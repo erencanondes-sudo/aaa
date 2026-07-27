@@ -874,6 +874,8 @@ button{
 <p>Puan Ortalaması (Zor): <span id="profileAvgScoreHard"></span></p>
 </div>
 
+<button class="challenge-play-btn decline-btn btn-compact" onclick="logoutUser()">Çıkış Yap 🚪</button>
+
 </div>
 
 <div id="otherProfileScreen" style="display:none;">
@@ -1112,6 +1114,28 @@ firebase.initializeApp(firebaseConfig);
 auth=firebase.auth();
 db=firebase.firestore();
 firebaseReady=true;
+
+auth.onAuthStateChanged(function(user){
+
+if(user){
+
+db.collection("users").doc(user.uid).get().then(function(doc){
+
+let profile=doc.data();
+
+if(profile){
+onLoginSuccess(user.uid,profile);
+}
+
+}).catch(function(e){
+
+console.error("Oturum geri yüklenemedi:",e);
+
+});
+
+}
+
+});
 
 }
 catch(e){
@@ -1891,6 +1915,34 @@ hideAllScreens();
 document.getElementById("playArea").style.display="block";
 
 showLevelSelect();
+
+}
+
+
+function logoutUser(){
+
+auth.signOut().then(function(){
+
+currentUser=null;
+gameHistory=[];
+
+hideAllScreens();
+
+screenNavStack=[];
+
+document.getElementById("registerForm").style.display="none";
+document.getElementById("loginForm").style.display="block";
+document.getElementById("loginEmail").value="";
+document.getElementById("loginPassword").value="";
+document.getElementById("loginError").innerHTML="";
+
+document.getElementById("authScreen").style.display="block";
+
+}).catch(function(e){
+
+console.error("Çıkış yapılamadı:",e);
+
+});
 
 }
 
