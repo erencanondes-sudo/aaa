@@ -1,0 +1,3406 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bir İşlem</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#273c75;
+    margin:0;
+    padding:15px;
+}
+
+.game{
+    max-width:520px;
+    margin:auto;
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+}
+
+h1{
+    color:#192a56;
+}
+
+button{
+    border:0;
+    border-radius:15px;
+    color:white;
+    cursor:pointer;
+}
+
+.newgame{
+    background:#0984e3;
+    width:85%;
+    padding:15px;
+    font-size:24px;
+    box-shadow:0 4px 0 #0a5aa1;
+}
+
+.newgame:active{
+    box-shadow:0 1px 0 #0a5aa1;
+    transform:translateY(3px);
+}
+
+.newgame-green, .challenge-btn.newgame-green{
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+}
+
+.newgame-green:active, .challenge-btn.newgame-green:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+.info{
+    display:flex;
+    justify-content:space-around;
+    margin:15px;
+}
+
+.target{
+    font-size:45px;
+    font-weight:bold;
+    color:#e84118;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:20px 0;
+    min-height:190px;
+    align-content:start;
+}
+
+.card{
+    background:#0097e6;
+    color:white;
+    padding:22px 5px;
+    border-radius:15px;
+    font-size:32px;
+    user-select:none;
+    cursor:pointer;
+    box-shadow:0 4px 0 #006ba3;
+}
+
+.card:active{
+    box-shadow:0 1px 0 #006ba3;
+    transform:translateY(3px);
+}
+
+.card.selected{
+    background:#e84118;
+    box-shadow:0 4px 0 #a83217;
+}
+
+.card.selected:active{
+    box-shadow:0 1px 0 #a83217;
+}
+
+
+.operations{
+    display:flex;
+    justify-content:center;
+    gap:5px;
+}
+
+.operations button{
+    width:65px;
+    height:65px;
+    background:#44bd32;
+    font-size:38px;
+    font-weight:bold;
+    box-shadow:0 4px 0 #2f8a22;
+}
+
+.operations button:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+
+.bottom-buttons{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:25px;
+    margin-top:15px;
+    margin-left:80px;
+}
+
+
+.undo{
+    background:#8e44ad;
+    width:110px;
+    height:65px;
+    font-size:34px;
+    font-weight:bold;
+    box-shadow:0 4px 0 #6c3483;
+}
+
+.undo:active{
+    box-shadow:0 1px 0 #6c3483;
+    transform:translateY(3px);
+}
+
+
+.equal{
+    background:#e67e22;
+    width:180px;
+    height:80px;
+    font-size:45px;
+    font-weight:bold;
+    box-shadow:0 4px 0 #b3641b;
+}
+
+.equal:active{
+    box-shadow:0 1px 0 #b3641b;
+    transform:translateY(3px);
+}
+
+
+#operation{
+    height:40px;
+    font-size:32px;
+    font-weight:bold;
+    color:#192a56;
+    background:#f1f2f6;
+    border:3px solid #0097e6;
+    border-radius:12px;
+    padding:12px 10px;
+    margin:15px 0;
+}
+
+.loading{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:50px 0;
+    gap:15px;
+}
+
+.spinner{
+    width:55px;
+    height:55px;
+    border:7px solid #dcdde1;
+    border-top:7px solid #0984e3;
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+}
+
+.loading p{
+    color:#192a56;
+    font-size:20px;
+    font-weight:bold;
+    margin:0;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+.level-select{
+    display:none;
+    flex-direction:column;
+    gap:14px;
+    padding:20px 0;
+}
+
+.level-select p{
+    color:#192a56;
+    font-size:20px;
+    font-weight:bold;
+    margin:0 0 5px 0;
+}
+
+.level-btn{
+    padding:18px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.level-easy{
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+}
+
+.level-easy:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+.level-medium{
+    background:#e67e22;
+    box-shadow:0 4px 0 #b3641b;
+}
+
+.level-medium:active{
+    box-shadow:0 1px 0 #b3641b;
+    transform:translateY(3px);
+}
+
+.level-hard{
+    background:#e84118;
+    box-shadow:0 4px 0 #a83217;
+}
+
+.level-hard:active{
+    box-shadow:0 1px 0 #a83217;
+    transform:translateY(3px);
+}
+
+.modal-overlay{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.modal-box{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    width:100%;
+    max-width:380px;
+    box-sizing:border-box;
+    text-align:center;
+}
+
+.modal-box p{
+    word-wrap:break-word;
+    line-height:1.4;
+    color:#192a56;
+    font-size:20px;
+    font-weight:bold;
+    margin:0 0 20px 0;
+}
+
+.modal-buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+.modal-continue{
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+    padding:14px 18px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.modal-continue:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+.modal-end{
+    background:#e84118;
+    box-shadow:0 4px 0 #a83217;
+    padding:14px 18px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.modal-end:active{
+    box-shadow:0 1px 0 #a83217;
+    transform:translateY(3px);
+}
+
+.win-banner{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0.5);
+    background:#44bd32;
+    color:white;
+    font-size:30px;
+    font-weight:bold;
+    padding:28px 34px;
+    border-radius:20px;
+    box-shadow:0 8px 0 #2f8a22;
+    opacity:0;
+    pointer-events:none;
+    z-index:200;
+    text-align:center;
+}
+
+.win-banner.show{
+    animation:winPop 2s ease forwards;
+}
+
+@keyframes winPop{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+    15%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}
+    25%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+    80%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(0.9);}
+}
+
+.solution-btn{
+    background:#192a56;
+    box-shadow:0 4px 0 #0f1a38;
+    width:100%;
+    padding:14px;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.solution-btn:active{
+    box-shadow:0 1px 0 #0f1a38;
+    transform:translateY(3px);
+}
+
+#solutionBox{
+    text-align:left;
+    background:#f1f2f6;
+    border-radius:12px;
+    padding:15px;
+    margin-top:12px;
+    font-size:17px;
+    color:#192a56;
+    line-height:1.6;
+}
+
+#solutionBox:empty{
+    padding:0;
+    margin-top:0;
+}
+
+.profile-icon{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:#dfe6e9;
+    font-size:46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:10px auto 20px auto;
+}
+
+.stats{
+    background:#f1f2f6;
+    border-radius:14px;
+    padding:15px;
+    margin-bottom:20px;
+}
+
+.stats p{
+    color:#192a56;
+    font-size:18px;
+    font-weight:bold;
+    margin:6px 0;
+}
+
+.history-btn{
+    background:#8e44ad;
+    box-shadow:0 4px 0 #6c3483;
+    margin-top:12px;
+    position:relative;
+}
+
+.tab-btn{
+    position:relative;
+}
+
+.badge{
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    background:#e84118;
+    color:white;
+    font-size:13px;
+    font-weight:bold;
+    min-width:22px;
+    height:22px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px;
+    box-shadow:0 2px 0 #a83217;
+}
+
+.clickable-name{
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.history-btn:active{
+    box-shadow:0 1px 0 #6c3483;
+    transform:translateY(3px);
+}
+
+.profile-btn{
+    background:#0097e6;
+    box-shadow:0 4px 0 #006ba3;
+    margin-top:12px;
+}
+
+.profile-btn:active{
+    box-shadow:0 1px 0 #006ba3;
+    transform:translateY(3px);
+}
+
+.friends-btn{
+    background:#e17055;
+    box-shadow:0 4px 0 #b04a34;
+    margin-top:12px;
+}
+
+.friends-btn:active{
+    box-shadow:0 1px 0 #b04a34;
+    transform:translateY(3px);
+}
+
+.back-btn{
+    background:#dfe6e9;
+    color:#192a56;
+    font-size:18px;
+    font-weight:bold;
+    padding:12px 20px;
+    margin-bottom:14px;
+    box-shadow:0 4px 0 #b2bec3;
+    width:auto;
+    align-self:center;
+}
+
+.back-btn:active{
+    box-shadow:0 1px 0 #b2bec3;
+    transform:translateY(3px);
+}
+
+.history-item{
+    background:#f1f2f6;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:10px;
+    text-align:left;
+}
+
+.history-item .h-top{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    color:#192a56;
+    font-size:17px;
+}
+
+.history-item .h-bottom{
+    color:#636e72;
+    font-size:14px;
+    margin-top:4px;
+}
+
+.history-item.win .h-top .h-result{
+    color:#44bd32;
+}
+
+.history-item.timeout .h-top .h-result{
+    color:#e84118;
+}
+
+.auth-info{
+    color:#636e72;
+    font-size:15px;
+    margin:5px 0 15px 0;
+}
+
+.auth-input{
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    margin-bottom:10px;
+    border:2px solid #dfe6e9;
+    border-radius:12px;
+    font-size:16px;
+    font-family:Arial,sans-serif;
+}
+
+.auth-input:focus{
+    outline:none;
+    border-color:#0984e3;
+}
+
+.auth-error{
+    color:#e84118;
+    font-size:14px;
+    font-weight:bold;
+    min-height:18px;
+    margin:0 0 10px 0;
+}
+
+.auth-toggle{
+    color:#636e72;
+    font-size:14px;
+    margin-top:14px;
+}
+
+.auth-toggle a{
+    color:#0984e3;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.auth-toggle-strong{
+    color:#192a56;
+    font-size:17px;
+    font-weight:bold;
+    margin-top:32px;
+    text-align:center;
+}
+
+.auth-toggle-strong a{
+    color:#0984e3;
+    font-weight:bold;
+    font-size:18px;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.welcome-text{
+    color:#192a56;
+    font-size:20px;
+    font-weight:bold;
+    margin:0 0 5px 0;
+}
+
+.screen-title{
+    color:#192a56;
+    font-size:19px;
+    font-weight:bold;
+    margin:10px 0 20px 0;
+}
+
+.challenge-btn{
+    background:#6c5ce7;
+    box-shadow:0 4px 0 #4b3fb0;
+    margin-top:12px;
+}
+
+.challenge-btn:active{
+    box-shadow:0 1px 0 #4b3fb0;
+    transform:translateY(3px);
+}
+
+.challenge-brown, .challenge-play-btn.challenge-brown{
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+}
+
+.challenge-brown:active, .challenge-play-btn.challenge-brown:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+.tab-buttons{
+    display:flex;
+    gap:10px;
+    margin:15px 0;
+}
+
+.tab-btn{
+    flex:1;
+    background:#dfe6e9;
+    color:#636e72;
+    padding:12px 5px;
+    font-size:15px;
+    font-weight:bold;
+    box-shadow:none;
+}
+
+.tab-btn.active{
+    background:#0984e3;
+    color:white;
+}
+
+.challenge-item{
+    background:#f1f2f6;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:10px;
+    text-align:left;
+}
+
+.challenge-item .h-top{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    color:#192a56;
+    font-size:17px;
+}
+
+.challenge-item .h-bottom{
+    color:#636e72;
+    font-size:14px;
+    margin-top:4px;
+}
+
+.challenge-play-btn{
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+    font-size:16px;
+    padding:10px;
+    margin-top:10px;
+    width:100%;
+}
+
+.btn-compact{
+    width:200px;
+    max-width:100%;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.btn-row{
+    display:flex;
+    gap:8px;
+}
+
+.btn-row .challenge-play-btn{
+    flex:1;
+    width:auto;
+}
+
+.decline-btn{
+    background:#e84118;
+    box-shadow:0 4px 0 #a83217;
+}
+
+.view-btn{
+    background:#636e72;
+    box-shadow:0 4px 0 #4b5052;
+}
+
+.message-btn{
+    background:#00b894;
+    box-shadow:0 4px 0 #018a71;
+    position:relative;
+}
+
+.already-friend{
+    color:#44bd32;
+    font-weight:bold;
+    font-size:14px;
+    margin-top:8px;
+}
+
+.chat-messages{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-height:320px;
+    overflow-y:auto;
+    text-align:left;
+    background:#f1f2f6;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:12px;
+}
+
+.chat-bubble{
+    max-width:80%;
+    padding:10px 14px;
+    border-radius:14px;
+    font-size:15px;
+    word-wrap:break-word;
+}
+
+.chat-bubble.mine{
+    align-self:flex-end;
+    background:#0984e3;
+    color:white;
+}
+
+.chat-bubble.other{
+    align-self:flex-start;
+    background:white;
+    color:#192a56;
+    border:1px solid #dfe6e9;
+}
+
+.chat-bubble b{
+    display:block;
+    font-size:12px;
+    opacity:0.75;
+    margin-bottom:2px;
+}
+
+.chat-input-row{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+}
+
+.chat-input-row .auth-input{
+    margin-bottom:0;
+    flex:1;
+}
+
+.chat-input-row button{
+    width:auto;
+    padding:14px 18px;
+    margin-top:0;
+}
+
+.challenge-play-btn:active{
+    box-shadow:0 1px 0 #2f8a22;
+    transform:translateY(3px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<h1>Bir İşlem</h1>
+
+<div id="authScreen">
+
+<div id="registerForm" style="display:none;">
+
+<h2>Üyelik Girişi</h2>
+
+<p class="auth-info">Devam etmek için lütfen kayıt olun.</p>
+
+<input type="text" id="regName" class="auth-input" placeholder="Ad Soyad">
+<input type="email" id="regEmail" class="auth-input" placeholder="E-posta">
+<input type="text" id="regUsername" class="auth-input" placeholder="Kullanıcı Adı">
+<input type="password" id="regPassword" class="auth-input" placeholder="Şifre">
+<input type="password" id="regPasswordConfirm" class="auth-input" placeholder="Şifre Onayı" onkeydown="if(event.key==='Enter')registerUser();">
+
+<p id="authError" class="auth-error"></p>
+
+<button class="newgame" id="registerBtn" onclick="registerUser()">Kayıt Ol</button>
+
+<p class="auth-toggle">Zaten hesabın var mı? <a onclick="showLoginForm()">Giriş Yap</a></p>
+
+</div>
+
+<div id="loginForm">
+
+<h2>Giriş Yap</h2>
+
+<input type="email" id="loginEmail" class="auth-input" placeholder="E-posta">
+<input type="password" id="loginPassword" class="auth-input" placeholder="Şifre" onkeydown="if(event.key==='Enter')loginUser();">
+
+<p id="loginError" class="auth-error"></p>
+
+<button class="newgame" id="loginBtn" onclick="loginUser()">Giriş Yap</button>
+
+<p class="auth-toggle-strong">Hesabın yok mu? <a onclick="showRegisterForm()">Kayıt Ol</a></p>
+
+</div>
+
+</div>
+
+<div id="homeScreen" style="display:none;">
+
+<p id="welcomeText" class="welcome-text"></p>
+
+<div class="profile-icon">👤</div>
+
+<div class="stats">
+<p>Başarı Yüzdesi: <span id="successPct">%0</span></p>
+<p>Puan Ortalaması (Kolay): <span id="avgScoreEasy">0</span></p>
+<p>Puan Ortalaması (Orta): <span id="avgScoreMedium">0</span></p>
+<p>Puan Ortalaması (Zor): <span id="avgScoreHard">0</span></p>
+</div>
+
+<button class="newgame newgame-green" onclick="openNewGameChoice()">Yeni Oyun</button>
+<button class="newgame history-btn" onclick="showHistory()">Oyunlarım<span class="badge" id="historyBadge" style="display:none;">0</span></button>
+<button class="newgame profile-btn" onclick="showProfile()">Profil</button>
+<button class="newgame friends-btn" onclick="showFriends()">Arkadaşlar</button>
+
+</div>
+
+<div id="profileScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<h2>Profil</h2>
+
+<div class="profile-icon">👤</div>
+
+<div class="stats">
+<p>Ad Soyad: <span id="profileName"></span></p>
+<p>Kullanıcı Adı: <span id="profileUsername"></span></p>
+<p>E-posta: <span id="profileEmail"></span></p>
+<p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
+<p>Puan Ortalaması (Kolay): <span id="profileAvgScoreEasy"></span></p>
+<p>Puan Ortalaması (Orta): <span id="profileAvgScoreMedium"></span></p>
+<p>Puan Ortalaması (Zor): <span id="profileAvgScoreHard"></span></p>
+</div>
+
+</div>
+
+<div id="otherProfileScreen" style="display:none;">
+
+<button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
+<h2>Kullanıcı Profili</h2>
+
+<div class="profile-icon">👤</div>
+
+<div class="stats" id="otherProfileContent"></div>
+
+</div>
+
+<div id="friendsScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<h2>Arkadaşlar</h2>
+
+<div id="friendsList"></div>
+
+</div>
+
+<div id="viewChallengeScreen" style="display:none;">
+
+<button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
+<h2>Meydan Okuma Detayı</h2>
+
+<div class="stats" id="viewChallengeContent"></div>
+
+</div>
+
+<div id="chatScreen" style="display:none;">
+
+<button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
+<h2 id="chatWithText">Mesajlar</h2>
+
+<div class="chat-messages" id="chatMessages"></div>
+
+<div class="chat-input-row">
+<input type="text" id="chatInput" class="auth-input" placeholder="Mesaj yaz...">
+<button class="challenge-play-btn" onclick="sendChatMessage()">Gönder</button>
+</div>
+
+</div>
+
+<div id="newGameChoiceScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Nasıl oynamak istersin?</p>
+
+<button class="newgame" onclick="startNewGameFlow()">Tekli Oyun</button>
+<button class="newgame challenge-brown" style="margin-top:12px;" onclick="openChallengeType()">Meydan Oku</button>
+
+</div>
+
+<div id="challengeTypeScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Kiminle meydan okumak istersin?</p>
+
+<button class="newgame challenge-btn newgame-green" onclick="openChallengeFriend()">Arkadaşınla Oyna</button>
+<button class="newgame challenge-btn" onclick="openChallengeRandom()">Rastgele Oyna</button>
+
+</div>
+
+<div id="challengeFriendScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Arkadaşının kullanıcı adı</p>
+
+<input type="text" id="challengeUsername" class="auth-input" placeholder="Kullanıcı Adı">
+
+<p id="challengeFriendError" class="auth-error"></p>
+
+<button class="newgame challenge-btn" onclick="confirmChallengeFriend()">Devam Et</button>
+
+</div>
+
+<div class="level-select" id="challengeLevelScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p id="challengeLevelText">Hangi seviyede meydan okuyacaksın?</p>
+
+<button class="level-btn level-easy" onclick="selectChallengeLevel('easy')">Kolay</button>
+<button class="level-btn level-medium" onclick="selectChallengeLevel('medium')">Orta</button>
+<button class="level-btn level-hard" onclick="selectChallengeLevel('hard')">Zor</button>
+
+</div>
+
+<div class="level-select" id="challengeFormatScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p>Kaç oyunluk meydan okumak istersin?</p>
+
+<button class="level-btn level-easy" onclick="createChallenge(1)">Tek Oyun</button>
+<button class="level-btn level-medium" onclick="createChallenge(3)">3 Oyun</button>
+
+</div>
+
+<div id="challengeDoneScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title" id="challengeDoneText"></p>
+
+</div>
+
+<div id="historyScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<h2>Oyunlarım</h2>
+
+<div class="tab-buttons">
+<button class="tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabGamesBtn" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
+</div>
+
+<div id="ongoingList"></div>
+
+<div id="historyList" style="display:none;"></div>
+
+<div id="challengesList" style="display:none;"></div>
+
+</div>
+
+<div id="playArea" style="display:none;">
+
+<div class="info">
+<div>Süre: <span id="time">120</span></div>
+<div>Puan: <span id="score">0</span></div>
+</div>
+
+<div class="level-select" id="levelSelect">
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+<p>Seviye seç</p>
+<button class="level-btn level-easy" onclick="newGame('easy')">Kolay</button>
+<button class="level-btn level-medium" onclick="newGame('medium')">Orta</button>
+<button class="level-btn level-hard" onclick="newGame('hard')">Zor</button>
+</div>
+
+<div class="loading" id="loading">
+<div class="spinner"></div>
+<p>Oyun hazırlanıyor...</p>
+</div>
+
+<div id="gameContent">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<h2>Hedef</h2>
+
+<div class="target" id="target">---</div>
+
+<div class="cards" id="cards"></div>
+
+<div id="operation">
+Sayı seçiniz
+</div>
+
+
+<div class="operations">
+<button onclick="setOperator('+')">+</button>
+<button onclick="setOperator('-')">−</button>
+<button onclick="setOperator('*')">×</button>
+<button onclick="setOperator('/')">÷</button>
+</div>
+
+
+<div class="bottom-buttons">
+
+<button class="undo" onclick="undo()">↶</button>
+
+<button class="equal" onclick="calculate()">=</button>
+
+</div>
+
+<p id="message"></p>
+
+<button class="solution-btn" id="solutionBtn" onclick="showSolution()" style="display:none;">Çözümü Göster</button>
+
+<div id="solutionBox"></div>
+
+</div>
+
+<div class="modal-overlay" id="closeModal">
+<div class="modal-box">
+<p id="closeModalText"></p>
+<div class="modal-buttons">
+<button class="modal-continue" onclick="declineClose()">Devam Et</button>
+<button class="modal-end" onclick="acceptClose()">Oyunu Bitir</button>
+</div>
+</div>
+</div>
+
+<div class="win-banner" id="winBanner"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const firebaseConfig={
+apiKey:"AIzaSyD9IQO8387frW2ujk5QPAEiwicHaGongS8",
+authDomain:"eren-63abb.firebaseapp.com",
+projectId:"eren-63abb",
+storageBucket:"eren-63abb.firebasestorage.app",
+messagingSenderId:"750087041131",
+appId:"1:750087041131:web:070444f7eacdfbd88f812e",
+measurementId:"G-W1BJ8P6GQ8"
+};
+
+let firebaseReady=false;
+let auth=null;
+let db=null;
+
+try{
+
+if(typeof firebase==="undefined"){
+throw new Error("Firebase kütüphanesi yüklenemedi (script engellenmiş olabilir).");
+}
+
+firebase.initializeApp(firebaseConfig);
+auth=firebase.auth();
+db=firebase.firestore();
+firebaseReady=true;
+
+}
+catch(e){
+
+console.error("Firebase başlatılamadı:",e);
+
+}
+
+let numbers=[];
+let originalNumbers=[];
+let target=0;
+let first=null;
+let second=null;
+let op=null;
+let history=[];
+let timer;
+let time=120;
+let score=0;
+let currentLevel=null;
+let pendingCloseValue=null;
+let pendingCloseDiff=null;
+let resultRecorded=false;
+let gameActive=false;
+
+
+function getAchievableTargets(smallNums,bigNum,minSmallUsed,opsAllowed,maxBigOps){
+
+opsAllowed=opsAllowed || {add:true,sub:true,mul:true,div:true};
+
+let items=smallNums.map(v=>({value:v,hasBig:false,count:1,bigOps:0}));
+items.push({value:bigNum,hasBig:true,count:0,bigOps:0});
+
+let resultsSet=new Set();
+let inRangeCount=0;
+let memo=new Set();
+let stop=false;
+
+const CAP=10000;
+const EARLY_STOP=40;
+
+function keyOf(list){
+return list.map(it=>it.value+":"+(it.hasBig?1:0)+":"+it.count+":"+it.bigOps).sort().join("|");
+}
+
+function explore(list){
+
+if(stop)return;
+
+let key=keyOf(list);
+if(memo.has(key))return;
+memo.add(key);
+
+list.forEach(it=>{
+
+if(it.hasBig && it.count>=minSmallUsed && (maxBigOps===undefined || it.bigOps<=maxBigOps) && !resultsSet.has(it.value)){
+
+resultsSet.add(it.value);
+
+if(it.value>=100 && it.value<=999){
+inRangeCount++;
+if(inRangeCount>=EARLY_STOP)stop=true;
+}
+
+}
+
+});
+
+if(stop || list.length<2)return;
+
+for(let i=0;i<list.length && !stop;i++){
+for(let j=i+1;j<list.length && !stop;j++){
+
+let a=list[i];
+let b=list[j];
+let rest=list.filter((_,idx)=>idx!==i && idx!==j);
+
+let candidates=[];
+
+if(opsAllowed.add)candidates.push(a.value+b.value);
+if(opsAllowed.mul)candidates.push(a.value*b.value);
+
+if(opsAllowed.sub){
+if(a.value>b.value)candidates.push(a.value-b.value);
+else if(b.value>a.value)candidates.push(b.value-a.value);
+}
+
+if(opsAllowed.div){
+if(b.value!==0 && a.value%b.value===0)candidates.push(a.value/b.value);
+if(a.value!==0 && a.value!==b.value && b.value%a.value===0)candidates.push(b.value/a.value);
+}
+
+for(let c of candidates){
+
+if(c<=0 || c>CAP)continue;
+
+let hasBig=a.hasBig||b.hasBig;
+let bigSource=a.hasBig?a:(b.hasBig?b:null);
+let bigOps=bigSource? bigSource.bigOps+1 : 0;
+
+if(maxBigOps!==undefined && hasBig && bigOps>maxBigOps)continue;
+
+let newItem={value:c,hasBig:hasBig,count:a.count+b.count,bigOps:bigOps};
+
+explore([...rest,newItem]);
+
+if(stop)break;
+
+}
+
+}
+}
+
+}
+
+explore(items);
+
+return Array.from(resultsSet);
+
+}
+
+
+const LEVELS={
+
+easy:{smallCount:4, bigOptions:[10], minSmallUsed:3, opsAllowed:{add:true,sub:true,mul:true,div:false}, maxCloseDiff:2, maxBigOps:2},
+medium:{smallCount:5, bigOptions:[10,15,25,50,75], minSmallUsed:4, opsAllowed:{add:true,sub:true,mul:true,div:true}, maxCloseDiff:5},
+hard:{smallCount:5, bigOptions:[12,18,24,30,40], minSmallUsed:4, opsAllowed:{add:true,sub:true,mul:true,div:true}, maxCloseDiff:10}
+
+};
+
+
+let gameHistory=[];
+let currentUser=null;
+
+
+function showLoginForm(){
+
+document.getElementById("registerForm").style.display="none";
+document.getElementById("loginForm").style.display="block";
+
+}
+
+
+function showRegisterForm(){
+
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="block";
+
+}
+
+
+function firebaseErrorMessage(e){
+
+let code=e.code || "";
+
+if(code==="auth/email-already-in-use")return "Bu e-posta zaten kayıtlı. Giriş yapmayı dene.";
+if(code==="auth/invalid-email")return "Geçersiz e-posta adresi.";
+if(code==="auth/weak-password")return "Şifre en az 6 karakter olmalı.";
+if(code==="auth/user-not-found" || code==="auth/wrong-password" || code==="auth/invalid-credential")return "E-posta veya şifre hatalı.";
+if(code==="timeout")return "Bağlantı zaman aşımına uğradı. İnternetini kontrol et veya bu dosyayı bir web sitesi olarak barındırmayı dene.";
+
+return "Bir hata oluştu: "+e.message;
+
+}
+
+
+function withTimeout(promise,ms){
+
+return Promise.race([
+
+promise,
+
+new Promise(function(resolve,reject){
+setTimeout(function(){
+reject({code:"timeout",message:"Bağlantı zaman aşımına uğradı. İnternetini kontrol et."});
+},ms);
+})
+
+]);
+
+}
+
+
+function registerUser(){
+
+let errorEl=document.getElementById("authError");
+
+if(!firebaseReady){
+errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+return;
+}
+
+let name=document.getElementById("regName").value.trim();
+let email=document.getElementById("regEmail").value.trim();
+let username=document.getElementById("regUsername").value.trim();
+let password=document.getElementById("regPassword").value;
+let passwordConfirm=document.getElementById("regPasswordConfirm").value;
+
+if(!name || !email || !username || !password || !passwordConfirm){
+errorEl.innerHTML="Lütfen tüm alanları doldurun.";
+return;
+}
+
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+errorEl.innerHTML="Geçerli bir e-posta adresi girin.";
+return;
+}
+
+if(username.length<3){
+errorEl.innerHTML="Kullanıcı adı en az 3 karakter olmalı.";
+return;
+}
+
+if(password.length<6){
+errorEl.innerHTML="Şifre en az 6 karakter olmalı.";
+return;
+}
+
+if(password!==passwordConfirm){
+errorEl.innerHTML="Şifreler eşleşmiyor.";
+return;
+}
+
+errorEl.innerHTML="Kayıt oluşturuluyor...";
+
+document.getElementById("registerBtn").disabled=true;
+
+withTimeout(auth.createUserWithEmailAndPassword(email,password),15000).then(function(cred){
+
+let profile={name:name,username:username,email:email};
+
+return db.collection("users").doc(cred.user.uid).set(profile).then(function(){
+
+onLoginSuccess(cred.user.uid,profile);
+
+});
+
+}).catch(function(e){
+
+document.getElementById("registerBtn").disabled=false;
+errorEl.innerHTML=firebaseErrorMessage(e);
+
+});
+
+}
+
+
+function loginUser(){
+
+let errorEl=document.getElementById("loginError");
+
+if(!firebaseReady){
+errorEl.style.color="";
+errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+return;
+}
+
+let email=document.getElementById("loginEmail").value.trim();
+let password=document.getElementById("loginPassword").value;
+
+if(!email || !password){
+errorEl.style.color="";
+errorEl.innerHTML="Lütfen e-posta ve şifreni gir.";
+return;
+}
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Giriş yapılıyor...";
+
+document.getElementById("loginBtn").disabled=true;
+
+withTimeout(auth.signInWithEmailAndPassword(email,password),15000).then(function(cred){
+
+return db.collection("users").doc(cred.user.uid).get().then(function(doc){
+
+let profile=doc.data();
+
+onLoginSuccess(cred.user.uid,profile);
+
+});
+
+}).catch(function(e){
+
+document.getElementById("loginBtn").disabled=false;
+errorEl.style.color="";
+errorEl.innerHTML=firebaseErrorMessage(e);
+
+});
+
+}
+
+
+function onLoginSuccess(uid,profile){
+
+currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email};
+
+document.getElementById("authScreen").style.display="none";
+document.getElementById("homeScreen").style.display="block";
+
+let firstName=profile.name.trim().split(/\s+/)[0];
+
+document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
+
+loadGameHistory().then(renderHomeStats);
+
+updateChallengeBadge();
+
+}
+
+
+function loadGameHistory(){
+
+return db.collection("users").doc(currentUser.uid).collection("history").orderBy("createdAt","desc").limit(20).get().then(function(snap){
+
+gameHistory=[];
+
+snap.forEach(function(doc){
+gameHistory.push(doc.data());
+});
+
+}).catch(function(e){
+
+console.error("Geçmiş yüklenemedi:",e);
+
+});
+
+}
+
+let pendingChallenge={opponent:null,type:null};
+let activeChallengeId=null;
+let activeChallengeSide=null;
+let activeChallengeGameIndex=null;
+let activeChatChallengeId=null;
+let returnToScreen=null;
+let chatUnsubscribe=null;
+
+const RANDOM_OPPONENTS=["Rakip_Ece","Rakip_Kaan","Rakip_Zeynep","Rakip_Mert","Rakip_Elif","Rakip_Deniz"];
+
+const LEVEL_NAMES={easy:"Kolay",medium:"Orta",hard:"Zor"};
+
+
+function recordGameEnd(result,finalScore){
+
+gameActive=false;
+
+let entry={level:currentLevel,result:result,score:finalScore,target:target,numbers:[...originalNumbers],isChallenge:!!activeChallengeId,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+
+gameHistory.unshift(entry);
+
+if(gameHistory.length>20){
+gameHistory=gameHistory.slice(0,20);
+}
+
+if(currentUser){
+
+db.collection("users").doc(currentUser.uid).collection("history").add(entry).then(function(){
+
+return db.collection("users").doc(currentUser.uid).collection("history").orderBy("createdAt","desc").get();
+
+}).then(function(snap){
+
+if(snap.size>20){
+
+snap.docs.slice(20).forEach(function(doc){
+doc.ref.delete().catch(function(e){
+console.error("Eski kayıt silinemedi:",e);
+});
+});
+
+}
+
+}).catch(function(e){
+console.error("Geçmiş kaydedilemedi:",e);
+});
+
+}
+
+if(activeChallengeId){
+
+let challengeId=activeChallengeId;
+let mySide=activeChallengeSide;
+let gameIndex=activeChallengeGameIndex;
+
+db.collection("challenges").doc(challengeId).get().then(function(doc){
+
+let ch=normalizeChallenge(doc.data());
+
+let updatedGames=ch.games.slice();
+let game=Object.assign({},updatedGames[gameIndex]);
+
+if(mySide==="from"){
+game.fromScore=finalScore;
+game.fromPlayed=true;
+}
+else{
+game.toScore=finalScore;
+game.toPlayed=true;
+}
+
+updatedGames[gameIndex]=game;
+
+db.collection("challenges").doc(challengeId).update({games:updatedGames}).then(function(){
+
+updateChallengeBadge();
+
+let msgEl=document.getElementById("message");
+
+let allDone=updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+if(allDone){
+
+let fromTotal=updatedGames.reduce(function(s,g){return s+g.fromScore;},0);
+let toTotal=updatedGames.reduce(function(s,g){return s+g.toScore;},0);
+
+let myTotal=mySide==="from" ? fromTotal : toTotal;
+let oppTotal=mySide==="from" ? toTotal : fromTotal;
+
+if(updatedGames.length===1){
+
+if(myTotal>oppTotal)msgEl.innerHTML="🎉 Kazandın! (Rakip puanı: "+oppTotal+")";
+else if(myTotal<oppTotal)msgEl.innerHTML="😔 Kaybettin! (Rakip puanı: "+oppTotal+")";
+else msgEl.innerHTML="🤝 Berabere! (Rakip puanı: "+oppTotal+")";
+
+}
+else{
+
+if(myTotal>oppTotal)msgEl.innerHTML="🎉 Seriyi kazandın! (Toplam: "+myTotal+" - "+oppTotal+")";
+else if(myTotal<oppTotal)msgEl.innerHTML="😔 Seriyi kaybettin! (Toplam: "+myTotal+" - "+oppTotal+")";
+else msgEl.innerHTML="🤝 Seri berabere! (Toplam: "+myTotal+" - "+oppTotal+")";
+
+}
+
+}
+else{
+
+let myPlayedCount=updatedGames.filter(function(g){ return mySide==="from" ? g.fromPlayed : g.toPlayed; }).length;
+
+msgEl.innerHTML="✅ "+myPlayedCount+"/"+updatedGames.length+" oyun tamamladın. Sırada bir sonraki oyun var.";
+
+}
+
+}).catch(function(e){
+console.error("Meydan okuma güncellenemedi:",e);
+});
+
+}).catch(function(e){
+
+console.error("Rakip bilgisi alınamadı:",e);
+
+});
+
+activeChallengeId=null;
+activeChallengeSide=null;
+activeChallengeGameIndex=null;
+
+}
+
+resultRecorded=true;
+
+}
+
+
+function hideAllScreens(){
+
+document.getElementById("homeScreen").style.display="none";
+document.getElementById("profileScreen").style.display="none";
+document.getElementById("otherProfileScreen").style.display="none";
+document.getElementById("friendsScreen").style.display="none";
+document.getElementById("viewChallengeScreen").style.display="none";
+document.getElementById("chatScreen").style.display="none";
+document.getElementById("newGameChoiceScreen").style.display="none";
+document.getElementById("challengeTypeScreen").style.display="none";
+document.getElementById("challengeFriendScreen").style.display="none";
+document.getElementById("challengeLevelScreen").style.display="none";
+document.getElementById("challengeFormatScreen").style.display="none";
+document.getElementById("challengeDoneScreen").style.display="none";
+document.getElementById("historyScreen").style.display="none";
+document.getElementById("playArea").style.display="none";
+
+if(chatUnsubscribe){
+chatUnsubscribe();
+chatUnsubscribe=null;
+}
+
+}
+
+
+function goHome(){
+
+if(gameActive && !resultRecorded){
+
+time=0;
+recordGameEnd("timeout",0);
+
+}
+
+gameActive=false;
+
+clearInterval(timer);
+
+activeChallengeId=null;
+activeChallengeSide=null;
+activeChallengeGameIndex=null;
+
+hideAllScreens();
+
+document.getElementById("homeScreen").style.display="block";
+
+renderHomeStats();
+updateChallengeBadge();
+
+}
+
+
+function goBackFromDetail(){
+
+let dest=returnToScreen;
+returnToScreen=null;
+
+if(dest==="istekler"){
+showHistory();
+switchHistoryTab("challenges");
+}
+else if(dest==="ongoing"){
+showHistory();
+switchHistoryTab("ongoing");
+}
+else if(dest==="oyunlarim"){
+showHistory();
+}
+else if(dest==="friends"){
+showFriends();
+}
+else{
+goHome();
+}
+
+}
+
+
+function openNewGameChoice(){
+
+hideAllScreens();
+document.getElementById("newGameChoiceScreen").style.display="block";
+
+}
+
+
+function openChallengeType(){
+
+hideAllScreens();
+document.getElementById("challengeTypeScreen").style.display="block";
+
+}
+
+
+function openChallengeFriend(){
+
+document.getElementById("challengeUsername").value="";
+document.getElementById("challengeFriendError").innerHTML="";
+
+hideAllScreens();
+document.getElementById("challengeFriendScreen").style.display="block";
+
+}
+
+
+function confirmChallengeFriend(){
+
+let username=document.getElementById("challengeUsername").value.trim();
+
+if(!username){
+
+document.getElementById("challengeFriendError").innerHTML="Lütfen bir kullanıcı adı gir.";
+return;
+
+}
+
+pendingChallenge={opponent:username,type:"friend"};
+
+hideAllScreens();
+document.getElementById("challengeLevelScreen").style.display="flex";
+document.getElementById("challengeLevelText").innerHTML=username+" için hangi seviyede meydan okuyacaksın?";
+
+}
+
+
+function challengeFromProfile(username){
+
+pendingChallenge={opponent:username,type:"friend"};
+
+hideAllScreens();
+document.getElementById("challengeLevelScreen").style.display="flex";
+document.getElementById("challengeLevelText").innerHTML=username+" için hangi seviyede meydan okuyacaksın?";
+
+}
+
+
+function openChallengeRandom(){
+
+let name=RANDOM_OPPONENTS[Math.floor(Math.random()*RANDOM_OPPONENTS.length)];
+
+pendingChallenge={opponent:name,type:"random"};
+
+hideAllScreens();
+document.getElementById("challengeLevelScreen").style.display="flex";
+document.getElementById("challengeLevelText").innerHTML=name+" için hangi seviyede meydan okuyacaksın?";
+
+}
+
+
+function selectChallengeLevel(level){
+
+pendingChallenge.level=level;
+
+hideAllScreens();
+document.getElementById("challengeFormatScreen").style.display="flex";
+
+}
+
+
+function createChallenge(gamesCount){
+
+let toUsername=pendingChallenge.opponent;
+let type=pendingChallenge.type;
+let level=pendingChallenge.level;
+let status=type==="friend" ? "pending" : "accepted";
+
+let games=[];
+
+for(let i=0;i<gamesCount;i++){
+
+let gameData=generateGameData(level);
+
+games.push({
+numbers:gameData.numbers,
+target:gameData.target,
+fromScore:null,
+toScore:null,
+fromPlayed:false,
+toPlayed:false
+});
+
+}
+
+let challengeData={
+fromUid:currentUser.uid,
+fromUsername:currentUser.username,
+toUsername:toUsername,
+level:level,
+gamesCount:gamesCount,
+games:games,
+type:type,
+status:status,
+fromLastRead:null,
+toLastRead:null,
+createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+acceptedAt:status==="accepted" ? firebase.firestore.FieldValue.serverTimestamp() : null
+};
+
+db.collection("challenges").add(challengeData).then(function(){
+
+hideAllScreens();
+document.getElementById("challengeDoneScreen").style.display="block";
+
+let formatText=gamesCount===1 ? "tek oyunluk" : "3 oyunluk";
+
+if(type==="friend"){
+document.getElementById("challengeDoneText").innerHTML="Meydan okuma "+toUsername+" kullanıcısına gönderildi! ("+formatText+")<br>Kabul ettiğinde İstekler bölümünde görünecek.";
+}
+else{
+document.getElementById("challengeDoneText").innerHTML="🎉 "+toUsername+" için "+formatText+" meydan okuma oluşturuldu!<br>48 saat içinde oynamalısın, yoksa iptal olur.";
+}
+
+}).catch(function(e){
+
+hideAllScreens();
+document.getElementById("challengeDoneScreen").style.display="block";
+document.getElementById("challengeDoneText").innerHTML="Meydan okuma oluşturulamadı: "+e.message;
+
+});
+
+}
+
+
+function respondChallenge(id,accept){
+
+let updateData=accept
+? {status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()}
+: {status:"declined"};
+
+db.collection("challenges").doc(id).update(updateData).then(function(){
+
+renderChallengesList();
+updateChallengeBadge();
+
+}).catch(function(e){
+
+console.error("Meydan okuma güncellenemedi:",e);
+
+});
+
+}
+
+
+function playChallenge(id,side){
+
+db.collection("challenges").doc(id).get().then(function(doc){
+
+let ch=normalizeChallenge(doc.data());
+
+let currentGameIndex=ch.games.findIndex(function(g){
+return !(g.fromPlayed && g.toPlayed);
+});
+
+if(currentGameIndex===-1){
+
+renderOngoingList();
+return;
+
+}
+
+let currentGame=ch.games[currentGameIndex];
+let mySidePlayedCurrent=side==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
+
+if(mySidePlayedCurrent){
+
+renderOngoingList();
+return;
+
+}
+
+activeChallengeId=id;
+activeChallengeSide=side;
+activeChallengeGameIndex=currentGameIndex;
+
+hideAllScreens();
+document.getElementById("playArea").style.display="block";
+
+let game=ch.games[currentGameIndex];
+
+newGame(ch.level,{numbers:game.numbers,target:game.target});
+
+});
+
+}
+
+
+function startNewGameFlow(){
+
+hideAllScreens();
+document.getElementById("playArea").style.display="block";
+
+showLevelSelect();
+
+}
+
+
+function showProfile(){
+
+hideAllScreens();
+document.getElementById("profileScreen").style.display="block";
+
+document.getElementById("profileName").innerHTML=currentUser.name;
+document.getElementById("profileUsername").innerHTML=currentUser.username;
+document.getElementById("profileEmail").innerHTML=currentUser.email;
+
+let avgByLevel=computeAvgByLevel(gameHistory);
+
+let challengeGames=gameHistory.filter(function(g){return g.isChallenge;});
+let challengeWins=challengeGames.filter(function(g){return g.result==="win";}).length;
+let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
+
+document.getElementById("profileSuccessPct").innerHTML="%"+successPct;
+document.getElementById("profileAvgScoreEasy").innerHTML=avgByLevel.easy;
+document.getElementById("profileAvgScoreMedium").innerHTML=avgByLevel.medium;
+document.getElementById("profileAvgScoreHard").innerHTML=avgByLevel.hard;
+
+}
+
+
+function viewUserProfile(username,from){
+
+returnToScreen=from || null;
+
+hideAllScreens();
+document.getElementById("otherProfileScreen").style.display="block";
+document.getElementById("otherProfileContent").innerHTML="<p>Yükleniyor...</p>";
+
+db.collection("users").where("username","==",username).get().then(function(snap){
+
+if(snap.empty){
+
+document.getElementById("otherProfileContent").innerHTML="<p>Kullanıcı bulunamadı.</p>";
+return;
+
+}
+
+let profile=snap.docs[0].data();
+let otherUid=snap.docs[0].id;
+
+let historyPromise=db.collection("users").doc(otherUid).collection("history").get();
+let friendPromise=db.collection("users").doc(currentUser.uid).collection("friends").doc(username).get();
+
+Promise.all([historyPromise,friendPromise]).then(function(results){
+
+let historySnap=results[0];
+let friendDoc=results[1];
+
+let games=[];
+let challengeCount=0;
+let challengeWins=0;
+
+historySnap.forEach(function(hDoc){
+let h=hDoc.data();
+games.push(h);
+if(h.isChallenge){
+challengeCount++;
+if(h.result==="win")challengeWins++;
+}
+});
+
+let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
+let avgByLevel=computeAvgByLevel(games);
+
+let isFriend=friendDoc.exists;
+
+let friendBtn=isFriend
+? "<button class=\"challenge-play-btn decline-btn btn-compact\" onclick=\"removeFriend('"+profile.username+"')\">Arkadaşlıktan Çıkar</button>"
+: "";
+
+document.getElementById("otherProfileContent").innerHTML=
+"<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
+"<p>Puan Ortalaması (Kolay): "+avgByLevel.easy+"</p><p>Puan Ortalaması (Orta): "+avgByLevel.medium+"</p><p>Puan Ortalaması (Zor): "+avgByLevel.hard+"</p>"+
+"<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku</button>"+
+friendBtn;
+
+}).catch(function(e){
+
+document.getElementById("otherProfileContent").innerHTML=
+"<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p>"+
+"<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku</button>";
+
+});
+
+}).catch(function(e){
+
+document.getElementById("otherProfileContent").innerHTML="<p>Profil yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function showFriends(){
+
+hideAllScreens();
+document.getElementById("friendsScreen").style.display="block";
+
+renderFriendsList();
+
+}
+
+
+function renderFriendsList(){
+
+let list=document.getElementById("friendsList");
+
+list.innerHTML="<p>Yükleniyor...</p>";
+
+db.collection("users").doc(currentUser.uid).collection("friends").get().then(function(snap){
+
+if(snap.empty){
+
+list.innerHTML="<p>Henüz bir arkadaşın yok. Oynadığın bir meydan okumadan 'Arkadaş Ekle' diyerek listene ekleyebilirsin.</p>";
+return;
+
+}
+
+let html="";
+
+snap.forEach(function(doc){
+
+let name=doc.id;
+
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+name+"','friends')\">"+name+"</span></div></div>";
+
+});
+
+list.innerHTML=html;
+
+}).catch(function(e){
+
+list.innerHTML="<p>Arkadaş listesi yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function addFriend(username,btnEl){
+
+if(btnEl){
+btnEl.outerHTML="<div class=\"already-friend\">✓ Arkadaşın</div>";
+}
+
+db.collection("users").doc(currentUser.uid).collection("friends").doc(username).set({
+
+username:username,
+addedAt:firebase.firestore.FieldValue.serverTimestamp()
+
+}).catch(function(e){
+
+console.error("Arkadaş eklenemedi:",e);
+
+});
+
+}
+
+
+function removeFriend(username){
+
+let preservedReturn=returnToScreen;
+
+db.collection("users").doc(currentUser.uid).collection("friends").doc(username).delete().then(function(){
+
+viewUserProfile(username,preservedReturn);
+
+}).catch(function(e){
+
+console.error("Arkadaş silinemedi:",e);
+
+});
+
+}
+
+
+function viewHistoryGame(idx){
+
+returnToScreen="oyunlarim";
+
+hideAllScreens();
+document.getElementById("viewChallengeScreen").style.display="block";
+
+let g=gameHistory[idx];
+
+let html="";
+
+html+="<p>Seviye: "+LEVEL_NAMES[g.level]+"</p>";
+html+="<p>Hedef: "+g.target+"</p>";
+
+if(g.numbers){
+html+="<p>Sayılar: "+g.numbers.join(", ")+"</p>";
+}
+
+html+="<p>Puan: "+g.score+"</p>";
+html+="<p>Sonuç: "+(g.result==="win"?"Tamamladın":"Süre Bitti")+"</p>";
+
+document.getElementById("viewChallengeContent").innerHTML=html;
+
+}
+
+
+function openChat(challengeId,otherName,mySide,from){
+
+returnToScreen=from || null;
+
+hideAllScreens();
+
+activeChatChallengeId=challengeId;
+
+document.getElementById("chatScreen").style.display="block";
+document.getElementById("chatWithText").innerHTML=otherName+" ile mesajlaş";
+document.getElementById("chatMessages").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("chatInput").value="";
+
+let readField=mySide==="from" ? "fromLastRead" : "toLastRead";
+let readUpdate={};
+readUpdate[readField]=firebase.firestore.FieldValue.serverTimestamp();
+
+db.collection("challenges").doc(challengeId).update(readUpdate).then(function(){
+updateChallengeBadge();
+}).catch(function(e){
+console.error("Okundu bilgisi güncellenemedi:",e);
+});
+
+chatUnsubscribe=db.collection("challenges").doc(challengeId).collection("messages").orderBy("sentAt","asc").onSnapshot(function(snap){
+
+let html="";
+
+snap.forEach(function(doc){
+
+let m=doc.data();
+let mine=m.senderUsername===currentUser.username;
+
+html+="<div class=\"chat-bubble "+(mine?"mine":"other")+"\"><b>"+m.senderUsername+"</b>"+m.text+"</div>";
+
+});
+
+document.getElementById("chatMessages").innerHTML=html || "<p>Henüz mesaj yok, ilk mesajı sen yaz.</p>";
+
+document.getElementById("chatMessages").scrollTop=document.getElementById("chatMessages").scrollHeight;
+
+},function(e){
+
+document.getElementById("chatMessages").innerHTML="<p>Mesajlar yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function sendChatMessage(){
+
+let input=document.getElementById("chatInput");
+let text=input.value.trim();
+
+if(!text || !activeChatChallengeId)return;
+
+db.collection("challenges").doc(activeChatChallengeId).collection("messages").add({
+
+senderUsername:currentUser.username,
+text:text,
+sentAt:firebase.firestore.FieldValue.serverTimestamp()
+
+}).then(function(){
+
+input.value="";
+
+}).catch(function(e){
+
+console.error("Mesaj gönderilemedi:",e);
+
+});
+
+}
+
+
+function viewChallenge(id){
+
+returnToScreen="oyunlarim";
+
+hideAllScreens();
+document.getElementById("viewChallengeScreen").style.display="block";
+document.getElementById("viewChallengeContent").innerHTML="<p>Yükleniyor...</p>";
+
+db.collection("challenges").doc(id).get().then(function(doc){
+
+let ch=normalizeChallenge(doc.data());
+
+let mySide=ch.fromUsername===currentUser.username ? "from" : "to";
+let otherName=mySide==="from" ? ch.toUsername : ch.fromUsername;
+
+let html="";
+
+html+="<p>Rakip: "+otherName+"</p>";
+html+="<p>Seviye: "+LEVEL_NAMES[ch.level]+"</p>";
+
+ch.games.forEach(function(g,i){
+
+let myScore=mySide==="from" ? g.fromScore : g.toScore;
+let opponentScore=mySide==="from" ? g.toScore : g.fromScore;
+let opponentPlayed=mySide==="from" ? g.toPlayed : g.fromPlayed;
+let mySidePlayed=mySide==="from" ? g.fromPlayed : g.toPlayed;
+
+html+="<p><b>"+(i+1)+". Oyun</b></p>";
+html+="<p>Hedef: "+g.target+"</p>";
+html+="<p>Sayılar: "+g.numbers.join(", ")+"</p>";
+
+if(mySidePlayed){
+html+="<p>Senin Puanın: "+myScore+"</p>";
+}
+
+if(opponentPlayed){
+html+="<p>Rakip Puanı: "+opponentScore+"</p>";
+}
+else{
+html+="<p>Rakip henüz oynamadı.</p>";
+}
+
+});
+
+let allDone=ch.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+if(allDone){
+
+let fromTotal=ch.games.reduce(function(s,g){return s+g.fromScore;},0);
+let toTotal=ch.games.reduce(function(s,g){return s+g.toScore;},0);
+
+let myTotal=mySide==="from" ? fromTotal : toTotal;
+let opponentTotal=mySide==="from" ? toTotal : fromTotal;
+
+let label=ch.games.length===1 ? "" : "Toplam ";
+
+html+="<p><b>"+label+"Sen: "+myTotal+" — Rakip: "+opponentTotal+"</b></p>";
+
+if(myTotal>opponentTotal)html+="<p><b>🎉 Kazandın</b></p>";
+else if(myTotal<opponentTotal)html+="<p><b>😔 Kaybettin</b></p>";
+else html+="<p><b>🤝 Berabere</b></p>";
+
+}
+
+document.getElementById("viewChallengeContent").innerHTML=html;
+
+}).catch(function(e){
+
+document.getElementById("viewChallengeContent").innerHTML="<p>Yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function showHistory(){
+
+hideAllScreens();
+document.getElementById("historyScreen").style.display="block";
+
+switchHistoryTab("ongoing");
+
+}
+
+
+function switchHistoryTab(tab){
+
+let ongoingBtn=document.getElementById("tabOngoingBtn");
+let gamesBtn=document.getElementById("tabGamesBtn");
+let challengesBtn=document.getElementById("tabChallengesBtn");
+
+let ongoingListEl=document.getElementById("ongoingList");
+let gamesList=document.getElementById("historyList");
+let challengesListEl=document.getElementById("challengesList");
+
+ongoingBtn.classList.remove("active");
+gamesBtn.classList.remove("active");
+challengesBtn.classList.remove("active");
+
+ongoingListEl.style.display="none";
+gamesList.style.display="none";
+challengesListEl.style.display="none";
+
+if(tab==="ongoing"){
+
+ongoingBtn.classList.add("active");
+ongoingListEl.style.display="block";
+
+renderOngoingList();
+
+}
+else if(tab==="games"){
+
+gamesBtn.classList.add("active");
+gamesList.style.display="block";
+
+renderHistoryList();
+
+}
+else{
+
+challengesBtn.classList.add("active");
+challengesListEl.style.display="block";
+
+renderChallengesList();
+
+}
+
+}
+
+
+function countUnreadMessages(challengeId,fromLastRead,toLastRead,mySide){
+
+let lastRead=mySide==="from" ? fromLastRead : toLastRead;
+
+return db.collection("challenges").doc(challengeId).collection("messages").get().then(function(snap){
+
+let count=0;
+
+snap.forEach(function(doc){
+
+let m=doc.data();
+
+if(m.senderUsername===currentUser.username)return;
+if(!lastRead || (m.sentAt && m.sentAt.seconds>lastRead.seconds))count++;
+
+});
+
+return count;
+
+});
+
+}
+
+
+function updateChatBadgesForItems(items){
+
+items.forEach(function(c){
+
+if(c.status!=="accepted")return;
+
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+
+countUnreadMessages(c.id,c.fromLastRead,c.toLastRead,mySide).then(function(count){
+
+let badge=document.getElementById("msgBadge-"+c.id);
+if(!badge)return;
+
+if(count>0){
+badge.innerHTML=count;
+badge.style.display="flex";
+}
+else{
+badge.style.display="none";
+}
+
+}).catch(function(e){
+
+console.error("Mesaj rozeti güncellenemedi:",e);
+
+});
+
+});
+
+}
+
+
+function updateChallengeBadge(){
+
+if(!currentUser)return;
+
+let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
+let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
+
+Promise.all([incoming,outgoing]).then(function(results){
+
+let all={};
+
+results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+let pendingCount=0;
+let ongoingActionCount=0;
+let ongoingListe=[];
+let oyunlarimListe=[];
+
+Object.keys(all).forEach(function(id){
+
+let c=all[id];
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+let bothPlayed=c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+if(c.status==="pending" && mySide==="to")pendingCount++;
+
+if(c.status==="accepted"){
+
+if(bothPlayed){
+oyunlarimListe.push({c:c,mySide:mySide});
+}
+else{
+
+let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
+let currentGame=c.games[currentGameIndex];
+let mySidePlayedCurrent=mySide==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
+
+if(!mySidePlayedCurrent)ongoingActionCount++;
+
+ongoingListe.push({c:c,mySide:mySide});
+
+}
+
+}
+
+});
+
+let ongoingUnreadPromises=ongoingListe.map(function(item){
+return countUnreadMessages(item.c.id,item.c.fromLastRead,item.c.toLastRead,item.mySide);
+});
+
+let oyunlarimUnreadPromises=oyunlarimListe.map(function(item){
+return countUnreadMessages(item.c.id,item.c.fromLastRead,item.c.toLastRead,item.mySide);
+});
+
+Promise.all([Promise.all(ongoingUnreadPromises),Promise.all(oyunlarimUnreadPromises)]).then(function(results){
+
+let ongoingUnread=results[0].reduce(function(a,b){return a+b;},0);
+let oyunlarimUnread=results[1].reduce(function(a,b){return a+b;},0);
+
+let ongoingTotal=ongoingActionCount+ongoingUnread;
+let istekTotal=pendingCount;
+let oyunlarimTotal=oyunlarimUnread;
+let homeTotal=ongoingTotal+istekTotal+oyunlarimTotal;
+
+let homeBadge=document.getElementById("historyBadge");
+let ongoingBadge=document.getElementById("ongoingBadge");
+let tabBadge=document.getElementById("tabBadge");
+let gamesBadge=document.getElementById("gamesBadge");
+
+if(homeTotal>0){
+homeBadge.innerHTML=homeTotal;
+homeBadge.style.display="flex";
+}
+else{
+homeBadge.style.display="none";
+}
+
+if(ongoingTotal>0){
+ongoingBadge.innerHTML=ongoingTotal;
+ongoingBadge.style.display="flex";
+}
+else{
+ongoingBadge.style.display="none";
+}
+
+if(istekTotal>0){
+tabBadge.innerHTML=istekTotal;
+tabBadge.style.display="flex";
+}
+else{
+tabBadge.style.display="none";
+}
+
+if(oyunlarimTotal>0){
+gamesBadge.innerHTML=oyunlarimTotal;
+gamesBadge.style.display="flex";
+}
+else{
+gamesBadge.style.display="none";
+}
+
+});
+
+}).catch(function(e){
+
+console.error("Bildirim sayısı güncellenemedi:",e);
+
+});
+
+}
+
+
+function buildCompletedChallengeHtml(c,otherName,mySide,friendNames){
+
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
+
+let fromTotal=c.games.reduce(function(s,g){return s+g.fromScore;},0);
+let toTotal=c.games.reduce(function(s,g){return s+g.toScore;},0);
+
+let myTotal=mySide==="from" ? fromTotal : toTotal;
+let opponentTotal=mySide==="from" ? toTotal : fromTotal;
+
+let totalGames=c.games.length;
+let formatLabel=totalGames===1 ? "" : " · "+totalGames+" Oyun";
+
+let html="";
+
+html+="<div class=\"challenge-item\">";
+html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+typeSuffix+"</span><span>"+LEVEL_NAMES[c.level]+formatLabel+"</span></div>";
+
+let resultLabel;
+if(myTotal>opponentTotal)resultLabel=totalGames===1 ? "🎉 Kazandın" : "🎉 Seriyi kazandın";
+else if(myTotal<opponentTotal)resultLabel=totalGames===1 ? "😔 Kaybettin" : "😔 Seriyi kaybettin";
+else resultLabel=totalGames===1 ? "🤝 Berabere" : "🤝 Seri berabere";
+
+html+="<div class=\"h-bottom\">"+resultLabel+" · Sen: "+myTotal+" — Rakip: "+opponentTotal+"</div>";
+
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn view-btn\" onclick=\"viewChallenge('"+c.id+"')\">Görüntüle</button>";
+
+if(c.type==="friend"){
+html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\"challengeFromProfile('"+otherName+"')\">Meydan Oku</button>";
+}
+else{
+html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\"openChallengeRandom()\">Meydan Oku</button>";
+}
+
+html+="</div>";
+
+if(c.type==="friend" && !friendNames.has(otherName)){
+
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn\" onclick=\"addFriend('"+otherName+"',this)\">Arkadaş Ekle</button>";
+html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">Mesajlaş<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+html+="</div>";
+
+}
+else{
+
+html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">Mesajlaş<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+
+if(c.type==="friend"){
+html+="<div class=\"already-friend\">✓ Arkadaşın</div>";
+}
+
+}
+
+html+="</div>";
+
+return html;
+
+}
+
+
+function renderOngoingList(){
+
+let list=document.getElementById("ongoingList");
+
+list.innerHTML="<p>Yükleniyor...</p>";
+
+let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
+let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
+let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+
+Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
+
+let all={};
+
+results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+let friendNames=new Set();
+results[2].forEach(function(doc){ friendNames.add(doc.id); });
+
+let now=Math.floor(Date.now()/1000);
+let FORTY_EIGHT_HOURS=48*60*60;
+
+let items=Object.values(all).filter(function(c){ return c.status==="accepted"; });
+
+items.forEach(function(c){
+
+let allDone=c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+if(c.acceptedAt && !allDone && (now-c.acceptedAt.seconds)>FORTY_EIGHT_HOURS){
+
+let updatedGames=c.games.map(function(g){
+
+let newG=Object.assign({},g);
+
+if(!newG.fromPlayed){ newG.fromPlayed=true; newG.fromScore=0; }
+if(!newG.toPlayed){ newG.toPlayed=true; newG.toScore=0; }
+
+return newG;
+
+});
+
+c.games=updatedGames;
+
+db.collection("challenges").doc(c.id).update({games:updatedGames}).catch(function(e){
+console.error("Süresi dolan meydan okuma güncellenemedi:",e);
+});
+
+}
+
+});
+
+items=items.filter(function(c){ return !c.games.every(function(g){ return g.fromPlayed && g.toPlayed; }); });
+
+items.sort(function(a,b){
+return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
+});
+
+if(items.length===0){
+list.innerHTML="<p>Şu an oynamayı bekleyen bir oyunun yok.</p>";
+return;
+}
+
+let html="";
+
+items.forEach(function(c){
+
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
+
+let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
+let currentGame=c.games[currentGameIndex];
+let mySidePlayedCurrent=mySide==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
+let totalGames=c.games.length;
+
+let formatLabel=totalGames===1 ? "" : " · "+totalGames+" Oyun";
+
+let remainingHours=48;
+
+if(c.acceptedAt){
+let elapsedHours=Math.floor((now-c.acceptedAt.seconds)/3600);
+remainingHours=Math.max(0,48-elapsedHours);
+}
+
+html+="<div class=\"challenge-item\">";
+html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+typeSuffix+"</span><span>"+LEVEL_NAMES[c.level]+formatLabel+"</span></div>";
+
+if(mySidePlayedCurrent){
+
+html+="<div class=\"h-bottom\">Sen "+(currentGameIndex+1)+". oyunu oynadın · Rakip bekleniyor ("+remainingHours+" saat içinde tamamlanmalı)</div>";
+
+}
+else{
+
+html+="<div class=\"h-bottom\">"+currentGameIndex+"/"+totalGames+" oyun tamamlandı · Sırada "+(currentGameIndex+1)+". oyun var ("+remainingHours+" saat içinde oynamalısın)</div>";
+html+="<button class=\"challenge-play-btn\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">Oyna</button>";
+
+}
+
+html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\">Mesajlaş<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+
+html+="</div>";
+
+});
+
+list.innerHTML=html;
+
+updateChatBadgesForItems(items);
+
+}).catch(function(e){
+
+list.innerHTML="<p>Oyunlar yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function renderChallengesList(){
+
+let list=document.getElementById("challengesList");
+
+list.innerHTML="<p>Yükleniyor...</p>";
+
+let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
+let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
+let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+
+Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
+
+let all={};
+
+results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+let friendNames=new Set();
+results[2].forEach(function(doc){ friendNames.add(doc.id); });
+
+let now=Math.floor(Date.now()/1000);
+let FORTY_EIGHT_HOURS=48*60*60;
+
+let items=Object.values(all).filter(function(c){ return c.status!=="accepted"; });
+
+items.forEach(function(c){
+
+if(c.status==="pending" && c.createdAt && (now-c.createdAt.seconds)>FORTY_EIGHT_HOURS){
+
+c.status="expired";
+
+db.collection("challenges").doc(c.id).update({status:"expired"}).catch(function(e){
+console.error("Süresi dolan istek güncellenemedi:",e);
+});
+
+}
+
+});
+
+items.sort(function(a,b){
+return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
+});
+
+if(items.length===0){
+list.innerHTML="<p>Bekleyen bir meydan okuma isteğin yok.</p>";
+return;
+}
+
+let html="";
+
+items.forEach(function(c){
+
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
+let formatLabel=c.games.length===1 ? "" : " · "+c.games.length+" Oyun";
+
+html+="<div class=\"challenge-item\">";
+html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+typeSuffix+"</span><span>"+LEVEL_NAMES[c.level]+formatLabel+"</span></div>";
+
+if(c.status==="pending" && mySide==="to"){
+
+html+="<div class=\"h-bottom\">Sana meydan okuma isteği geldi</div>";
+html+="<button class=\"challenge-play-btn btn-compact\" onclick=\"respondChallenge('"+c.id+"',true)\">Kabul Et</button>";
+html+="<button class=\"challenge-play-btn decline-btn btn-compact\" onclick=\"respondChallenge('"+c.id+"',false)\">Reddet</button>";
+
+}
+else if(c.status==="pending" && mySide==="from"){
+
+html+="<div class=\"h-bottom\">Kabul bekleniyor... (48 saat içinde cevap verilmezse iptal olur)</div>";
+
+}
+else if(c.status==="expired"){
+
+html+="<div class=\"h-bottom\">Süresi doldu (48 saat içinde cevaplanmadı)</div>";
+
+}
+else if(c.status==="declined"){
+
+html+="<div class=\"h-bottom\">Reddedildi</div>";
+
+}
+
+html+="</div>";
+
+});
+
+list.innerHTML=html;
+
+}).catch(function(e){
+
+list.innerHTML="<p>İstekler yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function normalizeChallenge(c){
+
+if(!c.games){
+
+c.games=[{
+numbers: c.numbers || [],
+target: c.target || 0,
+fromScore: c.fromScore!==undefined ? c.fromScore : null,
+toScore: c.toScore!==undefined ? c.toScore : null,
+fromPlayed: !!c.fromPlayed,
+toPlayed: !!c.toPlayed
+}];
+
+}
+
+return c;
+
+}
+
+
+function computeAvgByLevel(games){
+
+let sums={easy:0,medium:0,hard:0};
+let counts={easy:0,medium:0,hard:0};
+
+games.forEach(function(g){
+
+if(sums[g.level]!==undefined){
+sums[g.level]+=g.score;
+counts[g.level]++;
+}
+
+});
+
+return {
+
+easy: counts.easy? Math.round(sums.easy/counts.easy) : 0,
+medium: counts.medium? Math.round(sums.medium/counts.medium) : 0,
+hard: counts.hard? Math.round(sums.hard/counts.hard) : 0
+
+};
+
+}
+
+
+function renderHomeStats(){
+
+let avgByLevel=computeAvgByLevel(gameHistory);
+
+let challengeGames=gameHistory.filter(g=>g.isChallenge);
+let challengeWins=challengeGames.filter(g=>g.result==="win").length;
+let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
+
+document.getElementById("successPct").innerHTML="%"+successPct;
+document.getElementById("avgScoreEasy").innerHTML=avgByLevel.easy;
+document.getElementById("avgScoreMedium").innerHTML=avgByLevel.medium;
+document.getElementById("avgScoreHard").innerHTML=avgByLevel.hard;
+
+}
+
+
+function renderHistoryList(){
+
+let list=document.getElementById("historyList");
+
+list.innerHTML="<p>Yükleniyor...</p>";
+
+let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
+let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
+let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+
+Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
+
+let all={};
+
+results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+let friendNames=new Set();
+results[2].forEach(function(doc){ friendNames.add(doc.id); });
+
+let completedChallenges=Object.values(all).filter(function(c){
+
+return c.status==="accepted" && c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+});
+
+let combined=[];
+
+gameHistory.forEach(function(g,i){
+
+if(g.isChallenge)return;
+
+let time=g.createdAt? g.createdAt.seconds : 0;
+
+let resultClass=g.result==="win"?"win":"timeout";
+let resultText=g.result==="win"?"Tamamladın":"Süre Bitti";
+
+let html="<div class=\"history-item "+resultClass+"\">";
+html+="<div class=\"h-top\"><span>"+LEVEL_NAMES[g.level]+"</span><span class=\"h-result\">"+resultText+"</span></div>";
+html+="<div class=\"h-bottom\">Hedef: "+g.target+" · Puan: "+g.score+"</div>";
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn view-btn\" onclick=\"viewHistoryGame("+i+")\">Görüntüle</button>";
+html+="<button class=\"challenge-play-btn\" onclick=\"startNewGameFlow()\">Tekrar Oyna</button>";
+html+="</div>";
+html+="</div>";
+
+combined.push({time:time,html:html});
+
+});
+
+completedChallenges.forEach(function(c){
+
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
+
+let time=c.createdAt? c.createdAt.seconds : 0;
+
+let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames);
+
+combined.push({time:time,html:html});
+
+});
+
+if(combined.length===0){
+
+list.innerHTML="<p>Henüz oynanmış bir oyun yok.</p>";
+return;
+
+}
+
+combined.sort(function(a,b){ return b.time-a.time; });
+
+list.innerHTML=combined.map(function(x){return x.html;}).join("");
+
+updateChatBadgesForItems(completedChallenges);
+
+}).catch(function(e){
+
+list.innerHTML="<p>Geçmiş yüklenemedi: "+e.message+"</p>";
+
+});
+
+}
+
+
+function showLevelSelect(){
+
+clearInterval(timer);
+
+document.getElementById("gameContent").style.display="none";
+document.getElementById("loading").style.display="none";
+document.getElementById("levelSelect").style.display="flex";
+
+}
+
+
+function generateGameData(level){
+
+let config=LEVELS[level];
+
+let smallNums=[];
+
+for(let i=0;i<config.smallCount;i++){
+smallNums.push(Math.floor(Math.random()*9)+1);
+}
+
+let bigNum=config.bigOptions[Math.floor(Math.random()*config.bigOptions.length)];
+
+let possibleTargets=[];
+let attempts=0;
+
+while(possibleTargets.length===0 && attempts<40){
+
+if(attempts>0){
+
+smallNums=[];
+for(let i=0;i<config.smallCount;i++){
+smallNums.push(Math.floor(Math.random()*9)+1);
+}
+bigNum=config.bigOptions[Math.floor(Math.random()*config.bigOptions.length)];
+
+}
+
+possibleTargets=getAchievableTargets(smallNums,bigNum,config.minSmallUsed,config.opsAllowed,config.maxBigOps).filter(v=>v>=100 && v<=999);
+
+attempts++;
+
+}
+
+if(possibleTargets.length===0){
+
+let anyTargets=getAchievableTargets(smallNums,bigNum,config.minSmallUsed,config.opsAllowed,config.maxBigOps);
+possibleTargets=anyTargets.length? anyTargets:[Math.floor(Math.random()*900)+100];
+
+}
+
+let gameNumbers=[...smallNums,bigNum];
+let gameTarget=possibleTargets[Math.floor(Math.random()*possibleTargets.length)];
+
+return {numbers:gameNumbers,target:gameTarget};
+
+}
+
+
+function newGame(level,presetData){
+
+currentLevel=level;
+
+clearInterval(timer);
+
+numbers=[];
+history=[];
+
+first=null;
+second=null;
+op=null;
+
+time=120;
+score=0;
+resultRecorded=false;
+gameActive=true;
+
+document.getElementById("time").innerHTML=120;
+document.getElementById("score").innerHTML=0;
+document.getElementById("message").innerHTML="";
+document.getElementById("operation").innerHTML="Sayı seçiniz";
+document.getElementById("solutionBtn").style.display="none";
+document.getElementById("solutionBox").innerHTML="";
+
+document.getElementById("levelSelect").style.display="none";
+document.getElementById("gameContent").style.display="none";
+document.getElementById("loading").style.display="flex";
+document.getElementById("target").innerHTML="---";
+document.getElementById("cards").innerHTML="";
+
+
+setTimeout(()=>{
+
+let gameData=presetData? presetData : generateGameData(level);
+
+numbers=[...gameData.numbers];
+originalNumbers=[...gameData.numbers];
+target=gameData.target;
+
+document.getElementById("target").innerHTML=target;
+
+show();
+
+document.getElementById("loading").style.display="none";
+document.getElementById("gameContent").style.display="block";
+
+
+timer=setInterval(()=>{
+
+time--;
+
+document.getElementById("time").innerHTML=time;
+
+if(time<=60){
+document.getElementById("solutionBtn").style.display="inline-block";
+}
+
+if(time<=0){
+clearInterval(timer);
+document.getElementById("message").innerHTML="⏰ Süre bitti";
+recordGameEnd("timeout",0);
+}
+
+},1000);
+
+},600);
+
+}
+
+
+function show(){
+
+let area=document.getElementById("cards");
+area.innerHTML="";
+
+numbers.forEach((n,i)=>{
+
+let c=document.createElement("div");
+
+c.className="card";
+c.innerHTML=n;
+
+if((first && first.index==i) || (second && second.index==i)){
+c.classList.add("selected");
+}
+
+c.onclick=()=>selectNumber(i,c);
+
+area.appendChild(c);
+
+});
+
+}
+
+
+function saveState(){
+
+history.push(JSON.stringify({numbers:numbers,first:first,second:second,op:op}));
+
+}
+
+
+
+function selectNumber(i,c){
+
+if(first && second && first.index!=i && second.index!=i)return;
+
+saveState();
+
+if(first && first.index==i){
+
+first=null;
+c.classList.remove("selected");
+updateText();
+return;
+
+}
+
+
+if(second && second.index==i){
+
+second=null;
+c.classList.remove("selected");
+updateText();
+return;
+
+}
+
+
+if(first==null){
+
+first={index:i,value:numbers[i]};
+c.classList.add("selected");
+
+}
+else if(second==null){
+
+second={index:i,value:numbers[i]};
+c.classList.add("selected");
+
+}
+
+updateText();
+
+}
+
+
+
+function setOperator(x){
+
+if(first && second && op==x){
+
+calculate();
+return;
+
+}
+
+if(!first)return;
+
+saveState();
+
+op=x;
+updateText();
+
+}
+
+
+
+function updateText(){
+
+let t="";
+
+if(first)t+=first.value;
+if(op)t+=" "+op;
+if(second)t+=" "+second.value;
+
+document.getElementById("operation").innerHTML=t;
+
+}
+
+
+
+function calculate(){
+
+if(!first || !second || !op)return;
+
+let a=first.value;
+let b=second.value;
+let result;
+
+if(op=="/" && (b==0 || a%b!=0)){
+
+document.getElementById("operation").innerHTML="⚠️ Sonuç tam sayı olmalı";
+return;
+
+}
+
+saveState();
+
+
+if(op=="+")result=a+b;
+if(op=="-")result=a-b;
+if(op=="*")result=a*b;
+if(op=="/")result=a/b;
+
+
+let ids=[first.index,second.index];
+
+ids.sort((a,b)=>b-a);
+
+numbers.splice(ids[0],1);
+numbers.splice(ids[1],1);
+
+numbers.push(result);
+
+
+first=null;
+second=null;
+op=null;
+
+show();
+
+document.getElementById("operation").innerHTML="Yeni sayı: "+result;
+
+
+if(numbers.includes(target)){
+
+score=100+time;
+
+document.getElementById("score").innerHTML=score;
+
+document.getElementById("message").innerHTML="✅ Tamamladın!";
+
+showWinBanner("🎉 Hedefe Ulaştın!");
+
+clearInterval(timer);
+
+recordGameEnd("win",score);
+
+}
+else{
+
+checkCloseNumber();
+
+}
+
+}
+
+
+function findSolution(nums,target,maxBigOps){
+
+let items=nums.map((v,idx)=>({value:v,expr:String(v),hasBig:idx===nums.length-1,bigOps:0}));
+let visited=new Set();
+let stepsFound=null;
+
+function key(list){
+return list.map(it=>it.value+":"+(it.hasBig?1:0)+":"+it.bigOps).slice().sort().join(",");
+}
+
+function search(list,steps){
+
+if(stepsFound)return;
+
+if(list.some(it=>it.value===target)){
+stepsFound=steps.slice();
+return;
+}
+
+let k=key(list);
+if(visited.has(k))return;
+visited.add(k);
+
+if(list.length<2)return;
+
+for(let i=0;i<list.length && !stepsFound;i++){
+for(let j=0;j<list.length && !stepsFound;j++){
+
+if(i>=j)continue;
+
+let a=list[i];
+let b=list[j];
+let rest=list.filter((_,idx)=>idx!==i && idx!==j);
+
+let candidates=[];
+
+candidates.push({v:a.value+b.value,sym:"+",l:a,r:b});
+candidates.push({v:a.value*b.value,sym:"×",l:a,r:b});
+
+if(a.value>b.value)candidates.push({v:a.value-b.value,sym:"-",l:a,r:b});
+else if(b.value>a.value)candidates.push({v:b.value-a.value,sym:"-",l:b,r:a});
+
+if(b.value!==0 && a.value%b.value===0)candidates.push({v:a.value/b.value,sym:"÷",l:a,r:b});
+if(a.value!==0 && a.value!==b.value && b.value%a.value===0)candidates.push({v:b.value/a.value,sym:"÷",l:b,r:a});
+
+for(let c of candidates){
+
+if(c.v<=0)continue;
+
+let hasBig=c.l.hasBig||c.r.hasBig;
+let bigSource=c.l.hasBig?c.l:(c.r.hasBig?c.r:null);
+let bigOps=bigSource? bigSource.bigOps+1 : 0;
+
+if(maxBigOps!==undefined && hasBig && bigOps>maxBigOps)continue;
+
+let stepText=c.l.expr+" "+c.sym+" "+c.r.expr+" = "+c.v;
+let newItem={value:c.v,expr:String(c.v),hasBig:hasBig,bigOps:bigOps};
+
+search([...rest,newItem],[...steps,stepText]);
+
+if(stepsFound)return;
+
+}
+
+}
+}
+
+}
+
+search(items,[]);
+
+return stepsFound;
+
+}
+
+
+function showSolution(){
+
+if(!resultRecorded){
+
+clearInterval(timer);
+
+time=0;
+
+document.getElementById("time").innerHTML=0;
+document.getElementById("message").innerHTML="⏰ Süre bitti";
+
+recordGameEnd("timeout",0);
+
+}
+
+let maxBigOps=currentLevel? LEVELS[currentLevel].maxBigOps : undefined;
+
+let sol=findSolution(originalNumbers,target,maxBigOps);
+
+let box=document.getElementById("solutionBox");
+
+if(!sol){
+
+box.innerHTML="Bu hedef için bir çözüm bulunamadı.";
+
+}
+else{
+
+box.innerHTML="<b>Çözüm:</b><br>"+sol.join("<br>");
+
+}
+
+document.getElementById("solutionBtn").style.display="none";
+
+}
+
+
+function showWinBanner(text){
+
+let banner=document.getElementById("winBanner");
+
+banner.innerHTML=text;
+
+banner.classList.remove("show");
+
+void banner.offsetWidth;
+
+banner.classList.add("show");
+
+setTimeout(()=>{
+
+banner.classList.remove("show");
+
+},2000);
+
+}
+
+
+function checkCloseNumber(){
+
+let maxDiff=LEVELS[currentLevel].maxCloseDiff;
+
+let best=null;
+let bestDiff=Infinity;
+
+numbers.forEach(n=>{
+
+let diff=Math.abs(n-target);
+
+if(diff>0 && diff<=maxDiff && diff<bestDiff){
+bestDiff=diff;
+best=n;
+}
+
+});
+
+if(best!==null){
+
+pendingCloseValue=best;
+pendingCloseDiff=bestDiff;
+
+document.getElementById("closeModalText").innerHTML="Hedefe yakın bir sayı buldun: <b>"+best+"</b> (fark: "+bestDiff+"). Oyunu bu sayıyla bitirmek ister misin?";
+
+document.getElementById("closeModal").style.display="flex";
+
+}
+
+}
+
+
+function acceptClose(){
+
+let diff=pendingCloseDiff;
+
+let bonus;
+
+if(diff===1)bonus=50;
+else if(diff===2)bonus=30;
+else bonus=20;
+
+score=bonus+time;
+
+document.getElementById("score").innerHTML=score;
+
+document.getElementById("message").innerHTML="🎯 Yakın sayı ile bitirdin! ("+pendingCloseValue+", fark: "+diff+")";
+
+clearInterval(timer);
+
+document.getElementById("closeModal").style.display="none";
+
+recordGameEnd("win",score);
+
+}
+
+
+function declineClose(){
+
+document.getElementById("closeModal").style.display="none";
+
+}
+
+
+
+function undo(){
+
+if(history.length==0)return;
+
+let state=JSON.parse(history.pop());
+
+numbers=state.numbers;
+first=state.first;
+second=state.second;
+op=state.op;
+
+show();
+updateText();
+
+if(!first && !second && !op){
+document.getElementById("operation").innerHTML="Sayı seçiniz";
+}
+
+}
+
+
+document.addEventListener("visibilitychange",function(){
+
+if(document.visibilityState==="hidden" && gameActive && !resultRecorded){
+
+time=0;
+recordGameEnd("timeout",0);
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
