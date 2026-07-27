@@ -3455,6 +3455,28 @@ console.error("Service worker kaydedilemedi:",e);
 
 }
 
+
+window.history.pushState({app:true},"","");
+
+window.addEventListener("popstate",function(e){
+
+let onHome=document.getElementById("homeScreen").style.display==="block";
+
+if(!onHome){
+
+window.history.pushState({app:true},"","");
+
+if(returnToScreen){
+goBackFromDetail();
+}
+else{
+goHome();
+}
+
+}
+
+});
+
 </script>
 
 </body>
