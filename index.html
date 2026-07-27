@@ -797,7 +797,12 @@ button{
 
 <h1>Bir İşlem</h1>
 
-<div id="authScreen">
+<div class="loading" id="sessionCheckScreen" style="display:flex;">
+<div class="spinner"></div>
+<p>Yükleniyor...</p>
+</div>
+
+<div id="authScreen" style="display:none;">
 
 <div id="registerForm" style="display:none;">
 
@@ -1123,15 +1128,29 @@ db.collection("users").doc(user.uid).get().then(function(doc){
 
 let profile=doc.data();
 
+document.getElementById("sessionCheckScreen").style.display="none";
+
 if(profile){
 onLoginSuccess(user.uid,profile);
+}
+else{
+document.getElementById("authScreen").style.display="block";
 }
 
 }).catch(function(e){
 
 console.error("Oturum geri yüklenemedi:",e);
 
+document.getElementById("sessionCheckScreen").style.display="none";
+document.getElementById("authScreen").style.display="block";
+
 });
+
+}
+else{
+
+document.getElementById("sessionCheckScreen").style.display="none";
+document.getElementById("authScreen").style.display="block";
 
 }
 
@@ -1141,6 +1160,9 @@ console.error("Oturum geri yüklenemedi:",e);
 catch(e){
 
 console.error("Firebase başlatılamadı:",e);
+
+document.getElementById("sessionCheckScreen").style.display="none";
+document.getElementById("authScreen").style.display="block";
 
 }
 
