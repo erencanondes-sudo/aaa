@@ -1,4 +1,4 @@
-const CACHE_NAME = "bir-islem-v2";
+const CACHE_NAME = "bir-islem-v3";
 
 const APP_SHELL = [
   "./index.html",
@@ -46,6 +46,26 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
+  // Page navigations: always try the network first so updates (like this one)
+  // show up immediately. Fall back to cache only when offline.
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then(function (networkResponse) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, clone);
+          });
+          return networkResponse;
+        })
+        .catch(function () {
+          return caches.match("./index.html");
+        })
+    );
+    return;
+  }
+
+  // Everything else (icons, manifest, etc.): cache-first, since these rarely change.
   event.respondWith(
     caches.match(event.request).then(function (cachedResponse) {
       if (cachedResponse) {
@@ -62,9 +82,7 @@ self.addEventListener("fetch", function (event) {
           return networkResponse;
         })
         .catch(function () {
-          if (event.request.mode === "navigate") {
-            return caches.match("./index.html");
-          }
+          return undefined;
         });
     })
   );

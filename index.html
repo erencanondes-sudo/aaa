@@ -1445,6 +1445,11 @@ let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let activeChatChallengeId=null;
 let returnToScreen=null;
+
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","newGameChoiceScreen","challengeTypeScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","playArea"];
+
+let screenNavStack=[];
+let suppressScreenPush=false;
 let chatUnsubscribe=null;
 
 const RANDOM_OPPONENTS=["Rakip_Ece","Rakip_Kaan","Rakip_Zeynep","Rakip_Mert","Rakip_Elif","Rakip_Deniz"];
@@ -1575,6 +1580,25 @@ resultRecorded=true;
 
 function hideAllScreens(){
 
+if(!suppressScreenPush){
+
+for(let i=0;i<SCREEN_IDS.length;i++){
+
+let el=document.getElementById(SCREEN_IDS[i]);
+
+if(el.style.display && el.style.display!=="none"){
+
+screenNavStack.push({id:SCREEN_IDS[i],display:el.style.display});
+window.history.pushState({app:true},"","");
+
+break;
+
+}
+
+}
+
+}
+
 document.getElementById("homeScreen").style.display="none";
 document.getElementById("profileScreen").style.display="none";
 document.getElementById("otherProfileScreen").style.display="none";
@@ -1618,6 +1642,8 @@ activeChallengeGameIndex=null;
 hideAllScreens();
 
 document.getElementById("homeScreen").style.display="block";
+
+screenNavStack=[];
 
 renderHomeStats();
 updateChallengeBadge();
@@ -3460,19 +3486,21 @@ window.history.pushState({app:true},"","");
 
 window.addEventListener("popstate",function(e){
 
-let onHome=document.getElementById("homeScreen").style.display==="block";
-
-if(!onHome){
-
-window.history.pushState({app:true},"","");
-
-if(returnToScreen){
-goBackFromDetail();
-}
-else{
-goHome();
+if(screenNavStack.length===0){
+return;
 }
 
+let prev=screenNavStack.pop();
+
+suppressScreenPush=true;
+hideAllScreens();
+suppressScreenPush=false;
+
+document.getElementById(prev.id).style.display=prev.display;
+
+if(prev.id==="homeScreen"){
+renderHomeStats();
+updateChallengeBadge();
 }
 
 });
