@@ -1216,6 +1216,7 @@ let pendingCloseValue=null;
 let pendingCloseDiff=null;
 let resultRecorded=false;
 let gameActive=false;
+let gameEndTime=null;
 
 
 function getAchievableTargets(smallNums,bigNum,minSmallUsed,opsAllowed,maxBigOps){
@@ -3264,9 +3265,11 @@ document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="block";
 
 
+gameEndTime=Date.now()+time*1000;
+
 timer=setInterval(()=>{
 
-time--;
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("time").innerHTML=time;
 
@@ -3274,7 +3277,7 @@ if(time<=60){
 document.getElementById("solutionBtn").style.display="inline-block";
 }
 
-if(time<=0){
+if(time<=0 && !resultRecorded){
 clearInterval(timer);
 document.getElementById("message").innerHTML="⏰ Süre bitti";
 recordGameEnd("timeout",0);
@@ -3448,6 +3451,8 @@ document.getElementById("operation").innerHTML="Yeni sayı: "+result;
 
 if(numbers.includes(target)){
 
+if(!resultRecorded){
+
 score=100+time;
 
 document.getElementById("score").innerHTML=score;
@@ -3461,9 +3466,13 @@ clearInterval(timer);
 recordGameEnd("win",score);
 
 }
+
+}
 else{
 
+if(!resultRecorded){
 checkCloseNumber();
+}
 
 }
 
@@ -3555,9 +3564,6 @@ clearInterval(timer);
 time=0;
 
 document.getElementById("time").innerHTML=0;
-document.getElementById("message").innerHTML="⏰ Süre bitti";
-
-recordGameEnd("timeout",0);
 
 }
 
@@ -3638,6 +3644,11 @@ document.getElementById("closeModal").style.display="flex";
 
 function acceptClose(){
 
+if(resultRecorded){
+document.getElementById("closeModal").style.display="none";
+return;
+}
+
 let diff=pendingCloseDiff;
 
 let bonus;
@@ -3692,8 +3703,34 @@ document.getElementById("operation").innerHTML="Sayı seçiniz";
 
 document.addEventListener("visibilitychange",function(){
 
-if(document.visibilityState==="hidden" && gameActive && !resultRecorded){
+if(document.visibilityState==="visible" && gameActive && !resultRecorded && gameEndTime){
 
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
+
+document.getElementById("time").innerHTML=time;
+
+if(time<=60){
+document.getElementById("solutionBtn").style.display="inline-block";
+}
+
+if(time<=0){
+
+clearInterval(timer);
+document.getElementById("message").innerHTML="⏰ Süre bitti";
+recordGameEnd("timeout",0);
+
+}
+
+}
+
+});
+
+
+window.addEventListener("pagehide",function(){
+
+if(gameActive && !resultRecorded){
+
+clearInterval(timer);
 time=0;
 recordGameEnd("timeout",0);
 
