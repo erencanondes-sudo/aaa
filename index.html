@@ -811,10 +811,10 @@ button{
 <p class="auth-info">Devam etmek için lütfen kayıt olun.</p>
 
 <input type="text" id="regName" class="auth-input" placeholder="Ad Soyad">
-<input type="email" id="regEmail" class="auth-input" placeholder="E-posta">
-<input type="text" id="regUsername" class="auth-input" placeholder="Kullanıcı Adı">
-<input type="password" id="regPassword" class="auth-input" placeholder="Şifre">
-<input type="password" id="regPasswordConfirm" class="auth-input" placeholder="Şifre Onayı" onkeydown="if(event.key==='Enter')registerUser();">
+<input type="email" id="regEmail" class="auth-input" placeholder="E-posta" autocomplete="email" name="email">
+<input type="text" id="regUsername" class="auth-input" placeholder="Kullanıcı Adı" autocomplete="username" name="username">
+<input type="password" id="regPassword" class="auth-input" placeholder="Şifre" autocomplete="new-password" name="new-password">
+<input type="password" id="regPasswordConfirm" class="auth-input" placeholder="Şifre Onayı" autocomplete="new-password" name="new-password-confirm" onkeydown="if(event.key==='Enter')registerUser();">
 
 <p id="authError" class="auth-error"></p>
 
@@ -828,8 +828,8 @@ button{
 
 <h2>Giriş Yap</h2>
 
-<input type="email" id="loginEmail" class="auth-input" placeholder="E-posta">
-<input type="password" id="loginPassword" class="auth-input" placeholder="Şifre" onkeydown="if(event.key==='Enter')loginUser();">
+<input type="email" id="loginEmail" class="auth-input" placeholder="E-posta" autocomplete="username" name="username">
+<input type="password" id="loginPassword" class="auth-input" placeholder="Şifre" autocomplete="current-password" name="current-password" onkeydown="if(event.key==='Enter')loginUser();">
 
 <p id="loginError" class="auth-error"></p>
 
@@ -847,7 +847,7 @@ button{
 
 <p class="auth-info">Kayıtlı e-posta adresini gir, sana bir şifre sıfırlama bağlantısı gönderelim.</p>
 
-<input type="email" id="forgotEmail" class="auth-input" placeholder="E-posta" onkeydown="if(event.key==='Enter')sendPasswordReset();">
+<input type="email" id="forgotEmail" class="auth-input" placeholder="E-posta" autocomplete="email" name="email" onkeydown="if(event.key==='Enter')sendPasswordReset();">
 
 <p id="forgotError" class="auth-error"></p>
 
@@ -901,9 +901,9 @@ button{
 
 <div id="changePasswordForm" style="display:none;">
 
-<input type="password" id="currentPassword" class="auth-input" placeholder="Mevcut Şifre">
-<input type="password" id="newPassword" class="auth-input" placeholder="Yeni Şifre">
-<input type="password" id="newPasswordConfirm" class="auth-input" placeholder="Yeni Şifre Onayı" onkeydown="if(event.key==='Enter')changePassword();">
+<input type="password" id="currentPassword" class="auth-input" placeholder="Mevcut Şifre" autocomplete="current-password" name="current-password">
+<input type="password" id="newPassword" class="auth-input" placeholder="Yeni Şifre" autocomplete="new-password" name="new-password">
+<input type="password" id="newPasswordConfirm" class="auth-input" placeholder="Yeni Şifre Onayı" autocomplete="new-password" name="new-password-confirm" onkeydown="if(event.key==='Enter')changePassword();">
 
 <p id="changePasswordError" class="auth-error"></p>
 
