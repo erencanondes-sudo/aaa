@@ -835,7 +835,25 @@ button{
 
 <button class="newgame" id="loginBtn" onclick="loginUser()">Giriş Yap 🔑</button>
 
+<p class="auth-toggle">Şifreni mi unuttun? <a onclick="showForgotPasswordForm()">Şifremi Unuttum</a></p>
+
 <p class="auth-toggle-strong">Hesabın yok mu? <a onclick="showRegisterForm()">Kayıt Ol 📝</a></p>
+
+</div>
+
+<div id="forgotPasswordForm" style="display:none;">
+
+<h2>Şifremi Unuttum</h2>
+
+<p class="auth-info">Kayıtlı e-posta adresini gir, sana bir şifre sıfırlama bağlantısı gönderelim.</p>
+
+<input type="email" id="forgotEmail" class="auth-input" placeholder="E-posta" onkeydown="if(event.key==='Enter')sendPasswordReset();">
+
+<p id="forgotError" class="auth-error"></p>
+
+<button class="newgame" onclick="sendPasswordReset()">Sıfırlama Bağlantısı Gönder</button>
+
+<p class="auth-toggle">Şifreni hatırladın mı? <a onclick="showLoginForm()">Giriş Yap</a></p>
 
 </div>
 
@@ -877,6 +895,23 @@ button{
 <p>Puan Ortalaması (Kolay): <span id="profileAvgScoreEasy"></span></p>
 <p>Puan Ortalaması (Orta): <span id="profileAvgScoreMedium"></span></p>
 <p>Puan Ortalaması (Zor): <span id="profileAvgScoreHard"></span></p>
+</div>
+
+<button class="challenge-play-btn btn-compact" onclick="showChangePasswordForm()">Şifre Değiştir 🔒</button>
+
+<div id="changePasswordForm" style="display:none;">
+
+<input type="password" id="currentPassword" class="auth-input" placeholder="Mevcut Şifre">
+<input type="password" id="newPassword" class="auth-input" placeholder="Yeni Şifre">
+<input type="password" id="newPasswordConfirm" class="auth-input" placeholder="Yeni Şifre Onayı" onkeydown="if(event.key==='Enter')changePassword();">
+
+<p id="changePasswordError" class="auth-error"></p>
+
+<div class="btn-row">
+<button class="challenge-play-btn" onclick="changePassword()">Kaydet</button>
+<button class="challenge-play-btn view-btn" onclick="hideChangePasswordForm()">Vazgeç</button>
+</div>
+
 </div>
 
 <button class="challenge-play-btn decline-btn btn-compact" onclick="logoutUser()">Çıkış Yap 🚪</button>
@@ -1295,6 +1330,7 @@ let currentUser=null;
 function showLoginForm(){
 
 document.getElementById("registerForm").style.display="none";
+document.getElementById("forgotPasswordForm").style.display="none";
 document.getElementById("loginForm").style.display="block";
 
 }
@@ -1303,7 +1339,56 @@ document.getElementById("loginForm").style.display="block";
 function showRegisterForm(){
 
 document.getElementById("loginForm").style.display="none";
+document.getElementById("forgotPasswordForm").style.display="none";
 document.getElementById("registerForm").style.display="block";
+
+}
+
+
+function showForgotPasswordForm(){
+
+document.getElementById("loginForm").style.display="none";
+document.getElementById("registerForm").style.display="none";
+document.getElementById("forgotEmail").value="";
+document.getElementById("forgotError").innerHTML="";
+document.getElementById("forgotError").style.color="";
+document.getElementById("forgotPasswordForm").style.display="block";
+
+}
+
+
+function sendPasswordReset(){
+
+let errorEl=document.getElementById("forgotError");
+
+if(!firebaseReady){
+errorEl.style.color="";
+errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+return;
+}
+
+let email=document.getElementById("forgotEmail").value.trim();
+
+if(!email){
+errorEl.style.color="";
+errorEl.innerHTML="Lütfen e-posta adresini gir.";
+return;
+}
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Gönderiliyor...";
+
+withTimeout(auth.sendPasswordResetEmail(email),15000).then(function(){
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Sıfırlama bağlantısı e-postana gönderildi. Gelen kutunu (ve spam klasörünü) kontrol et.";
+
+}).catch(function(e){
+
+errorEl.style.color="";
+errorEl.innerHTML=firebaseErrorMessage(e);
+
+});
 
 }
 
@@ -1941,6 +2026,81 @@ showLevelSelect();
 }
 
 
+function showChangePasswordForm(){
+
+document.getElementById("currentPassword").value="";
+document.getElementById("newPassword").value="";
+document.getElementById("newPasswordConfirm").value="";
+document.getElementById("changePasswordError").innerHTML="";
+document.getElementById("changePasswordError").style.color="";
+
+document.getElementById("changePasswordForm").style.display="block";
+
+}
+
+
+function hideChangePasswordForm(){
+
+document.getElementById("changePasswordForm").style.display="none";
+
+}
+
+
+function changePassword(){
+
+let errorEl=document.getElementById("changePasswordError");
+
+let currentPassword=document.getElementById("currentPassword").value;
+let newPassword=document.getElementById("newPassword").value;
+let newPasswordConfirm=document.getElementById("newPasswordConfirm").value;
+
+if(!currentPassword || !newPassword || !newPasswordConfirm){
+errorEl.style.color="";
+errorEl.innerHTML="Lütfen tüm alanları doldur.";
+return;
+}
+
+if(newPassword.length<6){
+errorEl.style.color="";
+errorEl.innerHTML="Yeni şifre en az 6 karakter olmalı.";
+return;
+}
+
+if(newPassword!==newPasswordConfirm){
+errorEl.style.color="";
+errorEl.innerHTML="Yeni şifreler eşleşmiyor.";
+return;
+}
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Güncelleniyor...";
+
+let user=auth.currentUser;
+let credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,currentPassword);
+
+withTimeout(user.reauthenticateWithCredential(credential),15000).then(function(){
+
+return user.updatePassword(newPassword);
+
+}).then(function(){
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Şifren güncellendi.";
+
+document.getElementById("currentPassword").value="";
+document.getElementById("newPassword").value="";
+document.getElementById("newPasswordConfirm").value="";
+
+}).catch(function(e){
+
+errorEl.style.color="";
+errorEl.innerHTML=firebaseErrorMessage(e);
+
+});
+
+}
+
+
 function logoutUser(){
 
 auth.signOut().then(function(){
@@ -1973,6 +2133,7 @@ function showProfile(){
 
 hideAllScreens();
 document.getElementById("profileScreen").style.display="block";
+document.getElementById("changePasswordForm").style.display="none";
 
 document.getElementById("profileName").innerHTML=currentUser.name;
 document.getElementById("profileUsername").innerHTML=currentUser.username;
