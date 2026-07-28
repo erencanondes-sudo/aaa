@@ -111,6 +111,15 @@ button{
     box-shadow:0 4px 0 #a83217;
 }
 
+@keyframes cardWinGlow{
+    0%,100%{transform:scale(1);background:#44bd32;box-shadow:0 4px 0 #2f8a22;}
+    50%{transform:scale(1.15);background:#7bed9f;box-shadow:0 4px 0 #2f8a22,0 0 24px rgba(68,189,50,0.9);}
+}
+
+.card.win-glow{
+    animation:cardWinGlow 0.9s ease-in-out 2;
+}
+
 .card.selected:active{
     box-shadow:0 1px 0 #a83217;
 }
@@ -849,8 +858,109 @@ button{
     color:#c49a12;
 }
 
-.word-check-btn{
+.word-check-btn, .equal.word-check-btn{
     font-size:22px;
+    background:#44bd32;
+    box-shadow:0 4px 0 #2f8a22;
+}
+
+.word-check-btn:active{
+    box-shadow:0 1px 0 #2f8a22;
+}
+
+.word-undo-btn, .undo.word-undo-btn{
+    width:100px;
+}
+
+.word-shuffle-btn, .shuffle-icon.word-shuffle-btn{
+    background:#e67e22;
+    color:#ffffff;
+    width:100px;
+    box-shadow:0 4px 0 #b3641b;
+}
+
+.word-shuffle-btn:active{
+    box-shadow:0 1px 0 #b3641b;
+}
+
+.word-info{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    margin:15px;
+}
+
+.word-info .word-info-top{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+    width:100%;
+}
+
+.word-info .word-info-bottom{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+}
+
+.word-info-top div, .word-info-bottom div{
+    display:flex;
+    flex-direction:column;
+}
+
+.word-info span:first-child{
+    font-size:13px;
+    color:#7f8fa6;
+    font-weight:bold;
+}
+
+.word-info .value{
+    font-size:32px;
+    font-weight:bold;
+    color:#e84118;
+    min-width:3ch;
+    display:inline-block;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+}
+
+#wordTimeValue{
+    color:#e84118;
+}
+
+#wordScoreItem{
+    font-size:50px;
+    color:#44bd32;
+    margin-top:10px;
+}
+
+#wordScoreValue{
+    font-size:50px;
+    color:#44bd32;
+}
+
+#wordMessage{
+    color:#192a56;
+    font-size:14px;
+    font-weight:bold;
+    margin:0;
+    padding-top:1px;
+    padding-left:6px;
+    padding-right:6px;
+    flex:1;
+    align-self:flex-start;
+    text-align:center;
+}
+
+#wordsBox{
+    color:#192a56;
+    font-size:15px;
+    margin-top:8px;
+    text-align:left;
+    background:#f1f2f6;
+    border-radius:12px;
+    padding:10px;
 }
 
 .shuffle-icon{
@@ -1056,7 +1166,7 @@ button{
 
 @keyframes memGlow{
     0%,100%{box-shadow:0 4px 0 #7bc98f,0 0 0 rgba(68,189,50,0.5);}
-    50%{box-shadow:0 4px 0 #7bc98f,0 0 14px rgba(68,189,50,0.7);}
+    50%{box-shadow:0 4px 0 #7bc98f,0 0 24px rgba(68,189,50,0.9);}
 }
 
 .mem-sparkle{
@@ -1105,7 +1215,8 @@ button{
 
 @keyframes memMatchPulse{
     0%{transform:rotateY(180deg) scale(1);}
-    50%{transform:rotateY(180deg) scale(1.12);}
+    40%{transform:rotateY(180deg) scale(1.25);}
+    65%{transform:rotateY(180deg) scale(0.95);}
     100%{transform:rotateY(180deg) scale(1);}
 }
 
@@ -1312,11 +1423,27 @@ button{
 
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<p class="screen-title">Hangi oyunu oynamak istersin?</p>
+<p class="screen-title">Ne yapmak istersin?</p>
+
+<button class="newgame challenge-brown" onclick="openChallengeGameType()">Meydan Oku ⚔️</button>
+
+<p class="screen-title" style="margin-top:20px;">Hangi oyunu oynamak istersin?</p>
 
 <button class="newgame" onclick="selectGameType('word')">Kelime Bulma 🔤</button>
 <button class="newgame newgame-green" style="margin-top:12px;" onclick="selectGameType('math')">İşlem 🔢</button>
 <button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectGameType('hafiza')">Hafıza Oyunu 🧠</button>
+
+</div>
+
+<div id="challengeGameTypeScreen" style="display:none;">
+
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Hangi oyunla meydan okumak istersin?</p>
+
+<button class="newgame" onclick="selectChallengeGameType('word')">Kelime Bulma 🔤</button>
+<button class="newgame newgame-green" style="margin-top:12px;" onclick="selectChallengeGameType('math')">İşlem 🔢</button>
+<button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectChallengeGameType('hafiza')">Hafıza Oyunu 🧠</button>
 
 </div>
 
@@ -1409,7 +1536,7 @@ button{
 
 <div id="playArea" style="display:none;">
 
-<div class="info">
+<div class="info" id="sharedInfoBar">
 <div>Süre: <span id="time">120</span></div>
 <div>Puan: <span id="score">0</span></div>
 </div>
@@ -1470,9 +1597,16 @@ Sayı seçiniz
 
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<h2>Kalan Kelime</h2>
-
-<div class="target" id="wordTarget">--</div>
+<div class="word-info">
+<div class="word-info-top">
+<div><span>SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
+<p id="wordMessage">Harflerden kelime oluştur!</p>
+<div><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+</div>
+<div class="word-info-bottom">
+<div><span>PUAN</span><span class="value" id="wordScoreItem"><span id="wordScoreValue">0</span></span></div>
+</div>
+</div>
 
 <div class="cards word-cards" id="wordCards"></div>
 
@@ -1482,15 +1616,16 @@ Harf seçiniz
 
 <div class="bottom-buttons">
 
-<button class="undo" onclick="wordUndo()">↶</button>
+<button class="undo word-undo-btn" onclick="wordUndo()">↶</button>
 
 <button class="equal word-check-btn" onclick="checkWord()">✓ Kontrol Et</button>
 
-<button class="shuffle-icon" onclick="shuffleWordTiles()" title="Harfleri karıştır">🔀</button>
+<button class="shuffle-icon word-shuffle-btn" onclick="shuffleWordTiles()" title="Harfleri karıştır">🔀</button>
 
 </div>
 
-<p id="wordMessage"></p>
+<button class="solution-btn" id="showWordsBtn" style="display:none;" onclick="showWordsList()">Kelimeleri Göster</button>
+<div id="wordsBox"></div>
 
 </div>
 
@@ -1521,11 +1656,11 @@ Harf seçiniz
 </div>
 </div>
 
+</div>
+
+</div>
+
 <div class="win-banner" id="winBanner"></div>
-
-</div>
-
-</div>
 
 
 <script>
@@ -1994,7 +2129,7 @@ let activeChallengeGameIndex=null;
 let activeChatChallengeId=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","newGameChoiceScreen","challengeTypeScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","playArea"];
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","challengeGameTypeScreen","newGameChoiceScreen","challengeTypeScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","playArea"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -2153,13 +2288,15 @@ function recordGameEnd(result,finalScore){
 
 gameActive=false;
 
+if(activeChallengeId){
+
 let entry=buildGameEntry(result,finalScore);
 entry.createdAt=firebase.firestore.FieldValue.serverTimestamp();
 
 gameHistory.unshift(entry);
 
-if(gameHistory.length>20){
-gameHistory=gameHistory.slice(0,20);
+if(gameHistory.length>30){
+gameHistory=gameHistory.slice(0,30);
 }
 
 if(currentUser){
@@ -2170,9 +2307,9 @@ return db.collection("users").doc(currentUser.uid).collection("history").orderBy
 
 }).then(function(snap){
 
-if(snap.size>20){
+if(snap.size>30){
 
-snap.docs.slice(20).forEach(function(doc){
+snap.docs.slice(30).forEach(function(doc){
 doc.ref.delete().catch(function(e){
 console.error("Eski kayıt silinemedi:",e);
 });
@@ -2183,6 +2320,13 @@ console.error("Eski kayıt silinemedi:",e);
 }).catch(function(e){
 console.error("Geçmiş kaydedilemedi:",e);
 });
+
+}
+
+}
+else{
+
+resultRecorded=true;
 
 }
 
@@ -2299,6 +2443,7 @@ document.getElementById("friendsScreen").style.display="none";
 document.getElementById("viewChallengeScreen").style.display="none";
 document.getElementById("chatScreen").style.display="none";
 document.getElementById("gameTypeScreen").style.display="none";
+document.getElementById("challengeGameTypeScreen").style.display="none";
 document.getElementById("newGameChoiceScreen").style.display="none";
 document.getElementById("challengeTypeScreen").style.display="none";
 document.getElementById("challengeFriendScreen").style.display="none";
@@ -2398,7 +2543,24 @@ function selectGameType(type){
 
 selectedGameType=type;
 
-openNewGameChoice();
+startNewGameFlow();
+
+}
+
+
+function openChallengeGameType(){
+
+hideAllScreens();
+document.getElementById("challengeGameTypeScreen").style.display="block";
+
+}
+
+
+function selectChallengeGameType(type){
+
+selectedGameType=type;
+
+openChallengeType();
 
 }
 
@@ -3926,6 +4088,7 @@ function showLevelSelect(){
 
 clearInterval(timer);
 
+document.getElementById("sharedInfoBar").style.display="flex";
 document.getElementById("gameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
@@ -4052,7 +4215,11 @@ timer=setInterval(()=>{
 
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
-document.getElementById("time").innerHTML=time;
+document.getElementById("wordTimeValue").innerHTML=time;
+
+if(time<=60){
+document.getElementById("showWordsBtn").style.display="inline-block";
+}
 
 if(time<=0 && !resultRecorded){
 
@@ -4275,7 +4442,7 @@ setTimeout(()=>opBox.classList.remove(className),duration);
 
 function bumpWordScore(){
 
-let el=document.getElementById("score");
+let el=document.getElementById("wordScoreValue");
 el.classList.remove("score-bump");
 void el.offsetWidth;
 el.classList.add("score-bump");
@@ -4284,7 +4451,7 @@ el.classList.add("score-bump");
 
 function showWordFloatingPoints(pts){
 
-let container=document.getElementById("scoreItem");
+let container=document.getElementById("wordScoreItem");
 if(!container)return;
 
 let el=document.createElement("div");
@@ -4316,6 +4483,44 @@ setTimeout(()=>el.remove(),1600);
 
 }
 
+function showWordsList(){
+
+let remaining=wordAchievable.filter(function(w){ return !wordFound.has(w); });
+
+let box=document.getElementById("wordsBox");
+
+if(remaining.length===0){
+
+box.innerHTML="Zaten tüm kelimeleri buldun!";
+
+}
+else{
+
+box.innerHTML="<b>Bulunabilecek kelimeler:</b><br>"+remaining.join(", ");
+
+}
+
+if(!resultRecorded){
+
+clearInterval(timer);
+
+time=0;
+
+document.getElementById("wordTimeValue").innerHTML=0;
+
+let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
+
+document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ")+"Toplam puan: "+score;
+
+recordGameEnd(result,score);
+
+}
+
+document.getElementById("showWordsBtn").style.display="none";
+
+}
+
+
 function checkWord(){
 
 if(resultRecorded)return;
@@ -4346,7 +4551,7 @@ if(DICTIONARY.has(guess)){
 wordFound.add(guess);
 let pts=scoreForWord(guess,usedJoker);
 score+=pts;
-document.getElementById("score").innerHTML=score;
+document.getElementById("wordScoreValue").innerHTML=score;
 bumpWordScore();
 showWordFloatingPoints(pts);
 document.getElementById("wordMessage").innerHTML="🎉 "+guess+" buldun! +"+pts+" puan";
@@ -4363,7 +4568,7 @@ if(wordAchievable.length && wordFound.size>=wordAchievable.length && !resultReco
 clearInterval(timer);
 
 score+=100+time;
-document.getElementById("score").innerHTML=score;
+document.getElementById("wordScoreValue").innerHTML=score;
 document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeleri buldun. Toplam puan: "+score;
 
 recordGameEnd("win",score);
@@ -4408,6 +4613,7 @@ let hafizaFlipped=[];
 let hafizaMatchedCount=0;
 let hafizaMoves=0;
 let hafizaLock=false;
+let hafizaSettling=[];
 let hafizaStartTime=null;
 
 
@@ -4446,6 +4652,7 @@ hafizaFlipped=[];
 hafizaMatchedCount=0;
 hafizaMoves=0;
 hafizaLock=false;
+hafizaSettling=[];
 
 document.getElementById("hafizaMessage").innerHTML="Kartlara tıkla ve eşleri bul!";
 
@@ -4515,6 +4722,7 @@ if(hafizaLock)return;
 if(hafizaCards[i].matched)return;
 if(hafizaFlipped.includes(i))return;
 if(hafizaFlipped.length>=2)return;
+if(hafizaSettling.includes(i))return;
 
 let cardEl=document.getElementById("mem-card-"+i);
 
@@ -4562,13 +4770,16 @@ setTimeout(function(){
 document.getElementById("mem-card-"+a).classList.add("shake");
 document.getElementById("mem-card-"+b).classList.add("shake");
 
+hafizaFlipped=[];
+hafizaLock=false;
+hafizaSettling=[a,b];
+
 setTimeout(function(){
 
 document.getElementById("mem-card-"+a).classList.remove("flipped","shake");
 document.getElementById("mem-card-"+b).classList.remove("flipped","shake");
 
-hafizaFlipped=[];
-hafizaLock=false;
+hafizaSettling=[];
 
 },400);
 
@@ -4618,7 +4829,7 @@ document.querySelector(".game").classList.add("mem-win-shake");
 function burstMemSparkles(cardEl){
 
 let rect=cardEl.getBoundingClientRect();
-let count=6;
+let count=12;
 
 for(let i=0;i<count;i++){
 
@@ -4627,7 +4838,7 @@ s.className="mem-sparkle";
 s.innerHTML="✨";
 
 let angle=(Math.PI*2*i)/count;
-let dist=45+Math.random()*15;
+let dist=55+Math.random()*25;
 
 s.style.setProperty("--sx",(Math.cos(angle)*dist)+"px");
 s.style.setProperty("--sy",(Math.sin(angle)*dist)+"px");
@@ -4635,10 +4846,11 @@ s.style.setProperty("--sy",(Math.sin(angle)*dist)+"px");
 s.style.left=(rect.left+rect.width/2)+"px";
 s.style.top=(rect.top+rect.height/2)+"px";
 s.style.position="fixed";
+s.style.fontSize=(16+Math.random()*10)+"px";
 
 document.body.appendChild(s);
 
-setTimeout(function(){ s.remove(); },700);
+setTimeout(function(){ s.remove(); },750);
 
 }
 
@@ -4752,6 +4964,7 @@ time=120;
 score=0;
 resultRecorded=false;
 gameActive=true;
+winBannerActive=false;
 
 document.getElementById("time").innerHTML=120;
 document.getElementById("score").innerHTML=0;
@@ -4766,10 +4979,15 @@ document.getElementById("loading").style.display="flex";
 
 if(selectedGameType==="word"){
 
+document.getElementById("sharedInfoBar").style.display="none";
 document.getElementById("wordMessage").innerHTML="";
 document.getElementById("wordOperation").innerHTML="Harf seçiniz";
 document.getElementById("wordTarget").innerHTML="--";
+document.getElementById("wordScoreValue").innerHTML=0;
+document.getElementById("wordTimeValue").innerHTML=120;
 document.getElementById("wordCards").innerHTML="";
+document.getElementById("showWordsBtn").style.display="none";
+document.getElementById("wordsBox").innerHTML="";
 
 setTimeout(()=>{
 
@@ -4783,6 +5001,7 @@ return;
 
 if(selectedGameType==="hafiza"){
 
+document.getElementById("sharedInfoBar").style.display="flex";
 time=0;
 document.getElementById("time").innerHTML=0;
 document.getElementById("hafizaMessage").innerHTML="";
@@ -4797,6 +5016,8 @@ startHafizaRound(level,presetData);
 return;
 
 }
+
+document.getElementById("sharedInfoBar").style.display="flex";
 
 numbers=[];
 history=[];
@@ -5024,6 +5245,14 @@ document.getElementById("message").innerHTML="✅ Tamamladın!";
 
 showWinBanner("🎉 Hedefe Ulaştın!");
 
+launchMemConfetti();
+
+let winCardEls=document.querySelectorAll("#cards .card");
+let winTargetIndex=numbers.indexOf(target);
+if(winCardEls[winTargetIndex]){
+winCardEls[winTargetIndex].classList.add("win-glow");
+}
+
 clearInterval(timer);
 
 recordGameEnd("win",score);
@@ -5033,9 +5262,7 @@ recordGameEnd("win",score);
 }
 else{
 
-if(!resultRecorded){
-checkCloseNumber();
-}
+// Yakın sayı ile bitirme kaldırıldı: sadece hedefe tam ulaşılırsa kazanılır.
 
 }
 
@@ -5152,7 +5379,13 @@ document.getElementById("solutionBtn").style.display="none";
 }
 
 
+let winBannerActive=false;
+
 function showWinBanner(text){
+
+if(winBannerActive)return;
+
+winBannerActive=true;
 
 let banner=document.getElementById("winBanner");
 
@@ -5167,6 +5400,7 @@ banner.classList.add("show");
 setTimeout(()=>{
 
 banner.classList.remove("show");
+winBannerActive=false;
 
 },2000);
 
@@ -5271,6 +5505,32 @@ if(document.visibilityState==="visible" && gameActive && !resultRecorded && sele
 time=Math.round((Date.now()-hafizaStartTime)/1000);
 
 document.getElementById("time").innerHTML=time;
+
+return;
+
+}
+
+if(document.visibilityState==="visible" && gameActive && !resultRecorded && selectedGameType==="word" && gameEndTime){
+
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
+
+document.getElementById("wordTimeValue").innerHTML=time;
+
+if(time<=60){
+document.getElementById("showWordsBtn").style.display="inline-block";
+}
+
+if(time<=0){
+
+clearInterval(timer);
+
+let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
+
+document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ")+"Toplam puan: "+score;
+
+recordGameEnd(result,score);
+
+}
 
 return;
 
