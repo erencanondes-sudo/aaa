@@ -3482,7 +3482,12 @@ switchHistoryTab("ongoing");
 }
 
 
+let currentHistoryTab="ongoing";
+const HISTORY_TAB_ORDER=["ongoing","games","challenges"];
+
 function switchHistoryTab(tab){
+
+currentHistoryTab=tab;
 
 let ongoingBtn=document.getElementById("tabOngoingBtn");
 let gamesBtn=document.getElementById("tabGamesBtn");
@@ -4285,6 +4290,116 @@ return word.length*10+(usedJoker?5:0);
 }
 
 
+function animateLetterRoll(el,finalLetter,duration,callback){
+
+let steps=8;
+let stepTime=duration/steps;
+let count=0;
+
+let roll=setInterval(function(){
+
+count++;
+
+if(count>=steps){
+
+clearInterval(roll);
+el.innerHTML=finalLetter==='★' ? "★" : finalLetter;
+if(callback)callback();
+
+}
+else{
+
+let randLetter=WORD_ALPHABET[Math.floor(Math.random()*WORD_ALPHABET.length)];
+el.innerHTML=randLetter;
+
+}
+
+},stepTime);
+
+}
+
+
+function animateWordTargetRoll(finalValue,duration,callback){
+
+let targetEl=document.getElementById("wordTarget");
+let steps=8;
+let stepTime=duration/steps;
+let count=0;
+
+let roll=setInterval(function(){
+
+count++;
+
+if(count>=steps){
+
+clearInterval(roll);
+targetEl.innerHTML=finalValue;
+if(callback)callback();
+
+}
+else{
+
+targetEl.innerHTML=Math.floor(Math.random()*40)+1;
+
+}
+
+},stepTime);
+
+}
+
+
+function animateWordInitialDeal(tiles,remainingCount,onAllDone){
+
+let area=document.getElementById("wordCards");
+area.innerHTML="";
+
+let cardEls=[];
+
+tiles.forEach(function(t,i){
+
+let c=document.createElement("div");
+
+c.className="card card-pop"+(t.letter==='★' ? " joker" : "");
+c.dataset.id=t.id;
+c.innerHTML="?";
+
+c.addEventListener("pointerdown",function(e){ startWordTileDrag(e,i,c); });
+
+area.appendChild(c);
+cardEls.push(c);
+
+});
+
+let completedCount=0;
+let totalCards=tiles.length;
+
+cardEls.forEach(function(c,i){
+
+setTimeout(function(){
+
+animateLetterRoll(c,tiles[i].letter,450,function(){
+
+completedCount++;
+
+if(completedCount===totalCards){
+
+setTimeout(function(){
+
+animateWordTargetRoll(remainingCount,500,onAllDone);
+
+},200);
+
+}
+
+});
+
+},i*110);
+
+});
+
+}
+
+
 function startWordRound(presetData){
 
 let data=presetData ? presetData : generateWordGameData();
@@ -4298,11 +4413,10 @@ wordFound=new Set();
 let order=shuffleArray([...wordBaseLetters,'★']);
 wordTiles=order.map((l,i)=>({letter:l,used:false,id:i}));
 
-renderWordCards();
-updateWordTarget();
-
 document.getElementById("loading").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
+
+animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
 gameEndTime=Date.now()+time*1000;
 
@@ -4329,6 +4443,8 @@ recordGameEnd(result,score);
 }
 
 },1000);
+
+});
 
 }
 
@@ -5304,13 +5420,12 @@ numbers=[...gameData.numbers];
 originalNumbers=[...gameData.numbers];
 target=gameData.target;
 
-document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→"+target;
-
-show();
+document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→---";
 
 document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="block";
 
+animateInitialDeal(numbers,target,function(){
 
 gameEndTime=Date.now()+time*1000;
 
@@ -5332,7 +5447,119 @@ recordGameEnd("timeout",0);
 
 },1000);
 
+});
+
 },600);
+
+}
+
+
+function animateNumberRoll(el,finalValue,duration,callback){
+
+let steps=8;
+let stepTime=duration/steps;
+let count=0;
+
+let roll=setInterval(function(){
+
+count++;
+
+if(count>=steps){
+
+clearInterval(roll);
+el.innerHTML=finalValue;
+if(callback)callback();
+
+}
+else{
+
+let digits=String(finalValue).length;
+let max=Math.pow(10,digits)-1;
+let min=digits>1 ? Math.pow(10,digits-1) : 1;
+el.innerHTML=Math.floor(Math.random()*(max-min+1))+min;
+
+}
+
+},stepTime);
+
+}
+
+
+function animateTargetRoll(finalValue,duration,callback){
+
+let targetEl=document.getElementById("target");
+let steps=8;
+let stepTime=duration/steps;
+let count=0;
+
+let roll=setInterval(function(){
+
+count++;
+
+if(count>=steps){
+
+clearInterval(roll);
+targetEl.innerHTML="<span class=\"target-label\">Hedef</span>→"+finalValue;
+if(callback)callback();
+
+}
+else{
+
+let rand=Math.floor(Math.random()*900)+100;
+targetEl.innerHTML="<span class=\"target-label\">Hedef</span>→"+rand;
+
+}
+
+},stepTime);
+
+}
+
+
+function animateInitialDeal(nums,targetVal,onAllDone){
+
+let area=document.getElementById("cards");
+area.innerHTML="";
+
+let cardEls=[];
+
+nums.forEach(function(n,i){
+
+let c=document.createElement("div");
+c.className="card card-pop";
+c.innerHTML="?";
+c.onclick=()=>selectNumber(i,c);
+
+area.appendChild(c);
+cardEls.push(c);
+
+});
+
+let completedCount=0;
+let totalCards=nums.length;
+
+cardEls.forEach(function(c,i){
+
+setTimeout(function(){
+
+animateNumberRoll(c,nums[i],450,function(){
+
+completedCount++;
+
+if(completedCount===totalCards){
+
+setTimeout(function(){
+
+animateTargetRoll(targetVal,550,onAllDone);
+
+},200);
+
+}
+
+});
+
+},i*130);
+
+});
 
 }
 
@@ -5816,6 +6043,49 @@ document.getElementById("message").innerHTML="⏰ Süre bitti";
 recordGameEnd("timeout",0);
 
 }
+
+}
+
+});
+
+
+let historyTouchStartX=null;
+let historyTouchStartY=null;
+
+document.getElementById("historyScreen").addEventListener("touchstart",function(e){
+
+historyTouchStartX=e.touches[0].clientX;
+historyTouchStartY=e.touches[0].clientY;
+
+});
+
+document.getElementById("historyScreen").addEventListener("touchend",function(e){
+
+if(historyTouchStartX===null)return;
+
+let endX=e.changedTouches[0].clientX;
+let endY=e.changedTouches[0].clientY;
+
+let dx=endX-historyTouchStartX;
+let dy=endY-historyTouchStartY;
+
+historyTouchStartX=null;
+historyTouchStartY=null;
+
+if(Math.abs(dx)<50 || Math.abs(dx)<Math.abs(dy)){
+return;
+}
+
+let idx=HISTORY_TAB_ORDER.indexOf(currentHistoryTab);
+
+if(dx<0 && idx<HISTORY_TAB_ORDER.length-1){
+
+switchHistoryTab(HISTORY_TAB_ORDER[idx+1]);
+
+}
+else if(dx>0 && idx>0){
+
+switchHistoryTab(HISTORY_TAB_ORDER[idx-1]);
 
 }
 
