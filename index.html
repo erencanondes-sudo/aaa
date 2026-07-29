@@ -2973,6 +2973,52 @@ return;
 
 }
 
+let gType=ch.gameType || "math";
+let startedAtField=side==="from" ? "fromStartedAt" : "toStartedAt";
+let timeLimited=(gType==="math" || gType==="word");
+let resumeTime=null;
+
+if(timeLimited && currentGame[startedAtField]){
+
+let elapsedSeconds=(Date.now()-currentGame[startedAtField])/1000;
+
+if(elapsedSeconds>=120){
+
+let updatedGames=ch.games.slice();
+let forfeitGame=Object.assign({},updatedGames[currentGameIndex]);
+
+if(side==="from"){
+forfeitGame.fromScore=0;
+forfeitGame.fromPlayed=true;
+}
+else{
+forfeitGame.toScore=0;
+forfeitGame.toPlayed=true;
+}
+
+updatedGames[currentGameIndex]=forfeitGame;
+
+db.collection("challenges").doc(id).update({games:updatedGames}).then(function(){
+
+renderOngoingList();
+updateChallengeBadge();
+
+}).catch(function(e){
+console.error("Süre dolan oyun güncellenemedi:",e);
+renderOngoingList();
+});
+
+return;
+
+}
+else{
+
+resumeTime=Math.max(1,Math.round(120-elapsedSeconds));
+
+}
+
+}
+
 activeChallengeId=id;
 activeChallengeSide=side;
 activeChallengeGameIndex=currentGameIndex;
@@ -2982,17 +3028,36 @@ document.getElementById("playArea").style.display="block";
 
 let game=ch.games[currentGameIndex];
 
-selectedGameType=ch.gameType || "math";
+selectedGameType=gType;
+
+let startedAtPromise=Promise.resolve();
+
+if(timeLimited && !currentGame[startedAtField]){
+
+let updatedGames=ch.games.slice();
+let g=Object.assign({},updatedGames[currentGameIndex]);
+g[startedAtField]=Date.now();
+updatedGames[currentGameIndex]=g;
+
+startedAtPromise=db.collection("challenges").doc(id).update({games:updatedGames}).catch(function(e){
+console.error("Başlama zamanı kaydedilemedi:",e);
+});
+
+}
+
+startedAtPromise.then(function(){
 
 if(selectedGameType==="word"){
-newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable});
+newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable,resumeTime:resumeTime});
 }
 else if(selectedGameType==="hafiza"){
 newGame(ch.level,{deck:game.deck,pairs:game.pairs});
 }
 else{
-newGame(ch.level,{numbers:game.numbers,target:game.target});
+newGame(ch.level,{numbers:game.numbers,target:game.target,resumeTime:resumeTime});
 }
+
+});
 
 });
 
@@ -5467,7 +5532,7 @@ btn.classList.toggle("active",btnLevel===level);
 
 clearInterval(timer);
 
-time=120;
+time=(presetData && presetData.resumeTime) ? presetData.resumeTime : 120;
 score=0;
 resultRecorded=false;
 gameActive=true;
