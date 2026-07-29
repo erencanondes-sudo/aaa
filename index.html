@@ -901,6 +901,9 @@ button{
     align-items:center;
     justify-content:center;
     touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
 }
 
 .word-cards .card.used{
@@ -4409,7 +4412,12 @@ c.className="card card-pop"+(t.letter==='★' ? " joker" : "");
 c.dataset.id=t.id;
 c.innerHTML="?";
 
+if(t.letter==='★'){
+c.onclick=function(){ tapWordTile(i); };
+}
+else{
 c.addEventListener("pointerdown",function(e){ startWordTileDrag(e,i,c); });
+}
 
 area.appendChild(c);
 cardEls.push(c);
@@ -4511,7 +4519,12 @@ c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
 c.dataset.id=t.id;
 c.innerHTML=t.letter==='★' ? "★" : t.letter;
 
+if(t.letter==='★'){
+c.onclick=function(){ tapWordTile(i); };
+}
+else{
 c.addEventListener("pointerdown",function(e){ startWordTileDrag(e,i,c); });
+}
 
 area.appendChild(c);
 
