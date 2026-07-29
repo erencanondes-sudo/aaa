@@ -1333,9 +1333,9 @@ button{
 }
 
 .word-cards .card.tile-swap-color{
-    background:#e67e22 !important;
+    background:#8e44ad !important;
     color:white !important;
-    box-shadow:0 4px 0 #b3641b !important;
+    box-shadow:0 4px 0 #6c3483 !important;
 }
 
 .mem-card.shake{
@@ -1763,7 +1763,7 @@ Harf seçiniz
 </div>
 </div>
 
-<div class="modal-overlay" id="jokerModal">
+<div class="modal-overlay" id="jokerModal" onclick="if(event.target===this)cancelJokerPick()">
 <div class="modal-box">
 <p>Joker hangi harf olsun?</p>
 <div class="mini-keyboard" id="miniKeyboard"></div>
@@ -4502,7 +4502,7 @@ wordDragMoved=false;
 let startX=e.clientX;
 let startY=e.clientY;
 
-let canDrag=!wordTiles[index].used;
+let canDrag=!wordTiles[index].used && wordTiles[index].letter!=='★';
 let hoverEl=null;
 
 if(canDrag){
@@ -4526,7 +4526,7 @@ if(!canDrag)return;
 let dx=ev.clientX-startX;
 let dy=ev.clientY-startY;
 
-if(Math.abs(dx)>6 || Math.abs(dy)>6){
+if(Math.abs(dx)>14 || Math.abs(dy)>14){
 
 if(!wordDragMoved){
 el.classList.add("tile-swap-color");
@@ -4710,6 +4710,14 @@ updateWordOperationText();
 }
 
 const WORD_ALPHABET=['A','B','C','Ç','D','E','F','G','Ğ','H','I','İ','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z'];
+
+function cancelJokerPick(){
+
+document.getElementById("jokerModal").style.display="none";
+pendingJokerIndex=null;
+
+}
+
 
 function openJokerKeyboard(){
 
