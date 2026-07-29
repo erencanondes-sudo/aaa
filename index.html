@@ -2244,10 +2244,22 @@ clearInterval(badgeRefreshInterval);
 badgeRefreshInterval=setInterval(function(){
 
 if(currentUser){
+
 updateChallengeBadge();
+
+let historyScreenEl=document.getElementById("historyScreen");
+
+if(historyScreenEl.style.display!=="none"){
+
+renderOngoingList(true);
+renderHistoryList(true);
+renderChallengesList(true);
+
 }
 
-},20000);
+}
+
+},10000);
 
 }
 
@@ -2484,7 +2496,7 @@ let challengeId=activeChallengeId;
 let mySide=activeChallengeSide;
 let gameIndex=activeChallengeGameIndex;
 
-db.collection("challenges").doc(challengeId).get().then(function(doc){
+pendingChallengeWrite=db.collection("challenges").doc(challengeId).get().then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
 
@@ -2502,7 +2514,7 @@ game.toPlayed=true;
 
 updatedGames[gameIndex]=game;
 
-db.collection("challenges").doc(challengeId).update({games:updatedGames}).then(function(){
+return db.collection("challenges").doc(challengeId).update({games:updatedGames}).then(function(){
 
 updateChallengeBadge();
 
@@ -2549,6 +2561,10 @@ console.error("Meydan okuma güncellenemedi:",e);
 }).catch(function(e){
 
 console.error("Rakip bilgisi alınamadı:",e);
+
+}).finally(function(){
+
+pendingChallengeWrite=null;
 
 });
 
@@ -3550,6 +3566,7 @@ renderChallengesList();
 
 
 let currentHistoryTab="ongoing";
+let pendingChallengeWrite=null;
 const HISTORY_TAB_ORDER=["ongoing","games","challenges"];
 
 function switchHistoryTab(tab){
@@ -3816,11 +3833,13 @@ return html;
 }
 
 
-function renderOngoingList(){
+function renderOngoingList(silent){
 
 let list=document.getElementById("ongoingList");
 
+if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
+}
 
 let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
 let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
@@ -3952,11 +3971,13 @@ list.innerHTML="<p>Oyunlar yüklenemedi: "+e.message+"</p>";
 }
 
 
-function renderChallengesList(){
+function renderChallengesList(silent){
 
 let list=document.getElementById("challengesList");
 
+if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
+}
 
 let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
 let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
@@ -4147,11 +4168,13 @@ document.getElementById("avgScoreHafiza").innerHTML=avgByLevel.hafiza;
 }
 
 
-function renderHistoryList(){
+function renderHistoryList(silent){
 
 let list=document.getElementById("historyList");
 
+if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
+}
 
 let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
 let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
@@ -6307,10 +6330,21 @@ updateChallengeBadge();
 }
 
 if(prev.id==="historyScreen"){
+
+let refreshHistoryLists=function(){
 renderOngoingList();
 renderHistoryList();
 renderChallengesList();
 updateChallengeBadge();
+};
+
+if(pendingChallengeWrite){
+pendingChallengeWrite.then(refreshHistoryLists).catch(refreshHistoryLists);
+}
+else{
+refreshHistoryLists();
+}
+
 }
 
 });
