@@ -2916,6 +2916,7 @@ let updateData=accept
 db.collection("challenges").doc(id).update(updateData).then(function(){
 
 renderChallengesList();
+renderOngoingList();
 updateChallengeBadge();
 
 }).catch(function(e){
@@ -6302,6 +6303,13 @@ document.getElementById(prev.id).style.display=prev.display;
 
 if(prev.id==="homeScreen"){
 renderHomeStats();
+updateChallengeBadge();
+}
+
+if(prev.id==="historyScreen"){
+renderOngoingList();
+renderHistoryList();
+renderChallengesList();
 updateChallengeBadge();
 }
 
