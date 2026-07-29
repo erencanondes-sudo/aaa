@@ -76,13 +76,13 @@ button{
 }
 
 .target{
-    font-size:45px;
+    font-size:41px;
     font-weight:bold;
     color:#192a56;
 }
 
 .target-label{
-    font-size:28px;
+    font-size:24px;
     font-weight:bold;
     color:#192a56;
     margin-right:2px;
@@ -92,7 +92,7 @@ button{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:12px;
-    margin:10px 0;
+    margin:8px 0;
     min-height:170px;
     align-content:start;
 }
@@ -174,7 +174,7 @@ button{
     justify-content:center;
     align-items:center;
     gap:25px;
-    margin-top:8px;
+    margin-top:10px;
 }
 
 
@@ -210,7 +210,7 @@ button{
 
 #operation{
     height:40px;
-    font-size:27px;
+    font-size:25px;
     font-weight:bold;
     color:#192a56;
     background:#f1f2f6;
@@ -402,7 +402,7 @@ button{
     padding:14px;
     font-size:20px;
     font-weight:bold;
-    margin-top:10px;
+    margin-top:8px;
 }
 
 .solution-btn:active{
@@ -415,7 +415,7 @@ button{
     background:#f1f2f6;
     border-radius:12px;
     padding:15px;
-    margin-top:6px;
+    margin-top:4px;
     font-size:17px;
     color:#192a56;
     line-height:1.6;
@@ -827,6 +827,7 @@ button{
 
 .word-cards .card{
     font-weight:bold;
+    font-size:29px;
 }
 
 .word-cards .card.used{
@@ -1567,7 +1568,7 @@ button{
 
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:8px;">
+<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:6px;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
@@ -1604,7 +1605,7 @@ Sayı seçiniz
 
 <div id="solutionBox"></div>
 
-<button class="newgame" style="margin-top:10px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+<button class="newgame" style="margin-top:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 </div>
 
@@ -1614,12 +1615,12 @@ Sayı seçiniz
 
 <div class="word-info">
 <div class="word-info-top">
-<div><span>SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
-<p id="wordMessage">Harflerden kelime oluştur!</p>
-<div><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+<div style="margin-left:3px;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
+<p id="wordMessage" style="margin-left:3px;">Harflerden kelime oluştur!</p>
+<div style="margin-left:6px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom">
-<div><span>PUAN</span><span class="value" id="wordScoreItem"><span id="wordScoreValue">0</span></span></div>
+<div><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
 </div>
 </div>
 
@@ -1639,8 +1640,10 @@ Harf seçiniz
 
 </div>
 
-<button class="solution-btn" id="showWordsBtn" style="display:none;" onclick="showWordsList()">Kelimeleri Göster</button>
+<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:15px;" onclick="showWordsList()">Kelimeleri Göster</button>
 <div id="wordsBox"></div>
+
+<button class="newgame" style="margin-top:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 </div>
 
