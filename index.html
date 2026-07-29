@@ -58,6 +58,7 @@ button{
     padding-top:7.5px;
     padding-bottom:7.5px;
     font-size:18px;
+    font-weight:bold;
 }
 
 .newgame:active{
@@ -85,7 +86,7 @@ button{
     font-size:36px;
     font-weight:bold;
     color:#192a56;
-    margin-top:10px;
+    margin-top:15px;
 }
 
 .target-label{
@@ -233,7 +234,7 @@ button{
     border:3px solid #0097e6;
     border-radius:12px;
     padding:8px 10px;
-    margin:8px 0;
+    margin:13px 0 8px 0;
 }
 
 .loading{
@@ -1306,6 +1307,17 @@ button{
     0%,100%{transform:rotateY(180deg) translateX(0);}
     25%{transform:rotateY(180deg) translateX(-6px);}
     75%{transform:rotateY(180deg) translateX(6px);}
+}
+
+@keyframes wordDragHoverShake{
+    0%,100%{transform:translateX(0) rotate(0deg);}
+    25%{transform:translateX(-4px) rotate(-3deg);}
+    75%{transform:translateX(4px) rotate(3deg);}
+}
+
+.word-cards .card.drag-hover{
+    animation:wordDragHoverShake 0.25s ease-in-out infinite;
+    box-shadow:0 4px 0 #006ba3,0 0 0 3px #f9ca24;
 }
 
 .mem-card.shake{
@@ -4321,6 +4333,9 @@ recordGameEnd(result,score);
 }
 
 
+let wordDragSrcIndex=null;
+let wordDragMoved=false;
+
 function renderWordCards(){
 
 let area=document.getElementById("wordCards");
@@ -4334,11 +4349,159 @@ c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
 c.dataset.id=t.id;
 c.innerHTML=t.letter==='★' ? "★" : t.letter;
 
-c.onclick=()=>tapWordTile(i);
+c.addEventListener("pointerdown",function(e){ startWordTileDrag(e,i,c); });
 
 area.appendChild(c);
 
 });
+
+}
+
+
+function startWordTileDrag(e,index,el){
+
+if(resultRecorded)return;
+
+wordDragSrcIndex=index;
+wordDragMoved=false;
+
+let startX=e.clientX;
+let startY=e.clientY;
+
+let canDrag=!wordTiles[index].used;
+let hoverEl=null;
+
+if(canDrag){
+el.setPointerCapture(e.pointerId);
+el.style.zIndex=50;
+}
+
+function clearHover(){
+
+if(hoverEl){
+hoverEl.classList.remove("drag-hover");
+hoverEl=null;
+}
+
+}
+
+function onMove(ev){
+
+if(!canDrag)return;
+
+let dx=ev.clientX-startX;
+let dy=ev.clientY-startY;
+
+if(Math.abs(dx)>6 || Math.abs(dy)>6){
+wordDragMoved=true;
+}
+
+el.style.transition="none";
+el.style.transform="translate("+dx+"px,"+dy+"px) scale(1.12)";
+
+if(wordDragMoved){
+
+let hoverIndex=findWordTileIndexAtPoint(ev.clientX,ev.clientY,index);
+let cards=document.querySelectorAll("#wordCards .card");
+let newHoverEl=(hoverIndex!==null && !wordTiles[hoverIndex].used) ? cards[hoverIndex] : null;
+
+if(newHoverEl!==hoverEl){
+clearHover();
+if(newHoverEl){
+newHoverEl.classList.add("drag-hover");
+hoverEl=newHoverEl;
+}
+}
+
+}
+
+}
+
+function onUp(ev){
+
+el.removeEventListener("pointermove",onMove);
+el.removeEventListener("pointerup",onUp);
+el.removeEventListener("pointercancel",onCancel);
+
+clearHover();
+
+if(canDrag){
+
+el.style.transition="";
+el.style.transform="";
+el.style.zIndex="";
+
+}
+
+if(canDrag && wordDragMoved){
+
+let dropIndex=findWordTileIndexAtPoint(ev.clientX,ev.clientY,index);
+
+if(dropIndex!==null && !wordTiles[dropIndex].used){
+
+let tmp=wordTiles[index].letter;
+wordTiles[index].letter=wordTiles[dropIndex].letter;
+wordTiles[dropIndex].letter=tmp;
+
+}
+
+renderWordCards();
+
+}
+else{
+
+tapWordTile(index);
+
+}
+
+wordDragSrcIndex=null;
+wordDragMoved=false;
+
+}
+
+function onCancel(){
+
+el.removeEventListener("pointermove",onMove);
+el.removeEventListener("pointerup",onUp);
+el.removeEventListener("pointercancel",onCancel);
+
+clearHover();
+
+if(canDrag){
+el.style.transition="";
+el.style.transform="";
+el.style.zIndex="";
+}
+
+wordDragSrcIndex=null;
+wordDragMoved=false;
+
+}
+
+el.addEventListener("pointermove",onMove);
+el.addEventListener("pointerup",onUp);
+el.addEventListener("pointercancel",onCancel);
+
+}
+
+
+function findWordTileIndexAtPoint(x,y,excludeIndex){
+
+let cards=document.querySelectorAll("#wordCards .card");
+
+for(let i=0;i<cards.length;i++){
+
+if(i===excludeIndex)continue;
+
+let rect=cards[i].getBoundingClientRect();
+
+if(x>=rect.left && x<=rect.right && y>=rect.top && y<=rect.bottom){
+return i;
+}
+
+}
+
+return null;
 
 }
 
