@@ -54,6 +54,11 @@ button{
     box-shadow:0 4px 0 #0a5aa1;
 }
 
+.word-newgame-btn{
+    padding-top:7.5px;
+    padding-bottom:7.5px;
+}
+
 .newgame:active{
     box-shadow:0 1px 0 #0a5aa1;
     transform:translateY(3px);
@@ -152,6 +157,7 @@ button{
     display:flex;
     justify-content:center;
     gap:5px;
+    margin-top:13px;
 }
 
 .operations button{
@@ -175,6 +181,10 @@ button{
     align-items:center;
     gap:25px;
     margin-top:10px;
+}
+
+#gameContent .bottom-buttons{
+    margin-top:15px;
 }
 
 
@@ -266,6 +276,22 @@ button{
 #mathInlineLevelSelect .level-btn{
     padding-top:13px;
     padding-bottom:13px;
+}
+
+.math-top-controls{
+    background:#f1f2f6;
+    border-radius:18px;
+    padding:12px 12px 10px 12px;
+    margin-bottom:10px;
+}
+
+.math-newgame-text{
+    color:#0984e3;
+    font-size:20px;
+    font-weight:bold;
+    margin:0 0 10px 0;
+    cursor:pointer;
+    user-select:none;
 }
 
 .level-btn{
@@ -833,7 +859,11 @@ button{
 .word-cards .card{
     font-weight:bold;
     font-size:34px;
-    padding:20px 5px;
+    aspect-ratio:1/1;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .word-cards .card.used{
@@ -1596,12 +1626,16 @@ button{
 
 <div id="gameContent">
 
-<button class="newgame" style="margin-bottom:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+<div class="math-top-controls">
 
-<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:6px;">
+<p class="math-newgame-text" onclick="newGame(currentLevel)">🔄 Yeni Oyun</p>
+
+<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin:0;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
+</div>
+
 </div>
 
 <div class="target" id="target"><span class="target-label">Hedef</span>→---</div>
@@ -1639,7 +1673,7 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;">
 
-<button class="newgame" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
+<button class="newgame word-newgame-btn" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 <div class="word-info">
 <div class="word-info-top">
@@ -1675,8 +1709,6 @@ Harf seçiniz
 
 <div id="hafizaGameContent" style="display:none;">
 
-<button class="newgame" style="margin-bottom:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
-
 <div class="level-select" id="hafizaInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:15px;">
 <button class="level-btn level-easy" id="hafizaLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="hafizaLevelMedium" onclick="newGame('medium')">Orta</button>
@@ -1686,6 +1718,8 @@ Harf seçiniz
 <p id="hafizaMessage">Kartlara tıkla ve eşleri bul!</p>
 
 <div class="mem-cards" id="hafizaCardsArea"></div>
+
+<button class="newgame" style="margin-top:40px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 </div>
 
