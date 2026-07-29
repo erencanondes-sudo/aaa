@@ -871,6 +871,7 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
+    touch-action:none;
 }
 
 .word-cards .card.used{
@@ -1318,6 +1319,23 @@ button{
 .word-cards .card.drag-hover{
     animation:wordDragHoverShake 0.25s ease-in-out infinite;
     box-shadow:0 4px 0 #006ba3,0 0 0 3px #f9ca24;
+}
+
+@keyframes wordSwapShake{
+    0%,100%{transform:translateX(0);}
+    30%{transform:translateX(-5px);}
+    60%{transform:translateX(5px);}
+    85%{transform:translateX(-2px);}
+}
+
+.word-cards .card.swap-shake{
+    animation:wordSwapShake 0.2s ease-in-out;
+}
+
+.word-cards .card.tile-swap-color{
+    background:#e67e22 !important;
+    color:white !important;
+    box-shadow:0 4px 0 #b3641b !important;
 }
 
 .mem-card.shake{
@@ -4509,6 +4527,11 @@ let dx=ev.clientX-startX;
 let dy=ev.clientY-startY;
 
 if(Math.abs(dx)>6 || Math.abs(dy)>6){
+
+if(!wordDragMoved){
+el.classList.add("tile-swap-color");
+}
+
 wordDragMoved=true;
 }
 
@@ -4559,9 +4582,29 @@ let tmp=wordTiles[index].letter;
 wordTiles[index].letter=wordTiles[dropIndex].letter;
 wordTiles[dropIndex].letter=tmp;
 
+renderWordCards();
+
+let cardsAfter=document.querySelectorAll("#wordCards .card");
+
+[index,dropIndex].forEach(function(i){
+
+let el=cardsAfter[i];
+if(!el)return;
+
+el.classList.add("swap-shake","tile-swap-color");
+
+setTimeout(function(){
+el.classList.remove("swap-shake","tile-swap-color");
+},220);
+
+});
+
 }
+else{
 
 renderWordCards();
+
+}
 
 }
 else{
@@ -4587,6 +4630,7 @@ if(canDrag){
 el.style.transition="";
 el.style.transform="";
 el.style.zIndex="";
+el.classList.remove("tile-swap-color");
 }
 
 wordDragSrcIndex=null;
