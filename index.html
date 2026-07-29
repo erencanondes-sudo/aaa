@@ -711,19 +711,30 @@ button{
 .history-tabs-viewport{
     overflow:hidden;
     width:100%;
+    height:58vh;
+    min-height:320px;
+    max-height:520px;
+    position:relative;
 }
 
 .history-tabs-track{
     display:flex;
     width:300%;
-    transition:transform 0.3s ease;
+    height:100%;
+}
+
+.history-tabs-track.animated{
+    transition:transform 0.28s cubic-bezier(0.22,0.61,0.36,1);
 }
 
 .history-tab-panel{
     width:33.3333%;
     flex-shrink:0;
     box-sizing:border-box;
-    padding:0 2px;
+    padding:0 3px 15px 3px;
+    height:100%;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
 }
 
 .tab-btn{
@@ -1650,8 +1661,8 @@ button{
 <button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
 
-<div class="history-tabs-viewport">
-<div class="history-tabs-track" id="historyTabsTrack">
+<div class="history-tabs-viewport" id="historyTabsViewport">
+<div class="history-tabs-track animated" id="historyTabsTrack">
 <div class="history-tab-panel" id="ongoingList"></div>
 <div class="history-tab-panel" id="historyList"></div>
 <div class="history-tab-panel" id="challengesList"></div>
@@ -3515,7 +3526,21 @@ function showHistory(){
 hideAllScreens();
 document.getElementById("historyScreen").style.display="block";
 
-switchHistoryTab("ongoing");
+currentHistoryTab="ongoing";
+
+let track=document.getElementById("historyTabsTrack");
+track.classList.remove("animated");
+track.style.transform="translateX(0%)";
+void track.offsetWidth;
+track.classList.add("animated");
+
+document.getElementById("tabOngoingBtn").classList.add("active");
+document.getElementById("tabGamesBtn").classList.remove("active");
+document.getElementById("tabChallengesBtn").classList.remove("active");
+
+renderOngoingList();
+renderHistoryList();
+renderChallengesList();
 
 }
 
@@ -3537,28 +3562,18 @@ challengesBtn.classList.remove("active");
 
 let idx=HISTORY_TAB_ORDER.indexOf(tab);
 
-document.getElementById("historyTabsTrack").style.transform="translateX(-"+(idx*33.3333)+"%)";
+let track=document.getElementById("historyTabsTrack");
+track.classList.add("animated");
+track.style.transform="translateX(-"+(idx*33.3333)+"%)";
 
 if(tab==="ongoing"){
-
 ongoingBtn.classList.add("active");
-
-renderOngoingList();
-
 }
 else if(tab==="games"){
-
 gamesBtn.classList.add("active");
-
-renderHistoryList();
-
 }
 else{
-
 challengesBtn.classList.add("active");
-
-renderChallengesList();
-
 }
 
 }
@@ -6114,45 +6129,101 @@ recordGameEnd("timeout",0);
 });
 
 
-let historyTouchStartX=null;
-let historyTouchStartY=null;
+let historyDragStartX=null;
+let historyDragStartY=null;
+let historyDragBaseOffset=0;
+let historyDragCurrentOffset=0;
+let historyDragging=false;
+let historyDragLocked=null;
 
-document.getElementById("historyScreen").addEventListener("touchstart",function(e){
+let historyTabsViewport=document.getElementById("historyTabsViewport");
+let historyTabsTrackEl=document.getElementById("historyTabsTrack");
 
-historyTouchStartX=e.touches[0].clientX;
-historyTouchStartY=e.touches[0].clientY;
+historyTabsViewport.addEventListener("touchstart",function(e){
+
+historyDragStartX=e.touches[0].clientX;
+historyDragStartY=e.touches[0].clientY;
+historyDragBaseOffset=-(HISTORY_TAB_ORDER.indexOf(currentHistoryTab)*33.3333);
+historyDragCurrentOffset=historyDragBaseOffset;
+historyDragging=true;
+historyDragLocked=null;
 
 });
 
-document.getElementById("historyScreen").addEventListener("touchend",function(e){
+historyTabsViewport.addEventListener("touchmove",function(e){
 
-if(historyTouchStartX===null)return;
+if(!historyDragging)return;
 
-let endX=e.changedTouches[0].clientX;
-let endY=e.changedTouches[0].clientY;
+let dx=e.touches[0].clientX-historyDragStartX;
+let dy=e.touches[0].clientY-historyDragStartY;
 
-let dx=endX-historyTouchStartX;
-let dy=endY-historyTouchStartY;
+if(historyDragLocked===null){
 
-historyTouchStartX=null;
-historyTouchStartY=null;
+if(Math.abs(dx)<8 && Math.abs(dy)<8)return;
 
-if(Math.abs(dx)<50 || Math.abs(dx)<Math.abs(dy)){
+historyDragLocked=Math.abs(dx)>Math.abs(dy) ? "x" : "y";
+
+if(historyDragLocked==="x"){
+historyTabsTrackEl.classList.remove("animated");
+}
+
+}
+
+if(historyDragLocked!=="x")return;
+
+e.preventDefault();
+
+let viewportWidth=historyTabsViewport.offsetWidth;
+let dxPercent=(dx/viewportWidth)*33.3333;
+
+let idx=HISTORY_TAB_ORDER.indexOf(currentHistoryTab);
+let minOffset=-(HISTORY_TAB_ORDER.length-1)*33.3333;
+
+let newOffset=historyDragBaseOffset+dxPercent;
+
+if(newOffset>0)newOffset=historyDragBaseOffset+(newOffset-historyDragBaseOffset)*0.3;
+if(newOffset<minOffset)newOffset=minOffset+(newOffset-minOffset)*0.3;
+
+historyDragCurrentOffset=newOffset;
+
+historyTabsTrackEl.style.transform="translateX("+newOffset+"%)";
+
+},{passive:false});
+
+historyTabsViewport.addEventListener("touchend",function(){
+
+if(!historyDragging)return;
+
+historyDragging=false;
+
+if(historyDragLocked!=="x"){
+historyDragLocked=null;
 return;
 }
 
-let idx=HISTORY_TAB_ORDER.indexOf(currentHistoryTab);
+historyTabsTrackEl.classList.add("animated");
 
-if(dx<0 && idx<HISTORY_TAB_ORDER.length-1){
+let idx=HISTORY_TAB_ORDER.indexOf(currentHistoryTab);
+let moved=historyDragCurrentOffset-historyDragBaseOffset;
+let threshold=33.3333/4;
+
+if(moved<-threshold && idx<HISTORY_TAB_ORDER.length-1){
 
 switchHistoryTab(HISTORY_TAB_ORDER[idx+1]);
 
 }
-else if(dx>0 && idx>0){
+else if(moved>threshold && idx>0){
 
 switchHistoryTab(HISTORY_TAB_ORDER[idx-1]);
 
 }
+else{
+
+historyTabsTrackEl.style.transform="translateX("+historyDragBaseOffset+"%)";
+
+}
+
+historyDragLocked=null;
 
 });
 
