@@ -828,6 +828,7 @@ button{
 .word-cards .card{
     font-weight:bold;
     font-size:34px;
+    padding:20px 5px;
 }
 
 .word-cards .card.used{
@@ -1658,7 +1659,7 @@ Harf seçiniz
 
 </div>
 
-<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:20px;" onclick="showWordsList()">Kelimeleri Göster</button>
+<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:25px;" onclick="showWordsList()">Kelimeleri Göster</button>
 <div id="wordsBox"></div>
 
 <button class="newgame" style="margin-top:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
@@ -4193,12 +4194,11 @@ return result;
 
 function drawWordLetters(){
 let bag=buildLetterBag();
-let rest=bag.filter(l=>l!=='A');
-let attempt=['A',...shuffleArray(rest).slice(0,6)];
+let attempt=shuffleArray(bag).slice(0,7);
 let vowelCount=attempt.filter(l=>VOWELS.includes(l)).length;
 let tries=0;
 while((vowelCount<2 || vowelCount>4) && tries<30){
-attempt=['A',...shuffleArray(rest).slice(0,6)];
+attempt=shuffleArray(bag).slice(0,7);
 vowelCount=attempt.filter(l=>VOWELS.includes(l)).length;
 tries++;
 }
@@ -4530,6 +4530,8 @@ setTimeout(()=>el.remove(),1600);
 function showWordsList(){
 
 let remaining=wordAchievable.filter(function(w){ return !wordFound.has(w); });
+
+remaining.sort(function(a,b){ return b.length-a.length; });
 
 let box=document.getElementById("wordsBox");
 
