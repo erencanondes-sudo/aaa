@@ -57,6 +57,7 @@ button{
 .word-newgame-btn{
     padding-top:7.5px;
     padding-bottom:7.5px;
+    font-size:18px;
 }
 
 .newgame:active{
@@ -84,6 +85,7 @@ button{
     font-size:36px;
     font-weight:bold;
     color:#192a56;
+    margin-top:10px;
 }
 
 .target-label{
@@ -100,6 +102,10 @@ button{
     margin:8px 0;
     min-height:170px;
     align-content:start;
+}
+
+#cards{
+    margin-top:18px;
 }
 
 .card{
@@ -1626,16 +1632,10 @@ button{
 
 <div id="gameContent">
 
-<div class="math-top-controls">
-
-<p class="math-newgame-text" onclick="newGame(currentLevel)">🔄 Yeni Oyun</p>
-
-<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin:0;">
+<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:6px;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
-</div>
-
 </div>
 
 <div class="target" id="target"><span class="target-label">Hedef</span>→---</div>
