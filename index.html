@@ -708,6 +708,24 @@ button{
     margin:15px 0;
 }
 
+.history-tabs-viewport{
+    overflow:hidden;
+    width:100%;
+}
+
+.history-tabs-track{
+    display:flex;
+    width:300%;
+    transition:transform 0.3s ease;
+}
+
+.history-tab-panel{
+    width:33.3333%;
+    flex-shrink:0;
+    box-sizing:border-box;
+    padding:0 2px;
+}
+
 .tab-btn{
     flex:1;
     background:#dfe6e9;
@@ -1632,11 +1650,13 @@ button{
 <button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
 
-<div id="ongoingList"></div>
-
-<div id="historyList" style="display:none;"></div>
-
-<div id="challengesList" style="display:none;"></div>
+<div class="history-tabs-viewport">
+<div class="history-tabs-track" id="historyTabsTrack">
+<div class="history-tab-panel" id="ongoingList"></div>
+<div class="history-tab-panel" id="historyList"></div>
+<div class="history-tab-panel" id="challengesList"></div>
+</div>
+</div>
 
 </div>
 
@@ -3511,22 +3531,17 @@ let ongoingBtn=document.getElementById("tabOngoingBtn");
 let gamesBtn=document.getElementById("tabGamesBtn");
 let challengesBtn=document.getElementById("tabChallengesBtn");
 
-let ongoingListEl=document.getElementById("ongoingList");
-let gamesList=document.getElementById("historyList");
-let challengesListEl=document.getElementById("challengesList");
-
 ongoingBtn.classList.remove("active");
 gamesBtn.classList.remove("active");
 challengesBtn.classList.remove("active");
 
-ongoingListEl.style.display="none";
-gamesList.style.display="none";
-challengesListEl.style.display="none";
+let idx=HISTORY_TAB_ORDER.indexOf(tab);
+
+document.getElementById("historyTabsTrack").style.transform="translateX(-"+(idx*33.3333)+"%)";
 
 if(tab==="ongoing"){
 
 ongoingBtn.classList.add("active");
-ongoingListEl.style.display="block";
 
 renderOngoingList();
 
@@ -3534,7 +3549,6 @@ renderOngoingList();
 else if(tab==="games"){
 
 gamesBtn.classList.add("active");
-gamesList.style.display="block";
 
 renderHistoryList();
 
@@ -3542,7 +3556,6 @@ renderHistoryList();
 else{
 
 challengesBtn.classList.add("active");
-challengesListEl.style.display="block";
 
 renderChallengesList();
 
