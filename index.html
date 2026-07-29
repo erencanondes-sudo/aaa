@@ -101,6 +101,11 @@ button{
     box-shadow:0 4px 0 #006ba3;
 }
 
+#cards .card{
+    font-size:29px;
+    font-weight:bold;
+}
+
 .card:active{
     box-shadow:0 1px 0 #006ba3;
     transform:translateY(3px);
@@ -159,11 +164,10 @@ button{
 
 .bottom-buttons{
     display:flex;
-    justify-content:flex-start;
+    justify-content:center;
     align-items:center;
     gap:25px;
     margin-top:15px;
-    margin-left:80px;
 }
 
 
@@ -185,7 +189,7 @@ button{
 .equal{
     background:#e67e22;
     width:180px;
-    height:80px;
+    height:65px;
     font-size:45px;
     font-weight:bold;
     box-shadow:0 4px 0 #b3641b;
@@ -199,7 +203,7 @@ button{
 
 #operation{
     height:40px;
-    font-size:32px;
+    font-size:27px;
     font-weight:bold;
     color:#192a56;
     background:#f1f2f6;
@@ -1562,9 +1566,7 @@ button{
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
 </div>
 
-<h2>Hedef</h2>
-
-<div class="target" id="target">---</div>
+<div class="target" id="target">Hedef: ---</div>
 
 <div class="cards" id="cards"></div>
 
@@ -5058,7 +5060,7 @@ op=null;
 document.getElementById("message").innerHTML="";
 document.getElementById("operation").innerHTML="Sayı seçiniz";
 
-document.getElementById("target").innerHTML="---";
+document.getElementById("target").innerHTML="Hedef: ---";
 document.getElementById("cards").innerHTML="";
 
 
@@ -5070,7 +5072,7 @@ numbers=[...gameData.numbers];
 originalNumbers=[...gameData.numbers];
 target=gameData.target;
 
-document.getElementById("target").innerHTML=target;
+document.getElementById("target").innerHTML="Hedef: "+target;
 
 show();
 
