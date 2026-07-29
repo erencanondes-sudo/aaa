@@ -78,15 +78,22 @@ button{
 .target{
     font-size:45px;
     font-weight:bold;
-    color:#e84118;
+    color:#192a56;
+}
+
+.target-label{
+    font-size:28px;
+    font-weight:bold;
+    color:#192a56;
+    margin-right:2px;
 }
 
 .cards{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:12px;
-    margin:20px 0;
-    min-height:190px;
+    margin:10px 0;
+    min-height:170px;
     align-content:start;
 }
 
@@ -167,7 +174,7 @@ button{
     justify-content:center;
     align-items:center;
     gap:25px;
-    margin-top:15px;
+    margin-top:8px;
 }
 
 
@@ -209,8 +216,8 @@ button{
     background:#f1f2f6;
     border:3px solid #0097e6;
     border-radius:12px;
-    padding:12px 10px;
-    margin:15px 0;
+    padding:8px 10px;
+    margin:8px 0;
 }
 
 .loading{
@@ -408,7 +415,7 @@ button{
     background:#f1f2f6;
     border-radius:12px;
     padding:15px;
-    margin-top:12px;
+    margin-top:6px;
     font-size:17px;
     color:#192a56;
     line-height:1.6;
@@ -1560,13 +1567,13 @@ button{
 
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:15px;">
+<div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:8px;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
 </div>
 
-<div class="target" id="target">Hedef: ---</div>
+<div class="target" id="target"><span class="target-label">Hedef</span>→---</div>
 
 <div class="cards" id="cards"></div>
 
@@ -5060,7 +5067,7 @@ op=null;
 document.getElementById("message").innerHTML="";
 document.getElementById("operation").innerHTML="Sayı seçiniz";
 
-document.getElementById("target").innerHTML="Hedef: ---";
+document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→---";
 document.getElementById("cards").innerHTML="";
 
 
@@ -5072,7 +5079,7 @@ numbers=[...gameData.numbers];
 originalNumbers=[...gameData.numbers];
 target=gameData.target;
 
-document.getElementById("target").innerHTML="Hedef: "+target;
+document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→"+target;
 
 show();
 
