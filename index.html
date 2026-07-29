@@ -2946,6 +2946,8 @@ console.error("Meydan okuma güncellenemedi:",e);
 
 function playChallenge(id,side){
 
+let proceed=function(){
+
 db.collection("challenges").doc(id).get().then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
@@ -2993,6 +2995,15 @@ newGame(ch.level,{numbers:game.numbers,target:game.target});
 }
 
 });
+
+};
+
+if(pendingChallengeWrite){
+pendingChallengeWrite.then(proceed).catch(proceed);
+}
+else{
+proceed();
+}
 
 }
 
