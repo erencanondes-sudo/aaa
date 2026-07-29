@@ -981,6 +981,12 @@ button{
     padding:10px;
 }
 
+#wordsBox:empty{
+    display:none;
+    padding:0;
+    margin:0;
+}
+
 .shuffle-icon{
     background:#00cec9;
     color:#013330;
@@ -1663,7 +1669,7 @@ Harf seçiniz
 <button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:25px;" onclick="showWordsList()">Kelimeleri Göster</button>
 <div id="wordsBox"></div>
 
-<button class="newgame" style="margin-top:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
+<button class="newgame" style="margin-top:35px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 </div>
 
