@@ -1596,6 +1596,8 @@ button{
 
 <div id="gameContent">
 
+<button class="newgame" style="margin-bottom:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+
 <div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:6px;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
@@ -1633,11 +1635,11 @@ Sayı seçiniz
 
 <div id="solutionBox"></div>
 
-<button class="newgame" style="margin-top:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
-
 </div>
 
 <div id="wordGameContent" style="display:none;">
+
+<button class="newgame" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 <div class="word-info">
 <div class="word-info-top">
@@ -1669,11 +1671,11 @@ Harf seçiniz
 <button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:25px;" onclick="showWordsList()">Kelimeleri Göster</button>
 <div id="wordsBox"></div>
 
-<button class="newgame" style="margin-top:35px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
-
 </div>
 
 <div id="hafizaGameContent" style="display:none;">
+
+<button class="newgame" style="margin-bottom:8px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 <div class="level-select" id="hafizaInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:15px;">
 <button class="level-btn level-easy" id="hafizaLevelEasy" onclick="newGame('easy')">Kolay</button>
@@ -1684,8 +1686,6 @@ Harf seçiniz
 <p id="hafizaMessage">Kartlara tıkla ve eşleri bul!</p>
 
 <div class="mem-cards" id="hafizaCardsArea"></div>
-
-<button class="newgame" style="margin-top:40px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 </div>
 
