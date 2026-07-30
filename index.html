@@ -673,12 +673,17 @@ button{
 
 @keyframes envelopeFly{
     0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}
-    30%{transform:translate(10px,-15px) rotate(-8deg) scale(1.08);opacity:1;}
+    22%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}
+    45%{transform:translate(10px,-15px) rotate(-8deg) scale(1.08);opacity:1;}
     100%{transform:translate(220px,-180px) rotate(35deg) scale(0.3);opacity:0;}
 }
 
-#challengeEnvelope.flying{
-    animation:envelopeFly 0.9s ease-in forwards;
+#challengeEnvelope.flying-fast{
+    animation:envelopeFly 0.65s ease-in 1;
+}
+
+#challengeEnvelope.flying-loop{
+    animation:envelopeFly 2.4s ease-in infinite;
 }
 
 .screen-title{
@@ -2935,9 +2940,15 @@ hideAllScreens();
 document.getElementById("challengeDoneScreen").style.display="block";
 
 let envelope=document.getElementById("challengeEnvelope");
-envelope.classList.remove("flying");
+envelope.classList.remove("flying-fast","flying-loop");
 void envelope.offsetWidth;
-envelope.classList.add("flying");
+envelope.classList.add("flying-fast");
+
+envelope.addEventListener("animationend",function onFirstFly(){
+envelope.removeEventListener("animationend",onFirstFly);
+envelope.classList.remove("flying-fast");
+envelope.classList.add("flying-loop");
+});
 
 playChallengeSentSound();
 
@@ -3883,17 +3894,52 @@ playTone(740,0.08,"sine",0.1,0);
 
 function playChallengeSentSound(){
 
-playTone(440,0.08,"sine",0.3,0);
-playTone(659.25,0.08,"sine",0.3,0.08);
-playTone(880,0.16,"sine",0.3,0.16);
+let ctx=getAudioCtx();
+if(!ctx)return;
+
+try{
+
+let startTime=ctx.currentTime;
+let duration=0.6;
+
+let bufferSize=Math.floor(ctx.sampleRate*duration);
+let buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
+let data=buffer.getChannelData(0);
+
+for(let i=0;i<bufferSize;i++){
+data[i]=Math.random()*2-1;
+}
+
+let noise=ctx.createBufferSource();
+noise.buffer=buffer;
+
+let filter=ctx.createBiquadFilter();
+filter.type="bandpass";
+filter.Q.value=1.1;
+filter.frequency.setValueAtTime(3200,startTime);
+filter.frequency.exponentialRampToValueAtTime(180,startTime+duration);
+
+let gain=ctx.createGain();
+gain.gain.setValueAtTime(0.001,startTime);
+gain.gain.exponentialRampToValueAtTime(0.55,startTime+0.09);
+gain.gain.exponentialRampToValueAtTime(0.001,startTime+duration);
+
+noise.connect(filter);
+filter.connect(gain);
+gain.connect(ctx.destination);
+
+noise.start(startTime);
+noise.stop(startTime+duration);
+
+}catch(e){}
 
 }
 
 
 function playWarningSound(){
 
-playTone(330,0.09,"sine",0.08,0);
-playTone(247,0.11,"sine",0.08,0.09);
+playTone(330,0.09,"sine",0.16,0);
+playTone(247,0.11,"sine",0.16,0.09);
 
 }
 
