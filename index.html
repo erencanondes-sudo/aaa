@@ -2966,6 +2966,15 @@ return;
 
 }
 
+hideAllScreens();
+document.getElementById("playArea").style.display="block";
+
+document.getElementById("levelSelect").style.display="none";
+document.getElementById("gameContent").style.display="none";
+document.getElementById("wordGameContent").style.display="none";
+document.getElementById("hafizaGameContent").style.display="none";
+document.getElementById("loading").style.display="flex";
+
 let proceed=function(){
 
 db.collection("challenges").doc(id).get().then(function(doc){
@@ -3042,9 +3051,6 @@ resumeTime=Math.max(1,Math.round(120-elapsedSeconds));
 activeChallengeId=id;
 activeChallengeSide=side;
 activeChallengeGameIndex=currentGameIndex;
-
-hideAllScreens();
-document.getElementById("playArea").style.display="block";
 
 let game=ch.games[currentGameIndex];
 
