@@ -138,8 +138,8 @@ button{
 }
 
 .card.selected{
-    background:#e84118;
-    box-shadow:0 4px 0 #a83217;
+    background:#ef7a5d;
+    box-shadow:0 4px 0 #c27059;
 }
 
 @keyframes cardWinGlow{
@@ -914,10 +914,9 @@ button{
 }
 
 .word-cards .card.used{
-    background:#e84118;
-    box-shadow:0 4px 0 #a83217;
+    background:#ef7a5d;
+    box-shadow:0 4px 0 #c27059;
     cursor:default;
-    opacity:.55;
 }
 
 .word-cards .card.used:active{
@@ -931,9 +930,9 @@ button{
 }
 
 .word-cards .card.joker.used{
-    background:#e84118;
+    background:#ef7a5d;
     color:white;
-    box-shadow:0 4px 0 #a83217;
+    box-shadow:0 4px 0 #c27059;
 }
 
 #wordOperation{
@@ -1148,7 +1147,7 @@ button{
 }
 
 @keyframes cardBounce{
-    0%{transform:translateY(0) scale(1);background:#e84118;box-shadow:0 4px 0 #a83217;color:white;}
+    0%{transform:translateY(0) scale(1);background:#ef7a5d;box-shadow:0 4px 0 #c27059;color:white;}
     2%{transform:translateY(-3px) scale(1.02);background:#1b7a3d;box-shadow:0 4px 0 #124f28;color:white;}
     30%{transform:translateY(-20px) scale(1.1);background:#1b7a3d;box-shadow:0 4px 0 #124f28;color:white;}
     55%{transform:translateY(0) scale(1);background:#1b7a3d;box-shadow:0 4px 0 #124f28;color:white;}
@@ -3744,7 +3743,8 @@ playTone(659.25,0.15,"sine",0.3,0.09);
 
 function playErrorSound(){
 
-playTone(160,0.22,"sine",0.18,0);
+playTone(220,0.13,"triangle",0.28,0);
+playTone(150,0.22,"triangle",0.28,0.12);
 
 }
 
@@ -3759,7 +3759,7 @@ playTone(400,0.09,"triangle",0.2,0.11);
 
 function playMismatchSound(){
 
-playTone(220,0.13,"sine",0.2,0);
+playTone(220,0.13,"sine",0.5,0);
 
 }
 
@@ -3842,7 +3842,7 @@ playTone(1567.98,0.4,"sine",0.10,1.12);
 
 function playClickSoundOperator(){
 
-playTone(988,0.06,"triangle",0.18,0);
+playTone(660,0.06,"sine",0.16,0);
 
 }
 
@@ -3864,10 +3864,10 @@ playTone(247,0.11,"sine",0.08,0.09);
 
 function playShuffleSound(){
 
-playTone(300,0.05,"triangle",0.14,0);
-playTone(400,0.05,"triangle",0.14,0.05);
-playTone(500,0.05,"triangle",0.14,0.10);
-playTone(350,0.06,"triangle",0.14,0.15);
+playTone(300,0.05,"triangle",0.315,0);
+playTone(400,0.05,"triangle",0.315,0.05);
+playTone(500,0.05,"triangle",0.315,0.10);
+playTone(350,0.06,"triangle",0.315,0.15);
 
 }
 
@@ -6626,7 +6626,12 @@ document.getElementById("closeModal").style.display="none";
 
 function undo(){
 
-if(history.length==0)return;
+if(history.length==0){
+playWarningSound();
+return;
+}
+
+playUndoSound();
 
 let state=JSON.parse(history.pop());
 
@@ -6786,14 +6791,14 @@ let threshold=33.3333/8;
 
 if(moved<-threshold && idx<HISTORY_TAB_ORDER.length-1){
 
-playClickSoundTab();
+playClickSoundBack();
 
 switchHistoryTab(HISTORY_TAB_ORDER[idx+1]);
 
 }
 else if(moved>threshold && idx>0){
 
-playClickSoundTab();
+playClickSoundBack();
 
 switchHistoryTab(HISTORY_TAB_ORDER[idx-1]);
 
@@ -6862,7 +6867,7 @@ if(!btn)return;
 
 if(btn.closest("#wordCards") || btn.closest("#hafizaCardsArea"))return;
 if(btn.classList.contains("word-check-btn") || btn.classList.contains("equal"))return;
-if(btn.classList.contains("word-undo-btn") || btn.classList.contains("word-shuffle-btn"))return;
+if(btn.classList.contains("undo") || btn.classList.contains("word-shuffle-btn"))return;
 
 if(btn.closest(".operations")){
 playClickSoundOperator();
