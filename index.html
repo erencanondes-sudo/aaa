@@ -3696,7 +3696,8 @@ function saveWordProgress(){
 
 saveChallengeProgress({
 tiles:wordTiles.map(function(t){ return t.letter; }),
-found:Array.from(wordFound)
+found:Array.from(wordFound),
+score:score
 });
 
 }
@@ -4727,10 +4728,12 @@ if(restoredProgress){
 
 wordFound=new Set(restoredProgress.found);
 wordTiles=restoredProgress.tiles.map(function(l,i){ return {letter:l,used:false,id:i}; });
+score=restoredProgress.score || 0;
 
 renderWordCards();
 updateWordTarget();
 
+document.getElementById("wordScoreValue").innerHTML=score;
 document.getElementById("wordMessage").innerHTML="Harflerden kelime oluştur!";
 
 startWordTimerTick();
