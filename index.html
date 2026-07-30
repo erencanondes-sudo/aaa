@@ -3067,14 +3067,17 @@ console.error("Başlama zamanı kaydedilemedi:",e);
 
 startedAtPromise.then(function(){
 
+let progressField=side==="from" ? "fromProgress" : "toProgress";
+let progress=game[progressField] || null;
+
 if(selectedGameType==="word"){
-newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable,resumeTime:resumeTime});
+newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable,resumeTime:resumeTime,progress:progress});
 }
 else if(selectedGameType==="hafiza"){
 newGame(ch.level,{deck:game.deck,pairs:game.pairs});
 }
 else{
-newGame(ch.level,{numbers:game.numbers,target:game.target,resumeTime:resumeTime});
+newGame(ch.level,{numbers:game.numbers,target:game.target,resumeTime:resumeTime,progress:progress});
 }
 
 });
@@ -3663,6 +3666,93 @@ renderChallengesList();
 
 let currentHistoryTab="ongoing";
 let pendingChallengeWrite=null;
+
+function saveChallengeProgress(progressData){
+
+if(!activeChallengeId)return;
+
+let field=activeChallengeSide==="from" ? "fromProgress" : "toProgress";
+
+db.collection("challenges").doc(activeChallengeId).get().then(function(doc){
+
+let ch=normalizeChallenge(doc.data());
+let updatedGames=ch.games.slice();
+let g=Object.assign({},updatedGames[activeChallengeGameIndex]);
+
+g[field]=progressData;
+
+updatedGames[activeChallengeGameIndex]=g;
+
+return db.collection("challenges").doc(activeChallengeId).update({games:updatedGames});
+
+}).catch(function(e){
+console.error("İlerleme kaydedilemedi:",e);
+});
+
+}
+
+
+function saveWordProgress(){
+
+saveChallengeProgress({
+tiles:wordTiles.map(function(t){ return t.letter; }),
+found:Array.from(wordFound)
+});
+
+}
+
+
+function saveMathProgress(){
+
+saveChallengeProgress({
+numbers:[...numbers]
+});
+
+}
+
+
+function checkAndForfeitExpiredRound(c){
+
+let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
+
+if(currentGameIndex===-1)return Promise.resolve(false);
+
+let gameType=c.gameType || "math";
+
+if(gameType!=="math" && gameType!=="word")return Promise.resolve(false);
+
+let g=c.games[currentGameIndex];
+let updates={};
+let changed=false;
+
+if(!g.fromPlayed && g.fromStartedAt && (Date.now()-g.fromStartedAt)/1000>=120){
+updates.fromScore=0;
+updates.fromPlayed=true;
+changed=true;
+}
+
+if(!g.toPlayed && g.toStartedAt && (Date.now()-g.toStartedAt)/1000>=120){
+updates.toScore=0;
+updates.toPlayed=true;
+changed=true;
+}
+
+if(!changed)return Promise.resolve(false);
+
+let updatedGame=Object.assign({},g,updates);
+let updatedGames=c.games.slice();
+updatedGames[currentGameIndex]=updatedGame;
+
+c.games=updatedGames;
+
+return db.collection("challenges").doc(c.id).update({games:updatedGames}).then(function(){
+return true;
+}).catch(function(e){
+console.error("Süresi dolan tur güncellenemedi:",e);
+return false;
+});
+
+}
 const HISTORY_TAB_ORDER=["ongoing","games","challenges"];
 
 function switchHistoryTab(tab){
@@ -3765,6 +3855,12 @@ let all={};
 
 results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
 results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+Object.values(all).forEach(function(c){
+if(c.status==="accepted"){
+checkAndForfeitExpiredRound(c);
+}
+});
 
 let pendingCount=0;
 let ongoingActionCount=0;
@@ -3956,6 +4052,10 @@ let FORTY_EIGHT_HOURS=48*60*60;
 
 let items=Object.values(all).filter(function(c){ return c.status==="accepted"; });
 
+let expiryChecks=items.map(function(c){ return checkAndForfeitExpiredRound(c); });
+
+Promise.all(expiryChecks).then(function(){
+
 items.forEach(function(c){
 
 let allDone=c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
@@ -4057,6 +4157,8 @@ html+="</div>";
 list.innerHTML=html;
 
 updateChatBadgesForItems(items);
+
+});
 
 }).catch(function(e){
 
@@ -4574,25 +4676,7 @@ animateWordTargetRoll(remainingCount,500,onAllDone);
 }
 
 
-function startWordRound(presetData){
-
-let data=presetData ? presetData : generateWordGameData();
-
-wordBaseLetters=data.baseLetters;
-wordAchievable=data.achievable;
-wordHistory=[];
-wordSequence=[];
-wordFound=new Set();
-
-let order=shuffleArray([...wordBaseLetters,'★']);
-wordTiles=order.map((l,i)=>({letter:l,used:false,id:i}));
-
-document.getElementById("loading").style.display="none";
-document.getElementById("wordGameContent").style.display="block";
-
-document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "none" : "block";
-
-animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
+function startWordTimerTick(){
 
 gameEndTime=Date.now()+time*1000;
 
@@ -4620,7 +4704,52 @@ recordGameEnd(result,score);
 
 },1000);
 
+}
+
+
+function startWordRound(presetData){
+
+let data=presetData ? presetData : generateWordGameData();
+
+wordBaseLetters=data.baseLetters;
+wordAchievable=data.achievable;
+wordHistory=[];
+wordSequence=[];
+
+let restoredProgress=presetData && presetData.progress;
+
+document.getElementById("loading").style.display="none";
+document.getElementById("wordGameContent").style.display="block";
+
+document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "none" : "block";
+
+if(restoredProgress){
+
+wordFound=new Set(restoredProgress.found);
+wordTiles=restoredProgress.tiles.map(function(l,i){ return {letter:l,used:false,id:i}; });
+
+renderWordCards();
+updateWordTarget();
+
+document.getElementById("wordMessage").innerHTML="Harflerden kelime oluştur!";
+
+startWordTimerTick();
+
+}
+else{
+
+wordFound=new Set();
+
+let order=shuffleArray([...wordBaseLetters,'★']);
+wordTiles=order.map((l,i)=>({letter:l,used:false,id:i}));
+
+animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
+
+startWordTimerTick();
+
 });
+
+}
 
 }
 
@@ -5138,6 +5267,10 @@ flashWordCards(usedIndices,"success",320,55);
 flashWordOperation("success",400);
 updateWordTarget();
 
+if(activeChallengeId){
+saveWordProgress();
+}
+
 if(guess.length>=6){
 spawnWordConfetti(10);
 }
@@ -5632,20 +5765,7 @@ document.getElementById("cards").innerHTML="";
 
 setTimeout(()=>{
 
-let gameData=presetData? presetData : generateGameData(level);
-
-numbers=[...gameData.numbers];
-originalNumbers=[...gameData.numbers];
-target=gameData.target;
-
-document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→---";
-
-document.getElementById("loading").style.display="none";
-document.getElementById("gameContent").style.display="block";
-
-document.getElementById("mathInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
-
-animateInitialDeal(numbers,target,function(){
+function startMathTimerTick(){
 
 gameEndTime=Date.now()+time*1000;
 
@@ -5667,7 +5787,45 @@ recordGameEnd("timeout",0);
 
 },1000);
 
+}
+
+let gameData=presetData? presetData : generateGameData(level);
+
+numbers=[...gameData.numbers];
+originalNumbers=[...gameData.numbers];
+target=gameData.target;
+
+let restoredMathProgress=presetData && presetData.progress;
+
+if(restoredMathProgress){
+numbers=[...restoredMathProgress.numbers];
+}
+
+document.getElementById("loading").style.display="none";
+document.getElementById("gameContent").style.display="block";
+
+document.getElementById("mathInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
+
+if(restoredMathProgress){
+
+document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→"+target;
+
+show();
+
+startMathTimerTick();
+
+}
+else{
+
+document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef</span>→---";
+
+animateInitialDeal(numbers,target,function(){
+
+startMathTimerTick();
+
 });
+
+}
 
 },600);
 
@@ -5941,6 +6099,10 @@ op=null;
 show(numbers.length-1);
 
 document.getElementById("operation").innerHTML="Yeni sayı: "+result;
+
+if(activeChallengeId){
+saveMathProgress();
+}
 
 
 if(numbers.includes(target)){
