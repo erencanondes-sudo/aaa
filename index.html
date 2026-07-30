@@ -1737,7 +1737,7 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;">
 
-<button class="newgame word-newgame-btn" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
+<button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 <div class="word-info">
 <div class="word-info-top">
@@ -1783,7 +1783,7 @@ Harf seçiniz
 
 <div class="mem-cards" id="hafizaCardsArea"></div>
 
-<button class="newgame" style="margin-top:40px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+<button class="newgame" id="hafizaNewGameBtn" style="margin-top:40px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 </div>
 
@@ -2627,13 +2627,13 @@ chatUnsubscribe=null;
 
 function goHome(){
 
-if(gameActive && !resultRecorded){
+if(gameActive && !resultRecorded && !activeChallengeId){
 
 time=0;
 
 if(selectedGameType==="word"){
 
-if(!activeChallengeId && score>=300){
+if(score>=300){
 recordGameEnd("win",score);
 }
 else{
@@ -2647,15 +2647,16 @@ recordGameEnd("timeout",0);
 
 }
 
-}
-
 gameActive=false;
-
 clearInterval(timer);
 
+}
+
+if(!activeChallengeId){
 activeChallengeId=null;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
+}
 
 hideAllScreens();
 
@@ -2945,6 +2946,25 @@ console.error("Meydan okuma güncellenemedi:",e);
 
 
 function playChallenge(id,side){
+
+if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded){
+
+hideAllScreens();
+document.getElementById("playArea").style.display="block";
+
+if(selectedGameType==="word"){
+document.getElementById("wordGameContent").style.display="block";
+}
+else if(selectedGameType==="hafiza"){
+document.getElementById("hafizaGameContent").style.display="block";
+}
+else{
+document.getElementById("gameContent").style.display="block";
+}
+
+return;
+
+}
 
 let proceed=function(){
 
@@ -4570,6 +4590,8 @@ wordTiles=order.map((l,i)=>({letter:l,used:false,id:i}));
 document.getElementById("loading").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 
+document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "none" : "block";
+
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
 gameEndTime=Date.now()+time*1000;
@@ -5218,6 +5240,9 @@ renderHafizaCards(data.pairs,level);
 document.getElementById("loading").style.display="none";
 document.getElementById("hafizaGameContent").style.display="block";
 
+document.getElementById("hafizaNewGameBtn").style.display=activeChallengeId ? "none" : "block";
+document.getElementById("hafizaInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
+
 hafizaStartTime=Date.now();
 
 timer=setInterval(function(){
@@ -5617,6 +5642,8 @@ document.getElementById("target").innerHTML="<span class=\"target-label\">Hedef<
 
 document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="block";
+
+document.getElementById("mathInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
 
 animateInitialDeal(numbers,target,function(){
 
@@ -6343,14 +6370,14 @@ historyDragLocked=null;
 
 window.addEventListener("pagehide",function(){
 
-if(gameActive && !resultRecorded){
+if(gameActive && !resultRecorded && !activeChallengeId){
 
 let result,finalScore;
 
 if(selectedGameType==="word"){
 
 finalScore=score;
-result=(!activeChallengeId && score>=300) ? "win" : "timeout";
+result=(score>=300) ? "win" : "timeout";
 
 }
 else{
