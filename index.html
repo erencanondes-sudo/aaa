@@ -3673,6 +3673,95 @@ renderChallengesList();
 let currentHistoryTab="ongoing";
 let pendingChallengeWrite=null;
 
+let audioCtx=null;
+
+function getAudioCtx(){
+
+if(!audioCtx){
+try{
+audioCtx=new (window.AudioContext || window.webkitAudioContext)();
+}catch(e){
+return null;
+}
+}
+
+if(audioCtx.state==="suspended"){
+audioCtx.resume().catch(function(){});
+}
+
+return audioCtx;
+
+}
+
+
+function playTone(freq,duration,type,volume,delay){
+
+let ctx=getAudioCtx();
+if(!ctx)return;
+
+try{
+
+let startTime=ctx.currentTime+(delay||0);
+
+let osc=ctx.createOscillator();
+let gain=ctx.createGain();
+
+osc.type=type||"sine";
+osc.frequency.setValueAtTime(freq,startTime);
+
+gain.gain.setValueAtTime(volume||0.15,startTime);
+gain.gain.exponentialRampToValueAtTime(0.001,startTime+duration);
+
+osc.connect(gain);
+gain.connect(ctx.destination);
+
+osc.start(startTime);
+osc.stop(startTime+duration);
+
+}catch(e){}
+
+}
+
+
+function playSuccessSound(){
+
+playTone(523.25,0.12,"sine",0.15,0);
+playTone(659.25,0.15,"sine",0.15,0.09);
+
+}
+
+
+function playErrorSound(){
+
+playTone(180,0.22,"sawtooth",0.10,0);
+
+}
+
+
+function playMatchSound(){
+
+playTone(660,0.1,"sine",0.15,0);
+playTone(880,0.15,"sine",0.15,0.08);
+
+}
+
+
+function playWinSound(){
+
+playTone(523.25,0.13,"sine",0.18,0);
+playTone(659.25,0.13,"sine",0.18,0.12);
+playTone(783.99,0.13,"sine",0.18,0.24);
+playTone(1046.5,0.3,"sine",0.2,0.36);
+
+}
+
+
+function playClickSound(){
+
+playTone(880,0.05,"square",0.06,0);
+
+}
+
 function saveChallengeProgress(progressData){
 
 if(!activeChallengeId)return;
@@ -5249,6 +5338,7 @@ let usedIndices=wordSequence.map(s=>s.index);
 
 if(usedJoker && guess.length<5){
 document.getElementById("wordMessage").innerHTML="Joker sadece 5 harf ve üzeri kelimelerde kullanılabilir.";
+playErrorSound();
 flashWordCards(usedIndices,"error",400);
 flashWordOperation("error",400);
 setTimeout(clearWordSequence,400);
@@ -5257,6 +5347,7 @@ return;
 
 if(wordFound.has(guess)){
 document.getElementById("wordMessage").innerHTML=guess+" zaten bulundu.";
+playErrorSound();
 flashWordCards(usedIndices,"already-found",400);
 flashWordOperation("already-found",400);
 setTimeout(clearWordSequence,400);
@@ -5272,6 +5363,7 @@ document.getElementById("wordScoreValue").innerHTML=score;
 bumpWordScore();
 showWordFloatingPoints(pts);
 document.getElementById("wordMessage").innerHTML="🎉 "+guess+" buldun! +"+pts+" puan";
+playSuccessSound();
 flashWordCards(usedIndices,"success",320,55);
 flashWordOperation("success",400);
 updateWordTarget();
@@ -5292,6 +5384,8 @@ score+=100+time;
 document.getElementById("wordScoreValue").innerHTML=score;
 document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeleri buldun. Toplam puan: "+score;
 
+playWinSound();
+
 recordGameEnd("win",score);
 
 }
@@ -5301,6 +5395,7 @@ setTimeout(clearWordSequence,usedIndices.length*55+380);
 else{
 
 document.getElementById("wordMessage").innerHTML=guess+" geçerli bir kelime değil.";
+playErrorSound();
 flashWordCards(usedIndices,"error",400);
 flashWordOperation("error",400);
 setTimeout(clearWordSequence,400);
@@ -5475,6 +5570,8 @@ let elB=document.getElementById("mem-card-"+b);
 elA.classList.add("matched","matched-pulse");
 elB.classList.add("matched","matched-pulse");
 
+playMatchSound();
+
 burstMemSparkles(elA);
 burstMemSparkles(elB);
 
@@ -5493,6 +5590,8 @@ setTimeout(function(){
 
 document.getElementById("mem-card-"+a).classList.add("shake");
 document.getElementById("mem-card-"+b).classList.add("shake");
+
+playErrorSound();
 
 hafizaFlipped=[];
 hafizaLock=false;
@@ -5620,6 +5719,8 @@ animateHafizaScore(score);
 document.getElementById("hafizaMessage").innerHTML="✅ Tamamladın! "+hafizaMoves+" hamlede, "+time+" saniyede bitirdin.";
 
 showWinBanner("🎉 Tebrikler!");
+
+playWinSound();
 
 launchMemConfetti();
 
@@ -6125,6 +6226,8 @@ document.getElementById("score").innerHTML=score;
 document.getElementById("message").innerHTML="✅ Tamamladın!";
 
 showWinBanner("🎉 Hedefe Ulaştın!");
+
+playWinSound();
 
 launchMemConfetti();
 
