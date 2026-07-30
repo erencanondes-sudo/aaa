@@ -940,6 +940,10 @@ button{
     padding:12px 10px;
     margin:15px 0;
     letter-spacing:2px;
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
 }
 
 #wordOperation .joker-letter{
@@ -1371,7 +1375,7 @@ button{
 }
 
 .mem-card.shake{
-    animation:memShake 0.3s ease;
+    animation:memShake 0.2s ease;
 }
 
 @keyframes confettiRise{
@@ -1737,7 +1741,7 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;">
 
-<button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin-bottom:8px;" onclick="newGame(null)">🔄 Yeni Oyun</button>
+<button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 <div class="word-info">
 <div class="word-info-top">
@@ -1783,7 +1787,7 @@ Harf seçiniz
 
 <div class="mem-cards" id="hafizaCardsArea"></div>
 
-<button class="newgame" id="hafizaNewGameBtn" style="margin-top:40px;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+<button class="newgame" id="hafizaNewGameBtn" style="margin:40px auto 0 auto;display:block;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
 
 </div>
 
@@ -3738,6 +3742,21 @@ playTone(180,0.22,"sawtooth",0.10,0);
 }
 
 
+function playAlreadyFoundSound(){
+
+playTone(400,0.09,"triangle",0.10,0);
+playTone(400,0.09,"triangle",0.10,0.11);
+
+}
+
+
+function playMismatchSound(){
+
+playTone(220,0.13,"sine",0.10,0);
+
+}
+
+
 function playMatchSound(){
 
 playTone(660,0.1,"sine",0.15,0);
@@ -3759,6 +3778,48 @@ playTone(1046.5,0.3,"sine",0.2,0.36);
 function playClickSound(){
 
 playTone(880,0.05,"square",0.06,0);
+
+}
+
+
+function playClickSoundBack(){
+
+playTone(440,0.06,"sine",0.08,0);
+
+}
+
+
+function playClickSoundTab(){
+
+playTone(1046.5,0.04,"triangle",0.07,0);
+
+}
+
+
+function playClickSoundLevel(){
+
+playTone(660,0.05,"sine",0.08,0);
+
+}
+
+
+function playClickSoundNewgame(){
+
+playTone(392,0.07,"square",0.07,0);
+
+}
+
+
+function playClickSoundOperator(){
+
+playTone(988,0.06,"triangle",0.09,0);
+
+}
+
+
+function playNewNumberSound(){
+
+playTone(740,0.08,"sine",0.1,0);
 
 }
 
@@ -5347,7 +5408,7 @@ return;
 
 if(wordFound.has(guess)){
 document.getElementById("wordMessage").innerHTML=guess+" zaten bulundu.";
-playErrorSound();
+playAlreadyFoundSound();
 flashWordCards(usedIndices,"already-found",400);
 flashWordOperation("already-found",400);
 setTimeout(clearWordSequence,400);
@@ -5591,7 +5652,7 @@ setTimeout(function(){
 document.getElementById("mem-card-"+a).classList.add("shake");
 document.getElementById("mem-card-"+b).classList.add("shake");
 
-playErrorSound();
+playMismatchSound();
 
 hafizaFlipped=[];
 hafizaLock=false;
@@ -5604,9 +5665,9 @@ document.getElementById("mem-card-"+b).classList.remove("flipped","shake");
 
 hafizaSettling=[];
 
-},400);
+},300);
 
-},550);
+},400);
 
 }
 
@@ -6210,6 +6271,8 @@ show(numbers.length-1);
 
 document.getElementById("operation").innerHTML="Yeni sayı: "+result;
 
+playNewNumberSound();
+
 if(activeChallengeId){
 saveMathProgress();
 }
@@ -6686,6 +6749,37 @@ console.error("Service worker kaydedilemedi:",e);
 
 
 window.history.pushState({app:true},"","");
+
+document.addEventListener("click",function(e){
+
+let btn=e.target.closest("button");
+
+if(!btn)return;
+
+if(btn.closest("#wordCards") || btn.closest("#hafizaCardsArea"))return;
+if(btn.classList.contains("word-check-btn") || btn.classList.contains("equal"))return;
+
+if(btn.closest(".operations")){
+playClickSoundOperator();
+}
+else if(btn.classList.contains("back-btn")){
+playClickSoundBack();
+}
+else if(btn.classList.contains("tab-btn")){
+playClickSoundTab();
+}
+else if(btn.classList.contains("level-btn")){
+playClickSoundLevel();
+}
+else if(btn.classList.contains("newgame")){
+playClickSoundNewgame();
+}
+else{
+playClickSound();
+}
+
+});
+
 
 window.addEventListener("popstate",function(e){
 
