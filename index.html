@@ -3853,6 +3853,24 @@ playTone(300,0.08,"square",0.06,0);
 
 }
 
+
+function playShuffleSound(){
+
+playTone(300,0.05,"triangle",0.07,0);
+playTone(400,0.05,"triangle",0.07,0.05);
+playTone(500,0.05,"triangle",0.07,0.10);
+playTone(350,0.06,"triangle",0.07,0.15);
+
+}
+
+
+function playUndoSound(){
+
+playTone(500,0.08,"sine",0.09,0);
+playTone(350,0.09,"sine",0.09,0.06);
+
+}
+
 function saveChallengeProgress(progressData){
 
 if(!activeChallengeId)return;
@@ -4865,6 +4883,10 @@ animateWordTargetRoll(remainingCount,500,onAllDone);
 
 function startWordTimerTick(){
 
+if(wordRoundStartToken!==gameSessionToken)return;
+
+clearInterval(timer);
+
 gameEndTime=Date.now()+time*1000;
 
 timer=setInterval(()=>{
@@ -4895,6 +4917,8 @@ recordGameEnd(result,score);
 
 
 function startWordRound(presetData){
+
+wordRoundStartToken=gameSessionToken;
 
 let data=presetData ? presetData : generateWordGameData();
 
@@ -5249,6 +5273,8 @@ function wordUndo(){
 
 if(wordSequence.length===0)return;
 
+playUndoSound();
+
 wordSequence=[];
 wordTiles.forEach(t=>t.used=false);
 renderWordCards();
@@ -5268,6 +5294,8 @@ updateWordOperationText();
 function shuffleWordTiles(){
 
 if(resultRecorded)return;
+
+playShuffleSound();
 
 let oldRects={};
 document.querySelectorAll("#wordCards .card").forEach(el=>{
@@ -5421,7 +5449,11 @@ document.getElementById("showWordsBtn").style.display="none";
 function checkWord(){
 
 if(resultRecorded)return;
-if(wordSequence.length===0)return;
+
+if(wordSequence.length===0){
+playWarningSound();
+return;
+}
 
 let guess=wordSequence.map(s=>s.value).join("");
 let usedJoker=wordSequence.some(s=>s.isJoker);
@@ -5870,7 +5902,15 @@ return {numbers:gameNumbers,target:gameTarget};
 }
 
 
+let gameSessionToken=0;
+let wordRoundStartToken=null;
+let hafizaRoundStartToken=null;
+
+
 function newGame(level,presetData){
+
+gameSessionToken++;
+let mySessionToken=gameSessionToken;
 
 currentLevel=level;
 
@@ -5922,6 +5962,8 @@ document.getElementById("wordsBox").innerHTML="";
 
 setTimeout(()=>{
 
+if(mySessionToken!==gameSessionToken)return;
+
 startWordRound(presetData);
 
 },600);
@@ -5939,6 +5981,8 @@ document.getElementById("hafizaMessage").innerHTML="";
 document.getElementById("hafizaCardsArea").innerHTML="";
 
 setTimeout(()=>{
+
+if(mySessionToken!==gameSessionToken)return;
 
 startHafizaRound(level,presetData);
 
@@ -5966,7 +6010,13 @@ document.getElementById("cards").innerHTML="";
 
 setTimeout(()=>{
 
+if(mySessionToken!==gameSessionToken)return;
+
 function startMathTimerTick(){
+
+if(mySessionToken!==gameSessionToken)return;
+
+clearInterval(timer);
 
 gameEndTime=Date.now()+time*1000;
 
@@ -6791,6 +6841,7 @@ if(!btn)return;
 
 if(btn.closest("#wordCards") || btn.closest("#hafizaCardsArea"))return;
 if(btn.classList.contains("word-check-btn") || btn.classList.contains("equal"))return;
+if(btn.classList.contains("word-undo-btn") || btn.classList.contains("word-shuffle-btn"))return;
 
 if(btn.closest(".operations")){
 playClickSoundOperator();
