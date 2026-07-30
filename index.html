@@ -671,6 +671,16 @@ button{
     margin:0 0 5px 0;
 }
 
+@keyframes envelopeFly{
+    0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}
+    30%{transform:translate(10px,-15px) rotate(-8deg) scale(1.08);opacity:1;}
+    100%{transform:translate(220px,-180px) rotate(35deg) scale(0.3);opacity:0;}
+}
+
+#challengeEnvelope.flying{
+    animation:envelopeFly 0.9s ease-in forwards;
+}
+
 .screen-title{
     color:#192a56;
     font-size:19px;
@@ -1470,7 +1480,7 @@ button{
 <div class="stats">
 <p>Başarı Yüzdesi: <span id="successPct">%0</span></p>
 <p>Puan Ortalaması (İşlem): <span id="avgScoreMath">0</span></p>
-<p>Toplam Puan (Kelime Bulma): <span id="avgScoreWord">0</span></p>
+<p>Puan Ortalaması (Kelime): <span id="avgScoreWord">0</span></p>
 <p>Puan Ortalaması (Hafıza): <span id="avgScoreHafiza">0</span></p>
 </div>
 
@@ -1497,7 +1507,7 @@ button{
 <p>Puan Ortalaması (Kolay): <span id="profileAvgScoreEasy"></span></p>
 <p>Puan Ortalaması (Orta): <span id="profileAvgScoreMedium"></span></p>
 <p>Puan Ortalaması (Zor): <span id="profileAvgScoreHard"></span></p>
-<p>Toplam Puan (Kelime Bulma): <span id="profileAvgScoreWord"></span></p>
+<p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
 <p>Puan Ortalaması (Hafıza): <span id="profileAvgScoreHafiza"></span></p>
 </div>
 
@@ -1589,8 +1599,8 @@ button{
 
 <p class="screen-title">Hangi oyunla meydan okumak istersin?</p>
 
-<button class="newgame" onclick="selectChallengeGameType('word')">Kelime Bulma 🔤</button>
-<button class="newgame newgame-green" style="margin-top:12px;" onclick="selectChallengeGameType('math')">İşlem 🔢</button>
+<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectChallengeGameType('math')">İşlem 🔢</button>
+<button class="newgame" style="margin-top:12px;" onclick="selectChallengeGameType('word')">Kelime Bulma 🔤</button>
 <button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectChallengeGameType('hafiza')">Hafıza Oyunu 🧠</button>
 
 </div>
@@ -1657,6 +1667,8 @@ button{
 <div id="challengeDoneScreen" style="display:none;">
 
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<div id="challengeEnvelope" style="font-size:60px;margin:20px 0;">✉️</div>
 
 <p class="screen-title" id="challengeDoneText"></p>
 
@@ -2726,16 +2738,21 @@ startNewGameFlow();
 function openChallengeGameType(){
 
 hideAllScreens();
-document.getElementById("challengeGameTypeScreen").style.display="block";
+document.getElementById("challengeTypeScreen").style.display="block";
 
 }
+
+
+let pendingOpponentChoice=null;
 
 
 function selectChallengeGameType(type){
 
 selectedGameType=type;
 
-openChallengeType();
+pendingChallenge={opponent:pendingOpponentChoice.opponent,type:pendingOpponentChoice.type};
+
+proceedAfterOpponentChosen(pendingOpponentChoice.opponent);
 
 }
 
@@ -2799,18 +2816,20 @@ return;
 
 }
 
-pendingChallenge={opponent:username,type:"friend"};
+pendingOpponentChoice={type:"friend",opponent:username};
 
-proceedAfterOpponentChosen(username);
+hideAllScreens();
+document.getElementById("challengeGameTypeScreen").style.display="block";
 
 }
 
 
 function challengeFromProfile(username){
 
-pendingChallenge={opponent:username,type:"friend"};
+pendingOpponentChoice={type:"friend",opponent:username};
 
-proceedAfterOpponentChosen(username);
+hideAllScreens();
+document.getElementById("challengeGameTypeScreen").style.display="block";
 
 }
 
@@ -2819,9 +2838,10 @@ function openChallengeRandom(){
 
 let name=RANDOM_OPPONENTS[Math.floor(Math.random()*RANDOM_OPPONENTS.length)];
 
-pendingChallenge={opponent:name,type:"random"};
+pendingOpponentChoice={type:"random",opponent:name};
 
-proceedAfterOpponentChosen(name);
+hideAllScreens();
+document.getElementById("challengeGameTypeScreen").style.display="block";
 
 }
 
@@ -2913,6 +2933,13 @@ db.collection("challenges").add(challengeData).then(function(){
 
 hideAllScreens();
 document.getElementById("challengeDoneScreen").style.display="block";
+
+let envelope=document.getElementById("challengeEnvelope");
+envelope.classList.remove("flying");
+void envelope.offsetWidth;
+envelope.classList.add("flying");
+
+playChallengeSentSound();
 
 let formatText=gamesCount===1 ? "tek oyunluk" : "3 oyunluk";
 
@@ -3330,7 +3357,7 @@ let friendBtn=isFriend
 
 document.getElementById("otherProfileContent").innerHTML=
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
-"<p>Puan Ortalaması (Kolay): "+avgByLevel.easy+"</p><p>Puan Ortalaması (Orta): "+avgByLevel.medium+"</p><p>Puan Ortalaması (Zor): "+avgByLevel.hard+"</p><p>Toplam Puan (Kelime Bulma): "+avgByLevel.word+"</p><p>Puan Ortalaması (Hafıza): "+avgByLevel.hafiza+"</p>"+
+"<p>Puan Ortalaması (Kolay): "+avgByLevel.easy+"</p><p>Puan Ortalaması (Orta): "+avgByLevel.medium+"</p><p>Puan Ortalaması (Zor): "+avgByLevel.hard+"</p><p>Puan Ortalaması (Kelime): "+avgByLevel.word+"</p><p>Puan Ortalaması (Hafıza): "+avgByLevel.hafiza+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>"+
 friendBtn;
 
@@ -3850,6 +3877,15 @@ playTone(660,0.06,"sine",0.16,0);
 function playNewNumberSound(){
 
 playTone(740,0.08,"sine",0.1,0);
+
+}
+
+
+function playChallengeSentSound(){
+
+playTone(440,0.08,"sine",0.3,0);
+playTone(659.25,0.08,"sine",0.3,0.08);
+playTone(880,0.16,"sine",0.3,0.16);
 
 }
 
@@ -4555,7 +4591,7 @@ easy: counts.easy? Math.round(sums.easy/counts.easy) : 0,
 medium: counts.medium? Math.round(sums.medium/counts.medium) : 0,
 hard: counts.hard? Math.round(sums.hard/counts.hard) : 0,
 mathCombined: counts.mathAll? Math.round(sums.mathAll/counts.mathAll) : 0,
-word: sums.word,
+word: counts.word? Math.round(sums.word/counts.word) : 0,
 hafiza: counts.hafiza? Math.round(sums.hafiza/counts.hafiza) : 0
 
 };
@@ -6872,7 +6908,7 @@ if(btn.classList.contains("undo") || btn.classList.contains("word-shuffle-btn"))
 if(btn.closest(".operations")){
 playClickSoundOperator();
 }
-else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || btn.classList.contains("level-btn") || btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
+else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || (btn.classList.contains("level-btn") && !btn.closest("#challengeLevelScreen")) || btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
 // ses, oyun ekranı gerçekten görününce çalınır (newGame() içinde)
 }
 else{
