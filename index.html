@@ -1149,7 +1149,7 @@ button{
 }
 
 .word-cards .card.success{
-    animation:cardBounce .32s ease forwards;
+    animation:cardBounce .256s ease forwards;
 }
 
 @keyframes cardShake{
@@ -1161,7 +1161,7 @@ button{
 }
 
 .word-cards .card.error{
-    animation:cardShake .4s ease;
+    animation:cardShake .25s ease;
 }
 
 @keyframes alreadyFoundPulse{
@@ -1170,7 +1170,7 @@ button{
 }
 
 .word-cards .card.already-found{
-    animation:alreadyFoundPulse .4s ease;
+    animation:alreadyFoundPulse .25s ease;
 }
 
 @keyframes opSuccessAnim{
@@ -1180,7 +1180,7 @@ button{
 }
 
 #wordOperation.success{
-    animation:opSuccessAnim .4s ease;
+    animation:opSuccessAnim .32s ease;
 }
 
 @keyframes opErrorAnim{
@@ -1192,7 +1192,7 @@ button{
 }
 
 #wordOperation.error{
-    animation:opErrorAnim .4s ease;
+    animation:opErrorAnim .25s ease;
 }
 
 @keyframes opAlreadyFoundAnim{
@@ -1201,7 +1201,7 @@ button{
 }
 
 #wordOperation.already-found{
-    animation:opAlreadyFoundAnim .4s ease;
+    animation:opAlreadyFoundAnim .25s ease;
 }
 
 .confetti-piece{
@@ -1571,9 +1571,9 @@ button{
 
 <p class="screen-title" style="margin-top:20px;">Hangi oyunu oynamak istersin?</p>
 
-<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('math')">İşlem 🔢</button>
-<button class="newgame" style="margin-top:12px;" onclick="selectGameType('word')">Kelime Bulma 🔤</button>
-<button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectGameType('hafiza')">Hafıza Oyunu 🧠</button>
+<button class="newgame" id="selectMathBtn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('math')">İşlem 🔢</button>
+<button class="newgame" id="selectWordBtn" style="margin-top:12px;" onclick="selectGameType('word')">Kelime Bulma 🔤</button>
+<button class="newgame" id="selectHafizaBtn" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectGameType('hafiza')">Hafıza Oyunu 🧠</button>
 
 </div>
 
@@ -3805,7 +3805,30 @@ playTone(660,0.05,"sine",0.08,0);
 
 function playClickSoundNewgame(){
 
-playTone(392,0.07,"square",0.07,0);
+playTone(392,0.12,"sine",0.08,0);
+playTone(523.25,0.12,"sine",0.06,0);
+playTone(523.25,0.12,"sine",0.08,0.12);
+playTone(659.25,0.12,"sine",0.06,0.12);
+playTone(659.25,0.12,"sine",0.08,0.24);
+playTone(783.99,0.12,"sine",0.06,0.24);
+playTone(523.25,0.10,"sine",0.07,0.38);
+playTone(659.25,0.12,"sine",0.08,0.50);
+playTone(783.99,0.12,"sine",0.06,0.50);
+playTone(783.99,0.12,"sine",0.08,0.62);
+playTone(987.77,0.12,"sine",0.06,0.62);
+playTone(987.77,0.12,"sine",0.09,0.76);
+playTone(1174.66,0.12,"sine",0.07,0.76);
+playTone(783.99,0.10,"sine",0.07,0.90);
+playTone(880,0.12,"sine",0.08,1.02);
+playTone(1046.5,0.12,"sine",0.06,1.02);
+playTone(987.77,0.12,"sine",0.08,1.14);
+playTone(1174.66,0.12,"sine",0.06,1.14);
+playTone(1046.5,0.14,"sine",0.09,1.28);
+playTone(1318.51,0.14,"sine",0.07,1.28);
+playTone(1174.66,0.13,"sine",0.08,1.44);
+playTone(1396.91,0.13,"sine",0.06,1.44);
+playTone(1318.51,0.55,"sine",0.13,1.60);
+playTone(1567.98,0.55,"sine",0.10,1.60);
 
 }
 
@@ -3820,6 +3843,13 @@ playTone(988,0.06,"triangle",0.09,0);
 function playNewNumberSound(){
 
 playTone(740,0.08,"sine",0.1,0);
+
+}
+
+
+function playWarningSound(){
+
+playTone(300,0.08,"square",0.06,0);
 
 }
 
@@ -5400,18 +5430,18 @@ let usedIndices=wordSequence.map(s=>s.index);
 if(usedJoker && guess.length<5){
 document.getElementById("wordMessage").innerHTML="Joker sadece 5 harf ve üzeri kelimelerde kullanılabilir.";
 playErrorSound();
-flashWordCards(usedIndices,"error",400);
-flashWordOperation("error",400);
-setTimeout(clearWordSequence,400);
+flashWordCards(usedIndices,"error",250);
+flashWordOperation("error",250);
+setTimeout(clearWordSequence,250);
 return;
 }
 
 if(wordFound.has(guess)){
 document.getElementById("wordMessage").innerHTML=guess+" zaten bulundu.";
 playAlreadyFoundSound();
-flashWordCards(usedIndices,"already-found",400);
-flashWordOperation("already-found",400);
-setTimeout(clearWordSequence,400);
+flashWordCards(usedIndices,"already-found",250);
+flashWordOperation("already-found",250);
+setTimeout(clearWordSequence,250);
 return;
 }
 
@@ -5425,7 +5455,7 @@ bumpWordScore();
 showWordFloatingPoints(pts);
 document.getElementById("wordMessage").innerHTML="🎉 "+guess+" buldun! +"+pts+" puan";
 playSuccessSound();
-flashWordCards(usedIndices,"success",320,55);
+flashWordCards(usedIndices,"success",256,44);
 flashWordOperation("success",400);
 updateWordTarget();
 
@@ -5450,16 +5480,16 @@ playWinSound();
 recordGameEnd("win",score);
 
 }
-setTimeout(clearWordSequence,usedIndices.length*55+380);
+setTimeout(clearWordSequence,usedIndices.length*44+304);
 
 }
 else{
 
 document.getElementById("wordMessage").innerHTML=guess+" geçerli bir kelime değil.";
 playErrorSound();
-flashWordCards(usedIndices,"error",400);
-flashWordOperation("error",400);
-setTimeout(clearWordSequence,400);
+flashWordCards(usedIndices,"error",250);
+flashWordOperation("error",250);
+setTimeout(clearWordSequence,250);
 
 }
 
@@ -6231,7 +6261,10 @@ document.getElementById("operation").innerHTML=t;
 
 function calculate(){
 
-if(!first || !second || !op)return;
+if(!first || !second || !op){
+playWarningSound();
+return;
+}
 
 let a=first.value;
 let b=second.value;
@@ -6762,20 +6795,11 @@ if(btn.classList.contains("word-check-btn") || btn.classList.contains("equal"))r
 if(btn.closest(".operations")){
 playClickSoundOperator();
 }
-else if(btn.classList.contains("back-btn")){
-playClickSoundBack();
-}
-else if(btn.classList.contains("tab-btn")){
-playClickSoundTab();
-}
-else if(btn.classList.contains("level-btn")){
-playClickSoundLevel();
-}
-else if(btn.classList.contains("newgame")){
+else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || btn.classList.contains("level-btn") || btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
 playClickSoundNewgame();
 }
 else{
-playClickSound();
+playClickSoundBack();
 }
 
 });
