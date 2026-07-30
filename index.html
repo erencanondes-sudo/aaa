@@ -35,6 +35,13 @@ body{
     overflow:hidden;
 }
 
+#playArea{
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -webkit-touch-callout:none;
+}
+
 h1{
     color:#192a56;
 }
@@ -3737,7 +3744,7 @@ playTone(659.25,0.15,"sine",0.15,0.09);
 
 function playErrorSound(){
 
-playTone(180,0.22,"sawtooth",0.10,0);
+playTone(160,0.22,"sine",0.09,0);
 
 }
 
@@ -3805,30 +3812,30 @@ playTone(660,0.05,"sine",0.08,0);
 
 function playClickSoundNewgame(){
 
-playTone(392,0.12,"sine",0.08,0);
-playTone(523.25,0.12,"sine",0.06,0);
-playTone(523.25,0.12,"sine",0.08,0.12);
-playTone(659.25,0.12,"sine",0.06,0.12);
-playTone(659.25,0.12,"sine",0.08,0.24);
-playTone(783.99,0.12,"sine",0.06,0.24);
-playTone(523.25,0.10,"sine",0.07,0.38);
-playTone(659.25,0.12,"sine",0.08,0.50);
-playTone(783.99,0.12,"sine",0.06,0.50);
-playTone(783.99,0.12,"sine",0.08,0.62);
-playTone(987.77,0.12,"sine",0.06,0.62);
-playTone(987.77,0.12,"sine",0.09,0.76);
-playTone(1174.66,0.12,"sine",0.07,0.76);
-playTone(783.99,0.10,"sine",0.07,0.90);
-playTone(880,0.12,"sine",0.08,1.02);
-playTone(1046.5,0.12,"sine",0.06,1.02);
-playTone(987.77,0.12,"sine",0.08,1.14);
-playTone(1174.66,0.12,"sine",0.06,1.14);
-playTone(1046.5,0.14,"sine",0.09,1.28);
-playTone(1318.51,0.14,"sine",0.07,1.28);
-playTone(1174.66,0.13,"sine",0.08,1.44);
-playTone(1396.91,0.13,"sine",0.06,1.44);
-playTone(1318.51,0.55,"sine",0.13,1.60);
-playTone(1567.98,0.55,"sine",0.10,1.60);
+playTone(392,0.09,"sine",0.08,0);
+playTone(523.25,0.09,"sine",0.06,0);
+playTone(523.25,0.09,"sine",0.08,0.08);
+playTone(659.25,0.09,"sine",0.06,0.08);
+playTone(659.25,0.09,"sine",0.08,0.17);
+playTone(783.99,0.09,"sine",0.06,0.17);
+playTone(523.25,0.08,"sine",0.07,0.27);
+playTone(659.25,0.09,"sine",0.08,0.35);
+playTone(783.99,0.09,"sine",0.06,0.35);
+playTone(783.99,0.09,"sine",0.08,0.43);
+playTone(987.77,0.09,"sine",0.06,0.43);
+playTone(987.77,0.09,"sine",0.09,0.53);
+playTone(1174.66,0.09,"sine",0.07,0.53);
+playTone(783.99,0.08,"sine",0.07,0.63);
+playTone(880,0.09,"sine",0.08,0.71);
+playTone(1046.5,0.09,"sine",0.06,0.71);
+playTone(987.77,0.09,"sine",0.08,0.80);
+playTone(1174.66,0.09,"sine",0.06,0.80);
+playTone(1046.5,0.10,"sine",0.09,0.90);
+playTone(1318.51,0.10,"sine",0.07,0.90);
+playTone(1174.66,0.09,"sine",0.08,1.01);
+playTone(1396.91,0.09,"sine",0.06,1.01);
+playTone(1318.51,0.4,"sine",0.13,1.12);
+playTone(1567.98,0.4,"sine",0.10,1.12);
 
 }
 
@@ -4932,6 +4939,8 @@ let restoredProgress=presetData && presetData.progress;
 document.getElementById("loading").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 
+playClickSoundNewgame();
+
 document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "none" : "block";
 
 if(restoredProgress){
@@ -5271,7 +5280,10 @@ return s.isJoker ? "<span class=\"joker-letter\">"+s.value+"</span>" : s.value;
 
 function wordUndo(){
 
-if(wordSequence.length===0)return;
+if(wordSequence.length===0){
+playWarningSound();
+return;
+}
 
 playUndoSound();
 
@@ -5599,6 +5611,8 @@ renderHafizaCards(data.pairs,level);
 
 document.getElementById("loading").style.display="none";
 document.getElementById("hafizaGameContent").style.display="block";
+
+playClickSoundNewgame();
 
 document.getElementById("hafizaNewGameBtn").style.display=activeChallengeId ? "none" : "block";
 document.getElementById("hafizaInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
@@ -6054,6 +6068,8 @@ numbers=[...restoredMathProgress.numbers];
 
 document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="block";
+
+playClickSoundNewgame();
 
 document.getElementById("mathInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
 
@@ -6847,7 +6863,7 @@ if(btn.closest(".operations")){
 playClickSoundOperator();
 }
 else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || btn.classList.contains("level-btn") || btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
-playClickSoundNewgame();
+// ses, oyun ekranı gerçekten görününce çalınır (newGame() içinde)
 }
 else{
 playClickSoundBack();
