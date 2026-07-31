@@ -410,6 +410,12 @@ button{
     transform:translateY(3px);
 }
 
+#time.time-hafiza-style{
+    font-size:1.4em;
+    font-weight:bold;
+    color:#e84118;
+}
+
 .win-banner{
     position:fixed;
     top:50%;
@@ -2501,6 +2507,10 @@ if(selectedGameType==="word"){
 stopWordTargetConfettiRain();
 }
 
+if(selectedGameType==="math"){
+stopMathTargetConfettiRain();
+}
+
 if(activeChallengeId){
 
 let entry=buildGameEntry(result,finalScore);
@@ -3947,7 +3957,7 @@ let callback=options.callback;
 
 if(screenCheckId){
 let screenEl=document.getElementById(screenCheckId);
-if(!screenEl || screenEl.style.display!=="block"){
+if(!screenEl || screenEl.style.display!=="block" || screenEl.offsetParent===null){
 if(callback)callback();
 return;
 }
@@ -5126,6 +5136,8 @@ let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
 
+launchMemConfetti("small");
+
 let roll=setInterval(function(){
 
 count++;
@@ -5370,7 +5382,7 @@ if(!canDrag)return;
 let dx=ev.clientX-startX;
 let dy=ev.clientY-startY;
 
-if(Math.abs(dx)>14 || Math.abs(dy)>14){
+if(Math.abs(dx)>28 || Math.abs(dy)>28){
 
 if(!wordDragMoved){
 el.classList.add("tile-swap-color");
@@ -5817,7 +5829,9 @@ document.getElementById("wordMessage").innerHTML="Joker sadece 5 harf ve üzeri 
 playErrorSound();
 flashWordCards(usedIndices,"error",250);
 flashWordOperation("error",250);
-setTimeout(clearWordSequence,250);
+wordSequence=[];
+wordTiles.forEach(t=>t.used=false);
+setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 return;
 }
 
@@ -5826,7 +5840,9 @@ document.getElementById("wordMessage").innerHTML=guess+" zaten bulundu.";
 playAlreadyFoundSound();
 flashWordCards(usedIndices,"already-found",250);
 flashWordOperation("already-found",250);
-setTimeout(clearWordSequence,250);
+wordSequence=[];
+wordTiles.forEach(t=>t.used=false);
+setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 return;
 }
 
@@ -5869,7 +5885,9 @@ animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
 recordGameEnd("win",finalScore);
 
 }
-setTimeout(clearWordSequence,usedIndices.length*44+304);
+wordSequence=[];
+wordTiles.forEach(t=>t.used=false);
+setTimeout(function(){ renderWordCards(); updateWordOperationText(); },usedIndices.length*44+304);
 
 }
 else{
@@ -5878,7 +5896,9 @@ document.getElementById("wordMessage").innerHTML=guess+" geçerli bir kelime de�
 playErrorSound();
 flashWordCards(usedIndices,"error",250);
 flashWordOperation("error",250);
-setTimeout(clearWordSequence,250);
+wordSequence=[];
+wordTiles.forEach(t=>t.used=false);
+setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 
 }
 
@@ -5939,6 +5959,8 @@ return {deck:deck,pairs:pairCount};
 
 
 function startHafizaRound(level,presetData){
+
+document.getElementById("time").classList.add("time-hafiza-style");
 
 let data=presetData? presetData : generateHafizaGameData(level);
 
@@ -6039,7 +6061,13 @@ area.style.gridTemplateColumns="repeat("+cols+",1fr)";
 
 area.innerHTML="";
 
-let hafizaStagger=hafizaCards.length>1 ? 1350/(hafizaCards.length-1) : 0;
+let hafizaStagger=hafizaCards.length>1 ? 1150/(hafizaCards.length-1) : 0;
+
+launchMemConfetti("small");
+
+setTimeout(function(){
+launchMemConfetti("small");
+},1600);
 
 hafizaCards.forEach(function(cardData,i){
 
@@ -6189,7 +6217,7 @@ return;
 }
 
 let screenEl=document.getElementById("wordGameContent");
-if(!screenEl || screenEl.style.display!=="block"){
+if(!screenEl || screenEl.style.display!=="block" || screenEl.offsetParent===null){
 stopWordTargetConfettiRain();
 return;
 }
@@ -6211,13 +6239,59 @@ wordConfettiRainInterval=null;
 }
 
 
-function launchLocalConfettiLight(elementId,pieceCount){
+let mathConfettiRainInterval=null;
+
+
+function startMathTargetConfettiRain(){
+
+stopMathTargetConfettiRain();
+
+mathConfettiRainInterval=setInterval(function(){
+
+if(resultRecorded){
+stopMathTargetConfettiRain();
+return;
+}
+
+let screenEl=document.getElementById("gameContent");
+if(!screenEl || screenEl.style.display!=="block" || screenEl.offsetParent===null){
+stopMathTargetConfettiRain();
+return;
+}
+
+launchLocalConfettiLight("target",6,{widthScale:0.25,minFall:35,fallRange:20,yOffset:5});
+
+},10000);
+
+}
+
+
+function stopMathTargetConfettiRain(){
+
+if(mathConfettiRainInterval){
+clearInterval(mathConfettiRainInterval);
+mathConfettiRainInterval=null;
+}
+
+}
+
+
+function launchLocalConfettiLight(elementId,pieceCount,options){
+
+options=options||{};
 
 let el=document.getElementById(elementId);
 if(!el)return;
 
 let rect=el.getBoundingClientRect();
 let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
+
+let widthScale=options.widthScale!==undefined ? options.widthScale : 1;
+let usableWidth=rect.width*widthScale;
+let leftOffset=rect.left+(rect.width-usableWidth)/2;
+
+let minFall=options.minFall!==undefined ? options.minFall : 90;
+let fallRange=options.fallRange!==undefined ? options.fallRange : 50;
 
 for(let i=0;i<pieceCount;i++){
 
@@ -6227,13 +6301,14 @@ c.className="mem-confetti";
 let color=colors[Math.floor(Math.random()*colors.length)];
 c.style.background=color;
 
-let startX=rect.left+Math.random()*rect.width;
-let startY=rect.top-15-Math.random()*20;
+let startX=leftOffset+Math.random()*usableWidth;
+let yOffset=options.yOffset!==undefined ? options.yOffset : 0;
+let startY=rect.top-15-Math.random()*20+yOffset;
 
 c.style.left=startX+"px";
 c.style.top=startY+"px";
 
-let fallDistance=90+Math.random()*50;
+let fallDistance=minFall+Math.random()*fallRange;
 let duration=2.0+Math.random()*0.3;
 
 c.style.animationDuration=duration+"s";
@@ -6596,6 +6671,8 @@ if(mySessionToken!==gameSessionToken)return;
 
 clearInterval(timer);
 
+startMathTargetConfettiRain();
+
 gameEndTime=Date.now()+time*1000;
 
 timer=setInterval(()=>{
@@ -6623,6 +6700,8 @@ let gameData=presetData? presetData : generateGameData(level);
 numbers=[...gameData.numbers];
 originalNumbers=[...gameData.numbers];
 target=gameData.target;
+
+document.getElementById("time").classList.add("time-hafiza-style");
 
 let restoredMathProgress=presetData && presetData.progress;
 
@@ -6700,6 +6779,8 @@ let targetEl=document.getElementById("target");
 let steps=18;
 let stepTime=duration/steps;
 let count=0;
+
+launchMemConfetti("small");
 
 let roll=setInterval(function(){
 
@@ -6945,11 +7026,9 @@ document.getElementById("score").innerHTML=score;
 
 document.getElementById("message").innerHTML="✅ Tamamladın!";
 
-showWinBanner("🎉 Hedefe Ulaştın!");
-
 playWinSound();
 
-animateFinalWordScoreCountUp(score,{screenCheckId:"gameContent"});
+animateFinalWordScoreCountUp(score,{title:"Hedefe Ulaştın 🎉",screenCheckId:"gameContent"});
 
 let winCardEls=document.querySelectorAll("#cards .card");
 let winTargetIndex=numbers.indexOf(target);
