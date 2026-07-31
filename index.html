@@ -1859,7 +1859,7 @@ Harf seçiniz
 
 <div class="win-banner" id="winBanner"></div>
 
-<div class="win-banner" id="wordScoreBanner" style="background:#44bd32;box-shadow:0 8px 0 #2f8a22;padding:36px 44px;">
+<div class="win-banner" id="wordScoreBanner" style="background:#44bd32;box-shadow:0 8px 0 #2f8a22;padding:36px 20px;width:300px;box-sizing:border-box;">
 <div id="wordScoreBannerTitle" style="font-size:20px;letter-spacing:1px;">PUAN</div>
 <div id="wordScoreBannerValue" style="font-size:68px;line-height:1.1;">0</div>
 <div id="wordScoreBannerRating" style="font-size:22px;font-weight:bold;min-height:28px;margin-top:6px;"></div>
@@ -2691,6 +2691,8 @@ chatUnsubscribe=null;
 function goHome(){
 
 hideScoreBannerNow();
+stopWordTargetConfettiRain();
+stopMathTargetConfettiRain();
 
 if(gameActive && !resultRecorded && !activeChallengeId){
 
@@ -5135,10 +5137,16 @@ let steps=Math.min(Math.max(finalValue,1),30);
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
+let myToken=gameSessionToken;
 
 launchMemConfetti("small");
 
 let roll=setInterval(function(){
+
+if(myToken!==gameSessionToken){
+clearInterval(roll);
+return;
+}
 
 count++;
 
@@ -5207,6 +5215,8 @@ cardEls.forEach(function(c,i){
 
 setTimeout(function(){
 
+if(wordRoundStartToken!==gameSessionToken)return;
+
 animateLetterRoll(c,tiles[i].letter,450,function(){});
 
 },i*110);
@@ -5214,6 +5224,8 @@ animateLetterRoll(c,tiles[i].letter,450,function(){});
 });
 
 setTimeout(function(){
+
+if(wordRoundStartToken!==gameSessionToken)return;
 
 animateWordTargetRoll(remainingCount,1000,onAllDone);
 
@@ -5252,7 +5264,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
+animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -5800,7 +5812,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
+animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -5880,7 +5892,7 @@ document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeler
 
 playWinSound();
 
-animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
+animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
 recordGameEnd("win",finalScore);
 
@@ -6062,10 +6074,12 @@ area.style.gridTemplateColumns="repeat("+cols+",1fr)";
 area.innerHTML="";
 
 let hafizaStagger=hafizaCards.length>1 ? 1150/(hafizaCards.length-1) : 0;
+let myHafizaToken=gameSessionToken;
 
 launchMemConfetti("small");
 
 setTimeout(function(){
+if(myHafizaToken!==gameSessionToken)return;
 launchMemConfetti("small");
 },1600);
 
@@ -6562,6 +6576,9 @@ let hafizaRoundStartToken=null;
 
 function newGame(level,presetData){
 
+stopWordTargetConfettiRain();
+stopMathTargetConfettiRain();
+
 gameSessionToken++;
 let mySessionToken=gameSessionToken;
 
@@ -6779,10 +6796,16 @@ let targetEl=document.getElementById("target");
 let steps=18;
 let stepTime=duration/steps;
 let count=0;
+let myToken=gameSessionToken;
 
 launchMemConfetti("small");
 
 let roll=setInterval(function(){
+
+if(myToken!==gameSessionToken){
+clearInterval(roll);
+return;
+}
 
 count++;
 
@@ -6828,10 +6851,13 @@ cardEls.push(c);
 });
 
 let mathStagger=nums.length>1 ? 770/(nums.length-1) : 0;
+let myDealToken=gameSessionToken;
 
 cardEls.forEach(function(c,i){
 
 setTimeout(function(){
+
+if(myDealToken!==gameSessionToken)return;
 
 animateNumberRoll(c,nums[i],450,function(){});
 
@@ -6840,6 +6866,8 @@ animateNumberRoll(c,nums[i],450,function(){});
 });
 
 setTimeout(function(){
+
+if(myDealToken!==gameSessionToken)return;
 
 animateTargetRoll(targetVal,550,onAllDone);
 
@@ -7326,7 +7354,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
+animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -7537,6 +7565,8 @@ playClickSoundBack();
 window.addEventListener("popstate",function(e){
 
 hideScoreBannerNow();
+stopWordTargetConfettiRain();
+stopMathTargetConfettiRain();
 
 if(screenNavStack.length===0){
 return;
