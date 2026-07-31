@@ -2475,6 +2475,10 @@ function recordGameEnd(result,finalScore){
 
 gameActive=false;
 
+if(selectedGameType==="word"){
+stopWordTargetConfettiRain();
+}
+
 if(activeChallengeId){
 
 let entry=buildGameEntry(result,finalScore);
@@ -3723,6 +3727,9 @@ let pendingChallengeWrite=null;
 
 let audioCtx=null;
 
+const NEWGAME_SOUND_DURATION=1550;
+const TARGET_ROLL_START_DELAY=1570;
+
 function getAudioCtx(){
 
 if(!audioCtx){
@@ -3888,6 +3895,13 @@ playTone(660,0.06,"sine",0.16,0);
 function playNewNumberSound(){
 
 playTone(740,0.08,"sine",0.1,0);
+
+}
+
+
+function playCountTickSound(){
+
+playTone(720,0.035,"sine",0.14,0);
 
 }
 
@@ -4888,28 +4902,48 @@ el.innerHTML=randLetter;
 function animateWordTargetRoll(finalValue,duration,callback){
 
 let targetEl=document.getElementById("wordTarget");
-let steps=8;
+let steps=Math.min(Math.max(finalValue,1),30);
 let stepTime=duration/steps;
 let count=0;
+let lastValue=0;
 
 let roll=setInterval(function(){
 
 count++;
 
+let current=Math.round((finalValue/steps)*count);
+
 if(count>=steps){
 
 clearInterval(roll);
 targetEl.innerHTML=finalValue;
+playCountTickSound();
+checkWordCountMilestones(lastValue,finalValue);
 if(callback)callback();
 
 }
 else{
 
-targetEl.innerHTML=Math.floor(Math.random()*40)+1;
+targetEl.innerHTML=current;
+playCountTickSound();
+checkWordCountMilestones(lastValue,current);
+lastValue=current;
 
 }
 
 },stepTime);
+
+}
+
+
+function checkWordCountMilestones(fromValue,toValue){
+
+if(fromValue<300 && toValue>=300){
+launchMemConfetti("extra");
+}
+else if((fromValue<100 && toValue>=100) || (fromValue<200 && toValue>=200)){
+launchMemConfetti("small");
+}
 
 }
 
@@ -4941,32 +4975,21 @@ cardEls.push(c);
 
 });
 
-let completedCount=0;
-let totalCards=tiles.length;
-
 cardEls.forEach(function(c,i){
 
 setTimeout(function(){
 
-animateLetterRoll(c,tiles[i].letter,450,function(){
-
-completedCount++;
-
-if(completedCount===totalCards){
-
-setTimeout(function(){
-
-animateWordTargetRoll(remainingCount,500,onAllDone);
-
-},200);
-
-}
-
-});
+animateLetterRoll(c,tiles[i].letter,450,function(){});
 
 },i*110);
 
 });
+
+setTimeout(function(){
+
+animateWordTargetRoll(remainingCount,1000,onAllDone);
+
+},TARGET_ROLL_START_DELAY);
 
 }
 
@@ -4976,6 +4999,8 @@ function startWordTimerTick(){
 if(wordRoundStartToken!==gameSessionToken)return;
 
 clearInterval(timer);
+
+startWordTargetConfettiRain(wordAchievable.length);
 
 gameEndTime=Date.now()+time*1000;
 
@@ -5700,15 +5725,69 @@ playClickSoundNewgame();
 document.getElementById("hafizaNewGameBtn").style.display=activeChallengeId ? "none" : "block";
 document.getElementById("hafizaInlineLevelSelect").style.display=activeChallengeId ? "none" : "flex";
 
-hafizaStartTime=Date.now();
+time=0;
+document.getElementById("time").innerHTML=0;
+
+setTimeout(function(){
+
+animateHafizaTimeReveal(120,550,function(){
+
+gameEndTime=Date.now()+120*1000;
 
 timer=setInterval(function(){
 
-time=Math.round((Date.now()-hafizaStartTime)/1000);
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("time").innerHTML=time;
 
+if(time<=0 && !resultRecorded){
+
+clearInterval(timer);
+
+document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
+
+recordGameEnd("timeout",0);
+
+}
+
 },1000);
+
+});
+
+},TARGET_ROLL_START_DELAY);
+
+}
+
+
+function animateHafizaTimeReveal(finalValue,duration,callback){
+
+let timeEl=document.getElementById("time");
+let steps=18;
+let stepTime=duration/steps;
+let count=0;
+
+let roll=setInterval(function(){
+
+count++;
+
+let current=Math.round((finalValue/steps)*count);
+
+if(count>=steps){
+
+clearInterval(roll);
+timeEl.innerHTML=finalValue;
+playCountTickSound();
+if(callback)callback();
+
+}
+else{
+
+timeEl.innerHTML=current;
+playCountTickSound();
+
+}
+
+},stepTime);
 
 }
 
@@ -5723,11 +5802,13 @@ area.style.gridTemplateColumns="repeat("+cols+",1fr)";
 
 area.innerHTML="";
 
+let hafizaStagger=hafizaCards.length>1 ? 770/(hafizaCards.length-1) : 0;
+
 hafizaCards.forEach(function(cardData,i){
 
 let slot=document.createElement("div");
 slot.className="mem-card-slot pop";
-slot.style.animationDelay=(i*0.03)+"s";
+slot.style.animationDelay=(i*hafizaStagger/1000)+"s";
 
 let card=document.createElement("div");
 card.className="mem-card";
@@ -5835,10 +5916,157 @@ hafizaSettling=[];
 }
 
 
-function launchMemConfetti(){
+let wordConfettiRainInterval=null;
+
+
+function startWordTargetConfettiRain(achievableCount){
+
+stopWordTargetConfettiRain();
+
+let piecesPerTick;
+
+if(achievableCount<50){
+piecesPerTick=2;
+}
+else if(achievableCount<100){
+piecesPerTick=4;
+}
+else if(achievableCount<150){
+piecesPerTick=6;
+}
+else if(achievableCount<200){
+piecesPerTick=8;
+}
+else if(achievableCount<300){
+piecesPerTick=11;
+}
+else{
+piecesPerTick=15;
+}
+
+wordConfettiRainInterval=setInterval(function(){
+
+if(resultRecorded){
+stopWordTargetConfettiRain();
+return;
+}
+
+launchLocalConfettiLight("wordTarget",piecesPerTick);
+
+},10000);
+
+}
+
+
+function stopWordTargetConfettiRain(){
+
+if(wordConfettiRainInterval){
+clearInterval(wordConfettiRainInterval);
+wordConfettiRainInterval=null;
+}
+
+}
+
+
+function launchLocalConfettiLight(elementId,pieceCount){
+
+let el=document.getElementById(elementId);
+if(!el)return;
+
+let rect=el.getBoundingClientRect();
+let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
+
+for(let i=0;i<pieceCount;i++){
+
+let c=document.createElement("div");
+c.className="mem-confetti";
+
+let color=colors[Math.floor(Math.random()*colors.length)];
+c.style.background=color;
+
+let startX=rect.left+Math.random()*rect.width;
+let startY=rect.top-15-Math.random()*20;
+
+c.style.left=startX+"px";
+c.style.top=startY+"px";
+
+let fallDistance=90+Math.random()*50;
+let duration=2.0+Math.random()*0.3;
+
+c.style.animationDuration=duration+"s";
+c.style.setProperty("--fall",fallDistance+"px");
+c.style.setProperty("--spin",(Math.random()>0.5?720:-720)+"deg");
+c.style.borderRadius=Math.random()>0.5?"50%":"2px";
+c.style.width="5px";
+c.style.height="8px";
+c.style.opacity="0.65";
+
+document.body.appendChild(c);
+
+setTimeout(function(){ c.remove(); },duration*1000+100);
+
+}
+
+}
+
+
+function launchLocalConfetti(elementId,size){
+
+let el=document.getElementById(elementId);
+if(!el)return;
+
+let rect=el.getBoundingClientRect();
 
 let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
-let count=60;
+let count=size==="extra" ? 45 : 20;
+let quick=size==="small";
+
+for(let i=0;i<count;i++){
+
+let c=document.createElement("div");
+c.className="mem-confetti";
+
+let color=colors[Math.floor(Math.random()*colors.length)];
+c.style.background=color;
+
+let startX=rect.left+Math.random()*rect.width;
+let startY=rect.top-25-Math.random()*35;
+
+c.style.left=startX+"px";
+c.style.top=startY+"px";
+
+let fallDistance=110+Math.random()*70;
+
+let duration=quick ? (0.7+Math.random()*0.3) : (0.9+Math.random()*0.5);
+c.style.animationDuration=duration+"s";
+c.style.setProperty("--fall",fallDistance+"px");
+c.style.setProperty("--spin",(Math.random()>0.5?720:-720)+"deg");
+
+c.style.borderRadius=Math.random()>0.5?"50%":"2px";
+
+if(size==="extra"){
+c.style.width="9px";
+c.style.height="14px";
+}
+else{
+c.style.width="6px";
+c.style.height="10px";
+}
+
+document.body.appendChild(c);
+
+setTimeout(function(){ c.remove(); },duration*1000+100);
+
+}
+
+}
+
+
+function launchMemConfetti(size){
+
+let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
+let count=size==="small" ? 35 : (size==="extra" ? 120 : 60);
+let quick=size==="small";
 
 for(let i=0;i<count;i++){
 
@@ -5849,12 +6077,21 @@ let color=colors[Math.floor(Math.random()*colors.length)];
 c.style.background=color;
 c.style.left=Math.random()*100+"vw";
 
-let duration=(1.8+Math.random()*1.4);
+let duration=quick ? (0.9+Math.random()*0.5) : (1.8+Math.random()*1.4);
 c.style.animationDuration=duration+"s";
 c.style.setProperty("--fall",(window.innerHeight+40)+"px");
 c.style.setProperty("--spin",(Math.random()>0.5?720:-720)+"deg");
 
 c.style.borderRadius=Math.random()>0.5?"50%":"2px";
+
+if(size==="extra"){
+c.style.width="10px";
+c.style.height="16px";
+}
+else if(quick){
+c.style.width="7px";
+c.style.height="11px";
+}
 
 document.body.appendChild(c);
 
@@ -5930,13 +6167,15 @@ if(hafizaMatchedCount===totalPairs){
 
 clearInterval(timer);
 
+let timeUsed=120-time;
+
 let base=1000;
-let penalty=(hafizaMoves-totalPairs)*10+time*2;
+let penalty=(hafizaMoves-totalPairs)*10+timeUsed*2;
 
 score=Math.max(base-penalty,50);
 
 animateHafizaScore(score);
-document.getElementById("hafizaMessage").innerHTML="✅ Tamamladın! "+hafizaMoves+" hamlede, "+time+" saniyede bitirdin.";
+document.getElementById("hafizaMessage").innerHTML="✅ Tamamladın! "+hafizaMoves+" hamlede, "+timeUsed+" saniyede bitirdin.";
 
 showWinBanner("🎉 Tebrikler!");
 
@@ -6216,7 +6455,7 @@ el.innerHTML=Math.floor(Math.random()*(max-min+1))+min;
 function animateTargetRoll(finalValue,duration,callback){
 
 let targetEl=document.getElementById("target");
-let steps=8;
+let steps=18;
 let stepTime=duration/steps;
 let count=0;
 
@@ -6224,17 +6463,20 @@ let roll=setInterval(function(){
 
 count++;
 
+let current=Math.round((finalValue/steps)*count);
+
 if(count>=steps){
 
 clearInterval(roll);
 targetEl.innerHTML="<span class=\"target-label\">Hedef</span>→"+finalValue;
+playCountTickSound();
 if(callback)callback();
 
 }
 else{
 
-let rand=Math.floor(Math.random()*900)+100;
-targetEl.innerHTML="<span class=\"target-label\">Hedef</span>→"+rand;
+targetEl.innerHTML="<span class=\"target-label\">Hedef</span>→"+current;
+playCountTickSound();
 
 }
 
@@ -6262,32 +6504,23 @@ cardEls.push(c);
 
 });
 
-let completedCount=0;
-let totalCards=nums.length;
+let mathStagger=nums.length>1 ? 770/(nums.length-1) : 0;
 
 cardEls.forEach(function(c,i){
 
 setTimeout(function(){
 
-animateNumberRoll(c,nums[i],450,function(){
+animateNumberRoll(c,nums[i],450,function(){});
 
-completedCount++;
+},i*mathStagger);
 
-if(completedCount===totalCards){
+});
 
 setTimeout(function(){
 
 animateTargetRoll(targetVal,550,onAllDone);
 
-},200);
-
-}
-
-});
-
-},i*130);
-
-});
+},TARGET_ROLL_START_DELAY);
 
 }
 
@@ -6734,11 +6967,19 @@ document.getElementById("operation").innerHTML="Sayı seçiniz";
 
 document.addEventListener("visibilitychange",function(){
 
-if(document.visibilityState==="visible" && gameActive && !resultRecorded && selectedGameType==="hafiza" && hafizaStartTime){
+if(document.visibilityState==="visible" && gameActive && !resultRecorded && selectedGameType==="hafiza" && gameEndTime){
 
-time=Math.round((Date.now()-hafizaStartTime)/1000);
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("time").innerHTML=time;
+
+if(time<=0){
+
+clearInterval(timer);
+document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
+recordGameEnd("timeout",0);
+
+}
 
 return;
 
@@ -6954,8 +7195,12 @@ if(btn.classList.contains("undo") || btn.classList.contains("word-shuffle-btn"))
 if(btn.closest(".operations")){
 playClickSoundOperator();
 }
-else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || (btn.classList.contains("level-btn") && !btn.closest("#challengeLevelScreen")) || btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
+else if(btn.id==="wordNewGameBtn" || btn.id==="hafizaNewGameBtn" || (btn.classList.contains("level-btn") && !btn.closest("#challengeLevelScreen"))){
 // ses, oyun ekranı gerçekten görününce çalınır (newGame() içinde)
+}
+else if(btn.id==="selectMathBtn" || btn.id==="selectWordBtn" || btn.id==="selectHafizaBtn"){
+playClickSoundBack();
+// yeni oyun sesi ayrıca oyun ekranı görününce çalınır (newGame() içinde)
 }
 else{
 playClickSoundBack();
