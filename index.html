@@ -5104,10 +5104,7 @@ lastValue=current;
 
 function checkWordCountMilestones(fromValue,toValue){
 
-if(fromValue<300 && toValue>=300){
-launchMemConfetti("extra");
-}
-else if((fromValue<100 && toValue>=100) || (fromValue<200 && toValue>=200)){
+if((fromValue<100 && toValue>=100) || (fromValue<200 && toValue>=200) || (fromValue<300 && toValue>=300)){
 launchMemConfetti("small");
 }
 
@@ -5176,7 +5173,7 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
 
-if(time<=30){
+if(time<=90){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
@@ -6884,7 +6881,7 @@ if(numbers.includes(target)){
 
 if(!resultRecorded){
 
-score=100+time;
+score=time*3+500;
 
 document.getElementById("score").innerHTML=score;
 
@@ -6894,7 +6891,7 @@ showWinBanner("🎉 Hedefe Ulaştın!");
 
 playWinSound();
 
-launchMemConfetti();
+animateFinalWordScoreCountUp(score);
 
 let winCardEls=document.querySelectorAll("#cards .card");
 let winTargetIndex=numbers.indexOf(target);
@@ -7178,7 +7175,7 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
 
-if(time<=30){
+if(time<=90){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
