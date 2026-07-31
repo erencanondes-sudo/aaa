@@ -434,8 +434,18 @@ button{
 
 .win-banner.score-visible{
     opacity:1;
-    transform:translate(-50%,-50%) scale(1);
+    transform:translate(-50%,calc(-50% - 100px)) scale(1);
     transition:opacity 0.3s ease, transform 0.3s ease;
+}
+
+@keyframes bannerPulseGrow{
+    0%{transform:translate(-50%,calc(-50% - 100px)) scale(1);}
+    40%{transform:translate(-50%,calc(-50% - 100px)) scale(1.18);}
+    100%{transform:translate(-50%,calc(-50% - 100px)) scale(1);}
+}
+
+.win-banner.score-visible.banner-pulse{
+    animation:bannerPulseGrow 0.5s ease;
 }
 
 @keyframes winPop{
@@ -3931,7 +3941,7 @@ let bannerEl=document.getElementById("wordScoreBanner");
 let bannerValueEl=document.getElementById("wordScoreBannerValue");
 let bannerRatingEl=document.getElementById("wordScoreBannerRating");
 
-let steps=Math.min(Math.max(Math.round(toValue/20),15),30);
+let steps=Math.max(toValue,1);
 let duration=3000;
 let stepTime=duration/steps;
 let count=0;
@@ -3953,6 +3963,12 @@ function dismissOnClick(){
 dismissBanner();
 }
 
+function pulseBanner(){
+bannerEl.classList.remove("banner-pulse");
+void bannerEl.offsetWidth;
+bannerEl.classList.add("banner-pulse");
+}
+
 let roll=setInterval(function(){
 
 count++;
@@ -3964,7 +3980,10 @@ scoreEl.innerHTML=toValue;
 bannerValueEl.innerHTML=toValue;
 playCountTickSound();
 updateWordScoreRating(bannerRatingEl,toValue);
-checkScoreMilestones(lastValue,toValue);
+
+if(checkScoreMilestones(lastValue,toValue)){
+pulseBanner();
+}
 
 setTimeout(function(){
 document.addEventListener("click",dismissOnClick,true);
@@ -3980,13 +3999,19 @@ if(callback)callback();
 }
 else{
 
-let current=Math.round((toValue/steps)*count);
-scoreEl.innerHTML=current;
-bannerValueEl.innerHTML=current;
+if(count%8===0){
 playCountTickSound();
-updateWordScoreRating(bannerRatingEl,current);
-checkScoreMilestones(lastValue,current);
-lastValue=current;
+}
+
+scoreEl.innerHTML=count;
+bannerValueEl.innerHTML=count;
+updateWordScoreRating(bannerRatingEl,count);
+
+if(checkScoreMilestones(lastValue,count)){
+pulseBanner();
+}
+
+lastValue=count;
 
 }
 
@@ -3998,16 +4023,16 @@ lastValue=current;
 function updateWordScoreRating(el,value){
 
 if(value>=1000){
-el.innerHTML="Mükemmel";
+el.innerHTML="Mükemmel 🤩";
 }
 else if(value>=750){
-el.innerHTML="Çok iyi";
+el.innerHTML="Çok iyi 😄";
 }
 else if(value>=500){
-el.innerHTML="İyi";
+el.innerHTML="İyi 🙂";
 }
 else if(value>=300){
-el.innerHTML="Eh";
+el.innerHTML="Eh 😐";
 }
 else{
 el.innerHTML="";
@@ -4020,16 +4045,22 @@ function checkScoreMilestones(fromValue,toValue){
 
 if(fromValue<1000 && toValue>=1000){
 launchMemConfetti("extra");
+return true;
 }
 else if(fromValue<750 && toValue>=750){
 launchMemConfetti("large");
+return true;
 }
 else if(fromValue<500 && toValue>=500){
 launchMemConfetti();
+return true;
 }
 else if(fromValue<300 && toValue>=300){
 launchMemConfetti("small");
+return true;
 }
+
+return false;
 
 }
 
@@ -5145,7 +5176,7 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
 
-if(time<=60){
+if(time<=30){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
@@ -5673,18 +5704,25 @@ let remaining=wordAchievable.filter(function(w){ return !wordFound.has(w); });
 
 remaining.sort(function(a,b){ return b.length-a.length; });
 
+let foundList=Array.from(wordFound);
+foundList.sort(function(a,b){ return b.length-a.length; });
+
 let box=document.getElementById("wordsBox");
 
+let html="";
+
 if(remaining.length===0){
-
-box.innerHTML="Zaten tüm kelimeleri buldun!";
-
+html+="Zaten tüm kelimeleri buldun!";
 }
 else{
-
-box.innerHTML="<b>Bulunabilecek kelimeler:</b><br>"+remaining.join(", ");
-
+html+="<b>Bulunabilecek kelimeler:</b><br>"+remaining.join(", ");
 }
+
+if(foundList.length>0){
+html+="<br><br><b>Bulunan kelimeler:</b><br>"+foundList.join(", ");
+}
+
+box.innerHTML=html;
 
 if(!resultRecorded){
 
@@ -7140,7 +7178,7 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
 
-if(time<=60){
+if(time<=30){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
