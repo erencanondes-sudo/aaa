@@ -1854,7 +1854,7 @@ Harf seçiniz
 <div class="win-banner" id="winBanner"></div>
 
 <div class="win-banner" id="wordScoreBanner" style="background:#44bd32;box-shadow:0 8px 0 #2f8a22;padding:36px 44px;">
-<div style="font-size:20px;letter-spacing:1px;">PUAN</div>
+<div id="wordScoreBannerTitle" style="font-size:20px;letter-spacing:1px;">PUAN</div>
 <div id="wordScoreBannerValue" style="font-size:68px;line-height:1.1;">0</div>
 <div id="wordScoreBannerRating" style="font-size:22px;font-weight:bold;min-height:28px;margin-top:6px;"></div>
 </div>
@@ -2679,6 +2679,8 @@ chatUnsubscribe=null;
 
 
 function goHome(){
+
+hideScoreBannerNow();
 
 if(gameActive && !resultRecorded && !activeChallengeId){
 
@@ -3934,22 +3936,43 @@ return Math.round((rawScore/(achievableCount/130))*2);
 }
 
 
-function animateFinalWordScoreCountUp(toValue,callback){
+function animateFinalWordScoreCountUp(toValue,options){
 
-let scoreEl=document.getElementById("wordScoreValue");
+options=options||{};
+
+let title=options.title!==undefined ? options.title : "PUAN";
+let showRating=options.showRating!==undefined ? options.showRating : true;
+let screenCheckId=options.screenCheckId;
+let callback=options.callback;
+
+if(screenCheckId){
+let screenEl=document.getElementById(screenCheckId);
+if(!screenEl || screenEl.style.display!=="block"){
+if(callback)callback();
+return;
+}
+}
+
 let bannerEl=document.getElementById("wordScoreBanner");
+let bannerTitleEl=document.getElementById("wordScoreBannerTitle");
 let bannerValueEl=document.getElementById("wordScoreBannerValue");
 let bannerRatingEl=document.getElementById("wordScoreBannerRating");
+let wordScoreEl=document.getElementById("wordScoreValue");
+
+bannerTitleEl.innerHTML=title;
 
 let steps=Math.max(toValue,1);
 let duration=3000;
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
+let ratingInfo=getWordScoreRatingInfo(toValue);
 
-scoreEl.innerHTML=0;
 bannerValueEl.innerHTML=0;
 bannerRatingEl.innerHTML="";
+if(selectedGameType==="word" && wordScoreEl){
+wordScoreEl.innerHTML=0;
+}
 
 bannerEl.classList.add("score-visible");
 
@@ -3973,17 +3996,27 @@ let roll=setInterval(function(){
 
 count++;
 
+let displayValue=count>=steps ? toValue : count;
+
+bannerValueEl.innerHTML=displayValue;
+if(selectedGameType==="word" && wordScoreEl){
+wordScoreEl.innerHTML=displayValue;
+}
+
+if(showRating && ratingInfo.threshold!==null && displayValue>=ratingInfo.threshold){
+bannerRatingEl.innerHTML=ratingInfo.text;
+}
+
+if(checkScoreMilestones(lastValue,displayValue)){
+pulseBanner();
+}
+
+lastValue=displayValue;
+
 if(count>=steps){
 
 clearInterval(roll);
-scoreEl.innerHTML=toValue;
-bannerValueEl.innerHTML=toValue;
 playCountTickSound();
-updateWordScoreRating(bannerRatingEl,toValue);
-
-if(checkScoreMilestones(lastValue,toValue)){
-pulseBanner();
-}
 
 setTimeout(function(){
 document.addEventListener("click",dismissOnClick,true);
@@ -4003,19 +4036,29 @@ if(count%8===0){
 playCountTickSound();
 }
 
-scoreEl.innerHTML=count;
-bannerValueEl.innerHTML=count;
-updateWordScoreRating(bannerRatingEl,count);
-
-if(checkScoreMilestones(lastValue,count)){
-pulseBanner();
-}
-
-lastValue=count;
-
 }
 
 },stepTime);
+
+}
+
+
+function getWordScoreRatingInfo(finalValue){
+
+if(finalValue>=1000){
+return {threshold:1000,text:"Mükemmel 🤩"};
+}
+if(finalValue>=750){
+return {threshold:750,text:"Çok iyi 😄"};
+}
+if(finalValue>=500){
+return {threshold:500,text:"İyi 🙂"};
+}
+if(finalValue>=300){
+return {threshold:300,text:"Eh 😐"};
+}
+
+return {threshold:null,text:""};
 
 }
 
@@ -4061,6 +4104,16 @@ return true;
 }
 
 return false;
+
+}
+
+
+function hideScoreBannerNow(){
+
+let bannerEl=document.getElementById("wordScoreBanner");
+if(bannerEl){
+bannerEl.classList.remove("score-visible");
+}
 
 }
 
@@ -5187,7 +5240,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore);
+animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -5735,7 +5788,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore);
+animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -5811,7 +5864,7 @@ document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeler
 
 playWinSound();
 
-animateFinalWordScoreCountUp(finalScore);
+animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
 
 recordGameEnd("win",finalScore);
 
@@ -5986,7 +6039,7 @@ area.style.gridTemplateColumns="repeat("+cols+",1fr)";
 
 area.innerHTML="";
 
-let hafizaStagger=hafizaCards.length>1 ? 770/(hafizaCards.length-1) : 0;
+let hafizaStagger=hafizaCards.length>1 ? 1350/(hafizaCards.length-1) : 0;
 
 hafizaCards.forEach(function(cardData,i){
 
@@ -6131,6 +6184,12 @@ piecesPerTick=15;
 wordConfettiRainInterval=setInterval(function(){
 
 if(resultRecorded){
+stopWordTargetConfettiRain();
+return;
+}
+
+let screenEl=document.getElementById("wordGameContent");
+if(!screenEl || screenEl.style.display!=="block"){
 stopWordTargetConfettiRain();
 return;
 }
@@ -6358,14 +6417,13 @@ let penalty=(hafizaMoves-totalPairs)*10+timeUsed*2;
 
 score=Math.max(base-penalty,50);
 
-animateHafizaScore(score);
-document.getElementById("hafizaMessage").innerHTML="✅ Tamamladın! "+hafizaMoves+" hamlede, "+timeUsed+" saniyede bitirdin.";
-
-showWinBanner("🎉 Tebrikler!");
+document.getElementById("hafizaMessage").innerHTML=hafizaMoves+" hamlede, "+timeUsed+" saniyede bitirdin.";
 
 playWinSound();
 
-launchMemConfetti();
+animateFinalWordScoreCountUp(score,{title:"Oyunu Tamamladın 🎉",screenCheckId:"hafizaGameContent",callback:function(){
+document.getElementById("score").innerHTML=score;
+}});
 
 recordGameEnd("win",score);
 
@@ -6891,7 +6949,7 @@ showWinBanner("🎉 Hedefe Ulaştın!");
 
 playWinSound();
 
-animateFinalWordScoreCountUp(score);
+animateFinalWordScoreCountUp(score,{screenCheckId:"gameContent"});
 
 let winCardEls=document.querySelectorAll("#cards .card");
 let winTargetIndex=numbers.indexOf(target);
@@ -7189,7 +7247,7 @@ let finalScore=computeFinalWordScore(score,wordAchievable.length);
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
-animateFinalWordScoreCountUp(finalScore);
+animateFinalWordScoreCountUp(finalScore,{screenCheckId:"wordGameContent"});
 
 recordGameEnd(result,finalScore);
 
@@ -7398,6 +7456,8 @@ playClickSoundBack();
 
 
 window.addEventListener("popstate",function(e){
+
+hideScoreBannerNow();
 
 if(screenNavStack.length===0){
 return;
