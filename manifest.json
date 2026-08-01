@@ -1,6 +1,6 @@
 {
-  "name": "Bir İşlem",
-  "short_name": "Bir İşlem",
+  "name": "Konfeti",
+  "short_name": "Konfeti",
   "description": "Sayı oyunu - arkadaşlarınla meydan okuş",
   "start_url": "./index.html",
   "scope": "./",
