@@ -1827,7 +1827,9 @@ Sayı seçiniz
 
 </div>
 
-<div id="wordGameContent" style="display:none;">
+<div id="wordGameContent" style="display:none;position:relative;">
+
+<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:11px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;"></div>
 
 <button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
@@ -1835,20 +1837,18 @@ Sayı seçiniz
 <div class="word-info-top">
 <div style="margin-left:3px;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
 <p id="wordMessage" style="margin-left:3px;">Harflerden kelime oluştur!</p>
-<div style="margin-left:6px;cursor:pointer;position:relative;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span>
-<div id="wordLengthBreakdown" style="display:none;position:absolute;top:calc(100% - 6px);right:0;font-size:11px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;"></div>
-</div>
+<div style="margin-left:6px;cursor:pointer;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom">
 <div><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
 </div>
 </div>
 
-<div class="cards word-cards" id="wordCards"></div>
-
 <div id="wordOperation">
 Harf seçiniz
 </div>
+
+<div class="cards word-cards" id="wordCards"></div>
 
 <div class="bottom-buttons">
 
@@ -5459,6 +5459,9 @@ if(wordRevealToken!==revealSessionToken)return;
 
 clearInterval(timer);
 
+document.getElementById("wordLengthBreakdown").style.display="block";
+renderWordLengthBreakdown();
+
 startWordTargetConfettiRain(wordAchievable.length);
 
 gameEndTime=Date.now()+time*1000;
@@ -5515,9 +5518,7 @@ wordSequence=[];
 
 let restoredProgress=presetData && presetData.progress;
 
-document.getElementById("wordLengthBreakdown").style.display="block";
 wordFound=restoredProgress ? new Set(restoredProgress.found) : new Set();
-renderWordLengthBreakdown();
 
 document.getElementById("loading").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
@@ -5785,8 +5786,8 @@ if(el.style.display==="block"){
 el.style.display="none";
 }
 else{
-renderWordLengthBreakdown();
 el.style.display="block";
+renderWordLengthBreakdown();
 }
 
 }
@@ -5818,6 +5819,37 @@ return len+" harfli --> "+counts[len]+" adet";
 }).join("<br>");
 
 }
+
+positionWordLengthBreakdown();
+
+}
+
+
+function positionWordLengthBreakdown(){
+
+let el=document.getElementById("wordLengthBreakdown");
+let container=document.getElementById("wordGameContent");
+let cardsEl=document.getElementById("wordCards");
+let infoEl=document.querySelector(".word-info");
+
+if(!cardsEl || !infoEl)return;
+
+let containerRect=container.getBoundingClientRect();
+let cardsRect=cardsEl.getBoundingClientRect();
+let infoRect=infoEl.getBoundingClientRect();
+
+let rightOffset=containerRect.right-cardsRect.right;
+
+let gapTop=infoRect.bottom-containerRect.top;
+let gapBottom=cardsRect.top-containerRect.top;
+let gapHeight=gapBottom-gapTop;
+
+let elHeight=el.offsetHeight;
+
+let topPos=gapTop+Math.max(0,(gapHeight-elHeight)/2);
+
+el.style.right=rightOffset+"px";
+el.style.top=topPos+"px";
 
 }
 
