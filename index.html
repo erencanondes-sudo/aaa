@@ -5508,6 +5508,7 @@ wordRoundStartToken=gameSessionToken;
 wordRevealToken=revealSessionToken;
 
 document.getElementById("wordScoreBanner").classList.remove("score-visible");
+document.getElementById("wordLengthBreakdown").style.display="none";
 
 let data=presetData ? presetData : generateWordGameData();
 
@@ -5830,18 +5831,20 @@ function positionWordLengthBreakdown(){
 let el=document.getElementById("wordLengthBreakdown");
 let container=document.getElementById("wordGameContent");
 let cardsEl=document.getElementById("wordCards");
-let infoEl=document.querySelector(".word-info");
+let targetEl=document.getElementById("wordTarget");
+let operationEl=document.getElementById("wordOperation");
 
-if(!cardsEl || !infoEl)return;
+if(!cardsEl || !targetEl || !operationEl)return;
 
 let containerRect=container.getBoundingClientRect();
 let cardsRect=cardsEl.getBoundingClientRect();
-let infoRect=infoEl.getBoundingClientRect();
+let targetRect=targetEl.getBoundingClientRect();
+let operationRect=operationEl.getBoundingClientRect();
 
 let rightOffset=containerRect.right-cardsRect.right;
 
-let gapTop=infoRect.bottom-containerRect.top;
-let gapBottom=cardsRect.top-containerRect.top;
+let gapTop=targetRect.bottom-containerRect.top-4;
+let gapBottom=operationRect.top-containerRect.top-3;
 let gapHeight=gapBottom-gapTop;
 
 let elHeight=el.offsetHeight;
@@ -6919,6 +6922,9 @@ stopWordTargetConfettiRain();
 stopMathTargetConfettiRain();
 stopAllSounds();
 clearAllConfetti();
+
+let existingBreakdown=document.getElementById("wordLengthBreakdown");
+if(existingBreakdown)existingBreakdown.style.display="none";
 
 gameSessionToken++;
 revealSessionToken++;
