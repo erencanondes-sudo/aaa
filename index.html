@@ -1829,7 +1829,7 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:11px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;"></div>
+<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:10px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;cursor:grab;touch-action:none;"></div>
 
 <button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
@@ -5787,7 +5787,10 @@ if(el.style.display==="block"){
 el.style.display="none";
 }
 else{
+wordBreakdownDragged=false;
 el.style.display="block";
+el.style.left="";
+initWordBreakdownDrag();
 renderWordLengthBreakdown();
 }
 
@@ -5816,7 +5819,7 @@ el.innerHTML="Kalan kelime yok!";
 else{
 
 el.innerHTML=lengths.map(function(len){
-return len+" harfli --> "+counts[len]+" adet";
+return len+" harfli → "+counts[len]+" adet";
 }).join("<br>");
 
 }
@@ -5827,6 +5830,8 @@ positionWordLengthBreakdown();
 
 
 function positionWordLengthBreakdown(){
+
+if(wordBreakdownDragged)return;
 
 let el=document.getElementById("wordLengthBreakdown");
 let container=document.getElementById("wordGameContent");
@@ -5853,6 +5858,64 @@ let topPos=gapTop+Math.max(0,(gapHeight-elHeight)/2);
 
 el.style.right=rightOffset+"px";
 el.style.top=topPos+"px";
+
+}
+
+
+let wordBreakdownDragged=false;
+
+function initWordBreakdownDrag(){
+
+let el=document.getElementById("wordLengthBreakdown");
+if(!el || el.dataset.dragInit)return;
+el.dataset.dragInit="1";
+
+let dragging=false;
+let startX=0,startY=0;
+let startLeft=0,startTop=0;
+
+el.addEventListener("pointerdown",function(e){
+
+dragging=true;
+
+let rect=el.getBoundingClientRect();
+let containerRect=document.getElementById("wordGameContent").getBoundingClientRect();
+
+startX=e.clientX;
+startY=e.clientY;
+startLeft=rect.left-containerRect.left;
+startTop=rect.top-containerRect.top;
+
+el.setPointerCapture(e.pointerId);
+
+});
+
+el.addEventListener("pointermove",function(e){
+
+if(!dragging)return;
+
+let dx=e.clientX-startX;
+let dy=e.clientY-startY;
+
+if(Math.abs(dx)>3 || Math.abs(dy)>3){
+wordBreakdownDragged=true;
+}
+
+if(!wordBreakdownDragged)return;
+
+el.style.left=(startLeft+dx)+"px";
+el.style.top=(startTop+dy)+"px";
+el.style.right="auto";
+
+});
+
+el.addEventListener("pointerup",function(e){
+dragging=false;
+});
+
+el.addEventListener("pointercancel",function(e){
+dragging=false;
+});
 
 }
 
