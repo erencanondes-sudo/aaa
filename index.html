@@ -459,6 +459,30 @@ button{
     line-height:1;
 }
 
+@keyframes wordScoreEmojiBurst{
+    0%{transform:scale(1) rotate(0deg);}
+    18%{transform:scale(0.5) rotate(0deg);}
+    55%{transform:scale(var(--burst-scale,1.6)) rotate(-12deg);}
+    80%{transform:scale(calc(var(--burst-scale,1.6) * 0.85)) rotate(8deg);}
+    100%{transform:scale(1) rotate(0deg);}
+}
+
+#wordScoreEmoji.bursting{
+    animation:wordScoreEmojiBurst 0.5s ease;
+    display:inline-block;
+}
+
+.word-length-line{
+    transition:background-color 0.3s ease, color 0.3s ease;
+    border-radius:4px;
+    padding:0 2px;
+}
+
+.word-length-line.flash-found{
+    background:#44bd32;
+    color:white;
+}
+
 .win-banner{
     position:fixed;
     top:50%;
@@ -1399,6 +1423,16 @@ button{
     100%{transform:translateY(var(--fall)) rotate(var(--spin));opacity:0.9;}
 }
 
+@keyframes scoreEmojiScatter{
+    0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}
+    40%{transform:translate(var(--peak-x),var(--peak-y)) rotate(calc(var(--spin) * 0.5)) scale(0.85);opacity:1;}
+    100%{transform:translate(var(--end-x),var(--end-y)) rotate(var(--spin)) scale(0.55);opacity:0;}
+}
+
+.mem-confetti.scatter-burst{
+    animation:scoreEmojiScatter 0.9s ease-in forwards;
+}
+
 .game.mem-win-shake{
     animation:memGameShake 0.5s ease;
 }
@@ -1829,7 +1863,7 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:10px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;cursor:grab;touch-action:none;"></div>
+<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:10px;color:#192a56;line-height:1.35;text-align:left;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;cursor:grab;touch-action:none;"></div>
 
 <button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
@@ -1840,7 +1874,7 @@ Sayı seçiniz
 <div style="margin-left:6px;cursor:pointer;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom">
-<div><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
+<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:68px;left:-200px;">🎉</span><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
 </div>
 </div>
 
@@ -5797,30 +5831,124 @@ renderWordLengthBreakdown();
 }
 
 
+function flashWordLengthLine(length){
+
+let line=document.querySelector('#wordLengthBreakdown .word-length-line[data-length="'+length+'"]');
+
+if(!line)return;
+
+line.classList.add("flash-found");
+
+setTimeout(function(){
+line.classList.remove("flash-found");
+},450);
+
+}
+
+
+function triggerWordScoreEmojiBurst(wordLength){
+
+let el=document.getElementById("wordScoreEmoji");
+if(!el)return;
+
+let scale=1.2+Math.max(0,wordLength-2)*0.15;
+
+el.style.setProperty("--burst-scale",scale);
+
+el.classList.remove("bursting");
+void el.offsetWidth;
+el.classList.add("bursting");
+
+setTimeout(function(){
+scatterFromScoreEmoji(scale);
+},260);
+
+}
+
+
+function scatterFromScoreEmoji(scale){
+
+let el=document.getElementById("wordScoreEmoji");
+if(!el)return;
+
+let rect=el.getBoundingClientRect();
+let cx=rect.left+rect.width/2;
+let cy=rect.top+rect.height/2;
+
+let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
+let count=Math.round(14+scale*8);
+
+for(let i=0;i<count;i++){
+
+let piece=document.createElement("div");
+piece.className="mem-confetti scatter-burst";
+
+piece.style.top=cy+"px";
+piece.style.left=cx+"px";
+piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+piece.style.width="9px";
+piece.style.height="9px";
+piece.style.borderRadius=Math.random()>0.5 ? "50%" : "2px";
+piece.style.boxShadow="0 1px 3px rgba(0,0,0,0.35)";
+
+let baseAngle=-Math.PI/4;
+let spread=Math.PI/2.2;
+let angle=baseAngle+(Math.random()-0.5)*spread;
+let riseDistance=(40+Math.random()*50)*scale;
+
+let peakX=Math.cos(angle)*riseDistance;
+let peakY=Math.sin(angle)*riseDistance;
+
+let fallDistance=(50+Math.random()*40)*scale;
+let endX=peakX+(Math.random()-0.5)*30;
+let endY=peakY+fallDistance;
+
+piece.style.setProperty("--peak-x",peakX+"px");
+piece.style.setProperty("--peak-y",peakY+"px");
+piece.style.setProperty("--end-x",endX+"px");
+piece.style.setProperty("--end-y",endY+"px");
+piece.style.setProperty("--spin",(Math.random()>0.5?360:-360)+"deg");
+
+document.body.appendChild(piece);
+
+setTimeout(function(){ piece.remove(); },950);
+
+}
+
+}
+
+
 function renderWordLengthBreakdown(){
 
 let el=document.getElementById("wordLengthBreakdown");
 
-let remainingWords=wordAchievable.filter(function(w){ return !wordFound.has(w); });
+let totalCounts={};
 
-let counts={};
-
-remainingWords.forEach(function(w){
-counts[w.length]=(counts[w.length]||0)+1;
+wordAchievable.forEach(function(w){
+totalCounts[w.length]=(totalCounts[w.length]||0)+1;
 });
 
-let lengths=Object.keys(counts).map(Number).sort(function(a,b){ return b-a; });
+let remainingCounts={};
+
+wordAchievable.forEach(function(w){
+if(!wordFound.has(w)){
+remainingCounts[w.length]=(remainingCounts[w.length]||0)+1;
+}
+});
+
+let lengths=Object.keys(totalCounts).map(Number).sort(function(a,b){ return b-a; });
 
 if(lengths.length===0){
 
-el.innerHTML="Kalan kelime yok!";
+el.innerHTML="Kelime yok!";
 
 }
 else{
 
 el.innerHTML=lengths.map(function(len){
-return len+" harfli → "+counts[len]+" adet";
-}).join("<br>");
+let count=remainingCounts[len]||0;
+return "<div class=\"word-length-line\" data-length=\""+len+"\">"+len+" harfli → "+count+" adet</div>";
+}).join("");
 
 }
 
@@ -6248,6 +6376,8 @@ playSuccessSound();
 flashWordCards(usedIndices,"success",256,44);
 flashWordOperation("success",400);
 updateWordTarget();
+flashWordLengthLine(guess.length);
+triggerWordScoreEmojiBurst(guess.length);
 
 if(activeChallengeId){
 saveWordProgress();
