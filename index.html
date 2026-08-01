@@ -1041,7 +1041,7 @@ button{
 }
 
 #wordOperation{
-    min-height:40px;
+    min-height:35px;
     font-size:30px;
     font-weight:bold;
     color:#192a56;
@@ -1865,18 +1865,17 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<div id="wordLengthBreakdown" style="display:none;position:absolute;font-size:10px;color:#192a56;line-height:1.35;text-align:left;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;cursor:grab;touch-action:none;"></div>
-
 <button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
 
 <div class="word-info">
 <div class="word-info-top">
 <div style="margin-left:3px;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
-<p id="wordMessage" style="margin-left:3px;">Harflerden kelime oluştur!</p>
-<div style="margin-left:6px;cursor:pointer;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+<p id="wordMessage" style="margin-left:3px;display:none;">Harflerden kelime oluştur!</p>
+<div id="wordLengthBreakdown" style="font-size:11px;color:#192a56;line-height:1.35;text-align:left;margin-left:3px;"></div>
+<div style="margin-left:6px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom">
-<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:68px;left:-110px;">🎉</span><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
+<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:68px;left:-110px;">🎉</span><span style="position:relative;top:-4px;margin-left:100px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
 </div>
 </div>
 
@@ -5823,10 +5822,7 @@ if(el.style.display==="block"){
 el.style.display="none";
 }
 else{
-wordBreakdownDragged=false;
 el.style.display="block";
-el.style.left="";
-initWordBreakdownDrag();
 renderWordLengthBreakdown();
 }
 
@@ -5953,8 +5949,6 @@ return "<div class=\"word-length-line\" data-length=\""+len+"\">"+len+" harfli �
 }).join("");
 
 }
-
-positionWordLengthBreakdown();
 
 }
 
