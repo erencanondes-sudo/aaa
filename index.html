@@ -416,6 +416,49 @@ button{
     color:#e84118;
 }
 
+.detail-modal-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:rgba(0,0,0,0.55);
+    z-index:400;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.detail-modal-box{
+    background:white;
+    border-radius:18px;
+    padding:24px 20px 20px 20px;
+    max-width:440px;
+    width:100%;
+    max-height:80vh;
+    overflow-y:auto;
+    position:relative;
+    text-align:left;
+}
+
+.detail-modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:#f1f2f6;
+    border:none;
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    font-size:18px;
+    font-weight:bold;
+    color:#192a56;
+    cursor:pointer;
+    line-height:1;
+}
+
 .win-banner{
     position:fixed;
     top:50%;
@@ -1858,6 +1901,13 @@ Harf seçiniz
 </div>
 
 <div class="win-banner" id="winBanner"></div>
+
+<div id="detailModalOverlay" class="detail-modal-overlay" style="display:none;" onclick="if(event.target===this)closeDetailModal();">
+<div class="detail-modal-box">
+<button class="detail-modal-close" onclick="closeDetailModal()">✕</button>
+<div id="detailModalContent"></div>
+</div>
+</div>
 
 <div class="win-banner" id="wordScoreBanner" style="background:#44bd32;box-shadow:0 8px 0 #2f8a22;padding:36px 20px;width:300px;box-sizing:border-box;">
 <div id="wordScoreBannerTitle" style="font-size:20px;letter-spacing:1px;">PUAN</div>
@@ -3364,17 +3414,13 @@ document.getElementById("profileAvgScoreHafiza").innerHTML=avgByLevel.hafiza;
 
 function viewUserProfile(username,from){
 
-returnToScreen=from || null;
-
-hideAllScreens();
-document.getElementById("otherProfileScreen").style.display="block";
-document.getElementById("otherProfileContent").innerHTML="<p>Yükleniyor...</p>";
+openDetailModal("<p>Yükleniyor...</p>");
 
 db.collection("users").where("username","==",username).get().then(function(snap){
 
 if(snap.empty){
 
-document.getElementById("otherProfileContent").innerHTML="<p>Kullanıcı bulunamadı.</p>";
+document.getElementById("detailModalContent").innerHTML="<p>Kullanıcı bulunamadı.</p>";
 return;
 
 }
@@ -3412,7 +3458,7 @@ let friendBtn=isFriend
 ? "<button class=\"challenge-play-btn decline-btn btn-compact\" onclick=\"removeFriend('"+profile.username+"')\">Arkadaşlıktan Çıkar 💔</button>"
 : "";
 
-document.getElementById("otherProfileContent").innerHTML=
+document.getElementById("detailModalContent").innerHTML=
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
 "<p>Puan Ortalaması (Kolay): "+avgByLevel.easy+"</p><p>Puan Ortalaması (Orta): "+avgByLevel.medium+"</p><p>Puan Ortalaması (Zor): "+avgByLevel.hard+"</p><p>Puan Ortalaması (Kelime): "+avgByLevel.word+"</p><p>Puan Ortalaması (Hafıza): "+avgByLevel.hafiza+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>"+
@@ -3420,7 +3466,7 @@ friendBtn;
 
 }).catch(function(e){
 
-document.getElementById("otherProfileContent").innerHTML=
+document.getElementById("detailModalContent").innerHTML=
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>";
 
@@ -3428,7 +3474,7 @@ document.getElementById("otherProfileContent").innerHTML=
 
 }).catch(function(e){
 
-document.getElementById("otherProfileContent").innerHTML="<p>Profil yüklenemedi: "+e.message+"</p>";
+document.getElementById("detailModalContent").innerHTML="<p>Profil yüklenemedi: "+e.message+"</p>";
 
 });
 
@@ -3649,11 +3695,7 @@ console.error("Mesaj gönderilemedi:",e);
 
 function viewChallenge(id){
 
-returnToScreen="oyunlarim";
-
-hideAllScreens();
-document.getElementById("viewChallengeScreen").style.display="block";
-document.getElementById("viewChallengeContent").innerHTML="<p>Yükleniyor...</p>";
+openDetailModal("<p>Yükleniyor...</p>");
 
 db.collection("challenges").doc(id).get().then(function(doc){
 
@@ -3729,11 +3771,11 @@ else html+="<p><b>🤝 Berabere</b></p>";
 
 }
 
-document.getElementById("viewChallengeContent").innerHTML=html;
+document.getElementById("detailModalContent").innerHTML=html;
 
 }).catch(function(e){
 
-document.getElementById("viewChallengeContent").innerHTML="<p>Yüklenemedi: "+e.message+"</p>";
+document.getElementById("detailModalContent").innerHTML="<p>Yüklenemedi: "+e.message+"</p>";
 
 });
 
@@ -4149,6 +4191,22 @@ return true;
 }
 
 return false;
+
+}
+
+
+function openDetailModal(html){
+
+document.getElementById("detailModalContent").innerHTML=html;
+document.getElementById("detailModalOverlay").style.display="flex";
+
+}
+
+
+function closeDetailModal(){
+
+document.getElementById("detailModalOverlay").style.display="none";
+document.getElementById("detailModalContent").innerHTML="";
 
 }
 
@@ -4795,7 +4853,16 @@ return true;
 });
 
 items.sort(function(a,b){
+
+let aNeedsResponse=(a.status==="pending" && a.toUsername===currentUser.username) ? 1 : 0;
+let bNeedsResponse=(b.status==="pending" && b.toUsername===currentUser.username) ? 1 : 0;
+
+if(aNeedsResponse!==bNeedsResponse){
+return bNeedsResponse-aNeedsResponse;
+}
+
 return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
+
 });
 
 if(items.length===0){
@@ -4969,31 +5036,6 @@ return c.status==="accepted" && c.games.every(function(g){ return g.fromPlayed &
 
 let combined=[];
 
-gameHistory.forEach(function(g,i){
-
-if(g.isChallenge)return;
-
-let time=g.createdAt? g.createdAt.seconds : 0;
-
-let resultClass=g.result==="win"?"win":"timeout";
-let resultText=g.gameType==="word" ? (g.result==="win"?"Kazandın":"Kaybettin") : (g.result==="win"?"Tamamladın":"Süre Bitti");
-
-let typeLabel=g.gameType==="word" ? "Kelime Bulma" : g.gameType==="hafiza" ? "Hafıza ("+LEVEL_NAMES[g.level]+")" : LEVEL_NAMES[g.level];
-let subLine=g.gameType==="word" ? (g.wordsFound?g.wordsFound.length:0)+"/"+(g.totalAchievable||0)+" kelime · Puan: "+g.score : g.gameType==="hafiza" ? g.moves+" hamle · "+g.timeUsed+" sn · Puan: "+g.score : "Hedef: "+g.target+" · Puan: "+g.score;
-
-let html="<div class=\"history-item "+resultClass+"\">";
-html+="<div class=\"h-top\"><span>"+typeLabel+"</span><span class=\"h-result\">"+resultText+"</span></div>";
-html+="<div class=\"h-bottom\">"+subLine+"</div>";
-html+="<div class=\"btn-row\">";
-html+="<button class=\"challenge-play-btn view-btn\" onclick=\"viewHistoryGame("+i+")\">Görüntüle 🔍</button>";
-html+="<button class=\"challenge-play-btn\" onclick=\"replayFromHistory('"+g.gameType+"','"+(g.level||"")+"')\">Tekrar Oyna 🔁</button>";
-html+="</div>";
-html+="</div>";
-
-combined.push({time:time,html:html});
-
-});
-
 completedChallenges.forEach(function(c){
 
 let mySide=c.fromUsername===currentUser.username ? "from" : "to";
@@ -5015,6 +5057,8 @@ return;
 }
 
 combined.sort(function(a,b){ return b.time-a.time; });
+
+combined=combined.slice(0,30);
 
 list.innerHTML=combined.map(function(x){return x.html;}).join("");
 
@@ -5211,8 +5255,8 @@ lastValue=current;
 
 function checkWordCountMilestones(fromValue,toValue){
 
-if((fromValue<100 && toValue>=100) || (fromValue<200 && toValue>=200) || (fromValue<300 && toValue>=300)){
-launchMemConfetti("small");
+if((fromValue<150 && toValue>=150) || (fromValue<300 && toValue>=300)){
+launchMemConfetti("small",false);
 }
 
 }
@@ -6138,11 +6182,11 @@ area.innerHTML="";
 let hafizaStagger=hafizaCards.length>1 ? 1150/(hafizaCards.length-1) : 0;
 let myHafizaToken=revealSessionToken;
 
-launchMemConfetti("small");
+launchMemConfetti("small",false);
 
 setTimeout(function(){
 if(myHafizaToken!==revealSessionToken)return;
-launchMemConfetti("small");
+launchMemConfetti("small",false);
 },1600);
 
 hafizaCards.forEach(function(cardData,i){
@@ -6456,7 +6500,9 @@ setTimeout(function(){ c.remove(); },duration*1000+100);
 }
 
 
-function launchMemConfetti(size){
+function launchMemConfetti(size,shake){
+
+shake=shake!==false;
 
 let colors=["#e84118","#44bd32","#0984e3","#e67e22","#8e44ad","#0097e6"];
 let count=size==="small" ? 35 : (size==="large" ? 90 : (size==="extra" ? 120 : 60));
@@ -6493,9 +6539,11 @@ setTimeout(function(){ c.remove(); },duration*1000+100);
 
 }
 
+if(shake){
 document.querySelector(".game").classList.remove("mem-win-shake");
 void document.querySelector(".game").offsetWidth;
 document.querySelector(".game").classList.add("mem-win-shake");
+}
 
 }
 
