@@ -1102,9 +1102,9 @@ button{
 }
 
 .word-info .word-info-bottom{
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
 }
 
 .word-info-top div, .word-info-bottom div{
@@ -1870,12 +1870,12 @@ Sayı seçiniz
 <div class="word-info">
 <div class="word-info-top">
 <div style="justify-self:start;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
-<p id="wordMessage" style="display:none;">Harflerden kelime oluştur!</p>
 <div id="wordLengthBreakdown" style="justify-self:center;font-size:11px;color:#192a56;line-height:1.35;text-align:center;height:105px;overflow:hidden;visibility:hidden;"></div>
 <div style="justify-self:end;position:relative;left:-10px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom" style="margin-top:-6px;">
-<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:43px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;margin-left:100px;"><span style="position:relative;top:-50px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-45px;"><span id="wordScoreValue">0</span></span></span></div>
+<div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:43px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;position:relative;top:-47px;"><span>PUAN</span><span class="value" id="wordScoreItem"><span id="wordScoreValue">0</span></span></span></div>
+<p id="wordMessage" style="grid-column:3;justify-self:start;margin-left:10px;">Kelime bulunuz!</p>
 </div>
 </div>
 
