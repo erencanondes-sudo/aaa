@@ -1425,12 +1425,13 @@ button{
 
 @keyframes scoreEmojiScatter{
     0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}
-    40%{transform:translate(var(--peak-x),var(--peak-y)) rotate(calc(var(--spin) * 0.5)) scale(0.85);opacity:1;}
+    35%{transform:translate(var(--peak-x),var(--peak-y)) rotate(calc(var(--spin) * 0.5)) scale(0.85);opacity:1;}
+    60%{opacity:1;}
     100%{transform:translate(var(--end-x),var(--end-y)) rotate(var(--spin)) scale(0.55);opacity:0;}
 }
 
 .mem-confetti.scatter-burst{
-    animation:scoreEmojiScatter 0.9s ease-in forwards;
+    animation:scoreEmojiScatter 1.4s ease-in forwards;
 }
 
 .game.mem-win-shake{
@@ -1874,7 +1875,7 @@ Sayı seçiniz
 <div style="margin-left:6px;cursor:pointer;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom">
-<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:68px;left:-200px;">🎉</span><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
+<div><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:relative;top:68px;left:-110px;">🎉</span><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
 </div>
 </div>
 
@@ -5911,7 +5912,7 @@ piece.style.setProperty("--spin",(Math.random()>0.5?360:-360)+"deg");
 
 document.body.appendChild(piece);
 
-setTimeout(function(){ piece.remove(); },950);
+setTimeout(function(){ piece.remove(); },1450);
 
 }
 
