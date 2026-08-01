@@ -1835,7 +1835,9 @@ Sayı seçiniz
 <div class="word-info-top">
 <div style="margin-left:3px;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
 <p id="wordMessage" style="margin-left:3px;">Harflerden kelime oluştur!</p>
-<div style="margin-left:6px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+<div style="margin-left:6px;cursor:pointer;position:relative;" onclick="toggleWordLengthBreakdown()"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span>
+<div id="wordLengthBreakdown" style="display:none;position:absolute;top:calc(100% - 6px);right:0;font-size:11px;color:#192a56;line-height:1.35;text-align:right;white-space:nowrap;background:white;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:50;"></div>
+</div>
 </div>
 <div class="word-info-bottom">
 <div><span style="position:relative;top:-4px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:-8px;"><span id="wordScoreValue">0</span></span></div>
@@ -5513,6 +5515,10 @@ wordSequence=[];
 
 let restoredProgress=presetData && presetData.progress;
 
+document.getElementById("wordLengthBreakdown").style.display="block";
+wordFound=restoredProgress ? new Set(restoredProgress.found) : new Set();
+renderWordLengthBreakdown();
+
 document.getElementById("loading").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 
@@ -5762,6 +5768,56 @@ function updateWordTarget(){
 let remaining=wordAchievable.length-wordFound.size;
 
 document.getElementById("wordTarget").innerHTML=remaining;
+
+let breakdownEl=document.getElementById("wordLengthBreakdown");
+if(breakdownEl.style.display==="block"){
+renderWordLengthBreakdown();
+}
+
+}
+
+
+function toggleWordLengthBreakdown(){
+
+let el=document.getElementById("wordLengthBreakdown");
+
+if(el.style.display==="block"){
+el.style.display="none";
+}
+else{
+renderWordLengthBreakdown();
+el.style.display="block";
+}
+
+}
+
+
+function renderWordLengthBreakdown(){
+
+let el=document.getElementById("wordLengthBreakdown");
+
+let remainingWords=wordAchievable.filter(function(w){ return !wordFound.has(w); });
+
+let counts={};
+
+remainingWords.forEach(function(w){
+counts[w.length]=(counts[w.length]||0)+1;
+});
+
+let lengths=Object.keys(counts).map(Number).sort(function(a,b){ return b-a; });
+
+if(lengths.length===0){
+
+el.innerHTML="Kalan kelime yok!";
+
+}
+else{
+
+el.innerHTML=lengths.map(function(len){
+return len+" harfli --> "+counts[len]+" adet";
+}).join("<br>");
+
+}
 
 }
 
@@ -6321,7 +6377,7 @@ area.innerHTML="";
 let hafizaStagger=hafizaCards.length>1 ? 1150/(hafizaCards.length-1) : 0;
 let myHafizaToken=revealSessionToken;
 
-launchMemConfetti("small",false);
+launchMemConfetti("small");
 
 setTimeout(function(){
 if(myHafizaToken!==revealSessionToken)return;
