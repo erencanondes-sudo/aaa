@@ -2690,9 +2690,13 @@ chatUnsubscribe=null;
 
 function goHome(){
 
+revealSessionToken++;
+
 hideScoreBannerNow();
 stopWordTargetConfettiRain();
 stopMathTargetConfettiRain();
+stopAllSounds();
+clearAllConfetti();
 
 if(gameActive && !resultRecorded && !activeChallengeId){
 
@@ -3765,6 +3769,27 @@ let pendingChallengeWrite=null;
 
 let audioCtx=null;
 
+
+function stopAllSounds(){
+
+if(audioCtx){
+try{
+audioCtx.close();
+}catch(e){}
+audioCtx=null;
+}
+
+}
+
+
+function clearAllConfetti(){
+
+document.querySelectorAll(".mem-confetti").forEach(function(el){
+el.remove();
+});
+
+}
+
 const NEWGAME_SOUND_DURATION=1550;
 const TARGET_ROLL_START_DELAY=1570;
 
@@ -3979,6 +4004,7 @@ let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
 let ratingInfo=getWordScoreRatingInfo(toValue);
+let myScoreToken=gameSessionToken;
 
 bannerValueEl.innerHTML=0;
 bannerRatingEl.innerHTML="";
@@ -4005,6 +4031,13 @@ bannerEl.classList.add("banner-pulse");
 }
 
 let roll=setInterval(function(){
+
+if(myScoreToken!==gameSessionToken){
+clearInterval(roll);
+clearAllConfetti();
+dismissBanner();
+return;
+}
 
 count++;
 
@@ -5137,14 +5170,15 @@ let steps=Math.min(Math.max(finalValue,1),30);
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
-let myToken=gameSessionToken;
+let myToken=revealSessionToken;
 
 launchMemConfetti("small");
 
 let roll=setInterval(function(){
 
-if(myToken!==gameSessionToken){
+if(myToken!==revealSessionToken){
 clearInterval(roll);
+clearAllConfetti();
 return;
 }
 
@@ -5215,7 +5249,7 @@ cardEls.forEach(function(c,i){
 
 setTimeout(function(){
 
-if(wordRoundStartToken!==gameSessionToken)return;
+if(wordRevealToken!==revealSessionToken)return;
 
 animateLetterRoll(c,tiles[i].letter,450,function(){});
 
@@ -5225,7 +5259,7 @@ animateLetterRoll(c,tiles[i].letter,450,function(){});
 
 setTimeout(function(){
 
-if(wordRoundStartToken!==gameSessionToken)return;
+if(wordRevealToken!==revealSessionToken)return;
 
 animateWordTargetRoll(remainingCount,1000,onAllDone);
 
@@ -5236,7 +5270,7 @@ animateWordTargetRoll(remainingCount,1000,onAllDone);
 
 function startWordTimerTick(){
 
-if(wordRoundStartToken!==gameSessionToken)return;
+if(wordRevealToken!==revealSessionToken)return;
 
 clearInterval(timer);
 
@@ -5245,6 +5279,11 @@ startWordTargetConfettiRain(wordAchievable.length);
 gameEndTime=Date.now()+time*1000;
 
 timer=setInterval(()=>{
+
+if(wordRoundStartToken!==gameSessionToken){
+clearInterval(timer);
+return;
+}
 
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
@@ -5278,6 +5317,7 @@ recordGameEnd(result,finalScore);
 function startWordRound(presetData){
 
 wordRoundStartToken=gameSessionToken;
+wordRevealToken=revealSessionToken;
 
 document.getElementById("wordScoreBanner").classList.remove("score-visible");
 
@@ -5999,13 +6039,28 @@ document.getElementById("hafizaInlineLevelSelect").style.display=activeChallenge
 time=0;
 document.getElementById("time").innerHTML=0;
 
+let myHafizaTimerToken=gameSessionToken;
+let myHafizaRevealToken=revealSessionToken;
+
 setTimeout(function(){
 
+if(myHafizaRevealToken!==revealSessionToken)return;
+
 animateHafizaTimeReveal(120,550,function(){
+
+if(myHafizaRevealToken!==revealSessionToken)return;
+
+clearInterval(timer);
 
 gameEndTime=Date.now()+120*1000;
 
 timer=setInterval(function(){
+
+if(myHafizaTimerToken!==gameSessionToken){
+clearInterval(timer);
+clearAllConfetti();
+return;
+}
 
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
@@ -6036,8 +6091,15 @@ let timeEl=document.getElementById("time");
 let steps=18;
 let stepTime=duration/steps;
 let count=0;
+let myToken=revealSessionToken;
 
 let roll=setInterval(function(){
+
+if(myToken!==revealSessionToken){
+clearInterval(roll);
+clearAllConfetti();
+return;
+}
 
 count++;
 
@@ -6074,12 +6136,12 @@ area.style.gridTemplateColumns="repeat("+cols+",1fr)";
 area.innerHTML="";
 
 let hafizaStagger=hafizaCards.length>1 ? 1150/(hafizaCards.length-1) : 0;
-let myHafizaToken=gameSessionToken;
+let myHafizaToken=revealSessionToken;
 
 launchMemConfetti("small");
 
 setTimeout(function(){
-if(myHafizaToken!==gameSessionToken)return;
+if(myHafizaToken!==revealSessionToken)return;
 launchMemConfetti("small");
 },1600);
 
@@ -6570,7 +6632,9 @@ return {numbers:gameNumbers,target:gameTarget};
 
 
 let gameSessionToken=0;
+let revealSessionToken=0;
 let wordRoundStartToken=null;
+let wordRevealToken=null;
 let hafizaRoundStartToken=null;
 
 
@@ -6578,9 +6642,13 @@ function newGame(level,presetData){
 
 stopWordTargetConfettiRain();
 stopMathTargetConfettiRain();
+stopAllSounds();
+clearAllConfetti();
 
 gameSessionToken++;
+revealSessionToken++;
 let mySessionToken=gameSessionToken;
+let myRevealToken=revealSessionToken;
 
 currentLevel=level;
 
@@ -6684,7 +6752,7 @@ if(mySessionToken!==gameSessionToken)return;
 
 function startMathTimerTick(){
 
-if(mySessionToken!==gameSessionToken)return;
+if(myRevealToken!==revealSessionToken)return;
 
 clearInterval(timer);
 
@@ -6693,6 +6761,11 @@ startMathTargetConfettiRain();
 gameEndTime=Date.now()+time*1000;
 
 timer=setInterval(()=>{
+
+if(mySessionToken!==gameSessionToken){
+clearInterval(timer);
+return;
+}
 
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
@@ -6796,14 +6869,15 @@ let targetEl=document.getElementById("target");
 let steps=18;
 let stepTime=duration/steps;
 let count=0;
-let myToken=gameSessionToken;
+let myToken=revealSessionToken;
 
 launchMemConfetti("small");
 
 let roll=setInterval(function(){
 
-if(myToken!==gameSessionToken){
+if(myToken!==revealSessionToken){
 clearInterval(roll);
+clearAllConfetti();
 return;
 }
 
@@ -6851,13 +6925,13 @@ cardEls.push(c);
 });
 
 let mathStagger=nums.length>1 ? 770/(nums.length-1) : 0;
-let myDealToken=gameSessionToken;
+let myDealToken=revealSessionToken;
 
 cardEls.forEach(function(c,i){
 
 setTimeout(function(){
 
-if(myDealToken!==gameSessionToken)return;
+if(myDealToken!==revealSessionToken)return;
 
 animateNumberRoll(c,nums[i],450,function(){});
 
@@ -6867,7 +6941,7 @@ animateNumberRoll(c,nums[i],450,function(){});
 
 setTimeout(function(){
 
-if(myDealToken!==gameSessionToken)return;
+if(myDealToken!==revealSessionToken)return;
 
 animateTargetRoll(targetVal,550,onAllDone);
 
@@ -7564,9 +7638,13 @@ playClickSoundBack();
 
 window.addEventListener("popstate",function(e){
 
+revealSessionToken++;
+
 hideScoreBannerNow();
 stopWordTargetConfettiRain();
 stopMathTargetConfettiRain();
+stopAllSounds();
+clearAllConfetti();
 
 if(screenNavStack.length===0){
 return;
