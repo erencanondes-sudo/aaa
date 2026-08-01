@@ -1871,7 +1871,7 @@ Sayı seçiniz
 <div class="word-info-top">
 <div style="justify-self:start;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
 <p id="wordMessage" style="display:none;">Harflerden kelime oluştur!</p>
-<div id="wordLengthBreakdown" style="justify-self:center;font-size:11px;color:#192a56;line-height:1.35;text-align:center;height:105px;overflow:hidden;"></div>
+<div id="wordLengthBreakdown" style="justify-self:center;font-size:11px;color:#192a56;line-height:1.35;text-align:center;height:105px;overflow:hidden;visibility:hidden;"></div>
 <div style="justify-self:end;position:relative;left:-10px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom" style="margin-top:-6px;">
@@ -5494,7 +5494,7 @@ if(wordRevealToken!==revealSessionToken)return;
 
 clearInterval(timer);
 
-document.getElementById("wordLengthBreakdown").style.display="block";
+document.getElementById("wordLengthBreakdown").style.visibility="visible";
 renderWordLengthBreakdown();
 
 startWordTargetConfettiRain(wordAchievable.length);
@@ -5543,7 +5543,7 @@ wordRoundStartToken=gameSessionToken;
 wordRevealToken=revealSessionToken;
 
 document.getElementById("wordScoreBanner").classList.remove("score-visible");
-document.getElementById("wordLengthBreakdown").style.display="none";
+document.getElementById("wordLengthBreakdown").style.visibility="hidden";
 
 let data=presetData ? presetData : generateWordGameData();
 
@@ -5807,7 +5807,7 @@ let remaining=wordAchievable.length-wordFound.size;
 document.getElementById("wordTarget").innerHTML=remaining;
 
 let breakdownEl=document.getElementById("wordLengthBreakdown");
-if(breakdownEl.style.display==="block"){
+if(breakdownEl.style.visibility==="visible"){
 renderWordLengthBreakdown();
 }
 
@@ -7113,7 +7113,7 @@ stopAllSounds();
 clearAllConfetti();
 
 let existingBreakdown=document.getElementById("wordLengthBreakdown");
-if(existingBreakdown)existingBreakdown.style.display="none";
+if(existingBreakdown)existingBreakdown.style.visibility="hidden";
 
 gameSessionToken++;
 revealSessionToken++;
