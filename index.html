@@ -692,6 +692,14 @@ button{
     text-align:left;
 }
 
+.history-item:nth-child(odd){
+    background:#ccd1d6;
+}
+
+.history-item:nth-child(even){
+    background:#e9ebee;
+}
+
 .history-item .h-top{
     display:flex;
     justify-content:space-between;
@@ -889,6 +897,14 @@ button{
     padding:14px;
     margin-bottom:10px;
     text-align:left;
+}
+
+.challenge-item:nth-child(odd){
+    background:#ccd1d6;
+}
+
+.challenge-item:nth-child(even){
+    background:#e9ebee;
 }
 
 .challenge-item .h-top{
@@ -5093,7 +5109,16 @@ html+="<div class=\"h-bottom\">Sen "+(currentGameIndex+1)+". oyunu oynadın · R
 else{
 
 html+="<div class=\"h-bottom\">"+currentGameIndex+"/"+totalGames+" oyun tamamlandı · Sırada "+(currentGameIndex+1)+". oyun var ("+remainingHours+" saat içinde oynamalısın)</div>";
+
+let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
+let alreadyStarted=!!currentGame[mySideStartedField];
+
+if(alreadyStarted){
+html+="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shadow:0 4px 0 #c0392b;\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">Devam Et ▶️</button>";
+}
+else{
 html+="<button class=\"challenge-play-btn\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">Oyna ▶️</button>";
+}
 
 }
 
