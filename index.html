@@ -6649,6 +6649,7 @@ hafizaLock=false;
 hafizaSettling=[];
 
 let restoredHafizaProgress=presetData && presetData.progress;
+let isResumingHafiza=presetData && (presetData.resumeTime || presetData.progress);
 
 if(restoredHafizaProgress){
 
@@ -6693,7 +6694,7 @@ document.getElementById("time").innerHTML=0;
 let myHafizaTimerToken=gameSessionToken;
 let myHafizaRevealToken=revealSessionToken;
 
-if(restoredHafizaProgress){
+if(isResumingHafiza){
 
 let resumeTime=(presetData && presetData.resumeTime) ? presetData.resumeTime : 120;
 
