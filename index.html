@@ -660,6 +660,23 @@ button{
     align-self:center;
 }
 
+.back-arrow-btn{
+    background:#dfe6e9;
+    color:#192a56;
+    font-size:20px;
+    font-weight:bold;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    padding:0;
+    margin-bottom:10px;
+    box-shadow:0 4px 0 #b2bec3;
+    align-self:flex-start;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
 .back-btn:active{
     box-shadow:0 1px 0 #b2bec3;
     transform:translateY(3px);
@@ -1599,6 +1616,7 @@ button{
 
 <div id="profileScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <h2>Profil</h2>
@@ -1652,6 +1670,7 @@ button{
 
 <div id="friendsScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <h2>Arkadaşlar</h2>
@@ -1687,6 +1706,7 @@ button{
 
 <div id="gameTypeScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <button class="newgame challenge-brown" onclick="openChallengeGameType()">Meydan Oku ⚔️</button>
@@ -1701,6 +1721,7 @@ button{
 
 <div id="challengeGameTypeScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Hangi oyunla meydan okumak istersin?</p>
@@ -1713,6 +1734,7 @@ button{
 
 <div id="newGameChoiceScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Nasıl oynamak istersin?</p>
@@ -1724,6 +1746,7 @@ button{
 
 <div id="challengeTypeScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Kiminle meydan okumak istersin?</p>
@@ -1735,6 +1758,7 @@ button{
 
 <div id="challengeFriendScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Arkadaşının kullanıcı adı</p>
@@ -1749,6 +1773,7 @@ button{
 
 <div class="level-select" id="challengeLevelScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p id="challengeLevelText">Hangi seviyede meydan okuyacaksın?</p>
@@ -1761,6 +1786,7 @@ button{
 
 <div class="level-select" id="challengeFormatScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p>Kaç oyunluk meydan okumak istersin?</p>
@@ -1772,6 +1798,7 @@ button{
 
 <div id="challengeDoneScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <div id="challengeEnvelope" class="envelope-anim" style="font-size:60px;margin:20px 0;">✉️</div>
@@ -1782,6 +1809,7 @@ button{
 
 <div id="historyScreen" style="display:none;">
 
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <h2>Oyunlarım</h2>
@@ -1810,6 +1838,7 @@ button{
 </div>
 
 <div class="level-select" id="levelSelect">
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 <p>Seviye seç</p>
 <button class="level-btn level-easy" onclick="newGame('easy')">Kolay</button>
