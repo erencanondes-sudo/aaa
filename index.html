@@ -2495,6 +2495,7 @@ let activeChallengeId=null;
 let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let activeChatChallengeId=null;
+let activeChatMySide=null;
 let returnToScreen=null;
 
 const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","challengeGameTypeScreen","newGameChoiceScreen","challengeTypeScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","playArea"];
@@ -3928,6 +3929,7 @@ document.getElementById("viewChallengeContent").innerHTML=html;
 function openChat(challengeId,otherName,mySide,from){
 
 activeChatChallengeId=challengeId;
+activeChatMySide=mySide;
 
 let html="";
 html+="<p class=\"screen-title\" style=\"margin-top:0;\">"+otherName+" ile mesajlaş</p>";
@@ -3940,8 +3942,10 @@ html+="</div>";
 openDetailModal(html);
 
 let readField=mySide==="from" ? "fromLastRead" : "toLastRead";
+let unreadField=mySide==="from" ? "fromUnreadCount" : "toUnreadCount";
 let readUpdate={};
 readUpdate[readField]=firebase.firestore.FieldValue.serverTimestamp();
+readUpdate[unreadField]=0;
 
 db.collection("challenges").doc(challengeId).update(readUpdate).then(function(){
 updateChallengeBadge();
@@ -3999,6 +4003,14 @@ sentAt:firebase.firestore.FieldValue.serverTimestamp()
 }).then(function(){
 
 input.value="";
+
+let recipientField=activeChatMySide==="from" ? "toUnreadCount" : "fromUnreadCount";
+let incUpdate={};
+incUpdate[recipientField]=firebase.firestore.FieldValue.increment(1);
+
+db.collection("challenges").doc(activeChatChallengeId).update(incUpdate).catch(function(e){
+console.error("Okunmamış sayacı güncellenemedi:",e);
+});
 
 }).catch(function(e){
 
@@ -4798,8 +4810,7 @@ items.forEach(function(c){
 if(c.status!=="accepted")return;
 
 let mySide=c.fromUsername===currentUser.username ? "from" : "to";
-
-countUnreadMessages(c.id,c.fromLastRead,c.toLastRead,mySide).then(function(count){
+let count=mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
 
 let badge=document.getElementById("msgBadge-"+c.id);
 if(!badge)return;
@@ -4811,12 +4822,6 @@ badge.style.display="flex";
 else{
 badge.style.display="none";
 }
-
-}).catch(function(e){
-
-console.error("Mesaj rozeti güncellenemedi:",e);
-
-});
 
 });
 
@@ -4877,18 +4882,17 @@ ongoingListe.push({c:c,mySide:mySide});
 
 });
 
-let ongoingUnreadPromises=ongoingListe.map(function(item){
-return countUnreadMessages(item.c.id,item.c.fromLastRead,item.c.toLastRead,item.mySide);
-});
+let ongoingUnread=ongoingListe.reduce(function(sum,item){
+let c=item.c;
+let count=item.mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
+return sum+count;
+},0);
 
-let oyunlarimUnreadPromises=oyunlarimListe.map(function(item){
-return countUnreadMessages(item.c.id,item.c.fromLastRead,item.c.toLastRead,item.mySide);
-});
-
-Promise.all([Promise.all(ongoingUnreadPromises),Promise.all(oyunlarimUnreadPromises)]).then(function(results){
-
-let ongoingUnread=results[0].reduce(function(a,b){return a+b;},0);
-let oyunlarimUnread=results[1].reduce(function(a,b){return a+b;},0);
+let oyunlarimUnread=oyunlarimListe.reduce(function(sum,item){
+let c=item.c;
+let count=item.mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
+return sum+count;
+},0);
 
 let ongoingTotal=ongoingActionCount+ongoingUnread;
 let istekTotal=pendingCount;
@@ -4931,8 +4935,6 @@ gamesBadge.style.display="flex";
 else{
 gamesBadge.style.display="none";
 }
-
-});
 
 }).catch(function(e){
 
@@ -5006,6 +5008,23 @@ return html;
 }
 
 
+function pruneExcessChallenges(sortedItems,limit){
+
+if(sortedItems.length<=limit)return sortedItems;
+
+let excess=sortedItems.slice(limit);
+
+excess.forEach(function(c){
+db.collection("challenges").doc(c.id).delete().catch(function(e){
+console.error("Eski meydan okuma silinemedi:",e);
+});
+});
+
+return sortedItems.slice(0,limit);
+
+}
+
+
 function renderOngoingList(silent){
 
 let list=document.getElementById("ongoingList");
@@ -5014,19 +5033,10 @@ if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
 }
 
-let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
-let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+fetchChallengesAndFriends().then(function(data){
 
-Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
-
-let all={};
-
-results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-
-let friendNames=new Set();
-results[2].forEach(function(doc){ friendNames.add(doc.id); });
+let all=data.all;
+let friendNames=data.friendNames;
 
 let now=Math.floor(Date.now()/1000);
 let FORTY_EIGHT_HOURS=48*60*60;
@@ -5084,6 +5094,8 @@ return aWaiting ? 1 : -1;
 return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
 
 });
+
+items=pruneExcessChallenges(items,10);
 
 if(items.length===0){
 list.innerHTML="<p>Şu an oynamayı bekleyen bir oyunun yok.</p>";
@@ -5182,19 +5194,10 @@ if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
 }
 
-let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
-let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+fetchChallengesAndFriends().then(function(data){
 
-Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
-
-let all={};
-
-results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-
-let friendNames=new Set();
-results[2].forEach(function(doc){ friendNames.add(doc.id); });
+let all=data.all;
+let friendNames=data.friendNames;
 
 let now=Math.floor(Date.now()/1000);
 let FORTY_EIGHT_HOURS=48*60*60;
@@ -5238,6 +5241,8 @@ return bNeedsResponse-aNeedsResponse;
 return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
 
 });
+
+items=pruneExcessChallenges(items,20);
 
 if(items.length===0){
 list.innerHTML="<p>Bekleyen bir meydan okuma isteğin yok.</p>";
@@ -5388,19 +5393,10 @@ if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
 }
 
-let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
-let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+fetchChallengesAndFriends().then(function(data){
 
-Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
-
-let all={};
-
-results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-results[1].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-
-let friendNames=new Set();
-results[2].forEach(function(doc){ friendNames.add(doc.id); });
+let all=data.all;
+let friendNames=data.friendNames;
 
 let completedChallenges=Object.values(all).filter(function(c){
 
@@ -5419,7 +5415,7 @@ let time=c.completedAt? c.completedAt.seconds : (c.createdAt? c.createdAt.second
 
 let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames);
 
-combined.push({time:time,html:html});
+combined.push({time:time,html:html,c:c});
 
 });
 
@@ -5432,7 +5428,15 @@ return;
 
 combined.sort(function(a,b){ return b.time-a.time; });
 
-combined=combined.slice(0,30);
+if(combined.length>20){
+let excess=combined.slice(20).map(function(x){ return x.c; });
+excess.forEach(function(c){
+db.collection("challenges").doc(c.id).delete().catch(function(e){
+console.error("Eski meydan okuma silinemedi:",e);
+});
+});
+combined=combined.slice(0,20);
+}
 
 list.innerHTML=combined.map(function(x){return x.html;}).join("");
 
@@ -7376,6 +7380,47 @@ let gameNumbers=[...smallNums,bigNum];
 let gameTarget=possibleTargets[Math.floor(Math.random()*possibleTargets.length)];
 
 return {numbers:gameNumbers,target:gameTarget};
+
+}
+
+
+let challengesFetchCache=null;
+let challengesFetchCacheTime=0;
+
+function fetchChallengesAndFriends(){
+
+let now=Date.now();
+
+if(challengesFetchCache && (now-challengesFetchCacheTime)<2000){
+return challengesFetchCache;
+}
+
+let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
+let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
+let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
+
+challengesFetchCacheTime=now;
+
+challengesFetchCache=Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
+
+let all={};
+
+results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+
+let friendNames=new Set();
+results[2].forEach(function(doc){ friendNames.add(doc.id); });
+
+return {all:all,friendNames:friendNames};
+
+}).catch(function(e){
+
+challengesFetchCache=null;
+throw e;
+
+});
+
+return challengesFetchCache;
 
 }
 
