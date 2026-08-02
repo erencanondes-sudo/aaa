@@ -669,9 +669,11 @@ button{
     height:40px;
     border-radius:50%;
     padding:0;
-    margin-bottom:10px;
     box-shadow:0 4px 0 #b2bec3;
-    align-self:flex-start;
+    position:absolute;
+    top:16px;
+    left:16px;
+    z-index:20;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -1831,6 +1833,8 @@ button{
 </div>
 
 <div id="playArea" style="display:none;">
+
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
 
 <div class="info" id="sharedInfoBar">
 <div>Süre: <span id="time">120</span></div>
