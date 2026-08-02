@@ -1654,6 +1654,23 @@ button{
 
 </div>
 
+<button class="challenge-play-btn btn-compact" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="showChangeUsernameForm()">Kullanıcı Adı Değiştir ✏️</button>
+
+<div id="changeUsernameForm" style="display:none;">
+
+<p style="font-size:13px;color:#e17055;">Not: Kullanıcı adını değiştirirsen, mevcut arkadaşlarının seni bulması veya geçmiş meydan okumaların doğru görünmesi etkilenebilir.</p>
+
+<input type="text" id="newUsername" class="auth-input" placeholder="Yeni Kullanıcı Adı" autocomplete="off" onkeydown="if(event.key==='Enter')changeUsername();">
+
+<p id="changeUsernameError" class="auth-error"></p>
+
+<div class="btn-row">
+<button class="challenge-play-btn" onclick="changeUsername()">Kaydet</button>
+<button class="challenge-play-btn view-btn" onclick="hideChangeUsernameForm()">Vazgeç</button>
+</div>
+
+</div>
+
 <button class="challenge-play-btn decline-btn btn-compact" onclick="logoutUser()">Çıkış Yap 🚪</button>
 
 </div>
@@ -3524,6 +3541,83 @@ errorEl.innerHTML="Şifren güncellendi.";
 document.getElementById("currentPassword").value="";
 document.getElementById("newPassword").value="";
 document.getElementById("newPasswordConfirm").value="";
+
+}).catch(function(e){
+
+errorEl.style.color="";
+errorEl.innerHTML=firebaseErrorMessage(e);
+
+});
+
+}
+
+
+function showChangeUsernameForm(){
+
+document.getElementById("newUsername").value="";
+document.getElementById("changeUsernameError").innerHTML="";
+document.getElementById("changeUsernameError").style.color="";
+
+document.getElementById("changeUsernameForm").style.display="block";
+
+}
+
+
+function hideChangeUsernameForm(){
+
+document.getElementById("changeUsernameForm").style.display="none";
+
+}
+
+
+function changeUsername(){
+
+let errorEl=document.getElementById("changeUsernameError");
+
+let newUsername=document.getElementById("newUsername").value.trim().toLowerCase();
+
+if(!newUsername){
+errorEl.style.color="";
+errorEl.innerHTML="Lütfen bir kullanıcı adı gir.";
+return;
+}
+
+if(newUsername.length<3){
+errorEl.style.color="";
+errorEl.innerHTML="Kullanıcı adı en az 3 karakter olmalı.";
+return;
+}
+
+if(newUsername===currentUser.username){
+errorEl.style.color="";
+errorEl.innerHTML="Bu zaten mevcut kullanıcı adın.";
+return;
+}
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Kontrol ediliyor...";
+
+db.collection("users").where("username","==",newUsername).get().then(function(snap){
+
+if(!snap.empty){
+errorEl.style.color="";
+errorEl.innerHTML="Bu kullanıcı adı zaten alınmış.";
+return;
+}
+
+errorEl.innerHTML="Güncelleniyor...";
+
+return db.collection("users").doc(currentUser.uid).update({username:newUsername}).then(function(){
+
+currentUser.username=newUsername;
+document.getElementById("profileUsername").innerHTML=newUsername;
+
+errorEl.style.color="#27ae60";
+errorEl.innerHTML="Kullanıcı adın güncellendi.";
+
+document.getElementById("newUsername").value="";
+
+});
 
 }).catch(function(e){
 
