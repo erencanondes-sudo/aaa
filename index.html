@@ -6721,6 +6721,7 @@ if(time<=0 && !resultRecorded){
 
 clearInterval(timer);
 
+selectedGameType="hafiza";
 document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
 
 recordGameEnd("timeout",0);
@@ -6763,6 +6764,7 @@ if(time<=0 && !resultRecorded){
 
 clearInterval(timer);
 
+selectedGameType="hafiza";
 document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
 
 recordGameEnd("timeout",0);
@@ -8106,6 +8108,7 @@ document.getElementById("time").innerHTML=time;
 if(time<=0){
 
 clearInterval(timer);
+selectedGameType="hafiza";
 document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
 recordGameEnd("timeout",0);
 
