@@ -693,11 +693,11 @@ button{
 }
 
 .history-item:nth-child(odd){
-    background:#ccd1d6;
+    background:#dde1e6;
 }
 
 .history-item:nth-child(even){
-    background:#e9ebee;
+    background:#f0f1f5;
 }
 
 .history-item .h-top{
@@ -900,11 +900,11 @@ button{
 }
 
 .challenge-item:nth-child(odd){
-    background:#ccd1d6;
+    background:#dde1e6;
 }
 
 .challenge-item:nth-child(even){
-    background:#e9ebee;
+    background:#f0f1f5;
 }
 
 .challenge-item .h-top{
@@ -5067,7 +5067,22 @@ console.error("Süresi dolan meydan okuma güncellenemedi:",e);
 items=items.filter(function(c){ return !c.games.every(function(g){ return g.fromPlayed && g.toPlayed; }); });
 
 items.sort(function(a,b){
+
+let aMySide=a.fromUsername===currentUser.username ? "from" : "to";
+let bMySide=b.fromUsername===currentUser.username ? "from" : "to";
+
+let aCurrentGame=a.games.find(function(g){ return !(g.fromPlayed && g.toPlayed); });
+let bCurrentGame=b.games.find(function(g){ return !(g.fromPlayed && g.toPlayed); });
+
+let aWaiting=aCurrentGame ? (aMySide==="from" ? aCurrentGame.fromPlayed : aCurrentGame.toPlayed) : false;
+let bWaiting=bCurrentGame ? (bMySide==="from" ? bCurrentGame.fromPlayed : bCurrentGame.toPlayed) : false;
+
+if(aWaiting!==bWaiting){
+return aWaiting ? 1 : -1;
+}
+
 return (b.createdAt? b.createdAt.seconds:0) - (a.createdAt? a.createdAt.seconds:0);
+
 });
 
 if(items.length===0){
