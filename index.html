@@ -2573,7 +2573,12 @@ game.toPlayed=true;
 
 updatedGames[idx]=game;
 
-db.collection("challenges").doc(pending.activeChallengeId).update({games:updatedGames}).then(function(){
+let updatePayload={games:updatedGames};
+if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
+updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
+}
+
+db.collection("challenges").doc(pending.activeChallengeId).update(updatePayload).then(function(){
 updateChallengeBadge();
 }).catch(function(e){
 console.error("Bekleyen meydan okuma güncellenemedi:",e);
@@ -2714,7 +2719,12 @@ game.toPlayed=true;
 
 updatedGames[gameIndex]=game;
 
-return db.collection("challenges").doc(challengeId).update({games:updatedGames}).then(function(){
+let updatePayload={games:updatedGames};
+if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
+updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
+}
+
+return db.collection("challenges").doc(challengeId).update(updatePayload).then(function(){
 
 updateChallengeBadge();
 
@@ -3339,7 +3349,7 @@ return;
 
 let gType=ch.gameType || "math";
 let startedAtField=side==="from" ? "fromStartedAt" : "toStartedAt";
-let timeLimited=(gType==="math" || gType==="word");
+let timeLimited=(gType==="math" || gType==="word" || gType==="hafiza");
 let resumeTime=null;
 
 if(timeLimited && currentGame[startedAtField]){
@@ -3362,7 +3372,12 @@ forfeitGame.toPlayed=true;
 
 updatedGames[currentGameIndex]=forfeitGame;
 
-db.collection("challenges").doc(id).update({games:updatedGames}).then(function(){
+let updatePayload={games:updatedGames};
+if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
+updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
+}
+
+db.collection("challenges").doc(id).update(updatePayload).then(function(){
 
 renderOngoingList();
 updateChallengeBadge();
@@ -3415,7 +3430,7 @@ if(selectedGameType==="word"){
 newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable,resumeTime:resumeTime,progress:progress});
 }
 else if(selectedGameType==="hafiza"){
-newGame(ch.level,{deck:game.deck,pairs:game.pairs});
+newGame(ch.level,{deck:game.deck,pairs:game.pairs,resumeTime:resumeTime,progress:progress});
 }
 else{
 newGame(ch.level,{numbers:game.numbers,target:game.target,resumeTime:resumeTime,progress:progress});
@@ -4505,10 +4520,11 @@ chatUnsubscribe=null;
 
 function closeDetailModal(){
 
-hideDetailModal();
-
 if(window.history.state && window.history.state.modal){
 window.history.back();
+}
+else{
+hideDetailModal();
 }
 
 }
@@ -4645,6 +4661,16 @@ numbers:[...numbers]
 }
 
 
+function saveHafizaProgress(){
+
+saveChallengeProgress({
+matched:hafizaCards.map(function(c){ return c.matched; }),
+moves:hafizaMoves
+});
+
+}
+
+
 function checkAndForfeitExpiredRound(c){
 
 let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
@@ -4679,7 +4705,12 @@ updatedGames[currentGameIndex]=updatedGame;
 
 c.games=updatedGames;
 
-return db.collection("challenges").doc(c.id).update({games:updatedGames}).then(function(){
+let updatePayload={games:updatedGames};
+if(updatedGames.every(function(gm){ return gm.fromPlayed && gm.toPlayed; })){
+updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
+}
+
+return db.collection("challenges").doc(c.id).update(updatePayload).then(function(){
 return true;
 }).catch(function(e){
 console.error("Süresi dolan tur güncellenemedi:",e);
@@ -5009,7 +5040,7 @@ return newG;
 
 c.games=updatedGames;
 
-db.collection("challenges").doc(c.id).update({games:updatedGames}).catch(function(e){
+db.collection("challenges").doc(c.id).update({games:updatedGames,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){
 console.error("Süresi dolan meydan okuma güncellenemedi:",e);
 });
 
@@ -5344,7 +5375,7 @@ completedChallenges.forEach(function(c){
 let mySide=c.fromUsername===currentUser.username ? "from" : "to";
 let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
 
-let time=c.createdAt? c.createdAt.seconds : 0;
+let time=c.completedAt? c.completedAt.seconds : (c.createdAt? c.createdAt.seconds : 0);
 
 let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames);
 
@@ -6554,12 +6585,12 @@ const HAFIZA_ICONS=[
 "🍎","🍌","🍇","🍉","🍓","🍒","🍑","🍍","🥝","🥥",
 "🍕","🍔","🌭","🍟","🍩","🍪","🎂","🍦","🍫","🍿",
 "🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯",
-"🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🦄","🐴",
+"🦁","🐮","🐘","🐸","🐵","🐔","🐧","🐦","🦄","🐴",
 "⚽","🏀","🏈","⚾","🎾","🏐","🏉","🎱","🏓","🏸",
 "🌙","⭐","🌈","☀️","⛄","🔥","💧","🌸","🌻","🌵",
 "🚗","🚕","🚓","🚑","🚀","✈️","🚲","⛵","🚁","🚂",
 "🎈","🎁","🎉","🎨","🎸","🎮","🎲","🎯","🧩","🪁",
-"👑","💎","🔑","💰","🏆","🔔","💡","🕶️","👟","🎀",
+"👑","💎","🔑","💰","🏆","🔔","🎵","🕶️","👟","🎀",
 "🦋","🐝","🐢","🐙","🦀","🐳","🦈","🐬","🦉","🐞"
 ];
 
@@ -6617,9 +6648,36 @@ hafizaMoves=0;
 hafizaLock=false;
 hafizaSettling=[];
 
+let restoredHafizaProgress=presetData && presetData.progress;
+
+if(restoredHafizaProgress){
+
+hafizaCards.forEach(function(c,i){
+if(restoredHafizaProgress.matched && restoredHafizaProgress.matched[i]){
+c.matched=true;
+hafizaMatchedCount++;
+}
+});
+
+hafizaMatchedCount=hafizaMatchedCount/2;
+hafizaMoves=restoredHafizaProgress.moves || 0;
+
+}
+
 document.getElementById("hafizaMessage").innerHTML="Kartlara tıkla ve eşleri bul!";
 
 renderHafizaCards(data.pairs,level);
+
+if(restoredHafizaProgress){
+
+hafizaCards.forEach(function(c,i){
+if(c.matched){
+let cardEl=document.getElementById("mem-card-"+i);
+cardEl.classList.add("flipped","matched");
+}
+});
+
+}
 
 document.getElementById("loading").style.display="none";
 document.getElementById("hafizaGameContent").style.display="block";
@@ -6634,6 +6692,47 @@ document.getElementById("time").innerHTML=0;
 
 let myHafizaTimerToken=gameSessionToken;
 let myHafizaRevealToken=revealSessionToken;
+
+if(restoredHafizaProgress){
+
+let resumeTime=(presetData && presetData.resumeTime) ? presetData.resumeTime : 120;
+
+time=resumeTime;
+document.getElementById("time").innerHTML=time;
+
+gameEndTime=Date.now()+resumeTime*1000;
+
+clearInterval(timer);
+
+timer=setInterval(function(){
+
+if(myHafizaTimerToken!==gameSessionToken){
+clearInterval(timer);
+clearAllConfetti();
+return;
+}
+
+time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
+
+document.getElementById("time").innerHTML=time;
+
+if(time<=0 && !resultRecorded){
+
+clearInterval(timer);
+
+document.getElementById("hafizaMessage").innerHTML="⏰ Süre bitti!";
+
+recordGameEnd("timeout",0);
+
+}
+
+},1000);
+
+checkHafizaWin();
+
+return;
+
+}
 
 setTimeout(function(){
 
@@ -6813,6 +6912,10 @@ burstMemSparkles(elB);
 hafizaFlipped=[];
 hafizaLock=false;
 hafizaMatchedCount++;
+
+if(activeChallengeId){
+saveHafizaProgress();
+}
 
 checkHafizaWin();
 
