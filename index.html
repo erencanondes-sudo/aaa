@@ -3292,7 +3292,7 @@ console.error("Meydan okuma güncellenemedi:",e);
 
 function playChallenge(id,side){
 
-if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded){
+if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded && challengeRoundReady){
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
@@ -5650,6 +5650,8 @@ function startWordTimerTick(){
 
 if(wordRevealToken!==revealSessionToken)return;
 
+challengeRoundReady=true;
+
 clearInterval(timer);
 
 document.getElementById("wordLengthBreakdown").style.visibility="visible";
@@ -6701,6 +6703,8 @@ let resumeTime=(presetData && presetData.resumeTime) ? presetData.resumeTime : 1
 time=resumeTime;
 document.getElementById("time").innerHTML=time;
 
+challengeRoundReady=true;
+
 gameEndTime=Date.now()+resumeTime*1000;
 
 clearInterval(timer);
@@ -6743,6 +6747,8 @@ if(myHafizaRevealToken!==revealSessionToken)return;
 animateHafizaTimeReveal(120,550,function(){
 
 if(myHafizaRevealToken!==revealSessionToken)return;
+
+challengeRoundReady=true;
 
 clearInterval(timer);
 
@@ -7335,6 +7341,7 @@ return {numbers:gameNumbers,target:gameTarget};
 
 
 let gameSessionToken=0;
+let challengeRoundReady=false;
 let revealSessionToken=0;
 let wordRoundStartToken=null;
 let wordRevealToken=null;
@@ -7342,6 +7349,8 @@ let hafizaRoundStartToken=null;
 
 
 function newGame(level,presetData){
+
+challengeRoundReady=false;
 
 stopWordTargetConfettiRain();
 stopMathTargetConfettiRain();
@@ -7462,6 +7471,8 @@ if(mySessionToken!==gameSessionToken)return;
 function startMathTimerTick(){
 
 if(myRevealToken!==revealSessionToken)return;
+
+challengeRoundReady=true;
 
 clearInterval(timer);
 
