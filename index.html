@@ -1871,11 +1871,11 @@ Sayı seçiniz
 <div class="word-info-top">
 <div style="justify-self:start;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
 <div id="wordLengthBreakdown" style="justify-self:center;font-size:11px;color:#192a56;line-height:1.35;text-align:center;height:105px;overflow:hidden;visibility:hidden;"></div>
-<div style="justify-self:end;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+<div style="justify-self:end;position:relative;left:2px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
 </div>
 <div class="word-info-bottom" style="margin-top:-6px;">
-<div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:33px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;"><span style="position:relative;top:23px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:13px;"><span id="wordScoreValue">0</span></span></span></div>
-<p id="wordMessage" style="grid-column:3;justify-self:start;margin-left:10px;position:relative;top:33px;">Kelime bulunuz!</p>
+<div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:31px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;"><span style="position:relative;top:19px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:9px;"><span id="wordScoreValue">0</span></span></span></div>
+<p id="wordMessage" style="grid-column:3;justify-self:start;margin-left:10px;position:relative;top:32px;visibility:hidden;">Harflerden kelime türetiniz!</p>
 </div>
 </div>
 
@@ -5495,6 +5495,8 @@ if(wordRevealToken!==revealSessionToken)return;
 clearInterval(timer);
 
 document.getElementById("wordLengthBreakdown").style.visibility="visible";
+document.getElementById("wordMessage").style.visibility="visible";
+document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
 renderWordLengthBreakdown();
 
 startWordTargetConfettiRain(wordAchievable.length);
@@ -5544,6 +5546,7 @@ wordRevealToken=revealSessionToken;
 
 document.getElementById("wordScoreBanner").classList.remove("score-visible");
 document.getElementById("wordLengthBreakdown").style.visibility="hidden";
+document.getElementById("wordMessage").style.visibility="hidden";
 
 let data=presetData ? presetData : generateWordGameData();
 
@@ -5573,7 +5576,7 @@ renderWordCards();
 updateWordTarget();
 
 document.getElementById("wordScoreValue").innerHTML=score;
-document.getElementById("wordMessage").innerHTML="Harflerden kelime oluştur!";
+document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
 
 startWordTimerTick();
 
@@ -7114,6 +7117,9 @@ clearAllConfetti();
 
 let existingBreakdown=document.getElementById("wordLengthBreakdown");
 if(existingBreakdown)existingBreakdown.style.visibility="hidden";
+
+let existingMessage=document.getElementById("wordMessage");
+if(existingMessage)existingMessage.style.visibility="hidden";
 
 gameSessionToken++;
 revealSessionToken++;
