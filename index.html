@@ -2046,6 +2046,20 @@ auth=firebase.auth();
 db=firebase.firestore();
 firebaseReady=true;
 
+db.enablePersistence().catch(function(err){
+
+if(err.code==="failed-precondition"){
+console.warn("Firestore önbelleği: birden fazla sekme açık, önbellek sadece bir sekmede aktif olabilir.");
+}
+else if(err.code==="unimplemented"){
+console.warn("Firestore önbelleği: bu tarayıcı desteklemiyor.");
+}
+else{
+console.warn("Firestore önbelleği aktif edilemedi:",err);
+}
+
+});
+
 auth.onAuthStateChanged(function(user){
 
 if(user){
@@ -2443,31 +2457,7 @@ document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
 
 loadGameHistory().then(renderHomeStats);
 
-updateChallengeBadge();
-
-if(badgeRefreshInterval){
-clearInterval(badgeRefreshInterval);
-}
-
-badgeRefreshInterval=setInterval(function(){
-
-if(currentUser){
-
-updateChallengeBadge();
-
-let historyScreenEl=document.getElementById("historyScreen");
-
-if(historyScreenEl.style.display!=="none"){
-
-renderOngoingList(true);
-renderHistoryList(true);
-renderChallengesList(true);
-
-}
-
-}
-
-},10000);
+startChallengesListener();
 
 }
 
@@ -3339,7 +3329,11 @@ document.getElementById("loading").style.display="flex";
 
 let proceed=function(){
 
-db.collection("challenges").doc(id).get().then(function(doc){
+let docPromise=(liveChallengesData && liveChallengesData[id])
+? Promise.resolve({data:function(){ return liveChallengesData[id]; }})
+: db.collection("challenges").doc(id).get();
+
+docPromise.then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
 
@@ -3664,6 +3658,8 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 function logoutUser(){
 
 auth.signOut().then(function(){
+
+stopChallengesListener();
 
 if(badgeRefreshInterval){
 clearInterval(badgeRefreshInterval);
@@ -4832,15 +4828,7 @@ function updateChallengeBadge(){
 
 if(!currentUser)return;
 
-let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
-let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-
-Promise.all([incoming,outgoing]).then(function(results){
-
-let all={};
-
-results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
+fetchChallengesOnly().then(function(all){
 
 Object.values(all).forEach(function(c){
 if(c.status==="accepted"){
@@ -7384,43 +7372,170 @@ return {numbers:gameNumbers,target:gameTarget};
 }
 
 
-let challengesFetchCache=null;
-let challengesFetchCacheTime=0;
+let liveChallengesData=null;
+let challengesUnsubIncoming=null;
+let challengesUnsubOutgoing=null;
 
-function fetchChallengesAndFriends(){
+function startChallengesListener(){
+
+if(challengesUnsubIncoming || challengesUnsubOutgoing)return;
+
+liveChallengesData={};
+
+let incomingReady=false;
+let outgoingReady=false;
+
+function handleLiveUpdate(){
+
+if(!incomingReady || !outgoingReady)return;
+
+updateChallengeBadge();
+
+let historyScreenEl=document.getElementById("historyScreen");
+if(historyScreenEl && historyScreenEl.style.display!=="none"){
+renderOngoingList(true);
+renderHistoryList(true);
+renderChallengesList(true);
+}
+
+}
+
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).onSnapshot(function(snap){
+
+snap.docChanges().forEach(function(change){
+if(change.type==="removed"){
+delete liveChallengesData[change.doc.id];
+}
+else{
+liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.doc.id},change.doc.data()));
+}
+});
+
+incomingReady=true;
+handleLiveUpdate();
+
+},function(e){
+console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
+});
+
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).onSnapshot(function(snap){
+
+snap.docChanges().forEach(function(change){
+if(change.type==="removed"){
+delete liveChallengesData[change.doc.id];
+}
+else{
+liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.doc.id},change.doc.data()));
+}
+});
+
+outgoingReady=true;
+handleLiveUpdate();
+
+},function(e){
+console.error("Meydan okuma dinleyicisi (giden) hata:",e);
+});
+
+}
+
+
+function stopChallengesListener(){
+
+if(challengesUnsubIncoming){
+challengesUnsubIncoming();
+challengesUnsubIncoming=null;
+}
+
+if(challengesUnsubOutgoing){
+challengesUnsubOutgoing();
+challengesUnsubOutgoing=null;
+}
+
+liveChallengesData=null;
+
+}
+
+
+let challengesOnlyCache=null;
+let challengesOnlyCacheTime=0;
+
+function fetchChallengesOnly(){
+
+if(liveChallengesData){
+return Promise.resolve(Object.assign({},liveChallengesData));
+}
 
 let now=Date.now();
 
-if(challengesFetchCache && (now-challengesFetchCacheTime)<2000){
-return challengesFetchCache;
+if(challengesOnlyCache && (now-challengesOnlyCacheTime)<2000){
+return challengesOnlyCache;
 }
 
 let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
 let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-let friendsQuery=db.collection("users").doc(currentUser.uid).collection("friends").get();
 
-challengesFetchCacheTime=now;
+challengesOnlyCacheTime=now;
 
-challengesFetchCache=Promise.all([incoming,outgoing,friendsQuery]).then(function(results){
+challengesOnlyCache=Promise.all([incoming,outgoing]).then(function(results){
 
 let all={};
 
 results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
 results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
 
-let friendNames=new Set();
-results[2].forEach(function(doc){ friendNames.add(doc.id); });
-
-return {all:all,friendNames:friendNames};
+return all;
 
 }).catch(function(e){
 
-challengesFetchCache=null;
+challengesOnlyCache=null;
 throw e;
 
 });
 
-return challengesFetchCache;
+return challengesOnlyCache;
+
+}
+
+
+let friendsOnlyCache=null;
+let friendsOnlyCacheTime=0;
+
+function fetchFriendsOnly(){
+
+let now=Date.now();
+
+if(friendsOnlyCache && (now-friendsOnlyCacheTime)<2000){
+return friendsOnlyCache;
+}
+
+friendsOnlyCacheTime=now;
+
+friendsOnlyCache=db.collection("users").doc(currentUser.uid).collection("friends").get().then(function(snap){
+
+let friendNames=new Set();
+snap.forEach(function(doc){ friendNames.add(doc.id); });
+
+return friendNames;
+
+}).catch(function(e){
+
+friendsOnlyCache=null;
+throw e;
+
+});
+
+return friendsOnlyCache;
+
+}
+
+
+function fetchChallengesAndFriends(){
+
+return Promise.all([fetchChallengesOnly(),fetchFriendsOnly()]).then(function(results){
+
+return {all:results[0],friendNames:results[1]};
+
+});
 
 }
 
