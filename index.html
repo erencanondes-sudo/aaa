@@ -2885,7 +2885,7 @@ time=0;
 
 if(selectedGameType==="word"){
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters));
 
 if(score>=300){
 recordGameEnd("win",finalScore);
@@ -4355,21 +4355,23 @@ playTone(740,0.08,"sine",0.1,0);
 }
 
 
-function computeFinalWordScore(rawScore,achievableCount){
+function computeFinalWordScore(rawScore,achievableCount,letterBonus){
+
+let score=rawScore+(letterBonus||0);
 
 if(!achievableCount || achievableCount<=0){
-return rawScore*2;
+return score*2;
 }
 
 if(achievableCount<15){
-return Math.round(rawScore*(140/achievableCount)-150);
+return Math.round(score*(140/achievableCount)-150);
 }
 
 if(achievableCount<140){
-return Math.round(rawScore*(140/achievableCount));
+return Math.round(score*(140/achievableCount));
 }
 
-return Math.round((rawScore*2)+35);
+return Math.round((score*2)+35);
 
 }
 
@@ -5594,6 +5596,7 @@ return {baseLetters:baseLetters,achievable:achievable};
 
 let wordBaseLetters=[];
 let wordAchievable=[];
+let wordShowListBonusGiven=false;
 let wordTiles=[];
 let wordSequence=[];
 let wordHistory=[];
@@ -5602,9 +5605,40 @@ let pendingJokerIndex=null;
 
 function scoreForWord(word,usedJoker){
 
-const POINTS_BY_LENGTH={2:10,3:15,4:20,5:30,6:35,7:35,8:50};
+const POINTS_BY_LENGTH={2:10,3:15,4:20,5:30,6:35,7:40,8:50};
 
 return POINTS_BY_LENGTH[word.length] || 0;
+
+}
+
+
+function computeWordLetterBonus(baseLetters){
+
+const VOWELS=['A','E','I','İ','O','Ö','U','Ü'];
+
+let counts={};
+
+baseLetters.forEach(function(letter){
+counts[letter]=(counts[letter]||0)+1;
+});
+
+let bonus=0;
+
+Object.keys(counts).forEach(function(letter){
+
+let isConsonant=VOWELS.indexOf(letter)===-1;
+
+if(isConsonant && counts[letter]>1){
+bonus+=100*(counts[letter]-1);
+}
+
+});
+
+if(baseLetters.indexOf("J")!==-1){
+bonus+=100;
+}
+
+return bonus;
 
 }
 
@@ -5781,7 +5815,7 @@ clearInterval(timer);
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters));
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
@@ -5800,6 +5834,7 @@ function startWordRound(presetData){
 
 wordRoundStartToken=gameSessionToken;
 wordRevealToken=revealSessionToken;
+wordShowListBonusGiven=false;
 
 document.getElementById("wordScoreBanner").classList.remove("score-visible");
 document.getElementById("wordLengthBreakdown").style.visibility="hidden";
@@ -6535,6 +6570,14 @@ setTimeout(()=>el.remove(),1600);
 
 function showWordsList(){
 
+if(!wordShowListBonusGiven){
+
+wordShowListBonusGiven=true;
+score+=5*time;
+document.getElementById("wordScoreValue").innerHTML=score;
+
+}
+
 let remaining=wordAchievable.filter(function(w){ return !wordFound.has(w); });
 
 remaining.sort(function(a,b){ return b.length-a.length; });
@@ -6569,7 +6612,7 @@ document.getElementById("wordTimeValue").innerHTML=0;
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters));
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
@@ -6647,9 +6690,7 @@ if(wordAchievable.length && wordFound.size>=wordAchievable.length && !resultReco
 
 clearInterval(timer);
 
-score+=100+time;
-
-let finalScore=computeFinalWordScore(score,wordAchievable.length);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters));
 
 document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeleri buldun.";
 
@@ -8410,7 +8451,7 @@ clearInterval(timer);
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters));
 
 document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
 
