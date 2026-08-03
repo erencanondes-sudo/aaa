@@ -27,12 +27,21 @@ body{
 .game{
     max-width:520px;
     margin:auto;
-    background:white;
+    background-color:white;
+    background-image:url("menu-bg.jpg");
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center;
     border-radius:20px;
     padding:20px;
     text-align:center;
     position:relative;
     overflow:hidden;
+}
+
+.game.playing{
+    background-image:none;
+    background-color:white;
 }
 
 #playArea{
@@ -2020,6 +2029,28 @@ Harf seçiniz
 
 
 <script>
+
+(function(){
+
+let gameEl=document.querySelector(".game");
+let playAreaEl=document.getElementById("playArea");
+
+function syncPlayingClass(){
+
+if(playAreaEl.style.display==="none" || playAreaEl.style.display===""){
+gameEl.classList.remove("playing");
+}
+else{
+gameEl.classList.add("playing");
+}
+
+}
+
+syncPlayingClass();
+
+new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
+
+})();
 
 const firebaseConfig={
 apiKey:"AIzaSyD9IQO8387frW2ujk5QPAEiwicHaGongS8",
