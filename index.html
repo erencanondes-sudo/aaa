@@ -4401,7 +4401,7 @@ let wordScoreEl=document.getElementById("wordScoreValue");
 
 bannerTitleEl.innerHTML=title;
 
-let steps=Math.max(toValue,1);
+let steps=Math.min(50,Math.max(toValue,1));
 let duration=1200;
 let stepTime=duration/steps;
 let count=0;
@@ -4482,7 +4482,7 @@ return;
 
 count++;
 
-let displayValue=count>=steps ? toValue : count;
+let displayValue=count>=steps ? toValue : Math.round((toValue/steps)*count);
 
 bannerValueEl.innerHTML=displayValue;
 if(selectedGameType==="word" && wordScoreEl){
@@ -5638,7 +5638,7 @@ if(baseLetters.indexOf("J")!==-1){
 bonus+=120;
 }
 
-["Ö","G","P"].forEach(function(letter){
+["Ö","G","P","Ğ"].forEach(function(letter){
 if(baseLetters.indexOf(letter)!==-1){
 bonus+=70;
 }
