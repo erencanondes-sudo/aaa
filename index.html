@@ -7432,10 +7432,22 @@ clearInterval(timer);
 
 let timeUsed=120-time;
 
-let base=1000;
-let penalty=(hafizaMoves-totalPairs)*10+timeUsed*2;
+let completionBonus,moveMultiplier;
 
-score=Math.max(base-penalty,50);
+if(currentLevel==="easy"){
+completionBonus=550;
+moveMultiplier=20;
+}
+else if(currentLevel==="medium"){
+completionBonus=600;
+moveMultiplier=15;
+}
+else{
+completionBonus=700;
+moveMultiplier=10;
+}
+
+score=Math.round((((time*10+completionBonus)-(hafizaMoves*moveMultiplier))*2)/3);
 
 document.getElementById("hafizaMessage").innerHTML=hafizaMoves+" hamlede, "+timeUsed+" saniyede bitirdin.";
 
@@ -8170,7 +8182,30 @@ if(numbers.includes(target)){
 
 if(!resultRecorded){
 
-score=time*3+500;
+let mathThreshold,mathOffset;
+
+if(currentLevel==="easy"){
+mathThreshold=62;
+mathOffset=495;
+}
+else if(currentLevel==="medium"){
+mathThreshold=57;
+mathOffset=430;
+}
+else{
+mathThreshold=52;
+mathOffset=365;
+}
+
+if(time>=mathThreshold){
+score=(time*13)-mathOffset;
+}
+else if(time>=1){
+score=300;
+}
+else{
+score=100;
+}
 
 document.getElementById("score").innerHTML=score;
 
