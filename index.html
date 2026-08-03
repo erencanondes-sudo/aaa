@@ -5635,7 +5635,25 @@ bonus+=100*(counts[letter]-1);
 });
 
 if(baseLetters.indexOf("J")!==-1){
-bonus+=100;
+bonus+=120;
+}
+
+["Ö","G","P"].forEach(function(letter){
+if(baseLetters.indexOf(letter)!==-1){
+bonus+=70;
+}
+});
+
+let hasM=baseLetters.indexOf("M")!==-1;
+let hasA=baseLetters.indexOf("A")!==-1;
+let hasE=baseLetters.indexOf("E")!==-1;
+let hasK=baseLetters.indexOf("K")!==-1;
+
+if(hasM && hasA && hasE && hasK){
+bonus-=200;
+}
+else if((hasM && hasA && hasK) || (hasM && hasE && hasK)){
+bonus-=150;
 }
 
 return bonus;
