@@ -19,19 +19,7 @@
 <style>
 body{
     font-family:Arial,sans-serif;
-    background-color:#273c75;
-    background-image:
-        radial-gradient(circle at 10% 15%, rgba(232,65,24,0.35) 0, rgba(232,65,24,0.35) 4px, transparent 4px),
-        radial-gradient(circle at 80% 10%, rgba(68,189,50,0.35) 0, rgba(68,189,50,0.35) 3px, transparent 3px),
-        radial-gradient(circle at 25% 40%, rgba(230,126,34,0.3) 0, rgba(230,126,34,0.3) 3px, transparent 3px),
-        radial-gradient(circle at 65% 55%, rgba(9,132,227,0.35) 0, rgba(9,132,227,0.35) 4px, transparent 4px),
-        radial-gradient(circle at 90% 70%, rgba(142,68,173,0.35) 0, rgba(142,68,173,0.35) 3px, transparent 3px),
-        radial-gradient(circle at 15% 80%, rgba(0,151,230,0.3) 0, rgba(0,151,230,0.3) 4px, transparent 4px),
-        radial-gradient(circle at 50% 90%, rgba(232,65,24,0.3) 0, rgba(232,65,24,0.3) 3px, transparent 3px),
-        radial-gradient(circle at 40% 20%, rgba(255,255,255,0.25) 0, rgba(255,255,255,0.25) 2px, transparent 2px),
-        linear-gradient(135deg,#192a56 0%,#273c75 35%,#40739e 70%,#0097e6 100%);
-    background-size:100% 100%;
-    background-attachment:fixed;
+    background:#273c75;
     margin:0;
     padding:15px;
 }
@@ -45,6 +33,11 @@ body{
     text-align:center;
     position:relative;
     overflow:hidden;
+}
+
+.game.playing{
+    background-image:none;
+    background-color:white;
 }
 
 #playArea{
@@ -2032,6 +2025,28 @@ Harf seçiniz
 
 
 <script>
+
+(function(){
+
+let gameEl=document.querySelector(".game");
+let playAreaEl=document.getElementById("playArea");
+
+function syncPlayingClass(){
+
+if(playAreaEl.style.display==="none" || playAreaEl.style.display===""){
+gameEl.classList.remove("playing");
+}
+else{
+gameEl.classList.add("playing");
+}
+
+}
+
+syncPlayingClass();
+
+new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
+
+})();
 
 const firebaseConfig={
 apiKey:"AIzaSyD9IQO8387frW2ujk5QPAEiwicHaGongS8",
@@ -4346,7 +4361,15 @@ if(!achievableCount || achievableCount<=0){
 return rawScore*2;
 }
 
-return Math.round((rawScore/(achievableCount/130))*2);
+if(achievableCount<15){
+return Math.round(rawScore*(140/achievableCount)-150);
+}
+
+if(achievableCount<140){
+return Math.round(rawScore*(140/achievableCount));
+}
+
+return Math.round((rawScore*2)+35);
 
 }
 
@@ -4377,12 +4400,13 @@ let wordScoreEl=document.getElementById("wordScoreValue");
 bannerTitleEl.innerHTML=title;
 
 let steps=Math.max(toValue,1);
-let duration=3000;
+let duration=1200;
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
 let ratingInfo=getWordScoreRatingInfo(toValue);
 let myScoreToken=gameSessionToken;
+let animationComplete=false;
 
 bannerValueEl.innerHTML=0;
 bannerRatingEl.innerHTML="";
@@ -4394,12 +4418,8 @@ bannerEl.classList.add("score-visible");
 
 function dismissBanner(){
 bannerEl.classList.remove("score-visible");
-document.removeEventListener("click",dismissOnClick,true);
-document.removeEventListener("touchstart",dismissOnClick,true);
-}
-
-function dismissOnClick(){
-dismissBanner();
+document.removeEventListener("click",skipOrDismiss,true);
+document.removeEventListener("touchstart",skipOrDismiss,true);
 }
 
 function pulseBanner(){
@@ -4407,6 +4427,47 @@ bannerEl.classList.remove("banner-pulse");
 void bannerEl.offsetWidth;
 bannerEl.classList.add("banner-pulse");
 }
+
+function finalizeDisplay(){
+
+clearInterval(roll);
+
+bannerValueEl.innerHTML=toValue;
+if(selectedGameType==="word" && wordScoreEl){
+wordScoreEl.innerHTML=toValue;
+}
+
+if(showRating && ratingInfo.threshold!==null){
+bannerRatingEl.innerHTML=ratingInfo.text;
+}
+
+playCountTickSound();
+
+animationComplete=true;
+
+setTimeout(function(){
+dismissBanner();
+},3000);
+
+if(callback)callback();
+
+}
+
+function skipOrDismiss(){
+
+if(!animationComplete){
+finalizeDisplay();
+}
+else{
+dismissBanner();
+}
+
+}
+
+setTimeout(function(){
+document.addEventListener("click",skipOrDismiss,true);
+document.addEventListener("touchstart",skipOrDismiss,true);
+},50);
 
 let roll=setInterval(function(){
 
@@ -4438,19 +4499,7 @@ lastValue=displayValue;
 
 if(count>=steps){
 
-clearInterval(roll);
-playCountTickSound();
-
-setTimeout(function(){
-document.addEventListener("click",dismissOnClick,true);
-document.addEventListener("touchstart",dismissOnClick,true);
-},50);
-
-setTimeout(function(){
-dismissBanner();
-},5000);
-
-if(callback)callback();
+finalizeDisplay();
 
 }
 else{
@@ -5552,7 +5601,11 @@ let wordFound=new Set();
 let pendingJokerIndex=null;
 
 function scoreForWord(word,usedJoker){
-return word.length*10+(usedJoker?5:0);
+
+const POINTS_BY_LENGTH={2:10,3:15,4:20,5:30,6:35,7:35,8:50};
+
+return POINTS_BY_LENGTH[word.length] || 0;
+
 }
 
 
