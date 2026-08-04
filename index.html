@@ -4522,17 +4522,17 @@ playCountTickSound();
 
 function getWordScoreRatingInfo(finalValue){
 
-if(finalValue>=1000){
-return {threshold:1000,text:"Mükemmel 🤩"};
+if(finalValue>=900){
+return {threshold:900,text:"Mükemmel 🤩"};
 }
-if(finalValue>=750){
-return {threshold:750,text:"Çok iyi 😄"};
+if(finalValue>=700){
+return {threshold:700,text:"Çok iyi 🥳"};
 }
 if(finalValue>=500){
-return {threshold:500,text:"İyi 🙂"};
+return {threshold:500,text:"İyi 😊"};
 }
 if(finalValue>=300){
-return {threshold:300,text:"Eh 😐"};
+return {threshold:300,text:"Fena değil 🙂"};
 }
 
 return {threshold:null,text:""};
@@ -4563,11 +4563,11 @@ el.innerHTML="";
 
 function checkScoreMilestones(fromValue,toValue){
 
-if(fromValue<1000 && toValue>=1000){
+if(fromValue<900 && toValue>=900){
 launchMemConfetti("extra");
 return true;
 }
-else if(fromValue<750 && toValue>=750){
+else if(fromValue<700 && toValue>=700){
 launchMemConfetti("large");
 return true;
 }
@@ -5839,7 +5839,7 @@ let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
 let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
 
-document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
+document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
 animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
@@ -6596,7 +6596,7 @@ function showWordsList(){
 if(!wordShowListBonusGiven){
 
 wordShowListBonusGiven=true;
-wordShowListBonus=5*time;
+wordShowListBonus=4*time;
 
 }
 
@@ -6636,7 +6636,7 @@ let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
 let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
 
-document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
+document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
 animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
@@ -6714,7 +6714,7 @@ clearInterval(timer);
 
 let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
 
-document.getElementById("wordMessage").innerHTML="🎉 Kazandın! Tüm kelimeleri buldun.";
+document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
 playWinSound();
 
@@ -7835,12 +7835,6 @@ if(time<=90){
 document.getElementById("solutionBtn").style.display="inline-block";
 }
 
-if(time<=0 && !resultRecorded){
-clearInterval(timer);
-document.getElementById("message").innerHTML="⏰ Süre bitti";
-recordGameEnd("timeout",0);
-}
-
 },1000);
 
 }
@@ -8510,7 +8504,7 @@ let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
 let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
 
-document.getElementById("wordMessage").innerHTML=(result==="win" ? "🎉 Kazandın! " : "😔 Kaybettin! ");
+document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
 animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheckId:"wordGameContent"});
 
@@ -8530,14 +8524,6 @@ document.getElementById("time").innerHTML=time;
 
 if(time<=90){
 document.getElementById("solutionBtn").style.display="inline-block";
-}
-
-if(time<=0){
-
-clearInterval(timer);
-document.getElementById("message").innerHTML="⏰ Süre bitti";
-recordGameEnd("timeout",0);
-
 }
 
 }
