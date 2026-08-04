@@ -4365,10 +4365,10 @@ if(!achievableCount || achievableCount<=0){
 tierResult=rawScore*2;
 }
 else if(achievableCount<15){
-tierResult=rawScore*(140/achievableCount)-150;
+tierResult=(rawScore*(140/achievableCount)*2)-150;
 }
 else if(achievableCount<140){
-tierResult=rawScore*(140/achievableCount);
+tierResult=rawScore*(140/achievableCount)*2;
 }
 else{
 tierResult=(rawScore*2)+35;
@@ -8497,6 +8497,11 @@ document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
 if(time<=0){
+
+if(wordRevealToken!==revealSessionToken){
+clearInterval(timer);
+return;
+}
 
 clearInterval(timer);
 
