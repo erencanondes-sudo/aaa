@@ -2133,8 +2133,13 @@ return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#19
 },
 
 function(){
-return '<div style="width:100%;height:100%;position:relative;background:#000;">'+
-'<video src="ad-video-hotel.mp4" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>'+
+return '<div style="width:100%;height:100%;position:relative;background:linear-gradient(135deg,#0097e6,#00a8ff);">'+
+'<video src="ad-video-hotel.mp4" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\';document.getElementById(\'adVideoFallback\').style.display=\'flex\';"></video>'+
+'<div id="adVideoFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;position:absolute;top:0;left:0;">'+
+'<div style="font-size:32px;">🏖️</div>'+
+'<div style="font-size:16px;font-weight:bold;margin-top:6px;">Tatil Fırsatı</div>'+
+'<div style="font-size:12px;opacity:0.9;margin-top:4px;">Deniz Manzaralı Odalar</div>'+
+'</div>'+
 '<div style="position:absolute;bottom:10px;right:14px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 8px;border-radius:10px;">REKLAM</div>'+
 '</div>';
 },
@@ -2161,7 +2166,14 @@ if(adChosenIndex===null){
 adChosenIndex=Math.floor(Math.random()*adVariants.length);
 }
 
-document.getElementById("fakeAdBannerContent").innerHTML=adVariants[adChosenIndex]();
+let contentEl=document.getElementById("fakeAdBannerContent");
+contentEl.innerHTML=adVariants[adChosenIndex]();
+
+let videoEl=contentEl.querySelector("video");
+if(videoEl){
+videoEl.load();
+videoEl.play().catch(function(){});
+}
 
 }
 
