@@ -40,6 +40,58 @@ body{
     background-color:white;
 }
 
+@keyframes adFloatBounce{
+    0%{transform:translate(0,0) rotate(-15deg) scale(1);}
+    25%{transform:translate(6px,-16px) rotate(20deg) scale(1.25);}
+    50%{transform:translate(-4px,-24px) rotate(-10deg) scale(0.9);}
+    75%{transform:translate(-8px,-8px) rotate(15deg) scale(1.15);}
+    100%{transform:translate(0,0) rotate(-15deg) scale(1);}
+}
+
+@keyframes adPulseText{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.08);}
+}
+
+@keyframes adShake{
+    0%,100%{transform:translateX(0) rotate(0);}
+    20%{transform:translateX(-3px) rotate(-3deg);}
+    40%{transform:translateX(3px) rotate(3deg);}
+    60%{transform:translateX(-3px) rotate(-2deg);}
+    80%{transform:translateX(3px) rotate(2deg);}
+}
+
+@keyframes adBgShift{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.ad-anim-bg{
+    background-size:300% 300%;
+    animation:adBgShift 1.4s ease infinite;
+}
+
+.ad-anim-float{
+    animation:adFloatBounce 0.9s ease-in-out infinite;
+    display:inline-block;
+}
+
+.ad-anim-float2{
+    animation:adFloatBounce 1.1s ease-in-out infinite reverse;
+    display:inline-block;
+}
+
+.ad-anim-pulse{
+    animation:adPulseText 0.6s ease-in-out infinite;
+    display:inline-block;
+}
+
+.ad-anim-shake{
+    animation:adShake 0.5s ease-in-out infinite;
+    display:inline-block;
+}
+
 #playArea{
     user-select:none;
     -webkit-user-select:none;
@@ -1555,6 +1607,11 @@ button{
 
 <h1>Konfeti</h1>
 
+<div id="fakeAdBanner" style="display:none;position:absolute;left:20px;right:20px;height:144px;z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+<button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
+<div id="fakeAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
+</div>
+
 <div class="loading" id="sessionCheckScreen" style="display:flex;">
 <div class="spinner"></div>
 <p>Yükleniyor...</p>
@@ -2058,7 +2115,122 @@ syncPlayingClass();
 
 new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
 
+let adBannerEl=document.getElementById("fakeAdBanner");
+let adTargets={
+homeScreen:".stats",
+historyScreen:":scope > div",
+profileScreen:":scope > div",
+friendsScreen:":scope > div",
+gameTypeScreen:":scope > div"
+};
+let adWasVisible={};
+
+let adVariants=[
+
+function(){
+return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#8e44ad,#3498db);box-sizing:border-box;padding:12px;color:white;">'+
+'<div style="font-size:10px;opacity:0.75;letter-spacing:1px;">REKLAM</div>'+
+'<div style="font-size:19px;font-weight:bold;margin-top:22px;">🎁 Süper Fırsat!</div>'+
+'<div style="font-size:13px;margin-top:6px;opacity:0.9;">Şimdi indir, ekstra ödüller kazan.</div>'+
+'<div style="position:absolute;bottom:12px;right:16px;background:white;color:#8e44ad;font-weight:bold;font-size:12px;padding:6px 14px;border-radius:20px;">İNCELE</div>'+
+'</div>';
+},
+
+function(){
+return '<div style="width:100%;height:100%;position:relative;background:#000;">'+
+'<video src="ad-video.mp4" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>'+
+'<div style="position:absolute;bottom:10px;right:14px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 8px;border-radius:10px;">REKLAM</div>'+
+'</div>';
+},
+
+function(){
+return '<div class="ad-anim-bg" style="width:100%;height:100%;background:linear-gradient(120deg,#e84118,#fbc531,#0097e6,#8e44ad,#e84118);box-sizing:border-box;padding:12px;color:white;position:relative;overflow:hidden;">'+
+'<div style="font-size:10px;opacity:0.8;letter-spacing:1px;">REKLAM</div>'+
+'<div class="ad-anim-float" style="position:absolute;top:22px;right:60px;font-size:30px;">🎉</div>'+
+'<div class="ad-anim-float2" style="position:absolute;top:15px;right:16px;font-size:26px;">💰</div>'+
+'<div class="ad-anim-float" style="position:absolute;bottom:14px;left:14px;font-size:24px;">⭐</div>'+
+'<div class="ad-anim-float2" style="position:absolute;top:60px;left:120px;font-size:22px;">🔥</div>'+
+'<div class="ad-anim-shake" style="font-size:19px;font-weight:bold;margin-top:24px;max-width:65%;">Şansını Dene, Kazan!</div>'+
+'<div class="ad-anim-pulse" style="position:absolute;bottom:12px;right:16px;background:white;color:#e84118;font-weight:bold;font-size:13px;padding:7px 16px;border-radius:20px;">OYNA</div>'+
+'</div>';
+}
+
+];
+
+function fillRandomAd(){
+let pick=adVariants[Math.floor(Math.random()*adVariants.length)];
+document.getElementById("fakeAdBannerContent").innerHTML=pick();
+}
+
+function positionAdBanner(){
+
+let gameRect=document.querySelector(".game").getBoundingClientRect();
+
+for(let i=0;i<adRelevantScreenIdsList.length;i++){
+
+let id=adRelevantScreenIdsList[i];
+let screenEl=document.getElementById(id);
+
+if(screenEl.style.display!=="none" && screenEl.style.display!==""){
+
+let target=screenEl.querySelector(adTargets[id]);
+if(!target)return;
+
+let targetRect=target.getBoundingClientRect();
+
+adBannerEl.style.top=(targetRect.top-gameRect.top)+"px";
+adBannerEl.style.height=targetRect.height+"px";
+
+return;
+
+}
+
+}
+
+}
+
+let adRelevantScreenIdsList=Object.keys(adTargets);
+
+function syncAdBanner(){
+
+let anyVisible=false;
+
+adRelevantScreenIdsList.forEach(function(id){
+
+let el=document.getElementById(id);
+let isVisible=el.style.display!=="none" && el.style.display!=="";
+
+if(isVisible && !adWasVisible[id]){
+fillRandomAd();
+positionAdBanner();
+adBannerEl.style.display="block";
+}
+
+adWasVisible[id]=isVisible;
+
+if(isVisible)anyVisible=true;
+
+});
+
+if(!anyVisible){
+adBannerEl.style.display="none";
+}
+
+}
+
+adRelevantScreenIdsList.forEach(function(id){
+let el=document.getElementById(id);
+new MutationObserver(syncAdBanner).observe(el,{attributes:true,attributeFilter:["style"]});
+});
+
 })();
+
+
+function closeFakeAdBanner(){
+
+document.getElementById("fakeAdBanner").style.display="none";
+
+}
 
 const firebaseConfig={
 apiKey:"AIzaSyD9IQO8387frW2ujk5QPAEiwicHaGongS8",
