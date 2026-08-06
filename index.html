@@ -633,15 +633,21 @@ button{
 .stats{
     background:#f1f2f6;
     border-radius:14px;
-    padding:15px;
+    padding:8px 15px;
     margin-bottom:20px;
+    height:96px;
+    box-sizing:border-box;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
 }
 
 .stats p{
     color:#192a56;
-    font-size:18px;
+    font-size:15px;
     font-weight:bold;
-    margin:6px 0;
+    margin:1px 0;
 }
 
 .history-btn{
@@ -1919,11 +1925,13 @@ button{
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
-<div class="tab-buttons" style="margin-top:25px;">
+<div class="tab-buttons" style="position:absolute;top:570.78px;left:20px;right:20px;margin:0;">
 <button class="tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
 <button class="tab-btn" id="tabGamesBtn" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
 <button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
+
+<div style="height:60px;"></div>
 
 <div class="history-tabs-viewport" id="historyTabsViewport">
 <div class="history-tabs-track animated" id="historyTabsTrack">
@@ -2194,7 +2202,7 @@ if(!target)return;
 let targetRect=target.getBoundingClientRect();
 
 adBannerEl.style.top=(targetRect.top-gameRect.top)+"px";
-adBannerEl.style.height=targetRect.height+"px";
+adBannerEl.style.height="96px";
 
 return;
 
