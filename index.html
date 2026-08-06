@@ -1936,7 +1936,7 @@ button{
 <button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
 
-<div style="height:30px;"></div>
+<div id="tabButtonsSpacer" style="height:50px;"></div>
 
 <div class="history-tabs-viewport" id="historyTabsViewport">
 <div class="history-tabs-track animated" id="historyTabsTrack">
@@ -4441,6 +4441,13 @@ track.classList.add("animated");
 document.getElementById("tabOngoingBtn").classList.add("active");
 document.getElementById("tabGamesBtn").classList.remove("active");
 document.getElementById("tabChallengesBtn").classList.remove("active");
+
+let tabButtonsEl=document.querySelector("#historyScreen .tab-buttons");
+let anaWrapperEl=document.querySelector("#historyScreen > div");
+let tabButtonsBottom=tabButtonsEl.getBoundingClientRect().bottom;
+let anaWrapperBottom=anaWrapperEl.getBoundingClientRect().bottom;
+let neededSpacer=(tabButtonsBottom-anaWrapperBottom)+20;
+document.getElementById("tabButtonsSpacer").style.height=Math.max(neededSpacer,20)+"px";
 
 renderOngoingList();
 renderHistoryList();
