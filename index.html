@@ -1867,6 +1867,7 @@ button{
 
 <button class="newgame challenge-btn newgame-green" onclick="openChallengeFriend()">Arkadaşınla Oyna 👥</button>
 <button class="newgame challenge-btn" onclick="openChallengeRandom()">Rastgele Oyna <span style="font-size:0.85em;">🔀</span></button>
+<button class="newgame challenge-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #5f6a6a;" onclick="openChallengeComputer()">Bilgisayara Karşı Oyna 🤖</button>
 
 </div>
 
@@ -3363,12 +3364,59 @@ document.getElementById("challengeGameTypeScreen").style.display="block";
 }
 
 
+function openChallengeComputer(){
+
+pendingOpponentChoice={type:"computer",opponent:"Bilgisayar 🤖"};
+
+hideAllScreens();
+document.getElementById("challengeGameTypeScreen").style.display="block";
+
+}
+
+
 function selectChallengeLevel(level){
 
 pendingChallenge.level=level;
 
 hideAllScreens();
 document.getElementById("challengeFormatScreen").style.display="flex";
+
+}
+
+
+function randomComputerScore(gameType){
+
+if(gameType==="hafiza"){
+return Math.floor(Math.random()*(600-200+1))+200;
+}
+
+return Math.floor(Math.random()*(500-150+1))+150;
+
+}
+
+
+function generateComputerWordResult(wordData){
+
+let achievable=wordData.achievable.slice();
+
+let shuffled=achievable.sort(function(){ return Math.random()-0.5; });
+
+let possibleCounts=[9,10,11,12,13,14,15,16,17];
+let pickCount=possibleCounts[Math.floor(Math.random()*possibleCounts.length)];
+pickCount=Math.min(pickCount,shuffled.length);
+
+let wordsFound=shuffled.slice(0,pickCount);
+
+let rawScore=0;
+wordsFound.forEach(function(w){
+rawScore+=scoreForWord(w,false);
+});
+
+let letterBonus=computeWordLetterBonus(wordData.baseLetters);
+
+let finalScore=computeFinalWordScore(rawScore,achievable.length,letterBonus);
+
+return {score:finalScore,wordsFound:wordsFound};
 
 }
 
@@ -3389,13 +3437,24 @@ if(gameType==="word"){
 
 let wordData=generateWordGameData();
 
+if(type==="computer"){
+let tries=0;
+while(wordData.achievable.length<120 && tries<40){
+wordData=generateWordGameData();
+tries++;
+}
+}
+
+let computerResult=type==="computer" ? generateComputerWordResult(wordData) : null;
+
 games.push({
 baseLetters:wordData.baseLetters,
 achievable:wordData.achievable,
 fromScore:null,
-toScore:null,
+toScore:computerResult ? computerResult.score : null,
+toWordsFound:computerResult ? computerResult.wordsFound : null,
 fromPlayed:false,
-toPlayed:false
+toPlayed:type==="computer"
 });
 
 }
@@ -3407,9 +3466,9 @@ games.push({
 deck:hafizaData.deck,
 pairs:hafizaData.pairs,
 fromScore:null,
-toScore:null,
+toScore:type==="computer" ? randomComputerScore("hafiza") : null,
 fromPlayed:false,
-toPlayed:false
+toPlayed:type==="computer"
 });
 
 }
@@ -3421,9 +3480,9 @@ games.push({
 numbers:gameData.numbers,
 target:gameData.target,
 fromScore:null,
-toScore:null,
+toScore:type==="computer" ? randomComputerScore("math") : null,
 fromPlayed:false,
-toPlayed:false
+toPlayed:type==="computer"
 });
 
 }
@@ -3454,6 +3513,9 @@ let messageText;
 
 if(type==="friend"){
 messageText="Meydan okuma "+toUsername+" kullanıcısına gönderildi! ("+formatText+")<br>Kabul ettiğinde İstekler bölümünde görünecek.";
+}
+else if(type==="computer"){
+messageText="🤖 Bilgisayara karşı "+formatText+" meydan okuma başladı!<br>Oyunlarım menüsünden oynayabilirsin.";
 }
 else{
 messageText="🎉 "+toUsername+" için "+formatText+" meydan okuma oluşturuldu!<br>48 saat içinde oynamalısın, yoksa iptal olur.";
@@ -5231,7 +5293,7 @@ console.error("Bildirim sayısı güncellenemedi:",e);
 
 function buildCompletedChallengeHtml(c,otherName,mySide,friendNames){
 
-let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="computer" ? "Bilgisayar" : (c.type==="random" ? "Rastgele" : null));
 let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
 
 let fromTotal=c.games.reduce(function(s,g){return s+g.fromScore;},0);
@@ -5380,7 +5442,7 @@ items.forEach(function(c){
 
 let mySide=c.fromUsername===currentUser.username ? "from" : "to";
 let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
-let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="computer" ? "Bilgisayar" : (c.type==="random" ? "Rastgele" : null));
 let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
 
 let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
@@ -5525,7 +5587,7 @@ items.forEach(function(c){
 
 let mySide=c.fromUsername===currentUser.username ? "from" : "to";
 let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
-let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="random" ? "Rastgele" : null);
+let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="computer" ? "Bilgisayar" : (c.type==="random" ? "Rastgele" : null));
 let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
 let formatLabel=c.games.length===1 ? "" : " · "+c.games.length+" Oyun";
 
