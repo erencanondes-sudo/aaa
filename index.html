@@ -3275,6 +3275,15 @@ document.getElementById("challengeGameTypeScreen").style.display="block";
 }
 
 
+function challengeComputerFromHistory(){
+
+pendingOpponentChoice={type:"computer",opponent:"Bilgisayar 🤖"};
+
+showModalGameTypePicker();
+
+}
+
+
 function challengeFromProfile(username){
 
 pendingOpponentChoice={type:"friend",opponent:username};
@@ -3402,7 +3411,18 @@ let achievable=wordData.achievable.slice();
 
 let shuffled=achievable.sort(function(){ return Math.random()-0.5; });
 
-let possibleCounts=[9,10,11,12,13,14,15,16,17];
+let possibleCounts;
+
+if(achievable.length<150){
+possibleCounts=[8,9,10,11,12,13,14,15,16,17];
+}
+else if(achievable.length<200){
+possibleCounts=[12,13,14,15,16,17,18,19,20];
+}
+else{
+possibleCounts=[14,15,16,17,18,19,20,21];
+}
+
 let pickCount=possibleCounts[Math.floor(Math.random()*possibleCounts.length)];
 pickCount=Math.min(pickCount,shuffled.length);
 
@@ -3440,7 +3460,7 @@ let wordData=generateWordGameData();
 
 if(type==="computer"){
 let tries=0;
-while(wordData.achievable.length<120 && tries<40){
+while(wordData.achievable.length<100 && tries<40){
 wordData=generateWordGameData();
 tries++;
 }
@@ -5330,18 +5350,23 @@ html+="<button class=\"challenge-play-btn view-btn\" onclick=\"viewChallenge('"+
 html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">Mesajlaş 💬<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 html+="</div>";
 
+html+="<div class=\"btn-row\">";
+
 if(c.type==="friend"){
 html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\"challengeFromProfile('"+otherName+"')\">Meydan Oku ⚔️</button>";
+}
+else if(c.type==="computer"){
+html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\"challengeComputerFromHistory()\">Meydan Oku ⚔️</button>";
 }
 else{
 html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\"openChallengeRandom()\">Meydan Oku ⚔️</button>";
 }
 
 if(c.type==="friend" && !friendNames.has(otherName)){
-
 html+="<button class=\"challenge-play-btn add-friend-btn\" onclick=\"addFriend('"+otherName+"',this)\">Arkadaş Ekle ➕</button>";
-
 }
+
+html+="</div>";
 
 html+="</div>";
 
