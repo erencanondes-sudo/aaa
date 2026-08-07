@@ -22,6 +22,17 @@ body{
     background:#273c75;
     margin:0;
     padding:15px;
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -webkit-touch-callout:none;
+}
+
+input,textarea{
+    user-select:text;
+    -webkit-user-select:text;
+    -moz-user-select:text;
+    -webkit-touch-callout:default;
 }
 
 .game{
@@ -180,6 +191,9 @@ button{
     border-radius:15px;
     font-size:32px;
     user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -webkit-touch-callout:none;
     cursor:pointer;
     box-shadow:0 4px 0 #006ba3;
 }
@@ -943,8 +957,8 @@ button{
     flex:1;
     background:#dfe6e9;
     color:#636e72;
-    padding:12px 3px;
-    font-size:12px;
+    padding:11px 3px;
+    font-size:13px;
     font-weight:bold;
     box-shadow:none;
     white-space:nowrap;
@@ -1442,6 +1456,10 @@ button{
     cursor:pointer;
     transform-style:preserve-3d;
     transition:transform 0.4s;
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -webkit-touch-callout:none;
 }
 
 .mem-card.flipped{
@@ -1932,9 +1950,9 @@ button{
 </div>
 
 <div class="tab-buttons" style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">
-<button class="tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabGamesBtn" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
+<button class="tab-btn active" id="tabOngoingBtn" style="flex:0.8;" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabGamesBtn" style="flex:1.4;" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabChallengesBtn" style="flex:0.8;" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
 
 <div id="tabButtonsSpacer" style="height:50px;"></div>
