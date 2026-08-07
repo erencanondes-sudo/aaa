@@ -5354,7 +5354,7 @@ let formatLabel=totalGames===1 ? "" : " · "+totalGames+" Oyun";
 let html="";
 
 html+="<div class=\"challenge-item\">";
-html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+typeSuffix+"</span><span>"+(c.gameType==="word"?"Kelime Bulma":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":LEVEL_NAMES[c.level])+formatLabel+"</span></div>";
+html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span><span style=\"font-size:0.85em;\">"+(c.gameType==="word"?"Kelime":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":LEVEL_NAMES[c.level])+formatLabel+"</span></div>";
 
 let resultLabel;
 if(myTotal>opponentTotal)resultLabel=totalGames===1 ? "🎉 Kazandın" : "🎉 Seriyi kazandın";
@@ -5511,7 +5511,7 @@ remainingHours=Math.max(0,48-elapsedHours);
 }
 
 html+="<div class=\"challenge-item\">";
-html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+typeSuffix+"</span><span>"+(c.gameType==="word"?"Kelime Bulma":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":"İşlem ("+LEVEL_NAMES[c.level]+")")+formatLabel+"</span></div>";
+html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span><span style=\"font-size:0.85em;\">"+(c.gameType==="word"?"Kelime":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":"İşlem ("+LEVEL_NAMES[c.level]+")")+formatLabel+"</span></div>";
 
 if(mySidePlayedCurrent){
 
@@ -5520,7 +5520,7 @@ html+="<div class=\"h-bottom\">Sen "+(currentGameIndex+1)+". oyunu oynadın · R
 }
 else{
 
-html+="<div class=\"h-bottom\">"+currentGameIndex+"/"+totalGames+" oyun tamamlandı · Sırada "+(currentGameIndex+1)+". oyun var ("+remainingHours+" saat içinde oynamalısın)</div>";
+html+="<div class=\"h-bottom\">"+currentGameIndex+"/"+totalGames+" ("+remainingHours+" saat içinde oynamalısın)</div>";
 
 }
 
