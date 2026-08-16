@@ -3483,12 +3483,10 @@ if(gameType==="word"){
 
 let wordData=generateWordGameData();
 
-if(type==="computer"){
-let tries=0;
-while(wordData.achievable.length<100 && tries<40){
+let wordTries=0;
+while(wordData.achievable.length<100 && wordTries<40){
 wordData=generateWordGameData();
-tries++;
-}
+wordTries++;
 }
 
 let computerResult=type==="computer" ? generateComputerWordResult(wordData) : null;
