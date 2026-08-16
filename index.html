@@ -4563,7 +4563,7 @@ let gain=ctx.createGain();
 osc.type=type||"sine";
 osc.frequency.setValueAtTime(freq,startTime);
 
-gain.gain.setValueAtTime(volume||0.15,startTime);
+gain.gain.setValueAtTime(volume||0.225,startTime);
 gain.gain.exponentialRampToValueAtTime(0.001,startTime+duration);
 
 osc.connect(gain);
@@ -4579,121 +4579,121 @@ osc.stop(startTime+duration);
 
 function playSuccessSound(){
 
-playTone(523.25,0.12,"sine",0.3,0);
-playTone(659.25,0.15,"sine",0.3,0.09);
+playTone(523.25,0.12,"sine",0.45,0);
+playTone(659.25,0.15,"sine",0.45,0.09);
 
 }
 
 
 function playErrorSound(){
 
-playTone(220,0.13,"triangle",0.28,0);
-playTone(150,0.22,"triangle",0.28,0.12);
+playTone(220,0.13,"triangle",0.42,0);
+playTone(150,0.22,"triangle",0.42,0.12);
 
 }
 
 
 function playAlreadyFoundSound(){
 
-playTone(400,0.09,"triangle",0.2,0);
-playTone(400,0.09,"triangle",0.2,0.11);
+playTone(400,0.09,"triangle",0.3,0);
+playTone(400,0.09,"triangle",0.3,0.11);
 
 }
 
 
 function playMismatchSound(){
 
-playTone(220,0.13,"sine",0.5,0);
+playTone(220,0.13,"sine",0.75,0);
 
 }
 
 
 function playMatchSound(){
 
-playTone(660,0.1,"sine",0.3,0);
-playTone(880,0.15,"sine",0.3,0.08);
+playTone(660,0.1,"sine",0.45,0);
+playTone(880,0.15,"sine",0.45,0.08);
 
 }
 
 
 function playWinSound(){
 
-playTone(523.25,0.13,"sine",0.36,0);
-playTone(659.25,0.13,"sine",0.36,0.12);
-playTone(783.99,0.13,"sine",0.36,0.24);
-playTone(1046.5,0.3,"sine",0.36,0.36);
+playTone(523.25,0.13,"sine",0.54,0);
+playTone(659.25,0.13,"sine",0.54,0.12);
+playTone(783.99,0.13,"sine",0.54,0.24);
+playTone(1046.5,0.3,"sine",0.54,0.36);
 
 }
 
 
 function playClickSound(){
 
-playTone(880,0.05,"square",0.24,0);
+playTone(880,0.05,"square",0.36,0);
 
 }
 
 
 function playClickSoundBack(){
 
-playTone(440,0.06,"sine",0.32,0);
+playTone(440,0.06,"sine",0.48,0);
 
 }
 
 
 function playClickSoundTab(){
 
-playTone(1046.5,0.04,"triangle",0.28,0);
+playTone(1046.5,0.04,"triangle",0.42,0);
 
 }
 
 
 function playClickSoundLevel(){
 
-playTone(660,0.05,"sine",0.32,0);
+playTone(660,0.05,"sine",0.48,0);
 
 }
 
 
 function playClickSoundNewgame(){
 
-playTone(392,0.09,"sine",0.08,0);
-playTone(523.25,0.09,"sine",0.06,0);
-playTone(523.25,0.09,"sine",0.08,0.08);
-playTone(659.25,0.09,"sine",0.06,0.08);
-playTone(659.25,0.09,"sine",0.08,0.17);
-playTone(783.99,0.09,"sine",0.06,0.17);
-playTone(523.25,0.08,"sine",0.07,0.27);
-playTone(659.25,0.09,"sine",0.08,0.35);
-playTone(783.99,0.09,"sine",0.06,0.35);
-playTone(783.99,0.09,"sine",0.08,0.43);
-playTone(987.77,0.09,"sine",0.06,0.43);
-playTone(987.77,0.09,"sine",0.09,0.53);
-playTone(1174.66,0.09,"sine",0.07,0.53);
-playTone(783.99,0.08,"sine",0.07,0.63);
-playTone(880,0.09,"sine",0.08,0.71);
-playTone(1046.5,0.09,"sine",0.06,0.71);
-playTone(987.77,0.09,"sine",0.08,0.80);
-playTone(1174.66,0.09,"sine",0.06,0.80);
-playTone(1046.5,0.10,"sine",0.09,0.90);
-playTone(1318.51,0.10,"sine",0.07,0.90);
-playTone(1174.66,0.09,"sine",0.08,1.01);
-playTone(1396.91,0.09,"sine",0.06,1.01);
-playTone(1318.51,0.4,"sine",0.13,1.12);
-playTone(1567.98,0.4,"sine",0.10,1.12);
+playTone(392,0.09,"sine",0.12,0);
+playTone(523.25,0.09,"sine",0.09,0);
+playTone(523.25,0.09,"sine",0.12,0.08);
+playTone(659.25,0.09,"sine",0.09,0.08);
+playTone(659.25,0.09,"sine",0.12,0.17);
+playTone(783.99,0.09,"sine",0.09,0.17);
+playTone(523.25,0.08,"sine",0.105,0.27);
+playTone(659.25,0.09,"sine",0.12,0.35);
+playTone(783.99,0.09,"sine",0.09,0.35);
+playTone(783.99,0.09,"sine",0.12,0.43);
+playTone(987.77,0.09,"sine",0.09,0.43);
+playTone(987.77,0.09,"sine",0.135,0.53);
+playTone(1174.66,0.09,"sine",0.105,0.53);
+playTone(783.99,0.08,"sine",0.105,0.63);
+playTone(880,0.09,"sine",0.12,0.71);
+playTone(1046.5,0.09,"sine",0.09,0.71);
+playTone(987.77,0.09,"sine",0.12,0.80);
+playTone(1174.66,0.09,"sine",0.09,0.80);
+playTone(1046.5,0.10,"sine",0.135,0.90);
+playTone(1318.51,0.10,"sine",0.105,0.90);
+playTone(1174.66,0.09,"sine",0.12,1.01);
+playTone(1396.91,0.09,"sine",0.09,1.01);
+playTone(1318.51,0.4,"sine",0.195,1.12);
+playTone(1567.98,0.4,"sine",0.15,1.12);
 
 }
 
 
 function playClickSoundOperator(){
 
-playTone(660,0.06,"sine",0.16,0);
+playTone(660,0.06,"sine",0.24,0);
 
 }
 
 
 function playNewNumberSound(){
 
-playTone(740,0.08,"sine",0.1,0);
+playTone(740,0.08,"sine",0.15,0);
 
 }
 
@@ -4975,7 +4975,7 @@ bannerEl.classList.remove("score-visible");
 
 function playCountTickSound(){
 
-playTone(720,0.035,"sine",0.14,0);
+playTone(720,0.035,"sine",0.21,0);
 
 }
 
@@ -5026,26 +5026,26 @@ noise.stop(startTime+duration);
 
 function playWarningSound(){
 
-playTone(330,0.09,"sine",0.16,0);
-playTone(247,0.11,"sine",0.16,0.09);
+playTone(330,0.09,"sine",0.24,0);
+playTone(247,0.11,"sine",0.24,0.09);
 
 }
 
 
 function playShuffleSound(){
 
-playTone(300,0.05,"triangle",0.315,0);
-playTone(400,0.05,"triangle",0.315,0.05);
-playTone(500,0.05,"triangle",0.315,0.10);
-playTone(350,0.06,"triangle",0.315,0.15);
+playTone(300,0.05,"triangle",0.4725,0);
+playTone(400,0.05,"triangle",0.4725,0.05);
+playTone(500,0.05,"triangle",0.4725,0.10);
+playTone(350,0.06,"triangle",0.4725,0.15);
 
 }
 
 
 function playUndoSound(){
 
-playTone(500,0.08,"sine",0.18,0);
-playTone(350,0.09,"sine",0.18,0.06);
+playTone(500,0.08,"sine",0.27,0);
+playTone(350,0.09,"sine",0.27,0.06);
 
 }
 
