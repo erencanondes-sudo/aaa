@@ -6200,7 +6200,7 @@ if(restoredProgress){
 wordFound=new Set(restoredProgress.found);
 wordTiles=restoredProgress.tiles.map(function(t,i){
 let letter=(typeof t==="string") ? t : t.letter;
-let life=(typeof t==="string") ? (letter==='★' ? 5 : (Math.floor(Math.random()*5)+1)) : t.life;
+let life=(typeof t==="string") ? (letter==='★' ? 9 : (Math.floor(Math.random()*5)+1)) : t.life;
 return {letter:letter,used:false,id:i,life:life};
 });
 score=restoredProgress.score || 0;
@@ -6219,7 +6219,7 @@ else{
 wordFound=new Set();
 
 let order=shuffleArray([...wordBaseLetters,'★']);
-wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:l==='★' ? 5 : (Math.floor(Math.random()*5)+1)}));
+wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:l==='★' ? 9 : (Math.floor(Math.random()*5)+1)}));
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
@@ -7059,7 +7059,8 @@ let currentVowelCount=wordTiles.filter(function(t){ return t.letter!=='★' && V
 let willLoseVowel=VOWELS.includes(tile.letter);
 let vowelsAfterRemoval=willLoseVowel ? currentVowelCount-1 : currentVowelCount;
 
-let canBeJoker=(vowelsAfterRemoval>=2);
+let jokerAlreadyExists=wordTiles.some(function(t,tIdx){ return t.letter==='★' && tIdx!==idx; });
+let canBeJoker=(vowelsAfterRemoval>=2) && !jokerAlreadyExists;
 let becomesJoker=canBeJoker && Math.random()<0.15;
 
 if(becomesJoker){
