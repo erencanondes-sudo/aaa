@@ -201,11 +201,34 @@ button{
 
 .tile-life{
     position:absolute;
-    bottom:3px;
-    right:5px;
+    bottom:-4px;
+    right:-4px;
     font-size:11px;
     font-weight:bold;
-    opacity:0.85;
+    background:#44bd32;
+    color:white;
+    width:17px;
+    height:17px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1.5px solid white;
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+
+.tile-life-critical{
+    background:#e84118;
+}
+
+@keyframes tileLifeDrop{
+    0%{transform:scale(1);background:#e84118;}
+    40%{transform:scale(1.6);background:#e84118;}
+    100%{transform:scale(1);background:#44bd32;}
+}
+
+.tile-life-drop{
+    animation:tileLifeDrop 0.5s ease;
 }
 
 #cards .card{
@@ -6071,7 +6094,7 @@ setTimeout(function(){
 if(wordRevealToken!==revealSessionToken)return;
 
 animateLetterRoll(c,tiles[i].letter,450,function(){
-c.innerHTML+="<span class=\"tile-life\">"+tiles[i].life+"</span>";
+c.innerHTML+="<span class=\"tile-life"+(tiles[i].life===1 ? " tile-life-critical" : "")+"\">"+tiles[i].life+"</span>";
 });
 
 },i*110);
@@ -6222,7 +6245,7 @@ let c=document.createElement("div");
 
 c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
 c.dataset.id=t.id;
-c.innerHTML=(t.letter==='★' ? "★" : t.letter)+"<span class=\"tile-life\">"+t.life+"</span>";
+c.innerHTML=(t.letter==='★' ? "★" : t.letter)+"<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+t.life+"</span>";
 
 if(t.letter==='★'){
 c.onclick=function(){ tapWordTile(i); };
@@ -7019,6 +7042,7 @@ recordGameEnd("win",finalScore);
 }
 
 let replacedIndices=[];
+let decreasedIds=[];
 
 usedIndices.forEach(function(idx){
 
@@ -7026,15 +7050,25 @@ let tile=wordTiles[idx];
 
 tile.life--;
 
+decreasedIds.push(tile.id);
+
 if(tile.life<=0){
 
 let currentVowelCount=wordTiles.filter(function(t){ return t.letter!=='★' && VOWELS.includes(t.letter); }).length;
 let willLoseVowel=VOWELS.includes(tile.letter);
 let vowelsAfterRemoval=willLoseVowel ? currentVowelCount-1 : currentVowelCount;
 
-let pool=(vowelsAfterRemoval<2) ? VOWELS : WORD_ALPHABET;
+let canBeJoker=(vowelsAfterRemoval>=2);
+let becomesJoker=canBeJoker && Math.random()<0.15;
 
+if(becomesJoker){
+tile.letter='★';
+}
+else{
+let pool=(vowelsAfterRemoval<2) ? VOWELS : WORD_ALPHABET;
 tile.letter=pool[Math.floor(Math.random()*pool.length)];
+}
+
 tile.life=Math.floor(Math.random()*5)+1;
 
 replacedIndices.push(tile.id);
@@ -7046,7 +7080,8 @@ replacedIndices.push(tile.id);
 if(replacedIndices.length>0){
 
 wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
-wordAchievable=computeAchievableWords(wordBaseLetters);
+let recomputed=computeAchievableWords(wordBaseLetters);
+wordAchievable=Array.from(new Set([...recomputed,...wordFound]));
 updateWordTarget();
 
 }
@@ -7061,6 +7096,12 @@ updateWordOperationText();
 replacedIndices.forEach(function(id){
 let el=document.querySelector('#wordCards .card[data-id="'+id+'"]');
 if(el)el.classList.add("new-letter-pop");
+});
+
+decreasedIds.forEach(function(id){
+if(replacedIndices.includes(id))return;
+let el=document.querySelector('#wordCards .card[data-id="'+id+'"] .tile-life');
+if(el)el.classList.add("tile-life-drop");
 });
 
 },usedIndices.length*44+304);
