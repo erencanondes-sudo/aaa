@@ -196,6 +196,16 @@ button{
     -webkit-touch-callout:none;
     cursor:pointer;
     box-shadow:0 4px 0 #006ba3;
+    position:relative;
+}
+
+.tile-life{
+    position:absolute;
+    bottom:3px;
+    right:5px;
+    font-size:11px;
+    font-weight:bold;
+    opacity:0.85;
 }
 
 #cards .card{
@@ -235,6 +245,16 @@ button{
 
 .card-pop{
     animation:cardPop 0.45s ease;
+}
+
+@keyframes newLetterPop{
+    0%{transform:scale(0.3);opacity:0;box-shadow:0 0 0 0 rgba(255,221,89,0.9);}
+    50%{transform:scale(1.3);box-shadow:0 0 18px 8px rgba(255,221,89,0.9);}
+    100%{transform:scale(1);box-shadow:0 4px 0 #006ba3;}
+}
+
+.new-letter-pop{
+    animation:newLetterPop 0.5s ease;
 }
 
 
@@ -1710,9 +1730,7 @@ button{
 
 <div class="stats">
 <p>Başarı Yüzdesi: <span id="successPct">%0</span></p>
-<p>Puan Ortalaması (İşlem): <span id="avgScoreMath">0</span></p>
 <p>Puan Ortalaması (Kelime): <span id="avgScoreWord">0</span></p>
-<p>Puan Ortalaması (Hafıza): <span id="avgScoreHafiza">0</span></p>
 </div>
 
 <p id="welcomeText" class="welcome-text"></p>
@@ -1745,9 +1763,7 @@ button{
 <p>Kullanıcı Adı: <span id="profileUsername"></span></p>
 <p>E-posta: <span id="profileEmail"></span></p>
 <p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
-<p>Puan Ortalaması (İşlem): <span id="profileAvgScoreMath"></span></p>
 <p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
-<p>Puan Ortalaması (Hafıza): <span id="profileAvgScoreHafiza"></span></p>
 </div>
 
 <button class="challenge-play-btn btn-compact" onclick="showChangePasswordForm()">Şifre Değiştir 🔒</button>
@@ -1853,9 +1869,7 @@ button{
 
 <p class="screen-title" style="margin-top:20px;">Hangi oyunu oynamak istersin?</p>
 
-<button class="newgame" id="selectMathBtn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('math')">İşlem 🔢</button>
-<button class="newgame" id="selectWordBtn" style="margin-top:12px;" onclick="selectGameType('word')">Kelime Bulma 🔤</button>
-<button class="newgame" id="selectHafizaBtn" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectGameType('hafiza')">Hafıza Oyunu 🧠</button>
+<button class="newgame" id="selectWordBtn" onclick="selectGameType('word')">Kelime Bulma 🔤</button>
 
 </div>
 
@@ -1866,9 +1880,7 @@ button{
 
 <p class="screen-title">Hangi oyunla meydan okumak istersin?</p>
 
-<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectChallengeGameType('math')">İşlem 🔢</button>
-<button class="newgame" style="margin-top:12px;" onclick="selectChallengeGameType('word')">Kelime Bulma 🔤</button>
-<button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #b3641b;" onclick="selectChallengeGameType('hafiza')">Hafıza Oyunu 🧠</button>
+<button class="newgame" onclick="selectChallengeGameType('word')">Kelime Bulma 🔤</button>
 
 </div>
 
@@ -3419,17 +3431,6 @@ document.getElementById("challengeFormatScreen").style.display="flex";
 }
 
 
-function randomComputerScore(gameType){
-
-if(gameType==="hafiza"){
-return Math.floor(Math.random()*(600-200+1))+200;
-}
-
-return Math.floor(Math.random()*(500-150+1))+150;
-
-}
-
-
 function generateComputerWordResult(wordData){
 
 let achievable=wordData.achievable.slice();
@@ -3479,8 +3480,6 @@ let games=[];
 
 for(let i=0;i<gamesCount;i++){
 
-if(gameType==="word"){
-
 let wordData=generateWordGameData();
 
 let wordTries=0;
@@ -3500,36 +3499,6 @@ toWordsFound:computerResult ? computerResult.wordsFound : null,
 fromPlayed:false,
 toPlayed:type==="computer"
 });
-
-}
-else if(gameType==="hafiza"){
-
-let hafizaData=generateHafizaGameData(level);
-
-games.push({
-deck:hafizaData.deck,
-pairs:hafizaData.pairs,
-fromScore:null,
-toScore:type==="computer" ? randomComputerScore("hafiza") : null,
-fromPlayed:false,
-toPlayed:type==="computer"
-});
-
-}
-else{
-
-let gameData=generateGameData(level);
-
-games.push({
-numbers:gameData.numbers,
-target:gameData.target,
-fromScore:null,
-toScore:type==="computer" ? randomComputerScore("math") : null,
-fromPlayed:false,
-toPlayed:type==="computer"
-});
-
-}
 
 }
 
@@ -4057,9 +4026,7 @@ let challengeWins=challengeGames.filter(function(g){return g.result==="win";}).l
 let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
 
 document.getElementById("profileSuccessPct").innerHTML="%"+successPct;
-document.getElementById("profileAvgScoreMath").innerHTML=avgByLevel.mathCombined;
 document.getElementById("profileAvgScoreWord").innerHTML=avgByLevel.word;
-document.getElementById("profileAvgScoreHafiza").innerHTML=avgByLevel.hafiza;
 
 }
 
@@ -4112,7 +4079,7 @@ let friendBtn=isFriend
 
 document.getElementById("detailModalContent").innerHTML=
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
-"<p>Puan Ortalaması (Kolay): "+avgByLevel.easy+"</p><p>Puan Ortalaması (Orta): "+avgByLevel.medium+"</p><p>Puan Ortalaması (Zor): "+avgByLevel.hard+"</p><p>Puan Ortalaması (Kelime): "+avgByLevel.word+"</p><p>Puan Ortalaması (Hafıza): "+avgByLevel.hafiza+"</p>"+
+"<p>Puan Ortalaması (Kelime): "+avgByLevel.word+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>"+
 friendBtn;
 
@@ -5077,7 +5044,7 @@ console.error("İlerleme kaydedilemedi:",e);
 function saveWordProgress(){
 
 saveChallengeProgress({
-tiles:wordTiles.map(function(t){ return t.letter; }),
+tiles:wordTiles.map(function(t){ return {letter:t.letter,life:t.life}; }),
 found:Array.from(wordFound),
 score:score
 });
@@ -5755,9 +5722,7 @@ let challengeWins=challengeGames.filter(g=>g.result==="win").length;
 let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
 
 document.getElementById("successPct").innerHTML="%"+successPct;
-document.getElementById("avgScoreMath").innerHTML=avgByLevel.mathCombined;
 document.getElementById("avgScoreWord").innerHTML=avgByLevel.word;
-document.getElementById("avgScoreHafiza").innerHTML=avgByLevel.hafiza;
 
 }
 
@@ -6105,7 +6070,9 @@ setTimeout(function(){
 
 if(wordRevealToken!==revealSessionToken)return;
 
-animateLetterRoll(c,tiles[i].letter,450,function(){});
+animateLetterRoll(c,tiles[i].letter,450,function(){
+c.innerHTML+="<span class=\"tile-life\">"+tiles[i].life+"</span>";
+});
 
 },i*110);
 
@@ -6207,7 +6174,11 @@ document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "non
 if(restoredProgress){
 
 wordFound=new Set(restoredProgress.found);
-wordTiles=restoredProgress.tiles.map(function(l,i){ return {letter:l,used:false,id:i}; });
+wordTiles=restoredProgress.tiles.map(function(t,i){
+let letter=(typeof t==="string") ? t : t.letter;
+let life=(typeof t==="string") ? (letter==='★' ? 5 : (Math.floor(Math.random()*5)+1)) : t.life;
+return {letter:letter,used:false,id:i,life:life};
+});
 score=restoredProgress.score || 0;
 
 renderWordCards();
@@ -6224,7 +6195,7 @@ else{
 wordFound=new Set();
 
 let order=shuffleArray([...wordBaseLetters,'★']);
-wordTiles=order.map((l,i)=>({letter:l,used:false,id:i}));
+wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:l==='★' ? 5 : (Math.floor(Math.random()*5)+1)}));
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
@@ -6251,7 +6222,7 @@ let c=document.createElement("div");
 
 c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
 c.dataset.id=t.id;
-c.innerHTML=t.letter==='★' ? "★" : t.letter;
+c.innerHTML=(t.letter==='★' ? "★" : t.letter)+"<span class=\"tile-life\">"+t.life+"</span>";
 
 if(t.letter==='★'){
 c.onclick=function(){ tapWordTile(i); };
@@ -7046,9 +7017,53 @@ animateFinalWordScoreCountUp(finalScore,{title:"Oyun Sonlandı 🎉",screenCheck
 recordGameEnd("win",finalScore);
 
 }
+
+let replacedIndices=[];
+
+usedIndices.forEach(function(idx){
+
+let tile=wordTiles[idx];
+
+tile.life--;
+
+if(tile.life<=0){
+
+let currentVowelCount=wordTiles.filter(function(t){ return t.letter!=='★' && VOWELS.includes(t.letter); }).length;
+let willLoseVowel=VOWELS.includes(tile.letter);
+let vowelsAfterRemoval=willLoseVowel ? currentVowelCount-1 : currentVowelCount;
+
+let pool=(vowelsAfterRemoval<2) ? VOWELS : WORD_ALPHABET;
+
+tile.letter=pool[Math.floor(Math.random()*pool.length)];
+tile.life=Math.floor(Math.random()*5)+1;
+
+replacedIndices.push(tile.id);
+
+}
+
+});
+
+if(replacedIndices.length>0){
+
+wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
+wordAchievable=computeAchievableWords(wordBaseLetters);
+updateWordTarget();
+
+}
+
 wordSequence=[];
 wordTiles.forEach(t=>t.used=false);
-setTimeout(function(){ renderWordCards(); updateWordOperationText(); },usedIndices.length*44+304);
+setTimeout(function(){
+
+renderWordCards();
+updateWordOperationText();
+
+replacedIndices.forEach(function(id){
+let el=document.querySelector('#wordCards .card[data-id="'+id+'"]');
+if(el)el.classList.add("new-letter-pop");
+});
+
+},usedIndices.length*44+304);
 
 }
 else{
