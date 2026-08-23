@@ -4692,12 +4692,13 @@ function computeFinalWordScore(rawScore,achievableCount,extraBonus){
 
 extraBonus=extraBonus||0;
 
+if(!achievableCount || achievableCount<=0){
+return 2000;
+}
+
 let tierResult;
 
-if(!achievableCount || achievableCount<=0){
-tierResult=rawScore*2;
-}
-else if(achievableCount<15){
+if(achievableCount<15){
 tierResult=(rawScore*(140/achievableCount)*2)-150;
 }
 else if(achievableCount<140){
@@ -5857,24 +5858,24 @@ let j=Math.floor(Math.random()*(i+1));
 return a;
 }
 
-function canFormWord(word,baseLetters){
+function canFormWord(word,baseLetters,jokerCount){
 let pool=baseLetters.slice();
-let jokerAvailable=true;
+let jokersLeft=(jokerCount===undefined) ? 1 : jokerCount;
 let usedJoker=false;
 for(let ch of word){
 let idx=pool.indexOf(ch);
 if(idx!==-1){ pool.splice(idx,1); }
-else if(jokerAvailable){ jokerAvailable=false; usedJoker=true; }
+else if(jokersLeft>0){ jokersLeft--; usedJoker=true; }
 else return {ok:false};
 }
 if(usedJoker && word.length<5)return {ok:false};
 return {ok:true,usedJoker:usedJoker};
 }
 
-function computeAchievableWords(baseLetters){
+function computeAchievableWords(baseLetters,jokerCount){
 let result=[];
 DICTIONARY.forEach(w=>{
-if(canFormWord(w,baseLetters).ok)result.push(w);
+if(canFormWord(w,baseLetters,jokerCount).ok)result.push(w);
 });
 return result;
 }
@@ -7080,7 +7081,8 @@ replacedIndices.push(tile.id);
 if(replacedIndices.length>0){
 
 wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
-let recomputed=computeAchievableWords(wordBaseLetters);
+let currentJokerCount=wordTiles.filter(function(t){ return t.letter==='★'; }).length;
+let recomputed=computeAchievableWords(wordBaseLetters,currentJokerCount);
 wordAchievable=Array.from(new Set([...recomputed,...wordFound]));
 updateWordTarget();
 
