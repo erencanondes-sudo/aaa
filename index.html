@@ -2137,7 +2137,7 @@ Harf seçiniz
 </div>
 
 <div class="modal-overlay" id="jokerModal" onclick="if(event.target===this)cancelJokerPick()">
-<div class="modal-box">
+<div class="modal-box" style="margin-top:100px;">
 <p>Joker hangi harf olsun?</p>
 <div class="mini-keyboard" id="miniKeyboard"></div>
 </div>
@@ -3164,7 +3164,7 @@ time=0;
 
 if(selectedGameType==="word"){
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
 
 if(score>=300){
 recordGameEnd("win",finalScore);
@@ -4692,23 +4692,7 @@ function computeFinalWordScore(rawScore,achievableCount,extraBonus){
 
 extraBonus=extraBonus||0;
 
-if(!achievableCount || achievableCount<=0){
-return 2000;
-}
-
-let tierResult;
-
-if(achievableCount<15){
-tierResult=(rawScore*(140/achievableCount)*2)-150;
-}
-else if(achievableCount<140){
-tierResult=rawScore*(140/achievableCount)*2;
-}
-else{
-tierResult=(rawScore*2)+35;
-}
-
-return Math.round(tierResult+extraBonus);
+return Math.round(rawScore+extraBonus);
 
 }
 
@@ -5875,6 +5859,26 @@ let j=Math.floor(Math.random()*(i+1));
 return a;
 }
 
+function ensureJokerAtBottomLeft(){
+
+let jokerIdx=wordTiles.findIndex(function(t){ return t.letter==='★'; });
+
+if(jokerIdx===-1 || jokerIdx===4)return null;
+
+let tempLetter=wordTiles[4].letter;
+let tempLife=wordTiles[4].life;
+
+wordTiles[4].letter=wordTiles[jokerIdx].letter;
+wordTiles[4].life=wordTiles[jokerIdx].life;
+
+wordTiles[jokerIdx].letter=tempLetter;
+wordTiles[jokerIdx].life=tempLife;
+
+return {idA:wordTiles[4].id,idB:wordTiles[jokerIdx].id};
+
+}
+
+
 function canFormWord(word,baseLetters,jokerCount){
 let pool=baseLetters.slice();
 let jokersLeft=(jokerCount===undefined) ? 1 : jokerCount;
@@ -5948,7 +5952,7 @@ let pendingJokerIndex=null;
 
 function scoreForWord(word,usedJoker){
 
-const POINTS_BY_LENGTH={2:10,3:15,4:20,5:30,6:35,7:40,8:50};
+const POINTS_BY_LENGTH={2:20,3:30,4:40,5:65,6:75,7:85,8:100};
 
 return POINTS_BY_LENGTH[word.length] || 0;
 
@@ -6178,7 +6182,7 @@ clearInterval(timer);
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
 
 document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
@@ -6247,6 +6251,7 @@ wordFound=new Set();
 
 let order=shuffleArray([...wordBaseLetters,'★']);
 wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:l==='★' ? 9 : randomLifeForLetter(l)}));
+ensureJokerAtBottomLeft();
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
@@ -6318,38 +6323,7 @@ hoverEl=null;
 
 function onMove(ev){
 
-if(!canDrag)return;
-
-let dx=ev.clientX-startX;
-let dy=ev.clientY-startY;
-
-if(Math.abs(dx)>28 || Math.abs(dy)>28){
-
-if(!wordDragMoved){
-el.classList.add("tile-swap-color");
-}
-
-wordDragMoved=true;
-}
-
-el.style.transition="none";
-el.style.transform="translate("+dx+"px,"+dy+"px) scale(1.12)";
-
-if(wordDragMoved){
-
-let hoverIndex=findWordTileIndexAtPoint(ev.clientX,ev.clientY,index);
-let cards=document.querySelectorAll("#wordCards .card");
-let newHoverEl=(hoverIndex!==null && !wordTiles[hoverIndex].used) ? cards[hoverIndex] : null;
-
-if(newHoverEl!==hoverEl){
-clearHover();
-if(newHoverEl){
-newHoverEl.classList.add("drag-hover");
-hoverEl=newHoverEl;
-}
-}
-
-}
+return;
 
 }
 
@@ -6369,42 +6343,7 @@ el.style.zIndex="";
 
 }
 
-if(canDrag && wordDragMoved){
-
-let dropIndex=findWordTileIndexAtPoint(ev.clientX,ev.clientY,index);
-
-if(dropIndex!==null && !wordTiles[dropIndex].used){
-
-let tmp=wordTiles[index].letter;
-wordTiles[index].letter=wordTiles[dropIndex].letter;
-wordTiles[dropIndex].letter=tmp;
-
-renderWordCards();
-
-let cardsAfter=document.querySelectorAll("#wordCards .card");
-
-[index,dropIndex].forEach(function(i){
-
-let el=cardsAfter[i];
-if(!el)return;
-
-el.classList.add("swap-shake","tile-swap-color");
-
-setTimeout(function(){
-el.classList.remove("swap-shake","tile-swap-color");
-},220);
-
-});
-
-}
-else{
-
-renderWordCards();
-
-}
-
-}
-else{
+if(canDrag){
 
 tapWordTile(index);
 
@@ -6836,6 +6775,7 @@ wordSequence=[];
 wordHistory=[];
 wordTiles.forEach(t=>t.used=false);
 wordTiles=shuffleArray(wordTiles);
+ensureJokerAtBottomLeft();
 renderWordCards();
 updateWordOperationText();
 
@@ -6941,7 +6881,7 @@ function showWordsList(){
 if(!wordShowListBonusGiven){
 
 wordShowListBonusGiven=true;
-wordShowListBonus=4*time;
+wordShowListBonus=2*time;
 
 }
 
@@ -6979,7 +6919,7 @@ document.getElementById("wordTimeValue").innerHTML=0;
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
 
 document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
@@ -7057,7 +6997,7 @@ if(wordAchievable.length && wordFound.size>=wordAchievable.length && !resultReco
 
 clearInterval(timer);
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
 
 document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
@@ -7113,6 +7053,11 @@ replacedIndices.push(tile.id);
 });
 
 if(replacedIndices.length>0){
+
+let swapInfo=ensureJokerAtBottomLeft();
+if(swapInfo){
+replacedIndices.push(swapInfo.idA,swapInfo.idB);
+}
 
 wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
 let currentJokerCount=wordTiles.filter(function(t){ return t.letter==='★'; }).length;
@@ -8922,7 +8867,7 @@ clearInterval(timer);
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
-let finalScore=computeFinalWordScore(score,wordAchievable.length,computeWordLetterBonus(wordBaseLetters)+wordShowListBonus);
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
 
 document.getElementById("wordMessage").innerHTML=getWordScoreRatingInfo(finalScore).text || "Oyun bitti";
 
