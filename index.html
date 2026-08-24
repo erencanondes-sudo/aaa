@@ -2037,8 +2037,8 @@ button{
 <button class="tab-btn" style="flex:1;background:#9b59b6;color:white;" onclick="joinWeeklyTournament()">Haftalık Turnuva 📅</button>
 </div>
 
-<div class="tab-buttons" id="tournamentDailyRow" style="position:absolute;top:262px;left:12px;right:12px;margin:0;">
-<button class="tab-btn" style="flex:1;background:#00b894;color:white;" onclick="joinDailyTournament()">Günlük Turnuva ☀️</button>
+<div id="tournamentDailyRow" style="position:absolute;top:262px;left:12px;right:12px;margin:0;display:flex;justify-content:center;">
+<button class="tab-btn" style="flex:none;width:calc(50% - 4px);background:#00b894;color:white;" onclick="joinDailyTournament()">Günlük Turnuva ☀️</button>
 </div>
 
 <div id="tournamentTopSpacer" style="height:50px;"></div>
@@ -3524,6 +3524,11 @@ html+="<button class=\"newgame newgame-green\" onclick=\"joinTournament('"+t.id+
 
 if(iJoined && !expired){
 
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn\" style=\"background:#8e44ad;box-shadow:0 4px 0 #6c3483;\" onclick=\"openTournamentInvite('"+t.id+"')\">Arkadaş Davet Et ➕</button>";
+html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openTournamentChat('"+t.id+"')\">Sohbet 💬</button>";
+html+="</div>";
+
 for(let i=0;i<t.format;i++){
 
 let played=myEntry.scores[i]!==null;
@@ -3537,16 +3542,11 @@ else{
 roundLabel=played ? (i+1)+". Oyun (Oynadın) ✓" : (i+1)+". Oyunu Oyna ▶️";
 }
 
-let extraStyle="padding-top:7.5px;padding-bottom:7.5px;width:calc(85% - 20px);font-size:18px;"+(played?"opacity:0.5;":"");
+let extraStyle="padding-top:7.5px;padding-bottom:7.5px;width:calc(85% - 20px);font-size:18px;margin-top:12px;"+(played?"opacity:0.5;":"");
 
 html+="<button class=\"newgame\" "+(played?"disabled":"")+" style=\""+extraStyle+"\" onclick=\"playTournamentRound('"+t.id+"',"+i+")\">"+roundLabel+"</button>";
 
 }
-
-html+="<div class=\"btn-row\" style=\"margin-top:12px;\">";
-html+="<button class=\"challenge-play-btn\" style=\"background:#8e44ad;box-shadow:0 4px 0 #6c3483;\" onclick=\"openTournamentInvite('"+t.id+"')\">Arkadaş Davet Et ➕</button>";
-html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openTournamentChat('"+t.id+"')\">Sohbet 💬</button>";
-html+="</div>";
 
 }
 
