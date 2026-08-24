@@ -4323,6 +4323,24 @@ html+="<button class=\"challenge-play-btn newgame-green\" onclick=\"joinTourname
 html+="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shadow:0 4px 0 #c0392b;\" onclick=\"declineTournamentInvite('"+t.id+"',this)\">Reddet ❌</button>";
 html+="</div>";
 }
+else if(!isPast){
+
+let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
+let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s){ return s===null; }) : -1;
+
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+
+if(nextRoundIndex!==-1){
+html+="<button class=\"challenge-play-btn newgame-green\" onclick=\"playTournamentRound('"+t.id+"',"+nextRoundIndex+")\">Oyna ▶️</button>";
+}
+else{
+html+="<button class=\"challenge-play-btn\" disabled style=\"opacity:0.5;\">Oynadın ✓</button>";
+}
+
+html+="</div>";
+
+}
 else{
 html+="<button class=\"challenge-play-btn\" style=\"padding-top:7px;padding-bottom:7px;width:calc(100% - 30px);margin-left:15px;margin-right:15px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 }
