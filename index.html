@@ -129,6 +129,11 @@ button{
     box-shadow:0 4px 0 #0a5aa1;
 }
 
+#homeScreen .newgame{
+    padding-top:14px;
+    padding-bottom:14px;
+}
+
 .word-newgame-btn{
     padding-top:7.5px;
     padding-bottom:7.5px;
@@ -1770,7 +1775,7 @@ button{
 <button class="newgame newgame-green" onclick="openGameTypeChoice()">Yeni Oyun ▶️</button>
 <button class="newgame history-btn" onclick="showHistory()">Oyunlarım 🏠<span class="badge" id="historyBadge" style="display:none;">0</span></button>
 <button class="newgame tournament-btn" onclick="showTournaments()">Turnuva 🏆<span class="badge" id="tournamentBadge" style="display:none;">0</span></button>
-<button class="newgame profile-btn" onclick="showProfile()">Profil <span style="font-size:1.15em;">👤</span></button>
+<button class="newgame profile-btn" onclick="showProfile()">Profil <span>👤</span></button>
 <button class="newgame friends-btn" onclick="showFriends()">Arkadaşlar 👥</button>
 
 </div>
@@ -2267,7 +2272,8 @@ homeScreen:".stats",
 historyScreen:":scope > div",
 profileScreen:":scope > div",
 friendsScreen:":scope > div",
-gameTypeScreen:":scope > div"
+gameTypeScreen:":scope > div",
+tournamentScreen:":scope > div"
 };
 let adWasVisible={};
 
@@ -3520,7 +3526,9 @@ else{
 roundLabel=played ? (i+1)+". Oyun (Oynadın) ✓" : (i+1)+". Oyunu Oyna ▶️";
 }
 
-html+="<button class=\"newgame\" "+(played?"disabled style=\"opacity:0.5;\"":"")+" onclick=\"playTournamentRound('"+t.id+"',"+i+")\">"+roundLabel+"</button>";
+let extraStyle="padding-top:12.5px;padding-bottom:12.5px;"+(played?"opacity:0.5;":"");
+
+html+="<button class=\"newgame\" "+(played?"disabled":"")+" style=\""+extraStyle+"\" onclick=\"playTournamentRound('"+t.id+"',"+i+")\">"+roundLabel+"</button>";
 
 }
 
@@ -4105,7 +4113,7 @@ html+="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shado
 html+="</div>";
 }
 else{
-html+="<button class=\"challenge-play-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+html+="<button class=\"challenge-play-btn\" style=\"padding-top:9px;padding-bottom:9px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 }
 
 html+="</div>";
