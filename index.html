@@ -3802,7 +3802,7 @@ let played=myEntry.score!==null;
 
 let html="<p>Bugüne özel tek oyun, ilk 10'a gir!</p>";
 
-html+="<button class=\"newgame\" "+(played?"disabled style=\"opacity:0.5;\"":"")+" onclick=\"playDailyRound()\">"+(played?"Oynadın ✓":"Oyna ▶️")+"</button>";
+html+="<button class=\"newgame\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;padding-top:12px;padding-bottom:12px;font-size:23px;\" "+(played?"disabled":"")+" onclick=\"playDailyRound()\">"+(played?"Oynadın ✓":"Oyna ▶️")+"</button>";
 
 let sorted=t.participants.slice().sort(function(a,b){ return (b.score||0)-(a.score||0); }).slice(0,10);
 
@@ -4329,20 +4329,20 @@ let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s){ return s===null; }) : -1;
 
 html+="<div class=\"btn-row\">";
-html+="<button class=\"challenge-play-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+html+="<button class=\"challenge-play-btn view-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 
 if(nextRoundIndex!==-1){
 html+="<button class=\"challenge-play-btn newgame-green\" onclick=\"playTournamentRound('"+t.id+"',"+nextRoundIndex+")\">Oyna ▶️</button>";
 }
 else{
-html+="<button class=\"challenge-play-btn\" disabled style=\"opacity:0.5;\">Oynadın ✓</button>";
+html+="<button class=\"challenge-play-btn newgame-green\" disabled>Oynadın ✓</button>";
 }
 
 html+="</div>";
 
 }
 else{
-html+="<button class=\"challenge-play-btn\" style=\"padding-top:7px;padding-bottom:7px;width:calc(100% - 30px);margin-left:15px;margin-right:15px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+html+="<button class=\"challenge-play-btn view-btn\" style=\"padding-top:7px;padding-bottom:7px;width:calc(100% - 30px);margin-left:15px;margin-right:15px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 }
 
 html+="</div>";
