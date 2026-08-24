@@ -130,8 +130,8 @@ button{
 }
 
 #homeScreen .newgame{
-    padding-top:14px;
-    padding-bottom:14px;
+    padding-top:13.5px;
+    padding-bottom:13.5px;
 }
 
 .word-newgame-btn{
@@ -2037,6 +2037,10 @@ button{
 <button class="tab-btn" style="flex:1;background:#9b59b6;color:white;" onclick="joinWeeklyTournament()">Haftalık Turnuva 📅</button>
 </div>
 
+<div class="tab-buttons" id="tournamentDailyRow" style="position:absolute;top:262px;left:12px;right:12px;margin:0;">
+<button class="tab-btn" style="flex:1;background:#00b894;color:white;" onclick="joinDailyTournament()">Günlük Turnuva ☀️</button>
+</div>
+
 <div id="tournamentTopSpacer" style="height:50px;"></div>
 
 <div class="tab-buttons" id="tournamentTabButtons" style="position:relative;">
@@ -3056,6 +3060,13 @@ return;
 
 }
 
+if(activeDailyTournament){
+
+recordDailyScore(finalScore);
+return;
+
+}
+
 if(activeChallengeId){
 
 let entry=buildGameEntry(result,finalScore);
@@ -3358,11 +3369,11 @@ document.getElementById("tabTournamentOngoingBtn").classList.add("active");
 document.getElementById("tabTournamentPastBtn").classList.remove("active");
 document.getElementById("tabTournamentInviteBtn").classList.remove("active");
 
-let topButtonsEl=document.getElementById("tournamentTopButtons");
+let dailyRowEl=document.getElementById("tournamentDailyRow");
 let anaWrapperEl=document.querySelector("#tournamentScreen > div");
-let topButtonsBottom=topButtonsEl.getBoundingClientRect().bottom;
+let dailyRowBottom=dailyRowEl.getBoundingClientRect().bottom;
 let anaWrapperBottom=anaWrapperEl.getBoundingClientRect().bottom;
-let neededSpacer=(topButtonsBottom-anaWrapperBottom)+8;
+let neededSpacer=(dailyRowBottom-anaWrapperBottom)+8;
 document.getElementById("tournamentTopSpacer").style.height=Math.max(neededSpacer,20)+"px";
 
 renderTournamentLists();
@@ -3526,7 +3537,7 @@ else{
 roundLabel=played ? (i+1)+". Oyun (Oynadın) ✓" : (i+1)+". Oyunu Oyna ▶️";
 }
 
-let extraStyle="padding-top:12.5px;padding-bottom:12.5px;"+(played?"opacity:0.5;":"");
+let extraStyle="padding-top:7.5px;padding-bottom:7.5px;width:calc(85% - 20px);font-size:18px;"+(played?"opacity:0.5;":"");
 
 html+="<button class=\"newgame\" "+(played?"disabled":"")+" style=\""+extraStyle+"\" onclick=\"playTournamentRound('"+t.id+"',"+i+")\">"+roundLabel+"</button>";
 
@@ -3668,6 +3679,206 @@ function getCurrentWeekId(){
 let bounds=getCurrentWeekBounds();
 let d=new Date(bounds.start);
 return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+
+}
+
+
+function getCurrentDayBounds(){
+
+let now=new Date();
+let start=new Date(now);
+start.setHours(0,0,0,0);
+
+let end=new Date(now);
+end.setHours(23,59,59,999);
+
+return {start:start.getTime(),end:end.getTime()};
+
+}
+
+
+function getCurrentDayId(){
+
+let d=new Date();
+return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+
+}
+
+
+function joinDailyTournament(){
+
+let bounds=getCurrentDayBounds();
+let dayId=getCurrentDayId();
+
+let dailyRef=db.collection("dailyTournaments").doc(dayId);
+
+dailyRef.get().then(function(doc){
+
+if(doc.exists){
+
+joinDailyDoc(dailyRef,doc.data());
+
+}
+else{
+
+let wordData=generateWordGameData();
+let tries=0;
+while(wordData.achievable.length<100 && tries<40){
+wordData=generateWordGameData();
+tries++;
+}
+
+let newDoc={
+dayStartMillis:bounds.start,
+dayEndMillis:bounds.end,
+round:{baseLetters:wordData.baseLetters,achievable:wordData.achievable},
+participantUids:[],
+participants:[]
+};
+
+dailyRef.set(newDoc).then(function(){
+joinDailyDoc(dailyRef,newDoc);
+});
+
+}
+
+}).catch(function(e){
+console.error("Günlük turnuva yüklenemedi:",e);
+});
+
+}
+
+
+function joinDailyDoc(dailyRef,t){
+
+let proceedToView=function(){
+hideAllScreens();
+document.getElementById("tournamentDetailScreen").style.display="block";
+viewDailyTournament();
+};
+
+if(t.participantUids.includes(currentUser.uid)){
+proceedToView();
+return;
+}
+
+let updatedParticipants=t.participants.slice();
+updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,score:null,joinedAt:Date.now()});
+
+dailyRef.update({
+participantUids:firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+participants:updatedParticipants
+}).then(proceedToView);
+
+}
+
+
+function viewDailyTournament(){
+
+document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+
+let dayId=getCurrentDayId();
+
+db.collection("dailyTournaments").doc(dayId).get().then(function(doc){
+
+let t=doc.data();
+t.id=doc.id;
+
+renderDailyTournamentDetail(t);
+
+}).catch(function(e){
+console.error("Günlük turnuva yüklenemedi:",e);
+});
+
+}
+
+
+function renderDailyTournamentDetail(t){
+
+document.getElementById("tournamentDetailTitle").innerHTML="☀️ Günlük Turnuva";
+
+let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
+let played=myEntry.score!==null;
+
+let html="<p>Bugüne özel tek oyun, ilk 10'a gir!</p>";
+
+html+="<button class=\"newgame\" "+(played?"disabled style=\"opacity:0.5;\"":"")+" onclick=\"playDailyRound()\">"+(played?"Oynadın ✓":"Oyna ▶️")+"</button>";
+
+let sorted=t.participants.slice().sort(function(a,b){ return (b.score||0)-(a.score||0); }).slice(0,10);
+
+html+="<p style=\"margin-top:16px;font-weight:bold;\">İlk 10</p>";
+
+if(sorted.length===0){
+html+="<p>Henüz kimse oynamadı.</p>";
+}
+
+sorted.forEach(function(p,idx){
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+(p.score||0)+" puan</span></div></div>";
+});
+
+document.getElementById("tournamentDetailContent").innerHTML=html;
+
+}
+
+
+let activeDailyTournament=false;
+
+function playDailyRound(){
+
+let dayId=getCurrentDayId();
+
+db.collection("dailyTournaments").doc(dayId).get().then(function(doc){
+
+let t=doc.data();
+let round=t.round;
+
+activeDailyTournament=true;
+
+selectedGameType="word";
+activeChallengeId=null;
+activeTournamentId=null;
+activeWeeklyRoundIndex=null;
+
+hideAllScreens();
+document.getElementById("playArea").style.display="block";
+document.getElementById("gameContent").style.display="none";
+document.getElementById("hafizaGameContent").style.display="none";
+document.getElementById("wordGameContent").style.display="block";
+
+startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
+
+}).catch(function(e){
+console.error("Günlük oyun yüklenemedi:",e);
+});
+
+}
+
+
+function recordDailyScore(finalScore){
+
+if(!activeDailyTournament)return;
+
+let dayId=getCurrentDayId();
+let dailyRef=db.collection("dailyTournaments").doc(dayId);
+
+dailyRef.get().then(function(doc){
+
+let t=doc.data();
+let updatedParticipants=t.participants.map(function(p){
+
+if(p.uid!==currentUser.uid)return p;
+
+return Object.assign({},p,{score:finalScore});
+
+});
+
+dailyRef.update({participants:updatedParticipants}).then(function(){
+viewDailyTournament();
+});
+
+});
+
+activeDailyTournament=false;
 
 }
 
@@ -4113,7 +4324,7 @@ html+="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shado
 html+="</div>";
 }
 else{
-html+="<button class=\"challenge-play-btn\" style=\"padding-top:9px;padding-bottom:9px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+html+="<button class=\"challenge-play-btn\" style=\"padding-top:7px;padding-bottom:7px;width:calc(100% - 30px);margin-left:15px;margin-right:15px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 }
 
 html+="</div>";
