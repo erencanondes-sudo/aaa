@@ -5822,12 +5822,12 @@ let DICTIONARY = new Set(EMBEDDED_WORDS);
 
 const LETTER_TABLE = {
 A:{freq:5,min:1,max:5}, B:{freq:2,min:1,max:4}, C:{freq:2,min:1,max:3}, Ç:{freq:2,min:1,max:4},
-D:{freq:2,min:1,max:4}, E:{freq:4,min:1,max:5}, F:{freq:2,min:1,max:3}, G:{freq:2,min:1,max:2},
+D:{freq:2,min:1,max:4}, E:{freq:4,min:1,max:5}, F:{freq:2,min:1,max:3}, G:{freq:1,min:1,max:2},
 Ğ:{freq:1,min:1,max:2}, H:{freq:2,min:1,max:3}, I:{freq:3,min:1,max:4}, İ:{freq:3,min:1,max:5},
 J:{freq:1,min:1,max:2}, K:{freq:5,min:1,max:5}, L:{freq:4,min:1,max:5}, M:{freq:4,min:1,max:5},
 N:{freq:3,min:1,max:5}, O:{freq:2,min:1,max:4}, Ö:{freq:1,min:1,max:3}, P:{freq:2,min:1,max:3},
 R:{freq:4,min:1,max:5}, S:{freq:3,min:1,max:5}, Ş:{freq:2,min:1,max:4}, T:{freq:4,min:1,max:5},
-U:{freq:2,min:1,max:4}, Ü:{freq:2,min:1,max:3}, V:{freq:2,min:1,max:3}, Y:{freq:2,min:1,max:4},
+U:{freq:2,min:1,max:4}, Ü:{freq:2,min:1,max:3}, V:{freq:1,min:1,max:3}, Y:{freq:2,min:1,max:4},
 Z:{freq:2,min:1,max:4}
 };
 const VOWELS=['A','E','I','İ','O','Ö','U','Ü'];
@@ -5953,7 +5953,7 @@ let pendingJokerIndex=null;
 
 function scoreForWord(word,usedJoker){
 
-const POINTS_BY_LENGTH={2:20,3:30,4:40,5:65,6:75,7:85,8:100};
+const POINTS_BY_LENGTH={2:10,3:15,4:25,5:55,6:70,7:85,8:100};
 
 return POINTS_BY_LENGTH[word.length] || 0;
 
