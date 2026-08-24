@@ -3543,6 +3543,8 @@ tournamentRef.update({
 participantUids:firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
 participants:updatedParticipants
 }).then(function(){
+hideAllScreens();
+document.getElementById("tournamentDetailScreen").style.display="block";
 viewTournament(tournamentId);
 });
 
@@ -3571,6 +3573,8 @@ activeChallengeId=null;
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
+document.getElementById("gameContent").style.display="none";
+document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
@@ -3584,6 +3588,7 @@ function recordTournamentScore(finalScore){
 
 if(!activeTournamentId)return;
 
+let myTournamentId=activeTournamentId;
 let tournamentRef=db.collection("tournaments").doc(activeTournamentId);
 let myRoundIndex=activeTournamentRoundIndex;
 
@@ -3603,7 +3608,9 @@ return Object.assign({},p,{scores:newScores,totalScore:newTotal});
 
 });
 
-tournamentRef.update({participants:updatedParticipants});
+tournamentRef.update({participants:updatedParticipants}).then(function(){
+viewTournament(myTournamentId);
+});
 
 });
 
@@ -3744,11 +3751,9 @@ document.getElementById("tournamentDetailTitle").innerHTML="📅 Haftalık Turnu
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 
 let now=Date.now();
-let dayShortNames=["Pzt","Sal","Çar","Per","Cum","Cts","Paz"];
+let dayNames=["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"];
 
 let html="<p>Her gün 1 oyun oyna, ilk 10'a gir!</p>";
-
-html+="<div class=\"btn-row\" style=\"flex-wrap:nowrap;\">";
 
 for(let i=0;i<7;i++){
 
@@ -3758,18 +3763,16 @@ let dayArrived=now>=dayStartMillis;
 let played=myEntry.dailyScores[i]!==null;
 
 if(!dayArrived){
-html+="<button class=\"challenge-play-btn\" disabled style=\"background:#b2bec3;box-shadow:0 4px 0 #7f8c8d;opacity:0.6;\">"+dayShortNames[i]+"</button>";
+html+="<button class=\"newgame\" disabled style=\"background:#74b9ff;box-shadow:0 4px 0 #4a90d9;opacity:0.55;\">"+dayNames[i]+" (Henüz gelmedi)</button>";
 }
 else if(played){
-html+="<button class=\"challenge-play-btn\" disabled style=\"background:#636e72;box-shadow:0 4px 0 #444b4d;opacity:0.7;\">"+dayShortNames[i]+" ✓</button>";
+html+="<button class=\"newgame\" disabled style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;opacity:0.5;\">"+dayNames[i]+" ✓ Oynadın</button>";
 }
 else{
-html+="<button class=\"challenge-play-btn\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;\" onclick=\"playWeeklyRound("+i+")\">"+dayShortNames[i]+"</button>";
+html+="<button class=\"newgame\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;\" onclick=\"playWeeklyRound("+i+")\">"+dayNames[i]+" Oyna ▶️</button>";
 }
 
 }
-
-html+="</div>";
 
 let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.totalScore; }).slice(0,10);
 
@@ -3807,6 +3810,8 @@ activeTournamentId=null;
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
+document.getElementById("gameContent").style.display="none";
+document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
@@ -3843,7 +3848,9 @@ return Object.assign({},p,{dailyScores:newScores,totalScore:newTotal});
 
 });
 
-weeklyRef.update({participants:updatedParticipants});
+weeklyRef.update({participants:updatedParticipants}).then(function(){
+viewWeeklyTournament();
+});
 
 });
 
@@ -3965,9 +3972,11 @@ console.error("Arkadaş listesi yüklenemedi:",e);
 
 function sendTournamentInviteTo(tournamentId,username){
 
-db.collection("tournaments").doc(tournamentId).update({
-invitedUsernames:firebase.firestore.FieldValue.arrayUnion(username)
-}).then(function(){
+let updatePayload={};
+updatePayload.invitedUsernames=firebase.firestore.FieldValue.arrayUnion(username);
+updatePayload["inviteSources."+username]=currentUser.username;
+
+db.collection("tournaments").doc(tournamentId).update(updatePayload).then(function(){
 
 let btn=document.querySelector('#tournamentInviteFriendsList button[onclick*="'+username+'"]');
 if(btn){
@@ -3989,9 +3998,11 @@ let username=document.getElementById("tournamentInviteUsername").value.trim();
 
 if(!username)return;
 
-db.collection("tournaments").doc(tournamentId).update({
-invitedUsernames:firebase.firestore.FieldValue.arrayUnion(username)
-}).then(function(){
+let updatePayload={};
+updatePayload.invitedUsernames=firebase.firestore.FieldValue.arrayUnion(username);
+updatePayload["inviteSources."+username]=currentUser.username;
+
+db.collection("tournaments").doc(tournamentId).update(updatePayload).then(function(){
 
 closeDetailModal();
 
@@ -4031,9 +4042,9 @@ let myIds=new Set(mine.map(function(t){ return t.id; }));
 let inviteCombined=[...invitedList,...publicList].filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
 let inviteUnique=Array.from(new Map(inviteCombined.map(function(t){ return [t.id,t]; })).values());
 
-renderTournamentGroup(ongoingEl,ongoing,false);
-renderTournamentGroup(pastEl,past,true);
-renderTournamentGroup(inviteEl,inviteUnique,false);
+renderTournamentGroup(ongoingEl,ongoing,false,false);
+renderTournamentGroup(pastEl,past,true,false);
+renderTournamentGroup(inviteEl,inviteUnique,false,true);
 
 }).catch(function(e){
 console.error("Turnuvalar yüklenemedi:",e);
@@ -4043,7 +4054,7 @@ ongoingEl.innerHTML="<p>Yüklenirken hata oluştu.</p>";
 }
 
 
-function renderTournamentGroup(container,list,isPast){
+function renderTournamentGroup(container,list,isPast,isInviteTab){
 
 if(list.length===0){
 container.innerHTML="<p>"+(isPast?"Geçmiş turnuvan yok.":"Şu an listelenecek turnuva yok.")+"</p>";
@@ -4054,14 +4065,44 @@ let html="";
 
 list.forEach(function(t){
 
+let invitedBy=(t.inviteSources && t.inviteSources[currentUser.username]) ? t.inviteSources[currentUser.username] : null;
+
 html+="<div class=\"challenge-item\">";
 html+="<div class=\"h-top\"><span>"+(t.visibility==="public"?"🌍 ":"🔒 ")+t.creatorUsername+"</span><span style=\"font-size:0.85em;\">"+t.format+" oyunluk</span></div>";
+
+if(isInviteTab && invitedBy){
+html+="<p style=\"margin:4px 0;font-size:0.85em;color:#636e72;\">"+invitedBy+" seni davet etti</p>";
+}
+
+if(isInviteTab){
+html+="<button class=\"challenge-play-btn newgame-green\" onclick=\"joinTournament('"+t.id+"')\">Katıl 🏆</button>";
+html+="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shadow:0 4px 0 #c0392b;\" onclick=\"declineTournamentInvite('"+t.id+"',this)\">Reddet ❌</button>";
+}
+else{
 html+="<button class=\"challenge-play-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+}
+
 html+="</div>";
 
 });
 
 container.innerHTML=html;
+
+}
+
+
+function declineTournamentInvite(tournamentId,btnEl){
+
+db.collection("tournaments").doc(tournamentId).update({
+invitedUsernames:firebase.firestore.FieldValue.arrayRemove(currentUser.username)
+}).then(function(){
+
+let item=btnEl.closest(".challenge-item");
+if(item)item.remove();
+
+}).catch(function(e){
+console.error("Davet reddedilemedi:",e);
+});
 
 }
 
