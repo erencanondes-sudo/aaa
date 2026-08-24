@@ -2020,12 +2020,14 @@ button{
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
-<div class="btn-row" style="margin-top:8px;">
-<button class="challenge-play-btn" style="background:#f39c12;box-shadow:0 4px 0 #b9770e;" onclick="openTournamentCreate()">Turnuva Oluştur 🏆</button>
-<button class="challenge-play-btn" style="background:#9b59b6;box-shadow:0 4px 0 #71368a;" onclick="joinWeeklyTournament()">Haftalık Turnuva 📅</button>
+<div class="tab-buttons" id="tournamentTopButtons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
+<button class="tab-btn" style="flex:1;background:#f39c12;color:white;" onclick="openTournamentCreate()">Turnuva Oluştur 🏆</button>
+<button class="tab-btn" style="flex:1;background:#9b59b6;color:white;" onclick="joinWeeklyTournament()">Haftalık Turnuva 📅</button>
 </div>
 
-<div class="tab-buttons" id="tournamentTabButtons" style="position:relative;margin-top:16px;">
+<div id="tournamentTopSpacer" style="height:50px;"></div>
+
+<div class="tab-buttons" id="tournamentTabButtons" style="position:relative;">
 <button class="tab-btn active" id="tabTournamentOngoingBtn" style="flex:1;" onclick="switchTournamentTab('ongoing')">Turnuvalar<span class="badge" id="tournamentOngoingBadge" style="display:none;">0</span></button>
 <button class="tab-btn" id="tabTournamentPastBtn" style="flex:1;" onclick="switchTournamentTab('past')">Geçmiş<span class="badge" id="tournamentPastBadge" style="display:none;">0</span></button>
 <button class="tab-btn" id="tabTournamentInviteBtn" style="flex:1;" onclick="switchTournamentTab('invite')">Davet<span class="badge" id="tournamentInviteBadge" style="display:none;">0</span></button>
@@ -3343,6 +3345,13 @@ document.getElementById("tabTournamentOngoingBtn").classList.add("active");
 document.getElementById("tabTournamentPastBtn").classList.remove("active");
 document.getElementById("tabTournamentInviteBtn").classList.remove("active");
 
+let topButtonsEl=document.getElementById("tournamentTopButtons");
+let anaWrapperEl=document.querySelector("#tournamentScreen > div");
+let topButtonsBottom=topButtonsEl.getBoundingClientRect().bottom;
+let anaWrapperBottom=anaWrapperEl.getBoundingClientRect().bottom;
+let neededSpacer=(topButtonsBottom-anaWrapperBottom)+8;
+document.getElementById("tournamentTopSpacer").style.height=Math.max(neededSpacer,20)+"px";
+
 renderTournamentLists();
 
 }
@@ -3735,27 +3744,32 @@ document.getElementById("tournamentDetailTitle").innerHTML="📅 Haftalık Turnu
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 
 let now=Date.now();
-let dayNames=["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"];
+let dayShortNames=["Pzt","Sal","Çar","Per","Cum","Cts","Paz"];
 
 let html="<p>Her gün 1 oyun oyna, ilk 10'a gir!</p>";
 
+html+="<div class=\"btn-row\" style=\"flex-wrap:nowrap;\">";
+
 for(let i=0;i<7;i++){
 
-let dayStartMillis=t.weekStartMillis+i*86400000;
+let unlockDayIndex=(i===6) ? 5 : i;
+let dayStartMillis=t.weekStartMillis+unlockDayIndex*86400000;
 let dayArrived=now>=dayStartMillis;
 let played=myEntry.dailyScores[i]!==null;
 
 if(!dayArrived){
-html+="<button class=\"newgame\" disabled style=\"opacity:0.4;\">"+dayNames[i]+" (Henüz gelmedi)</button>";
+html+="<button class=\"challenge-play-btn\" disabled style=\"background:#b2bec3;box-shadow:0 4px 0 #7f8c8d;opacity:0.6;\">"+dayShortNames[i]+"</button>";
 }
 else if(played){
-html+="<button class=\"newgame\" disabled style=\"opacity:0.5;\">"+dayNames[i]+" ✓ Oynadın</button>";
+html+="<button class=\"challenge-play-btn\" disabled style=\"background:#636e72;box-shadow:0 4px 0 #444b4d;opacity:0.7;\">"+dayShortNames[i]+" ✓</button>";
 }
 else{
-html+="<button class=\"newgame\" onclick=\"playWeeklyRound("+i+")\">"+dayNames[i]+" Oyna ▶️</button>";
+html+="<button class=\"challenge-play-btn\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;\" onclick=\"playWeeklyRound("+i+")\">"+dayShortNames[i]+"</button>";
 }
 
 }
+
+html+="</div>";
 
 let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.totalScore; }).slice(0,10);
 
