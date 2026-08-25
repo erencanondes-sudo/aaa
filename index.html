@@ -1944,8 +1944,8 @@ button{
 
 <div id="randomWaitScreen" style="display:none;">
 
-<button class="back-arrow-btn" onclick="cancelRandomQueue();window.history.back();">←</button>
-<button class="back-btn" onclick="cancelRandomQueue();goHome();">Ana Sayfa</button>
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <div style="font-size:50px;margin:30px 0 10px 0;" class="random-wait-pulse">🔀</div>
 
@@ -3222,10 +3222,6 @@ resultRecorded=true;
 
 
 function hideAllScreens(){
-
-if(document.getElementById("randomWaitScreen").style.display==="block"){
-cancelRandomQueue();
-}
 
 if(!suppressScreenPush){
 
