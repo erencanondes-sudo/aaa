@@ -264,19 +264,9 @@ button{
     box-shadow:0 1px 0 #a83217;
 }
 
-@keyframes randomWaitPulse{
-    0%,100%{transform:scale(1);opacity:0.8;}
-    50%{transform:scale(1.2);opacity:1;}
-}
-
 @keyframes randomWaitColor{
     0%,100%{color:#0984e3;}
     50%{color:#e17055;}
-}
-
-.random-wait-pulse{
-    animation:randomWaitPulse 1.2s ease-in-out infinite;
-    display:inline-block;
 }
 
 .random-wait-text{
@@ -1947,9 +1937,7 @@ button{
 <button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<div style="font-size:50px;margin:30px 0 10px 0;" class="random-wait-pulse">🔀</div>
-
-<p class="random-wait-text">Rakip eşleşmesi bekleniyor...</p>
+<p class="random-wait-text" style="margin-top:40px;">Eşleşme bekleniyor</p>
 
 </div>
 
@@ -4741,9 +4729,16 @@ db.collection("randomQueue").where("matchedChallengeId","==",null).orderBy("join
 let opponentDoc=null;
 
 snap.forEach(function(doc){
-if(!opponentDoc && doc.id!==currentUser.uid){
+
+if(opponentDoc || doc.id===currentUser.uid)return;
+
+let data=doc.data();
+let joinedMillis=(data.joinedAt && data.joinedAt.toMillis) ? data.joinedAt.toMillis() : 0;
+
+if(joinedMillis && (Date.now()-joinedMillis)>86400000)return;
+
 opponentDoc=doc;
-}
+
 });
 
 if(opponentDoc){
