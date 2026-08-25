@@ -1982,6 +1982,7 @@ button{
 
 <button class="level-btn level-easy" onclick="createChallenge(1)">Tek Oyun</button>
 <button class="level-btn level-medium" onclick="createChallenge(3)">3 Oyun</button>
+<button class="level-btn level-hard" onclick="createChallenge(10)">10 Oyun</button>
 
 </div>
 
@@ -3404,8 +3405,9 @@ else document.getElementById("tabTournamentInviteBtn").classList.add("active");
 function openTournamentCreate(){
 
 let html="<p class=\"screen-title\" style=\"margin-top:0;\">Turnuva Formatı</p>";
-html+="<button class=\"newgame\" onclick=\"selectTournamentFormat(1)\">Tek Oyunluk</button>";
-html+="<button class=\"newgame\" style=\"margin-top:12px;\" onclick=\"selectTournamentFormat(3)\">3 Oyunluk</button>";
+html+="<button class=\"newgame\" onclick=\"selectTournamentFormat(1)\">1 Oyun (24 saat)</button>";
+html+="<button class=\"newgame\" style=\"margin-top:12px;\" onclick=\"selectTournamentFormat(3)\">3 Oyun (48 saat)</button>";
+html+="<button class=\"newgame\" style=\"margin-top:12px;\" onclick=\"selectTournamentFormat(10)\">10 Oyun (1 hafta)</button>";
 
 openDetailModal(html);
 
@@ -3444,6 +3446,18 @@ rounds.push({baseLetters:wordData.baseLetters,achievable:wordData.achievable});
 
 let now=Date.now();
 
+let durationMillis;
+
+if(pendingTournament.format===1){
+durationMillis=86400000;
+}
+else if(pendingTournament.format===3){
+durationMillis=172800000;
+}
+else{
+durationMillis=604800000;
+}
+
 let tournamentData={
 creatorUid:currentUser.uid,
 creatorUsername:currentUser.username,
@@ -3452,7 +3466,7 @@ format:pendingTournament.format,
 gameType:"word",
 rounds:rounds,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-expiresAtMillis:now+86400000,
+expiresAtMillis:now+durationMillis,
 participantUids:[currentUser.uid],
 participants:[{uid:currentUser.uid,username:currentUser.username,scores:new Array(pendingTournament.format).fill(null),totalScore:0,joinedAt:now}],
 invitedUsernames:[]
@@ -3553,7 +3567,9 @@ html+="<button class=\"newgame\" "+(played?"disabled":"")+" style=\""+extraStyle
 html+="<p style=\"margin-top:16px;font-weight:bold;\">Sıralama</p>";
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div></div>";
+let playedCount=p.scores.filter(function(s){ return s!==null; }).length;
+let avgScore=playedCount>0 ? Math.round(p.totalScore/playedCount) : 0;
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">"+playedCount+"/"+t.format+" oyun · Ort: "+avgScore+"</p></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -3606,11 +3622,21 @@ activeTournamentRoundIndex=roundIndex;
 selectedGameType="word";
 activeChallengeId=null;
 
+clearInterval(timer);
+time=120;
+score=0;
+resultRecorded=false;
+gameActive=true;
+
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
+document.getElementById("levelSelect").style.display="none";
+document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
+document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordScoreValue").innerHTML=0;
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
 
@@ -3813,7 +3839,7 @@ html+="<p>Henüz kimse oynamadı.</p>";
 }
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+(p.score||0)+" puan</span></div></div>";
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+(p.score||0)+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">"+(p.score!==null?"1":"0")+"/1 oyun · Ort: "+(p.score||0)+"</p></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -3839,11 +3865,21 @@ activeChallengeId=null;
 activeTournamentId=null;
 activeWeeklyRoundIndex=null;
 
+clearInterval(timer);
+time=120;
+score=0;
+resultRecorded=false;
+gameActive=true;
+
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
+document.getElementById("levelSelect").style.display="none";
+document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
+document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordScoreValue").innerHTML=0;
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
 
@@ -4018,7 +4054,9 @@ html+="<p>Henüz kimse oynamadı.</p>";
 }
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div></div>";
+let playedCount=p.dailyScores.filter(function(s){ return s!==null; }).length;
+let avgScore=playedCount>0 ? Math.round(p.totalScore/playedCount) : 0;
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">"+playedCount+"/7 oyun · Ort: "+avgScore+"</p></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -4043,11 +4081,21 @@ selectedGameType="word";
 activeChallengeId=null;
 activeTournamentId=null;
 
+clearInterval(timer);
+time=120;
+score=0;
+resultRecorded=false;
+gameActive=true;
+
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
+document.getElementById("levelSelect").style.display="none";
+document.getElementById("loading").style.display="none";
 document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
+document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordScoreValue").innerHTML=0;
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
 
@@ -4547,6 +4595,7 @@ let html="";
 html+="<p class=\"screen-title\" style=\"margin-top:0;\">Kaç oyunluk meydan okuma göndermek istersin?</p>";
 html+="<button class=\"newgame challenge-btn\" onclick=\"createChallenge(1,true)\">Tek Oyun</button>";
 html+="<button class=\"newgame challenge-btn\" style=\"margin-top:12px;\" onclick=\"createChallenge(3,true)\">3 Oyun</button>";
+html+="<button class=\"newgame challenge-btn\" style=\"margin-top:12px;\" onclick=\"createChallenge(10,true)\">10 Oyun</button>";
 
 document.getElementById("detailModalContent").innerHTML=html;
 
@@ -7361,7 +7410,8 @@ document.getElementById("wordGameContent").style.display="block";
 
 playClickSoundNewgame();
 
-document.getElementById("wordNewGameBtn").style.display=activeChallengeId ? "none" : "block";
+let inManagedContext=activeChallengeId || activeTournamentId || activeWeeklyRoundIndex!==null || activeDailyTournament;
+document.getElementById("wordNewGameBtn").style.display=inManagedContext ? "none" : "block";
 
 if(restoredProgress){
 
