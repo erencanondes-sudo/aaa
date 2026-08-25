@@ -3542,7 +3542,7 @@ else{
 roundLabel=played ? (i+1)+". Oyun (Oynadın) ✓" : (i+1)+". Oyunu Oyna ▶️";
 }
 
-let extraStyle="padding-top:7.5px;padding-bottom:7.5px;width:calc(85% - 20px);font-size:18px;margin-top:12px;"+(played?"opacity:0.5;":"");
+let extraStyle="background:#44bd32;box-shadow:0 4px 0 #2f8a22;padding-top:6.5px;padding-bottom:6.5px;width:calc(85% - 26px);font-size:17px;margin-top:12px;";
 
 html+="<button class=\"newgame\" "+(played?"disabled":"")+" style=\""+extraStyle+"\" onclick=\"playTournamentRound('"+t.id+"',"+i+")\">"+roundLabel+"</button>";
 
@@ -3802,7 +3802,7 @@ let played=myEntry.score!==null;
 
 let html="<p>Bugüne özel tek oyun, ilk 10'a gir!</p>";
 
-html+="<button class=\"newgame\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;padding-top:12px;padding-bottom:12px;font-size:23px;\" "+(played?"disabled":"")+" onclick=\"playDailyRound()\">"+(played?"Oynadın ✓":"Oyna ▶️")+"</button>";
+html+="<button class=\"newgame\" style=\"background:#44bd32;box-shadow:0 4px 0 #2f8a22;padding-top:10px;padding-bottom:10px;font-size:22px;\" "+(played?"disabled":"")+" onclick=\"playDailyRound()\">"+(played?"Oynadın ✓":"Oyna ▶️")+"</button>";
 
 let sorted=t.participants.slice().sort(function(a,b){ return (b.score||0)-(a.score||0); }).slice(0,10);
 
