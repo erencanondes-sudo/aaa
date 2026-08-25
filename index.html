@@ -2844,6 +2844,7 @@ document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
 loadGameHistory().then(renderHomeStats);
 
 startChallengesListener();
+startTournamentsListener();
 
 }
 
@@ -4401,36 +4402,35 @@ let ongoingEl=document.getElementById("tournamentOngoingList");
 let pastEl=document.getElementById("tournamentPastList");
 let inviteEl=document.getElementById("tournamentInviteList");
 
-ongoingEl.innerHTML="<p>Yükleniyor...</p>";
-pastEl.innerHTML="<p>Yükleniyor...</p>";
-inviteEl.innerHTML="<p>Yükleniyor...</p>";
-
-let myTournaments=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).get();
-let invited=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).get();
-let publicOpen=db.collection("tournaments").where("visibility","==","public").get();
-
-Promise.all([myTournaments,invited,publicOpen]).then(function(results){
-
 let now=Date.now();
 
-let mine=results[0].docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-let invitedList=results[1].docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-let publicList=results[2].docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+let mine=liveTournamentsData ? Object.values(liveTournamentsData) : [];
+let invitedList=liveTournamentInvitesData ? Object.values(liveTournamentInvitesData) : [];
 
 let ongoing=mine.filter(function(t){ return now<=t.expiresAtMillis; });
 let past=mine.filter(function(t){ return now>t.expiresAtMillis; });
 
 let myIds=new Set(mine.map(function(t){ return t.id; }));
-let inviteCombined=[...invitedList,...publicList].filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
-let inviteUnique=Array.from(new Map(inviteCombined.map(function(t){ return [t.id,t]; })).values());
+let inviteUnique=invitedList.filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
 
 renderTournamentGroup(ongoingEl,ongoing,false,false);
 renderTournamentGroup(pastEl,past,true,false);
-renderTournamentGroup(inviteEl,inviteUnique,false,true);
+
+inviteEl.innerHTML="<p>Yükleniyor...</p>";
+
+db.collection("tournaments").where("visibility","==","public").get().then(function(snap){
+
+let publicList=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+let publicOpen=publicList.filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
+
+let combined=[...inviteUnique,...publicOpen];
+let combinedUnique=Array.from(new Map(combined.map(function(t){ return [t.id,t]; })).values());
+
+renderTournamentGroup(inviteEl,combinedUnique,false,true);
 
 }).catch(function(e){
-console.error("Turnuvalar yüklenemedi:",e);
-ongoingEl.innerHTML="<p>Yüklenirken hata oluştu.</p>";
+console.error("Herkese açık turnuvalar yüklenemedi:",e);
+renderTournamentGroup(inviteEl,inviteUnique,false,true);
 });
 
 }
@@ -4717,7 +4717,14 @@ let randomQueueUnsubscribe=null;
 
 function openChallengeRandom(){
 
-if(inRandomQueue)return;
+if(inRandomQueue){
+
+hideAllScreens();
+document.getElementById("randomWaitScreen").style.display="block";
+
+return;
+
+}
 
 inRandomQueue=true;
 
@@ -5452,6 +5459,7 @@ function logoutUser(){
 auth.signOut().then(function(){
 
 stopChallengesListener();
+stopTournamentsListener();
 
 if(badgeRefreshInterval){
 clearInterval(badgeRefreshInterval);
@@ -9419,6 +9427,118 @@ liveChallengesData=null;
 }
 
 
+let liveTournamentsData=null;
+let liveTournamentInvitesData=null;
+let tournamentsUnsubMine=null;
+let tournamentsUnsubInvites=null;
+
+function startTournamentsListener(){
+
+if(tournamentsUnsubMine || tournamentsUnsubInvites)return;
+
+liveTournamentsData={};
+liveTournamentInvitesData={};
+
+tournamentsUnsubMine=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).onSnapshot(function(snap){
+
+snap.docChanges().forEach(function(change){
+if(change.type==="removed"){
+delete liveTournamentsData[change.doc.id];
+}
+else{
+liveTournamentsData[change.doc.id]=Object.assign({id:change.doc.id},change.doc.data());
+}
+});
+
+updateTournamentBadge();
+
+let tournamentScreenEl=document.getElementById("tournamentScreen");
+if(tournamentScreenEl && tournamentScreenEl.style.display!=="none"){
+renderTournamentLists();
+}
+
+},function(e){
+console.error("Turnuva dinleyicisi hata:",e);
+});
+
+tournamentsUnsubInvites=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).onSnapshot(function(snap){
+
+snap.docChanges().forEach(function(change){
+if(change.type==="removed"){
+delete liveTournamentInvitesData[change.doc.id];
+}
+else{
+liveTournamentInvitesData[change.doc.id]=Object.assign({id:change.doc.id},change.doc.data());
+}
+});
+
+updateTournamentBadge();
+
+let tournamentScreenEl=document.getElementById("tournamentScreen");
+if(tournamentScreenEl && tournamentScreenEl.style.display!=="none"){
+renderTournamentLists();
+}
+
+},function(e){
+console.error("Turnuva davet dinleyicisi hata:",e);
+});
+
+}
+
+
+function stopTournamentsListener(){
+
+if(tournamentsUnsubMine){
+tournamentsUnsubMine();
+tournamentsUnsubMine=null;
+}
+
+if(tournamentsUnsubInvites){
+tournamentsUnsubInvites();
+tournamentsUnsubInvites=null;
+}
+
+liveTournamentsData=null;
+liveTournamentInvitesData=null;
+
+}
+
+
+function updateTournamentBadge(){
+
+if(!liveTournamentsData || !liveTournamentInvitesData)return;
+
+let now=Date.now();
+let count=0;
+
+Object.values(liveTournamentsData).forEach(function(t){
+
+if(now>t.expiresAtMillis)return;
+
+let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
+if(!myEntry)return;
+
+let hasUnplayed=myEntry.scores.some(function(s){ return s===null; });
+if(hasUnplayed)count++;
+
+});
+
+count+=Object.keys(liveTournamentInvitesData).length;
+
+let badgeEl=document.getElementById("tournamentBadge");
+if(badgeEl){
+if(count>0){
+badgeEl.innerHTML=count;
+badgeEl.style.display="inline-block";
+}
+else{
+badgeEl.style.display="none";
+}
+}
+
+}
+
+
 let challengesOnlyCache=null;
 let challengesOnlyCacheTime=0;
 
@@ -10389,7 +10509,7 @@ let dy=e.touches[0].clientY-historyDragStartY;
 
 if(historyDragLocked===null){
 
-if(Math.abs(dx)<8 && Math.abs(dy)<8)return;
+if(Math.abs(dx)<5 && Math.abs(dy)<5)return;
 
 historyDragLocked=Math.abs(dx)>Math.abs(dy) ? "x" : "y";
 
@@ -10435,7 +10555,7 @@ historyTabsTrackEl.classList.add("animated");
 
 let idx=HISTORY_TAB_ORDER.indexOf(currentHistoryTab);
 let moved=historyDragCurrentOffset-historyDragBaseOffset;
-let threshold=33.3333/8;
+let threshold=33.3333/14;
 
 if(moved<-threshold && idx<HISTORY_TAB_ORDER.length-1){
 
@@ -10492,7 +10612,7 @@ let dy=e.touches[0].clientY-tournamentDragStartY;
 
 if(tournamentDragLocked===null){
 
-if(Math.abs(dx)<8 && Math.abs(dy)<8)return;
+if(Math.abs(dx)<5 && Math.abs(dy)<5)return;
 
 tournamentDragLocked=Math.abs(dx)>Math.abs(dy) ? "x" : "y";
 
@@ -10537,7 +10657,7 @@ tournamentTabsTrackEl.classList.add("animated");
 
 let idx=TOURNAMENT_TAB_ORDER.indexOf(currentTournamentTab);
 let moved=tournamentDragCurrentOffset-tournamentDragBaseOffset;
-let threshold=33.3333/8;
+let threshold=33.3333/14;
 
 if(moved<-threshold && idx<TOURNAMENT_TAB_ORDER.length-1){
 
