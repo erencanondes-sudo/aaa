@@ -726,14 +726,14 @@ button{
 .history-btn{
     background:#8e44ad;
     box-shadow:0 4px 0 #6c3483;
-    margin-top:12px;
+    margin-top:11px;
     position:relative;
 }
 
 .tournament-btn{
     background:#f39c12;
     box-shadow:0 4px 0 #b9770e;
-    margin-top:12px;
+    margin-top:11px;
     position:relative;
 }
 
@@ -772,7 +772,7 @@ button{
 .profile-btn{
     background:#0097e6;
     box-shadow:0 4px 0 #006ba3;
-    margin-top:12px;
+    margin-top:11px;
 }
 
 .profile-btn:active{
@@ -783,7 +783,7 @@ button{
 .friends-btn{
     background:#e17055;
     box-shadow:0 4px 0 #b04a34;
-    margin-top:12px;
+    margin-top:11px;
 }
 
 .friends-btn:active{
@@ -1994,7 +1994,7 @@ button{
 
 <p class="screen-title" id="challengeDoneText"></p>
 
-<button class="newgame" onclick="showHistory()">Oyunlarım 🎮</button>
+<button class="newgame" onclick="goToHistoryFromChallengeDone()">Oyunlarım 🎮</button>
 
 </div>
 
@@ -5010,7 +5010,7 @@ if(inModal){
 
 let html="<div id=\"modalChallengeEnvelope\" class=\"envelope-anim\" style=\"font-size:60px;margin:10px 0;text-align:center;\">✉️</div>";
 html+="<p class=\"screen-title\">"+messageText+"</p>";
-html+="<button class=\"newgame\" onclick=\"closeDetailModal();showHistory();\">Oyunlarım 🎮</button>";
+html+="<button class=\"newgame\" onclick=\"closeDetailModal();goToHistoryFromChallengeDone();\">Oyunlarım 🎮</button>";
 
 document.getElementById("detailModalContent").innerHTML=html;
 
@@ -5905,6 +5905,17 @@ document.getElementById("detailModalContent").innerHTML=html;
 document.getElementById("detailModalContent").innerHTML="<p>Yüklenemedi: "+e.message+"</p>";
 
 });
+
+}
+
+
+function goToHistoryFromChallengeDone(){
+
+screenNavStack=[{id:"homeScreen",display:"block"}];
+
+suppressScreenPush=true;
+showHistory();
+suppressScreenPush=false;
 
 }
 
