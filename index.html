@@ -703,6 +703,48 @@ button{
     margin:10px auto 20px auto;
 }
 
+.profile-icon-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin:10px 0 20px 0;
+}
+
+.profile-icon-row .profile-icon{
+    margin:0;
+}
+
+.title-confetti{
+    display:inline-block;
+    font-size:28px;
+}
+
+.title-confetti.mirrored{
+    display:inline-block;
+    transform:scaleX(-1);
+}
+
+@keyframes confettiBurst{
+    0%{transform:scale(0) rotate(0deg);opacity:0;}
+    50%{transform:scale(1.4) rotate(20deg);opacity:1;}
+    100%{transform:scale(1) rotate(0deg);opacity:1;}
+}
+
+@keyframes confettiBurstMirrored{
+    0%{transform:scaleX(-1) scale(0) rotate(0deg);opacity:0;}
+    50%{transform:scaleX(-1) scale(1.4) rotate(-20deg);opacity:1;}
+    100%{transform:scaleX(-1) scale(1) rotate(0deg);opacity:1;}
+}
+
+.title-confetti.burst{
+    animation:confettiBurst 0.6s ease-out;
+}
+
+.title-confetti.mirrored.burst{
+    animation:confettiBurstMirrored 0.6s ease-out;
+}
+
 .stats{
     background:#f1f2f6;
     border-radius:14px;
@@ -1703,7 +1745,7 @@ button{
 
 <div class="game">
 
-<h1>Konfeti</h1>
+<h1><span class="title-confetti" id="titleConfettiLeft">🎉</span>Konfeti<span class="title-confetti mirrored" id="titleConfettiRight">🎉</span></h1>
 
 <div id="fakeAdBanner" style="display:none;position:absolute;left:20px;right:20px;height:144px;z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
 <button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
@@ -1781,7 +1823,11 @@ button{
 
 <p id="welcomeText" class="welcome-text"></p>
 
+<div class="profile-icon-row">
+<span class="title-confetti" id="profileConfettiLeft">🎉</span>
 <div class="profile-icon">👤</div>
+<span class="title-confetti mirrored" id="profileConfettiRight">🎉</span>
+</div>
 
 <button class="newgame newgame-green" onclick="openGameTypeChoice()">Yeni Oyun ▶️</button>
 <button class="newgame history-btn" onclick="showHistory()">Oyunlarım 🏠<span class="badge" id="historyBadge" style="display:none;">0</span></button>
@@ -2845,6 +2891,28 @@ loadGameHistory().then(renderHomeStats);
 
 startChallengesListener();
 startTournamentsListener();
+
+burstHomeConfetti();
+
+}
+
+
+function burstHomeConfetti(){
+
+let ids=["titleConfettiLeft","titleConfettiRight","profileConfettiLeft","profileConfettiRight"];
+
+ids.forEach(function(id){
+
+let el=document.getElementById(id);
+if(!el)return;
+
+el.classList.remove("burst");
+void el.offsetWidth;
+el.classList.add("burst");
+
+});
+
+launchMemConfetti("extra",false);
 
 }
 
