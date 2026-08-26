@@ -4412,7 +4412,7 @@ renderTournamentGroup(pastEl,past,true,false);
 
 inviteEl.innerHTML="<p>Yükleniyor...</p>";
 
-db.collection("tournaments").where("visibility","==","public").get().then(function(snap){
+db.collection("tournaments").where("visibility","==","public").limit(50).get().then(function(snap){
 
 let publicList=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
 let publicOpen=publicList.filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
@@ -6678,7 +6678,6 @@ checkAndForfeitExpiredRound(c);
 });
 
 let pendingCount=0;
-let ongoingActionCount=0;
 let ongoingListe=[];
 let oyunlarimListe=[];
 
@@ -6697,17 +6696,24 @@ oyunlarimListe.push({c:c,mySide:mySide});
 }
 else{
 
-let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
-let currentGame=c.games[currentGameIndex];
-let mySidePlayedCurrent=mySide==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
-
-if(!mySidePlayedCurrent)ongoingActionCount++;
-
 ongoingListe.push({c:c,mySide:mySide});
 
 }
 
 }
+
+});
+
+let ongoingActionCount=0;
+
+ongoingListe.forEach(function(item){
+
+let c=item.c;
+let mySide=item.mySide;
+let currentGame=c.games.find(function(g){ return !(g.fromPlayed && g.toPlayed); });
+let mySidePlayedCurrent=mySide==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
+
+if(!mySidePlayedCurrent)ongoingActionCount++;
 
 });
 
@@ -9343,10 +9349,19 @@ liveChallengesData={};
 
 let incomingReady=false;
 let outgoingReady=false;
+let handleLiveUpdateTimeout=null;
 
 function handleLiveUpdate(){
 
 if(!incomingReady || !outgoingReady)return;
+
+if(handleLiveUpdateTimeout){
+clearTimeout(handleLiveUpdateTimeout);
+}
+
+handleLiveUpdateTimeout=setTimeout(function(){
+
+handleLiveUpdateTimeout=null;
 
 updateChallengeBadge();
 
@@ -9357,9 +9372,11 @@ renderHistoryList(true);
 renderChallengesList(true);
 }
 
+},300);
+
 }
 
-challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).onSnapshot(function(snap){
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(300).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9377,7 +9394,7 @@ handleLiveUpdate();
 console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
 });
 
-challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).onSnapshot(function(snap){
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(300).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9427,7 +9444,7 @@ if(tournamentsUnsubMine || tournamentsUnsubInvites)return;
 liveTournamentsData={};
 liveTournamentInvitesData={};
 
-tournamentsUnsubMine=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).onSnapshot(function(snap){
+tournamentsUnsubMine=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).limit(200).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9449,7 +9466,7 @@ renderTournamentLists();
 console.error("Turnuva dinleyicisi hata:",e);
 });
 
-tournamentsUnsubInvites=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).onSnapshot(function(snap){
+tournamentsUnsubInvites=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).limit(200).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
