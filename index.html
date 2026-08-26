@@ -2830,6 +2830,9 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
+let perfStart=performance.now();
+console.log("[PERF] onLoginSuccess başladı, hesap:",profile.username);
+
 currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email};
 
 flushPendingGameFromStorage();
@@ -2841,9 +2844,18 @@ let firstName=profile.name.trim().split(/\s+/)[0];
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
 
-loadGameHistory().then(renderHomeStats);
+console.log("[PERF] Ana sayfa gösterildi:",Math.round(performance.now()-perfStart)+"ms");
 
+loadGameHistory().then(function(){
+console.log("[PERF] loadGameHistory tamamlandı:",Math.round(performance.now()-perfStart)+"ms");
+renderHomeStats();
+console.log("[PERF] renderHomeStats tamamlandı:",Math.round(performance.now()-perfStart)+"ms");
+});
+
+console.log("[PERF] startChallengesListener çağrılıyor:",Math.round(performance.now()-perfStart)+"ms");
 startChallengesListener();
+
+console.log("[PERF] startTournamentsListener çağrılıyor:",Math.round(performance.now()-perfStart)+"ms");
 startTournamentsListener();
 
 burstHomeConfetti();
@@ -6670,12 +6682,6 @@ if(!currentUser)return;
 
 fetchChallengesOnly().then(function(all){
 
-Object.values(all).forEach(function(c){
-if(c.status==="accepted" && !c.games.every(function(g){ return g.fromPlayed && g.toPlayed; })){
-checkAndForfeitExpiredRound(c);
-}
-});
-
 let pendingCount=0;
 let ongoingListe=[];
 let oyunlarimListe=[];
@@ -6741,6 +6747,7 @@ let gamesBadge=document.getElementById("gamesBadge");
 if(homeTotal>0){
 homeBadge.innerHTML=homeTotal;
 homeBadge.style.display="flex";
+console.log("[PERF] Oyunlarım rozeti göründü, değer:",homeTotal,"zaman:",Math.round(performance.now()));
 }
 else{
 homeBadge.style.display="none";
@@ -9344,6 +9351,8 @@ function startChallengesListener(){
 
 if(challengesUnsubIncoming || challengesUnsubOutgoing)return;
 
+let listenerPerfStart=performance.now();
+
 liveChallengesData={};
 
 let incomingReady=false;
@@ -9375,7 +9384,7 @@ renderChallengesList(true);
 
 }
 
-challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(300).onSnapshot(function(snap){
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(100).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9387,13 +9396,14 @@ liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.do
 });
 
 incomingReady=true;
+console.log("[PERF] Meydan okuma dinleyicisi (gelen) ilk veri geldi:",Math.round(performance.now()-listenerPerfStart)+"ms, belge sayısı:",snap.size);
 handleLiveUpdate();
 
 },function(e){
 console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
 });
 
-challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(300).onSnapshot(function(snap){
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(100).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9405,6 +9415,7 @@ liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.do
 });
 
 outgoingReady=true;
+console.log("[PERF] Meydan okuma dinleyicisi (giden) ilk veri geldi:",Math.round(performance.now()-listenerPerfStart)+"ms, belge sayısı:",snap.size);
 handleLiveUpdate();
 
 },function(e){
