@@ -3432,12 +3432,7 @@ let rounds=[];
 
 for(let i=0;i<pendingTournament.format;i++){
 
-let wordData=generateWordGameData();
-let tries=0;
-while(wordData.achievable.length<100 && tries<40){
-wordData=generateWordGameData();
-tries++;
-}
+let wordData=generateWordGameData(100);
 
 rounds.push({baseLetters:wordData.baseLetters,achievable:wordData.achievable});
 
@@ -3837,12 +3832,7 @@ joinDailyDoc(dailyRef,doc.data());
 }
 else{
 
-let wordData=generateWordGameData();
-let tries=0;
-while(wordData.achievable.length<100 && tries<40){
-wordData=generateWordGameData();
-tries++;
-}
+let wordData=generateWordGameData(100);
 
 let newDoc={
 dayStartMillis:bounds.start,
@@ -4036,12 +4026,7 @@ let dailyRounds=[];
 
 for(let i=0;i<7;i++){
 
-let wordData=generateWordGameData();
-let tries=0;
-while(wordData.achievable.length<100 && tries<40){
-wordData=generateWordGameData();
-tries++;
-}
+let wordData=generateWordGameData(100);
 
 dailyRounds.push({baseLetters:wordData.baseLetters,achievable:wordData.achievable});
 
@@ -4778,12 +4763,7 @@ let opponentData=opponentDoc.data();
 
 selectedGameType="word";
 
-let wordData=generateWordGameData();
-let tries=0;
-while(wordData.achievable.length<100 && tries<40){
-wordData=generateWordGameData();
-tries++;
-}
+let wordData=generateWordGameData(100);
 
 let challengeData={
 fromUid:currentUser.uid,
@@ -4959,13 +4939,7 @@ let games=[];
 
 for(let i=0;i<gamesCount;i++){
 
-let wordData=generateWordGameData();
-
-let wordTries=0;
-while(wordData.achievable.length<100 && wordTries<40){
-wordData=generateWordGameData();
-wordTries++;
-}
+let wordData=generateWordGameData(100);
 
 let computerResult=type==="computer" ? generateComputerWordResult(wordData) : null;
 
@@ -6689,7 +6663,7 @@ if(!currentUser)return;
 fetchChallengesOnly().then(function(all){
 
 Object.values(all).forEach(function(c){
-if(c.status==="accepted"){
+if(c.status==="accepted" && !c.games.every(function(g){ return g.fromPlayed && g.toPlayed; })){
 checkAndForfeitExpiredRound(c);
 }
 });
@@ -7354,12 +7328,12 @@ return {idA:wordTiles[4].id,idB:wordTiles[jokerIdx].id};
 
 
 function canFormWord(word,baseLetters,jokerCount){
-let pool=baseLetters.slice();
+let counts={};
+for(let ch of baseLetters){ counts[ch]=(counts[ch]||0)+1; }
 let jokersLeft=(jokerCount===undefined) ? 1 : jokerCount;
 let usedJoker=false;
 for(let ch of word){
-let idx=pool.indexOf(ch);
-if(idx!==-1){ pool.splice(idx,1); }
+if(counts[ch]>0){ counts[ch]--; }
 else if(jokersLeft>0){ jokersLeft--; usedJoker=true; }
 else return {ok:false};
 }
@@ -7398,8 +7372,9 @@ return shuffleArray(result);
 
 }
 
-function generateWordGameData(){
+function generateWordGameData(minAchievable){
 
+let threshold=minAchievable||6;
 let tries=0;
 let baseLetters,achievable;
 
@@ -7407,7 +7382,7 @@ do{
 baseLetters=drawWordLetters();
 achievable=computeAchievableWords(baseLetters);
 tries++;
-} while(achievable.length<6 && tries<25);
+} while(achievable.length<threshold && tries<25);
 
 return {baseLetters:baseLetters,achievable:achievable};
 
@@ -9371,7 +9346,7 @@ renderChallengesList(true);
 
 }
 
-challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).onSnapshot(function(snap){
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).orderBy("createdAt","desc").limit(300).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9389,7 +9364,7 @@ handleLiveUpdate();
 console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
 });
 
-challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).onSnapshot(function(snap){
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).orderBy("createdAt","desc").limit(300).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
