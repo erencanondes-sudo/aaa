@@ -6841,14 +6841,6 @@ function pruneExcessChallenges(sortedItems,limit){
 
 if(sortedItems.length<=limit)return sortedItems;
 
-let excess=sortedItems.slice(limit);
-
-excess.forEach(function(c){
-db.collection("challenges").doc(c.id).delete().catch(function(e){
-console.error("Eski meydan okuma silinemedi:",e);
-});
-});
-
 return sortedItems.slice(0,limit);
 
 }
@@ -7250,12 +7242,6 @@ return;
 combined.sort(function(a,b){ return b.time-a.time; });
 
 if(combined.length>20){
-let excess=combined.slice(20).map(function(x){ return x.c; });
-excess.forEach(function(c){
-db.collection("challenges").doc(c.id).delete().catch(function(e){
-console.error("Eski meydan okuma silinemedi:",e);
-});
-});
 combined=combined.slice(0,20);
 }
 
