@@ -4783,7 +4783,6 @@ gameType:"word",
 gamesCount:1,
 games:[{
 baseLetters:wordData.baseLetters,
-achievable:wordData.achievable,
 fromScore:null,
 toScore:null,
 fromPlayed:false,
@@ -4954,7 +4953,6 @@ let computerResult=type==="computer" ? generateComputerWordResult(wordData) : nu
 
 games.push({
 baseLetters:wordData.baseLetters,
-achievable:wordData.achievable,
 fromScore:null,
 toScore:computerResult ? computerResult.score : null,
 toWordsFound:computerResult ? computerResult.wordsFound : null,
@@ -5220,7 +5218,8 @@ let progressField=side==="from" ? "fromProgress" : "toProgress";
 let progress=game[progressField] || null;
 
 if(selectedGameType==="word"){
-newGame(null,{baseLetters:game.baseLetters,achievable:game.achievable,resumeTime:resumeTime,progress:progress});
+let achievableWords=game.achievable || computeAchievableWords(game.baseLetters);
+newGame(null,{baseLetters:game.baseLetters,achievable:achievableWords,resumeTime:resumeTime,progress:progress});
 }
 else if(selectedGameType==="hafiza"){
 newGame(ch.level,{deck:game.deck,pairs:game.pairs,resumeTime:resumeTime,progress:progress});
