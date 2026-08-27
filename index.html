@@ -1914,7 +1914,19 @@ button{
 
 <button class="newgame challenge-brown" style="margin-top:20px;" onclick="openChallengeGameType()">Meydan Oku ⚔️</button>
 
-<button class="newgame" id="selectWordBtn" style="margin-top:20px;" onclick="selectGameType('word')">Oyna ▶️</button>
+<button class="newgame" id="selectWordBtn" style="margin-top:20px;" onclick="openWordModeChoice()">Oyna ▶️</button>
+
+</div>
+
+<div id="wordModeChoiceScreen" style="display:none;">
+
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Hangi oyunu oynamak istersin?</p>
+
+<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('word',false)">Çetrefilli ▶️</button>
+<button class="newgame" id="selectWordBtnSade" style="margin-top:12px;background:#0984e3;box-shadow:0 4px 0 #0a5aa1;" onclick="selectGameType('word',true)">Sadeli ▶️</button>
 
 </div>
 
@@ -2160,7 +2172,10 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<button class="newgame word-newgame-btn" id="wordNewGameBtn" style="margin:0 auto 8px auto;display:block;" onclick="newGame(null)">🔄 Yeni Oyun</button>
+<div class="btn-row" id="wordNewGameBtn" style="margin:0 auto 8px auto;">
+<button class="challenge-play-btn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;font-size:22px;padding:11.5px 4px;" onclick="startFreshWordGame(false)">🔄 Çetrefilli</button>
+<button class="challenge-play-btn" style="background:#0984e3;box-shadow:0 4px 0 #0a5aa1;font-size:22px;padding:11.5px 4px;" onclick="startFreshWordGame(true)">🔄 Sadeli</button>
+</div>
 
 <div class="word-info">
 <div class="word-info-top">
@@ -2830,9 +2845,6 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
-let perfStart=performance.now();
-console.log("[PERF] onLoginSuccess başladı, hesap:",profile.username);
-
 currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email};
 
 flushPendingGameFromStorage();
@@ -2844,18 +2856,9 @@ let firstName=profile.name.trim().split(/\s+/)[0];
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
 
-console.log("[PERF] Ana sayfa gösterildi:",Math.round(performance.now()-perfStart)+"ms");
+loadGameHistory().then(renderHomeStats);
 
-loadGameHistory().then(function(){
-console.log("[PERF] loadGameHistory tamamlandı:",Math.round(performance.now()-perfStart)+"ms");
-renderHomeStats();
-console.log("[PERF] renderHomeStats tamamlandı:",Math.round(performance.now()-perfStart)+"ms");
-});
-
-console.log("[PERF] startChallengesListener çağrılıyor:",Math.round(performance.now()-perfStart)+"ms");
 startChallengesListener();
-
-console.log("[PERF] startTournamentsListener çağrılıyor:",Math.round(performance.now()-perfStart)+"ms");
 startTournamentsListener();
 
 burstHomeConfetti();
@@ -2896,7 +2899,7 @@ let activeChatChallengeId=null;
 let activeChatMySide=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","playArea"];
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","playArea"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -3259,6 +3262,7 @@ document.getElementById("friendsScreen").style.display="none";
 document.getElementById("viewChallengeScreen").style.display="none";
 document.getElementById("chatScreen").style.display="none";
 document.getElementById("gameTypeScreen").style.display="none";
+document.getElementById("wordModeChoiceScreen").style.display="none";
 document.getElementById("challengeTypeScreen").style.display="none";
 document.getElementById("randomWaitScreen").style.display="none";
 document.getElementById("challengeFriendScreen").style.display="none";
@@ -3365,6 +3369,14 @@ function openGameTypeChoice(){
 
 hideAllScreens();
 document.getElementById("gameTypeScreen").style.display="block";
+
+}
+
+
+function openWordModeChoice(){
+
+hideAllScreens();
+document.getElementById("wordModeChoiceScreen").style.display="block";
 
 }
 
@@ -3635,6 +3647,7 @@ activeTournamentId=tournamentId;
 activeTournamentRoundIndex=roundIndex;
 
 selectedGameType="word";
+wordSadeMode=false;
 activeChallengeId=null;
 
 clearInterval(timer);
@@ -3969,6 +3982,7 @@ let round=t.round;
 activeDailyTournament=true;
 
 selectedGameType="word";
+wordSadeMode=false;
 activeChallengeId=null;
 activeTournamentId=null;
 activeWeeklyRoundIndex=null;
@@ -4184,6 +4198,7 @@ let round=t.dailyRounds[dayIndex];
 activeWeeklyRoundIndex=dayIndex;
 
 selectedGameType="word";
+wordSadeMode=false;
 activeChallengeId=null;
 activeTournamentId=null;
 
@@ -4523,9 +4538,10 @@ console.error("Davet reddedilemedi:",e);
 }
 
 
-function selectGameType(type){
+function selectGameType(type,sadeMode){
 
 selectedGameType=type;
+wordSadeMode=!!sadeMode;
 
 startNewGameFlow();
 
@@ -4783,6 +4799,7 @@ function matchWithWaitingOpponent(opponentDoc){
 let opponentData=opponentDoc.data();
 
 selectedGameType="word";
+wordSadeMode=false;
 
 let wordData=generateWordGameData(100);
 
@@ -5208,6 +5225,7 @@ activeChallengeGameIndex=currentGameIndex;
 let game=ch.games[currentGameIndex];
 
 selectedGameType=gType;
+wordSadeMode=false;
 
 let startedAtPromise=Promise.resolve();
 
@@ -5841,6 +5859,13 @@ let mySidePlayed=mySide==="from" ? g.fromPlayed : g.toPlayed;
 
 html+="<p><b>"+(i+1)+". Oyun</b></p>";
 
+if(!mySidePlayed){
+
+html+="<p>Henüz oynamadın.</p>";
+
+}
+else{
+
 if(ch.gameType==="word"){
 html+="<p>Harfler: "+(g.baseLetters ? g.baseLetters.join(", ") : "-")+"</p>";
 }
@@ -5852,9 +5877,7 @@ html+="<p>Hedef: "+g.target+"</p>";
 html+="<p>Sayılar: "+g.numbers.join(", ")+"</p>";
 }
 
-if(mySidePlayed){
 html+="<p>Senin Puanın: "+myScore+"</p>";
-}
 
 if(opponentPlayed){
 html+="<p>Rakip Puanı: "+opponentScore+"</p>";
@@ -5868,12 +5891,14 @@ if(ch.gameType==="word"){
 let myWordsFound=mySide==="from" ? g.fromWordsFound : g.toWordsFound;
 let opponentWordsFound=mySide==="from" ? g.toWordsFound : g.fromWordsFound;
 
-if(mySidePlayed && myWordsFound && myWordsFound.length){
+if(myWordsFound && myWordsFound.length){
 html+="<p>Senin Bulduğun Kelimeler: "+myWordsFound.join(", ")+"</p>";
 }
 
 if(opponentPlayed && opponentWordsFound && opponentWordsFound.length){
 html+="<p>Rakibin Bulduğu Kelimeler: "+opponentWordsFound.join(", ")+"</p>";
+}
+
 }
 
 }
@@ -6747,7 +6772,6 @@ let gamesBadge=document.getElementById("gamesBadge");
 if(homeTotal>0){
 homeBadge.innerHTML=homeTotal;
 homeBadge.style.display="flex";
-console.log("[PERF] Oyunlarım rozeti göründü, değer:",homeTotal,"zaman:",Math.round(performance.now()));
 }
 else{
 homeBadge.style.display="none";
@@ -7399,6 +7423,7 @@ return {baseLetters:baseLetters,achievable:achievable};
 
 
 let wordBaseLetters=[];
+let wordSadeMode=false;
 let wordAchievable=[];
 let wordShowListBonusGiven=false;
 let wordShowListBonus=0;
@@ -7584,7 +7609,9 @@ setTimeout(function(){
 if(wordRevealToken!==revealSessionToken)return;
 
 animateLetterRoll(c,tiles[i].letter,450,function(){
+if(!wordSadeMode){
 c.innerHTML+="<span class=\"tile-life"+(tiles[i].life===1 ? " tile-life-critical" : "")+"\">"+tiles[i].life+"</span>";
+}
 });
 
 },i*110);
@@ -7709,7 +7736,7 @@ else{
 wordFound=new Set();
 
 let order=shuffleArray([...wordBaseLetters,'★']);
-wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:l==='★' ? 9 : randomLifeForLetter(l)}));
+wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:wordSadeMode ? Infinity : (l==='★' ? 9 : randomLifeForLetter(l))}));
 ensureJokerAtBottomRight();
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
@@ -7737,7 +7764,7 @@ let c=document.createElement("div");
 
 c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
 c.dataset.id=t.id;
-c.innerHTML=(t.letter==='★' ? "★" : t.letter)+"<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+t.life+"</span>";
+c.innerHTML=(t.letter==='★' ? "★" : t.letter)+(wordSadeMode ? "" : "<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+t.life+"</span>");
 
 if(t.letter==='★'){
 c.onclick=function(){ tapWordTile(i); };
@@ -9337,8 +9364,6 @@ function startChallengesListener(){
 
 if(challengesUnsubIncoming || challengesUnsubOutgoing)return;
 
-let listenerPerfStart=performance.now();
-
 liveChallengesData={};
 
 let incomingReady=false;
@@ -9382,7 +9407,6 @@ liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.do
 });
 
 incomingReady=true;
-console.log("[PERF] Meydan okuma dinleyicisi (gelen) ilk veri geldi:",Math.round(performance.now()-listenerPerfStart)+"ms, belge sayısı:",snap.size);
 handleLiveUpdate();
 
 },function(e){
@@ -9401,7 +9425,6 @@ liveChallengesData[change.doc.id]=normalizeChallenge(Object.assign({id:change.do
 });
 
 outgoingReady=true;
-console.log("[PERF] Meydan okuma dinleyicisi (giden) ilk veri geldi:",Math.round(performance.now()-listenerPerfStart)+"ms, belge sayısı:",snap.size);
 handleLiveUpdate();
 
 },function(e){
@@ -9630,6 +9653,14 @@ let revealSessionToken=0;
 let wordRoundStartToken=null;
 let wordRevealToken=null;
 let hafizaRoundStartToken=null;
+
+
+function startFreshWordGame(sadeMode){
+
+wordSadeMode=sadeMode;
+newGame(null);
+
+}
 
 
 function newGame(level,presetData){
