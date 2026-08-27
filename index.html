@@ -1707,6 +1707,10 @@ button{
 
 <div class="game">
 
+<div id="wordTopAdBanner" style="display:none;width:320px;max-width:100%;height:50px;margin:0 auto 8px auto;border-radius:10px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:relative;z-index:15;">
+<div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
+</div>
+
 <h1>Konfeti</h1>
 
 <div id="fakeAdBanner" style="display:none;position:absolute;left:20px;right:20px;height:144px;z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
@@ -1930,7 +1934,19 @@ button{
 <p class="screen-title">Hangi oyunu oynamak istersin?</p>
 
 <button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('word',false)">Çetrefilli ▶️</button>
-<button class="newgame" id="selectWordBtnSade" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectGameType('word',true)">Sadeli ▶️</button>
+<button class="newgame" id="selectWordBtnSade" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectGameType('word',true)">Klasik ▶️</button>
+
+</div>
+
+<div id="challengeModeChoiceScreen" style="display:none;">
+
+<button class="back-arrow-btn" onclick="window.history.back()">←</button>
+<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
+<p class="screen-title">Hangi oyunu oynamak istersin?</p>
+
+<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectChallengeMode(false)">Çetrefilli ▶️</button>
+<button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectChallengeMode(true)">Klasik ▶️</button>
 
 </div>
 
@@ -2112,7 +2128,7 @@ button{
 
 <div id="playArea" style="display:none;">
 
-<button class="back-arrow-btn" onclick="window.history.back()">←</button>
+<button class="back-arrow-btn" id="playAreaBackBtn" style="left:2px;width:22px;height:22px;font-size:12px;" onclick="window.history.back()">←</button>
 
 <div class="info" id="sharedInfoBar">
 <div>Süre: <span id="time">120</span></div>
@@ -2178,7 +2194,7 @@ Sayı seçiniz
 
 <div class="btn-row" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:80%;">
 <button class="challenge-play-btn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" onclick="startFreshWordGame(false)">Çetrefilli</button>
-<button class="challenge-play-btn" style="background:#e67e22;box-shadow:0 4px 0 #ba6218;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" onclick="startFreshWordGame(true)">Sadeli</button>
+<button class="challenge-play-btn" style="background:#e67e22;box-shadow:0 4px 0 #ba6218;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" onclick="startFreshWordGame(true)">Klasik</button>
 </div>
 
 <div class="word-info">
@@ -2209,7 +2225,10 @@ Harf seçiniz
 
 </div>
 
-<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:25px;" onclick="showWordsList()">Kelimeleri Göster</button>
+<div class="btn-row" style="margin-top:25px;align-items:center;">
+<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:0;flex:1;font-size:16px;white-space:nowrap;" onclick="showWordsList()">Kelimeleri Göster</button>
+<button class="challenge-play-btn" id="wordContinuePlayBtn" style="display:none;flex:1;padding:14px;font-size:16px;font-weight:bold;margin-top:0;white-space:nowrap;" onclick="continueWordFreePlay()">Devam Et ▶️</button>
+</div>
 <div id="wordsBox"></div>
 
 </div>
@@ -2425,6 +2444,58 @@ function closeFakeAdBanner(){
 document.getElementById("fakeAdBanner").style.display="none";
 
 }
+
+
+const wordTopAdVariants=[
+function(){
+return "<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box;background:linear-gradient(135deg,#0984e3,#00cec9);color:#fff;font-weight:bold;font-size:13px;\"><span>📱 Uygulamayı Değerlendir</span><span style=\"background:#fff;color:#0984e3;padding:5px 10px;border-radius:8px;font-size:12px;\">Puan Ver</span></div>";
+},
+function(){
+return "<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box;background:linear-gradient(135deg,#e17055,#fdcb6e);color:#fff;font-weight:bold;font-size:13px;\"><span>🎁 Arkadaşını Davet Et</span><span style=\"background:#fff;color:#e17055;padding:5px 10px;border-radius:8px;font-size:12px;\">Davet Et</span></div>";
+},
+function(){
+return "<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;font-weight:bold;font-size:13px;\"><span>🏆 Turnuvalara Katıl</span><span style=\"background:#fff;color:#6c5ce7;padding:5px 10px;border-radius:8px;font-size:12px;\">Katıl</span></div>";
+}
+];
+
+let wordTopAdChosenIndex=null;
+
+function fillWordTopAd(){
+
+if(wordTopAdChosenIndex===null){
+wordTopAdChosenIndex=Math.floor(Math.random()*wordTopAdVariants.length);
+}
+
+document.getElementById("wordTopAdBannerContent").innerHTML=wordTopAdVariants[wordTopAdChosenIndex]();
+
+}
+
+
+function syncWordTopAdBanner(){
+
+let wordScreenEl=document.getElementById("wordGameContent");
+let bannerEl=document.getElementById("wordTopAdBanner");
+
+let isVisible=wordScreenEl.style.display!=="none" && wordScreenEl.style.display!=="";
+
+if(isVisible){
+
+if(bannerEl.style.display==="none"){
+fillWordTopAd();
+}
+
+bannerEl.style.display="block";
+
+}
+else{
+
+bannerEl.style.display="none";
+
+}
+
+}
+
+new MutationObserver(syncWordTopAdBanner).observe(document.getElementById("wordGameContent"),{attributes:true,attributeFilter:["style"]});
 
 const firebaseConfig={
 apiKey:"AIzaSyD9IQO8387frW2ujk5QPAEiwicHaGongS8",
@@ -2879,7 +2950,7 @@ launchMemConfetti("extra",false);
 
 function loadGameHistory(){
 
-return db.collection("users").doc(currentUser.uid).collection("history").orderBy("createdAt","desc").limit(20).get().then(function(snap){
+return db.collection("users").doc(currentUser.uid).collection("history").orderBy("createdAt","desc").limit(10).get().then(function(snap){
 
 gameHistory=[];
 
@@ -2897,13 +2968,14 @@ console.error("Geçmiş yüklenemedi:",e);
 
 let pendingChallenge={opponent:null,type:null};
 let activeChallengeId=null;
+let activeChallengeIsComputer=false;
 let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let activeChatChallengeId=null;
 let activeChatMySide=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","playArea"];
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","playArea"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -3228,6 +3300,7 @@ pendingChallengeWrite=null;
 });
 
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 
@@ -3267,6 +3340,7 @@ document.getElementById("viewChallengeScreen").style.display="none";
 document.getElementById("chatScreen").style.display="none";
 document.getElementById("gameTypeScreen").style.display="none";
 document.getElementById("wordModeChoiceScreen").style.display="none";
+document.getElementById("challengeModeChoiceScreen").style.display="none";
 document.getElementById("challengeTypeScreen").style.display="none";
 document.getElementById("randomWaitScreen").style.display="none";
 document.getElementById("challengeFriendScreen").style.display="none";
@@ -3327,6 +3401,7 @@ clearInterval(timer);
 
 if(!activeChallengeId){
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 }
@@ -3653,6 +3728,7 @@ activeTournamentRoundIndex=roundIndex;
 selectedGameType="word";
 wordSadeMode=false;
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 
 clearInterval(timer);
 time=120;
@@ -3988,6 +4064,7 @@ activeDailyTournament=true;
 selectedGameType="word";
 wordSadeMode=false;
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeTournamentId=null;
 activeWeeklyRoundIndex=null;
 
@@ -4204,6 +4281,7 @@ activeWeeklyRoundIndex=dayIndex;
 selectedGameType="word";
 wordSadeMode=false;
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeTournamentId=null;
 
 clearInterval(timer);
@@ -4569,6 +4647,23 @@ selectedGameType=type;
 
 pendingChallenge={opponent:pendingOpponentChoice.opponent,type:pendingOpponentChoice.type};
 
+openChallengeModeChoice();
+
+}
+
+
+function openChallengeModeChoice(){
+
+hideAllScreens();
+document.getElementById("challengeModeChoiceScreen").style.display="block";
+
+}
+
+
+function selectChallengeMode(sadeMode){
+
+pendingChallenge.sadeMode=sadeMode;
+
 proceedAfterOpponentChosen(pendingOpponentChoice.opponent);
 
 }
@@ -4690,7 +4785,7 @@ pendingChallenge={opponent:pendingOpponentChoice.opponent,type:pendingOpponentCh
 if(type==="word"){
 
 pendingChallenge.level=null;
-showModalFormatPicker();
+openChallengeModalModeChoice();
 
 }
 else{
@@ -4719,6 +4814,26 @@ document.getElementById("detailModalContent").innerHTML=html;
 function selectChallengeLevelInModal(level){
 
 pendingChallenge.level=level;
+showModalFormatPicker();
+
+}
+
+
+function openChallengeModalModeChoice(){
+
+let html="<p class=\"screen-title\" style=\"margin-top:0;\">Hangi oyunu oynamak istersin?</p>";
+html+="<button class=\"newgame\" style=\"background:#8e44ad;box-shadow:0 4px 0 #6c3483;\" onclick=\"selectChallengeModalMode(false)\">Çetrefilli ▶️</button>";
+html+="<button class=\"newgame\" style=\"margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;\" onclick=\"selectChallengeModalMode(true)\">Klasik ▶️</button>";
+
+document.getElementById("detailModalContent").innerHTML=html;
+
+}
+
+
+function selectChallengeModalMode(sadeMode){
+
+pendingChallenge.sadeMode=sadeMode;
+
 showModalFormatPicker();
 
 }
@@ -5005,6 +5120,7 @@ gamesCount:gamesCount,
 games:games,
 type:type,
 status:status,
+sadeMode:pendingChallenge.sadeMode||false,
 fromLastRead:null,
 toLastRead:null,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
@@ -5225,11 +5341,12 @@ resumeTime=Math.max(1,Math.round(120-elapsedSeconds));
 activeChallengeId=id;
 activeChallengeSide=side;
 activeChallengeGameIndex=currentGameIndex;
+activeChallengeIsComputer=(ch.type==="computer");
 
 let game=ch.games[currentGameIndex];
 
 selectedGameType=gType;
-wordSadeMode=false;
+wordSadeMode=!!ch.sadeMode;
 
 let startedAtPromise=Promise.resolve();
 
@@ -5281,6 +5398,7 @@ proceed();
 function replayFromHistory(gameType,level){
 
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 
@@ -5302,6 +5420,7 @@ newGame(level||null);
 function startNewGameFlow(){
 
 activeChallengeId=null;
+activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 
@@ -7428,6 +7547,7 @@ return {baseLetters:baseLetters,achievable:achievable};
 
 let wordBaseLetters=[];
 let wordSadeMode=false;
+let wordFreePlayMode=false;
 let wordAchievable=[];
 let wordShowListBonusGiven=false;
 let wordShowListBonus=0;
@@ -7667,6 +7787,28 @@ document.getElementById("showWordsBtn").style.display="inline-block";
 
 if(time<=0 && !resultRecorded){
 
+let isPlainSolo=!activeChallengeId && !activeTournamentId && activeWeeklyRoundIndex===null && !activeDailyTournament;
+let isComputerChallenge=activeChallengeId && activeChallengeIsComputer;
+let isSoloKlasik=wordSadeMode && (isPlainSolo || isComputerChallenge);
+
+if(isSoloKlasik && !wordFreePlayMode){
+
+clearInterval(timer);
+
+if(isComputerChallenge){
+
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
+recordGameEnd((score>=300) ? "win" : "timeout",finalScore);
+resultRecorded=false;
+gameActive=true;
+
+}
+
+offerWordContinuePlay();
+return;
+
+}
+
 clearInterval(timer);
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
@@ -7687,6 +7829,8 @@ recordGameEnd(result,finalScore);
 
 
 function startWordRound(presetData){
+
+wordFreePlayMode=false;
 
 wordRoundStartToken=gameSessionToken;
 wordRevealToken=revealSessionToken;
@@ -8362,6 +8506,30 @@ setTimeout(()=>el.remove(),1600);
 
 }
 
+function offerWordContinuePlay(){
+
+document.getElementById("wordMessage").innerHTML="⏰ Süre bitti! İstersen puansız devam edebilirsin.";
+
+document.getElementById("showWordsBtn").style.display="inline-block";
+document.getElementById("wordContinuePlayBtn").style.display="inline-block";
+
+let finalScore=computeFinalWordScore(score,wordAchievable.length,wordShowListBonus);
+
+animateFinalWordScoreCountUp(finalScore,{title:"PUAN",screenCheckId:"wordGameContent"});
+
+}
+
+
+function continueWordFreePlay(){
+
+wordFreePlayMode=true;
+
+document.getElementById("wordContinuePlayBtn").style.display="none";
+document.getElementById("wordMessage").innerHTML="Puansız devam modundasın 🎮";
+
+}
+
+
 function showWordsList(){
 
 if(!wordShowListBonusGiven){
@@ -8459,7 +8627,8 @@ if(DICTIONARY.has(guess)){
 
 wordFound.add(guess);
 let pts=scoreForWord(guess,usedJoker);
-score+=pts;
+let pointsToAdd=wordFreePlayMode ? 0 : pts;
+score+=pointsToAdd;
 document.getElementById("wordScoreValue").innerHTML=score;
 bumpWordScore();
 showWordFloatingPoints(pts);
@@ -9399,7 +9568,7 @@ renderChallengesList(true);
 
 }
 
-challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(100).onSnapshot(function(snap){
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(15).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9417,7 +9586,7 @@ handleLiveUpdate();
 console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
 });
 
-challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(100).onSnapshot(function(snap){
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(15).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9467,7 +9636,7 @@ if(tournamentsUnsubMine || tournamentsUnsubInvites)return;
 liveTournamentsData={};
 liveTournamentInvitesData={};
 
-tournamentsUnsubMine=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).limit(200).onSnapshot(function(snap){
+tournamentsUnsubMine=db.collection("tournaments").where("participantUids","array-contains",currentUser.uid).limit(10).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9489,7 +9658,7 @@ renderTournamentLists();
 console.error("Turnuva dinleyicisi hata:",e);
 });
 
-tournamentsUnsubInvites=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).limit(200).onSnapshot(function(snap){
+tournamentsUnsubInvites=db.collection("tournaments").where("invitedUsernames","array-contains",currentUser.username).limit(10).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9733,6 +9902,7 @@ document.getElementById("wordScoreValue").innerHTML=0;
 document.getElementById("wordTimeValue").innerHTML=120;
 document.getElementById("wordCards").innerHTML="";
 document.getElementById("showWordsBtn").style.display="none";
+document.getElementById("wordContinuePlayBtn").style.display="none";
 document.getElementById("wordsBox").innerHTML="";
 
 setTimeout(()=>{
