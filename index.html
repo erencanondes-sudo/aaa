@@ -683,32 +683,51 @@ body{
 </style>
 
 
+
 <style id="logout-style">
 .logout-wrap{
   width:100%;
   display:flex;
   justify-content:center;
-  margin:18px 0 12px;
+  margin:18px 0 2px;
 }
 .logout-btn{
   border:0;
-  background:#e74c3c;
+  background:#a61b1b;
   color:#fff;
   font-weight:800;
   font-size:16px;
-  padding:11px 38px;
+  padding:11px 34px;
   border-radius:14px;
-  box-shadow:0 4px 0 #c0392b;
+  box-shadow:0 4px 0 #781010;
   cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.logout-icon{
+  font-size:21px;
+  line-height:1;
+  font-weight:900;
+  display:inline-block;
+  transform:translateY(-1px);
 }
 .logout-btn:active{
   transform:translateY(2px);
-  box-shadow:0 2px 0 #c0392b;
+  box-shadow:0 2px 0 #781010;
 }
 @media(max-width:390px){
-  .logout-wrap{margin:14px 0 10px}
-  .logout-btn{font-size:14px;padding:9px 32px}
+  .logout-wrap{margin:14px 0 2px}
+  .logout-btn{font-size:14px;padding:9px 30px}
+  .logout-icon{font-size:19px}
 }
+</style>
+
+
+<style id="logout-bottom-tight">
+.logout-wrap{margin-bottom:2px !important;}
+.logout-wrap + *{margin-top:0 !important;}
 </style>
 
 </head>
@@ -793,7 +812,7 @@ body{
   </nav>
 
 <div class="logout-wrap">
-  <button type="button" class="logout-btn" onclick="logoutUser()">Çıkış Yap</button>
+  <button type="button" class="logout-btn" onclick="logoutUser()"><span class="logout-icon" aria-hidden="true">↪</span><span>Çıkış Yap</span></button>
 </div>
 
 </main>
