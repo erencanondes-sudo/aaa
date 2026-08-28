@@ -571,6 +571,18 @@ body{
   }
 }
 
+
+/* Dar CSS viewport telefonlar: S20 FE gibi cihazlarda yatay alanı tam kullan */
+@media (max-width:380px) and (orientation:portrait){
+  .app{
+    width:100%;
+    max-width:none;
+    margin-left:0;
+    margin-right:0;
+    border-radius:clamp(20px,4vw,30px);
+  }
+}
+
 </style>
 
 <style id="first-paint-fix">
