@@ -199,187 +199,376 @@ button{font:inherit;border:0;cursor:pointer}
 }
 .section-title:before,.section-title:after{content:"";height:2px;background:#e8ebef;flex:1}
 
+/* =========================================================
+   TÜM TELEFON / TABLET UYUMLULUĞU
+   - iPhone SE'den büyük telefonlara
+   - Android küçük/büyük ekranlara
+   - yatay kullanım
+   - çentik / safe-area
+   - dinamik ekran yüksekliği
+   ========================================================= */
 
-/* FINAL RESPONSIVE DÜZEN */
-html,body{
+html{
   width:100%;
   min-width:0;
-  height:100%;
-  min-height:100%;
-  overflow:hidden;
-}
-body{
-  min-height:100dvh;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:
-    max(4px,env(safe-area-inset-top))
-    max(4px,env(safe-area-inset-right))
-    max(4px,env(safe-area-inset-bottom))
-    max(4px,env(safe-area-inset-left));
-}
-.app{
-  width:calc(100vw - 10px);
-  max-width:1040px;
-  height:calc(100dvh - 8px);
-  min-height:0;
-  margin:4px auto 0;
-  padding:clamp(10px,2.2vw,24px)
-          clamp(10px,3vw,30px)
-          clamp(10px,2.2vw,24px);
-  border-radius:clamp(22px,4vw,46px);
-  overflow:hidden;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
 }
 
-/* Dikey yerleşimi ekran yüksekliğine göre akışkan tut */
+body{
+  width:100%;
+  min-width:0;
+  height:100dvh;
+  min-height:100dvh;
+  overflow:hidden;
+  padding:
+    max(0px, env(safe-area-inset-top))
+    max(0px, env(safe-area-inset-right))
+    max(0px, env(safe-area-inset-bottom))
+    max(0px, env(safe-area-inset-left));
+}
+
+.app{
+  width:min(1040px, calc(100% - 10px));
+  max-width:895px;
+  min-height:auto;
+  margin:
+    clamp(5px, 1.2vh, 16px) auto
+    max(12px, env(safe-area-inset-bottom));
+  padding:clamp(16px, 3.5vw, 30px)
+          clamp(12px, 4.1vw, 37px)
+          clamp(18px, 4vw, 34px);
+  border-radius:clamp(24px, 5vw, 52px);
+}
+
+/* Logo alanı */
 .header{
-  height:clamp(60px,11.5vh,112px);
-  min-height:60px;
+  height:clamp(72px, 14vw, 135px);
+  min-height:72px;
 }
 .logo{
-  font-size:clamp(40px,8vw,70px);
+  font-size:clamp(42px, 8.7vw, 78px);
+  letter-spacing:clamp(-3px, -.45vw, -4px);
 }
-.ad{
-  width:min(320px,100%);
-  height:100px;
-  flex:none;
-  margin:4px auto clamp(10px,2.2vh,22px);
-  padding:10px 12px;
+.settings{
+  width:clamp(46px, 7.2vw, 64px);
+  height:clamp(46px, 7.2vw, 64px);
+  border-radius:clamp(14px, 2.1vw, 19px);
+  font-size:clamp(27px, 4vw, 37px);
 }
-.ad-label{top:9px;font-size:12px}
-.ad-chart{font-size:34px;width:45px}
-.ad-title{font-size:17px}
-.ad-sub{font-size:10px;margin-top:3px}
-.ad-coin{font-size:32px;width:40px}
-.ad-btn{font-size:11px;padding:7px 10px}
-.ad-close{width:31px;height:31px;font-size:24px;right:6px;top:6px}
 
-/* Profil kartı */
+/* Reklam */
+.ad{
+  height:100px;
+  margin:clamp(3px, 1vw, 4px) 0 clamp(20px, 3.5vw, 34px);
+  border-radius:clamp(19px, 3.1vw, 28px);
+  padding:clamp(12px, 2.5vw, 22px)
+          clamp(12px, 3.4vw, 30px);
+  gap:clamp(7px, 1.5vw, 18px);
+}
+.ad-label{
+  top:clamp(13px, 3vw, 27px);
+  font-size:clamp(12px, 2.3vw, 21px);
+}
+.ad-chart{
+  font-size:clamp(36px, 7.5vw, 72px);
+  width:clamp(55px, 14vw, 135px);
+}
+.ad-copy{
+  padding-top:clamp(9px, 2vw, 18px);
+  min-width:0;
+}
+.ad-title{
+  font-size:clamp(17px, 3.8vw, 36px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ad-sub{
+  font-size:clamp(11px, 2.5vw, 24px);
+  margin-top:clamp(4px, 1.2vw, 12px);
+  white-space:nowrap;
+}
+.ad-coin{
+  font-size:clamp(29px, 7vw, 68px);
+  width:clamp(45px, 12vw, 120px);
+}
+.ad-btn{
+  font-size:clamp(12px, 2.6vw, 25px);
+  padding:clamp(9px, 1.9vw, 17px)
+          clamp(10px, 3.9vw, 35px);
+}
+.ad-close{
+  width:clamp(34px, 5.5vw, 50px);
+  height:clamp(34px, 5.5vw, 50px);
+  font-size:clamp(26px, 4.3vw, 39px);
+  right:clamp(7px, 1.5vw, 15px);
+  top:clamp(7px, 1.5vw, 14px);
+}
+
+/* Hoş geldin */
 .welcome{
-  min-height:0;
-  height:clamp(108px,16vh,160px);
-  margin-bottom:clamp(9px,1.8vh,17px);
-  padding:clamp(10px,2vw,18px) clamp(12px,3vw,26px);
+  min-height:clamp(114px, 20vw, 190px);
+  margin-bottom:clamp(18px, 3.2vw, 31px);
+  border-radius:clamp(19px, 3.2vw, 29px);
+  padding:clamp(12px, 2.7vw, 22px)
+          clamp(12px, 3.5vw, 30px);
 }
 .avatar{
-  width:clamp(64px,11vw,112px);
-  height:clamp(64px,11vw,112px);
-  font-size:clamp(38px,6.8vw,68px);
+  width:clamp(72px, 13.5vw, 138px);
+  height:clamp(72px, 13.5vw, 138px);
+  font-size:clamp(42px, 7.8vw, 80px);
 }
-.online{width:22px;height:22px;border-width:3px;right:2px;bottom:3px}
-.welcome-content{padding-left:clamp(10px,3.5vw,30px)}
-.greeting{font-size:clamp(18px,3.4vw,30px);margin-bottom:clamp(8px,1.8vh,16px)}
-.stat{gap:8px}
-.stat-icon{font-size:clamp(23px,4.5vw,40px)}
-.stat b{font-size:clamp(17px,3vw,27px)}
-.stat small{font-size:clamp(9px,1.8vw,16px)}
-.vline{height:44px;margin:0 clamp(6px,2vw,18px)}
+.online{
+  width:clamp(19px, 3.4vw, 32px);
+  height:clamp(19px, 3.4vw, 32px);
+  border-width:clamp(3px, .55vw, 5px);
+  right:clamp(1px, .6vw, 6px);
+  bottom:clamp(2px, .8vw, 8px);
+}
+.welcome-content{
+  padding-left:clamp(12px, 4.5vw, 42px);
+  min-width:0;
+}
+.greeting{
+  font-size:clamp(18px, 3.8vw, 34px);
+  margin-bottom:clamp(10px, 2.8vw, 25px);
+  white-space:nowrap;
+}
+.stats{min-width:0}
+.stat{
+  gap:clamp(5px, 1.6vw, 15px);
+  min-width:0;
+}
+.stat-icon{
+  font-size:clamp(25px, 5.4vw, 49px);
+  flex:none;
+}
+.stat b{
+  font-size:clamp(18px, 3.5vw, 31px);
+}
+.stat small{
+  font-size:clamp(10px, 2.2vw, 20px);
+  white-space:nowrap;
+}
+.vline{
+  height:clamp(40px, 7vw, 62px);
+  margin:0 clamp(7px, 3vw, 28px);
+}
 
-/* Menü: yüksekliği kontrollü */
+/* Menü kartları */
 .menu-card{
-  min-height:clamp(60px,9.2vh,88px);
-  margin-bottom:clamp(7px,1.15vh,12px);
-  padding:8px clamp(10px,3vw,26px);
-  border-radius:clamp(18px,2.8vw,26px);
+  min-height:clamp(60px, 8.7vw, 88px);
+  border-radius:clamp(19px, 3.2vw, 29px);
+  margin-bottom:clamp(8px, 1.3vw, 13px);
+  padding:clamp(9px, 1.8vw, 16px)
+          clamp(13px, 3.8vw, 35px);
+  box-shadow:0 6px 0 rgba(0,0,0,.22),0 8px 16px rgba(25,40,60,.10);
 }
-.new{
-  min-height:clamp(72px,11vh,106px);
-}
+.new{min-height:clamp(72px, 10.8vw, 114px)}
 .icon-circle{
-  width:clamp(50px,8.2vw,78px);
-  height:clamp(50px,8.2vw,78px);
-  margin-right:clamp(10px,2.7vw,25px);
-  font-size:clamp(26px,4.6vw,42px);
+  width:clamp(56px, 9.8vw, 92px);
+  height:clamp(56px, 9.8vw, 92px);
+  margin-right:clamp(13px, 3.8vw, 35px);
+  font-size:clamp(29px, 5.2vw, 49px);
 }
 .new .icon-circle{
-  width:clamp(58px,9vw,84px);
-  height:clamp(58px,9vw,84px);
-  font-size:clamp(30px,5vw,44px);
+  width:clamp(65px, 10.8vw, 102px);
+  height:clamp(65px, 10.8vw, 102px);
+  font-size:clamp(33px, 5.7vw, 52px);
 }
-.menu-copy b{font-size:clamp(20px,3.6vw,32px)}
-.menu-copy span{font-size:clamp(11px,2vw,17px);margin-top:3px}
-.arrow{font-size:clamp(29px,4.5vw,42px);margin-left:8px}
+.menu-copy{min-width:0}
+.menu-copy b{
+  font-size:clamp(22px, 4.1vw, 37px);
+  line-height:1.08;
+}
+.menu-copy span{
+  font-size:clamp(12px, 2.45vw, 22px);
+  margin-top:clamp(3px, .8vw, 7px);
+  line-height:1.2;
+}
+.arrow{
+  font-size:clamp(31px, 5.3vw, 48px);
+  margin-left:clamp(7px, 2vw, 20px);
+  flex:none;
+}
 .badge{
-  min-width:clamp(38px,5.8vw,52px);
-  height:clamp(38px,5.8vw,52px);
-  font-size:clamp(17px,2.8vw,25px);
+  min-width:clamp(40px, 6.7vw, 60px);
+  height:clamp(40px, 6.7vw, 60px);
+  font-size:clamp(18px, 3.1vw, 29px);
+  padding:0 clamp(9px, 1.7vw, 15px);
+  flex:none;
 }
 .section-title{
-  font-size:clamp(12px,1.9vw,17px);
-  margin:2px 0 clamp(9px,1.5vh,14px);
+  font-size:clamp(13px, 2.4vw, 20px);
+  gap:clamp(8px, 1.8vw, 17px);
+  margin:clamp(2px, .8vw, 7px) 0 clamp(12px, 2.4vw, 22px);
 }
 
-/* Yeni Oyun: beyaz daireyi garanti altına al */
-.new-game-card{
-  min-height:clamp(72px,11vh,106px)!important;
-  padding:8px clamp(10px,3vw,26px)!important;
-}
-.new-play-circle{
-  width:clamp(58px,8.5vw,82px)!important;
-  height:clamp(58px,8.5vw,82px)!important;
-  min-width:clamp(58px,8.5vw,82px)!important;
-  margin-right:clamp(12px,2.7vw,25px);
-  border-radius:50%;
-  background:#fff!important;
-}
-.new-play-triangle{
-  border-top:clamp(9px,1.5vw,13px) solid transparent;
-  border-bottom:clamp(9px,1.5vw,13px) solid transparent;
-  border-left:clamp(14px,2.2vw,20px) solid #209e32;
-}
-
-/* Kısa ekranlar: dikeyde daha kompakt */
-@media(max-height:760px) and (orientation:portrait){
-  .app{padding-top:8px;padding-bottom:10px}
-  .header{height:58px}
-  .welcome{height:102px}
-  .ad{margin-bottom:9px}
-  .menu-card{margin-bottom:6px;min-height:56px}
-  .new{min-height:70px}
-  .section-title{margin-top:1px;margin-bottom:7px}
-  .new-play-circle{width:54px!important;height:54px!important;min-width:54px!important}
-}
-
-/* Çok kısa ekranlar */
-@media(max-height:680px) and (orientation:portrait){
-  .app{padding-top:6px;padding-bottom:7px}
-  .header{height:50px}
-  .logo{font-size:36px}
-  .ad{height:100px;margin-bottom:6px}
-  .welcome{height:88px;margin-bottom:6px}
-  .avatar{width:58px;height:58px;font-size:34px}
-  .greeting{font-size:17px;margin-bottom:5px}
-  .stat-icon{font-size:20px}
-  .stat b{font-size:15px}
-  .stat small{font-size:8px}
-  .menu-card{min-height:49px;margin-bottom:4px}
-  .new{min-height:61px}
-  .icon-circle{width:43px;height:43px;margin-right:8px}
-  .new .icon-circle{width:48px;height:48px}
-  .menu-copy b{font-size:18px}
-  .menu-copy span{font-size:9px}
-  .badge{width:34px;height:34px;min-width:34px;font-size:15px}
+/* Çok dar telefonlar: iPhone SE / küçük Android */
+@media(max-width:390px){
+  .app{
+    width:calc(100% - 6px);
+    margin-top:9px;
+    border-radius:24px;
+    padding-left:10px;
+    padding-right:10px;
+  }
+  .header{min-height:67px;height:72px}
+  .logo{font-size:39px}
+  .settings{width:43px;height:43px;font-size:25px}
+  .ad{height:100px}
+  .ad-chart,.ad-coin{display:none}
+  .ad-copy{padding-left:5px}
+  .ad-title{font-size:17px}
+  .ad-sub{font-size:11px}
+  .ad-btn{font-size:11px;padding:8px 9px}
+  .welcome{padding:12px 10px}
+  .avatar{width:70px;height:70px;font-size:42px}
+  .welcome-content{padding-left:9px}
+  .greeting{font-size:18px}
+  .stat-icon{font-size:23px}
+  .stat b{font-size:17px}
+  .stat small{font-size:9px}
+  .vline{margin:0 5px}
+  .menu-card{padding-left:10px;padding-right:10px}
+  .icon-circle{margin-right:11px}
+  .menu-copy b{font-size:20px}
+  .menu-copy span{font-size:11px}
+  .arrow{font-size:29px}
 }
 
 /* Yatay telefon */
-@media(orientation:landscape) and (max-height:600px){
+@media (orientation:landscape) and (max-height:600px){
   .app{
-    width:calc(100vw - 10px);
-    height:calc(100dvh - 8px);
-    padding:6px 16px 8px;
+    width:min(760px,calc(100% - 28px));
+    margin:12px auto;
+    padding:14px 18px 18px;
   }
-  .header{height:48px}
-  .ad{height:100px;margin:2px auto 6px}
-  .welcome{height:78px;margin-bottom:6px}
-  .avatar{width:55px;height:55px;font-size:32px}
-  .greeting{font-size:18px;margin-bottom:4px}
-  .menu-card{min-height:43px;margin-bottom:4px}
-  .new{min-height:52px}
-  .icon-circle{width:38px;height:38px;font-size:22px}
-  .new .icon-circle{width:43px;height:43px}
-  .menu-copy b{font-size:18px}
-  .menu-copy span{font-size:9px}
+  .header{height:72px}
+  .ad{height:100px;margin-bottom:16px}
+  .welcome{min-height:100px;margin-bottom:16px}
+  .avatar{width:72px;height:72px}
+  .menu-card{min-height:66px;margin-bottom:9px}
+  .new{min-height:78px}
+  .icon-circle{width:50px;height:50px}
+  .new .icon-circle{width:58px;height:58px}
+  .menu-copy b{font-size:21px}
+  .menu-copy span{font-size:11px}
+}
+
+/* Tablet / geniş telefon: tasarım gereksiz büyümesin */
+@media(min-width:701px) and (max-width:950px){
+  .app{width:calc(100% - 40px)}
+}
+
+/* Dokunmatik cihazlarda butonlar rahat tıklansın */
+@media (pointer:coarse){
+  button{touch-action:manipulation}
+}
+
+/* Ekrana tam sığdırma */
+.app{
+  transform-origin:center top;
+  will-change:transform;
+}
+.play-icon{
+  width:0!important;
+  height:0!important;
+  border-top:22px solid transparent;
+  border-bottom:22px solid transparent;
+  border-left:31px solid #209e32;
+  border-radius:3px;
+  background:transparent!important;
+  box-shadow:none!important;
+  margin-left:6px!important;
+}
+@media(max-width:700px){
+  .play-icon{
+    width:67px!important;
+    height:67px!important;
+  }
+  .play-icon::after{
+    border-top-width:13px;
+    border-bottom-width:13px;
+    border-left-width:20px;
+  }
+}
+
+
+/* Profil ikonu: mavi butonda beyaz, net ve emoji-font bağımsız */
+.profile-icon{
+  position:relative;
+  background:rgba(0,73,155,.42)!important;
+}
+.profile-icon .profile-head{
+  position:absolute;
+  width:25px;height:25px;
+  border-radius:50%;
+  background:#fff;
+  left:50%;top:18px;
+  transform:translateX(-50%);
+}
+.profile-icon .profile-body{
+  position:absolute;
+  width:48px;height:25px;
+  border-radius:28px 28px 18px 18px;
+  background:#fff;
+  left:50%;bottom:16px;
+  transform:translateX(-50%);
+}
+@media(max-width:700px){
+  .profile-icon .profile-head{
+    width:16px;height:16px;top:11px;
+  }
+  .profile-icon .profile-body{
+    width:32px;height:17px;bottom:10px;
+  }
+}
+
+
+/* YENİ OYUN — baştan tasarlanmış */
+.new-game-card{
+  min-height:118px!important;
+  padding:14px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.new-play-circle{
+  width:76px;
+  height:76px;
+  min-width:76px;
+  border-radius:50%;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:27px;
+  box-shadow:0 4px 10px rgba(0,0,0,.13);
+}
+.new-play-triangle{
+  width:0;
+  height:0;
+  border-top:13px solid transparent;
+  border-bottom:13px solid transparent;
+  border-left:20px solid #209e32;
+  transform:translateX(2px);
+}
+@media(max-width:700px){
+  .new-game-card{
+    min-height:88px!important;
+    padding:10px 13px!important;
+  }
+  .new-play-circle{
+    width:58px;
+    height:58px;
+    min-width:58px;
+    margin-right:14px;
+  }
+  .new-play-triangle{
+    border-top-width:9px;
+    border-bottom-width:9px;
+    border-left-width:14px;
+  }
 }
 
 </style>
@@ -461,6 +650,43 @@ body{
 <script>document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
 </script>
 
+<script>
+(function(){
+  function fitToScreen(){
+    const app = document.querySelector('.app');
+    if(!app) return;
+
+    app.style.transform = 'scale(1)';
+
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+
+    /* Keep a small visual breathing room around the white card. */
+    const horizontalRoom = Math.max(8, vw - 16);
+    const verticalRoom = Math.max(8, vh - 16);
+
+    const w = app.getBoundingClientRect().width;
+    const h = app.getBoundingClientRect().height;
+
+    let scale = Math.min(1, horizontalRoom / w, verticalRoom / h);
+
+    /* Very small screens: prioritize fitting the complete composition. */
+    if(scale < 0.999){
+      app.style.transform = 'scale(' + scale + ')';
+    }
+  }
+
+  window.addEventListener('load', function(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(fitToScreen);
+    });
+  });
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fitToScreen, 120);
+  });
+})();
+</script>
 
 </body>
 </html>
