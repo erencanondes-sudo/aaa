@@ -229,7 +229,7 @@ body{
 }
 
 .app{
-  width:min(895px, calc(100% - 32px));
+  width:min(980px, calc(100% - 16px));
   max-width:895px;
   min-height:auto;
   margin:
@@ -357,14 +357,14 @@ body{
 
 /* Menü kartları */
 .menu-card{
-  min-height:clamp(76px, 11.5vw, 116px);
+  min-height:clamp(70px, 10.5vw, 106px);
   border-radius:clamp(19px, 3.2vw, 29px);
-  margin-bottom:clamp(11px, 2vw, 20px);
+  margin-bottom:clamp(9px, 1.7vw, 17px);
   padding:clamp(9px, 1.8vw, 16px)
           clamp(13px, 3.8vw, 35px);
   box-shadow:0 6px 0 rgba(0,0,0,.22),0 8px 16px rgba(25,40,60,.10);
 }
-.new{min-height:clamp(92px, 14.5vw, 150px)}
+.new{min-height:clamp(84px, 13vw, 136px)}
 .icon-circle{
   width:clamp(56px, 9.8vw, 92px);
   height:clamp(56px, 9.8vw, 92px);
@@ -407,7 +407,7 @@ body{
 /* Çok dar telefonlar: iPhone SE / küçük Android */
 @media(max-width:390px){
   .app{
-    width:calc(100% - 18px);
+    width:calc(100% - 10px);
     margin-top:9px;
     border-radius:24px;
     padding-left:10px;
@@ -494,6 +494,37 @@ body{
   }
 }
 
+
+/* Profil ikonu: mavi butonda beyaz, net ve emoji-font bağımsız */
+.profile-icon{
+  position:relative;
+  background:rgba(0,73,155,.42)!important;
+}
+.profile-icon .profile-head{
+  position:absolute;
+  width:25px;height:25px;
+  border-radius:50%;
+  background:#fff;
+  left:50%;top:18px;
+  transform:translateX(-50%);
+}
+.profile-icon .profile-body{
+  position:absolute;
+  width:48px;height:25px;
+  border-radius:28px 28px 18px 18px;
+  background:#fff;
+  left:50%;bottom:16px;
+  transform:translateX(-50%);
+}
+@media(max-width:700px){
+  .profile-icon .profile-head{
+    width:16px;height:16px;top:11px;
+  }
+  .profile-icon .profile-body{
+    width:32px;height:17px;bottom:10px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -558,7 +589,7 @@ body{
   <div class="section-title">DİĞER</div>
 
   <button class="menu-card blue">
-    <div class="icon-circle">👤</div>
+    <div class="icon-circle profile-icon" aria-hidden="true"><i class="profile-head"></i><i class="profile-body"></i></div>
     <div class="menu-copy"><b>Profil</b><span>Profilini ve istatistiklerini gör</span></div>
     <div class="arrow">›</div>
   </button>
