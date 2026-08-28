@@ -6,7 +6,13 @@
 <title>Konfeti</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;font-family:Arial,"Helvetica Neue",sans-serif;background:#0d3574}
+html,body{
+  width:100%;
+  min-width:0;
+  min-
+  overflow-x:hidden;
+  overflow-y:auto;
+}
 body{color:#172f62}
 button{font:inherit;border:0;cursor:pointer}
 
@@ -29,12 +35,15 @@ button{font:inherit;border:0;cursor:pointer}
 .app{
   width:98%;
   max-width:895px;
-  min-height:calc(100vh - 82px);
+  min-
   margin:40px auto 50px;
   background:#fff;
   border-radius:52px;
   padding:30px 37px 34px;
   box-shadow:0 20px 45px rgba(0,0,0,.20);
+  overflow:visible;
+
+  min-height:0;
   overflow:visible;
 }
 
@@ -81,7 +90,7 @@ button{font:inherit;border:0;cursor:pointer}
   margin:4px 0 34px;
   border-radius:28px;
   position:relative;
-  overflow:hidden;
+  overflow:visible;
   color:#fff;
   background:linear-gradient(108deg,#ffa800 0%,#f28b0b 26%,#35bd4d 65%,#f1ae0a 100%);
   box-shadow:0 10px 20px rgba(20,35,45,.22);
@@ -157,7 +166,7 @@ button{font:inherit;border:0;cursor:pointer}
   text-align:left;
   box-shadow:0 7px 0 rgba(0,0,0,.22),0 9px 18px rgba(25,40,60,.10);
   transition:transform .1s,filter .1s;
-  position:relative;overflow:hidden;
+  position:relative;overflow:visible;
 }
 .menu-card:active{transform:translateY(4px);filter:brightness(.96)}
 .new{min-height:169px;background:linear-gradient(105deg,var(--green1),var(--green2))}
@@ -220,7 +229,7 @@ body{
   min-width:0;
   height:100dvh;
   min-height:100dvh;
-  overflow:hidden;
+  overflow:visible;
   padding:
     max(0px, env(safe-area-inset-top))
     max(0px, env(safe-area-inset-right))
@@ -280,7 +289,7 @@ body{
 }
 .ad-title{
   font-size:clamp(17px, 3.8vw, 36px);
-  overflow:hidden;
+  overflow:visible;
   text-overflow:ellipsis;
 }
 .ad-sub{
@@ -572,65 +581,89 @@ body{
 }
 
 
-/* ALT YATAY MENÜ */
+
+/* ALT MENÜ - DAHA BÜYÜK VE RENKLİ */
 .bottom-nav{
   width:100%;
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:clamp(7px,1.8vw,14px);
-  margin-top:clamp(12px,2vw,20px);
-  padding-top:clamp(10px,1.8vw,16px);
-  border-top:2px solid #eef0f4;
+  gap:clamp(9px,2.2vw,18px);
+  margin-top:clamp(14px,2.5vw,22px);
+  padding-top:clamp(12px,2vw,18px);
+  border-top:2px solid #e7ebf1;
 }
 .bottom-nav-item{
-  background:transparent;
-  color:#34415d;
+  border:0;
+  min-height:clamp(82px,12vw,108px);
+  border-radius:22px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:5px;
-  padding:0;
-  font-size:clamp(10px,1.8vw,15px);
-  font-weight:700;
+  gap:7px;
+  padding:8px 4px;
+  color:#26364d;
+  font-size:clamp(11px,2vw,16px);
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(35,50,75,.10);
+  transition:transform .12s ease;
 }
+.bottom-nav-item:active{transform:scale(.96)}
 .bottom-icon{
-  width:clamp(48px,8vw,66px);
-  height:clamp(48px,8vw,66px);
+  width:clamp(54px,9.5vw,72px);
+  height:clamp(54px,9.5vw,72px);
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:clamp(23px,4.2vw,34px);
-  box-shadow:0 4px 9px rgba(30,45,65,.12);
+  font-size:clamp(27px,5vw,38px);
+  box-shadow:0 3px 7px rgba(30,45,65,.13);
 }
-.profile-bottom .bottom-icon{background:#e8f1ff}
-.friends-bottom .bottom-icon{background:#e9f8e6}
-.settings-bottom .bottom-icon{background:#fff3d8}
-.info-bottom .bottom-icon{background:#f0eaff}
+.profile-bottom{background:#eaf3ff}
+.friends-bottom{background:#e9f9e6}
+.settings-bottom{background:#fff3d9}
+.info-bottom{background:#f1eaff}
+.profile-bottom .bottom-icon{background:#cfe3ff}
+.friends-bottom .bottom-icon{background:#ccefc3}
+.settings-bottom .bottom-icon{background:#ffe4a8}
+.info-bottom .bottom-icon{background:#ded0ff}
 
 .profile-symbol{position:relative}
 .profile-symbol .profile-head{
   position:absolute;
-  width:clamp(13px,2.4vw,19px);
-  height:clamp(13px,2.4vw,19px);
+  width:clamp(15px,2.7vw,21px);
+  height:clamp(15px,2.7vw,21px);
   border-radius:50%;
-  background:#2b78df;
-  top:clamp(10px,1.7vw,14px);
+  background:#2674d9;
+  top:clamp(11px,1.9vw,15px);
 }
 .profile-symbol .profile-body{
   position:absolute;
-  width:clamp(27px,4.8vw,38px);
-  height:clamp(14px,2.6vw,21px);
-  border-radius:20px 20px 12px 12px;
-  background:#2b78df;
-  bottom:clamp(9px,1.6vw,13px);
+  width:clamp(31px,5.3vw,41px);
+  height:clamp(17px,2.9vw,23px);
+  border-radius:22px 22px 12px 12px;
+  background:#2674d9;
+  bottom:clamp(10px,1.8vw,14px);
 }
 
 @media(max-width:390px){
-  .bottom-nav{gap:4px;margin-top:10px;padding-top:9px}
-  .bottom-icon{width:45px;height:45px;font-size:21px}
-  .bottom-nav-item{font-size:9px;gap:3px}
+  .bottom-nav{gap:6px;margin-top:12px;padding-top:10px}
+  .bottom-nav-item{
+    min-height:76px;
+    border-radius:18px;
+    font-size:9px;
+    gap:4px;
+  }
+  .bottom-icon{width:50px;height:50px;font-size:24px}
+}
+
+
+/* Alt navigasyon tüm cihazlarda görünür */
+.bottom-nav{
+  display:grid !important;
+  visibility:visible !important;
+  opacity:1 !important;
 }
 
 </style>
@@ -722,3 +755,25 @@ body{
 
 </body>
 </html>
+
+<style id="final-scroll-fix">
+html,body{
+  height:auto !important;
+  min-height:100% !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+.app{
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+.bottom-nav{
+  position:relative !important;
+  display:grid !important;
+  width:100% !important;
+  margin-bottom:20px !important;
+  z-index:20 !important;
+}
+</style>
