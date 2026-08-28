@@ -682,6 +682,35 @@ body{
 }
 </style>
 
+
+<style id="logout-style">
+.logout-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin:18px 0 12px;
+}
+.logout-btn{
+  border:0;
+  background:#e74c3c;
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  padding:11px 38px;
+  border-radius:14px;
+  box-shadow:0 4px 0 #c0392b;
+  cursor:pointer;
+}
+.logout-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 2px 0 #c0392b;
+}
+@media(max-width:390px){
+  .logout-wrap{margin:14px 0 10px}
+  .logout-btn{font-size:14px;padding:9px 32px}
+}
+</style>
+
 </head>
 <body>
 
@@ -762,9 +791,22 @@ body{
       <span>Bilgi</span>
     </button>
   </nav>
+
+<div class="logout-wrap">
+  <button type="button" class="logout-btn" onclick="logoutUser()">Çıkış Yap</button>
+</div>
+
 </main>
 
 <script>document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
+</script>
+
+
+<script>
+function logoutUser(){
+  if(typeof logout === 'function') logout();
+  else if(typeof signOutUser === 'function') signOutUser();
+}
 </script>
 
 </body>
