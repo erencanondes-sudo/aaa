@@ -684,76 +684,6 @@ body{
 
 
 
-<style id="logout-style">
-.logout-wrap{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  margin:18px 0 2px;
-}
-.logout-btn{
-  border:0;
-  background:#0d3574;
-  color:#fff;
-  font-weight:800;
-  font-size:16px;
-  padding:11px 34px;
-  border-radius:14px;
-  box-shadow:0 4px 0 #0f1a38;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
-.logout-icon{
-  position:relative;
-  width:20px;
-  height:20px;
-  display:inline-block;
-  flex:none;
-  border:3px solid #fff;
-  border-top-color:transparent;
-  border-radius:50%;
-  box-sizing:border-box;
-}
-.logout-icon::before{
-  content:"";
-  position:absolute;
-  left:5px;
-  top:-3px;
-  width:4px;
-  height:11px;
-  background:#fff;
-  border-radius:3px;
-}
-.logout-icon::after{
-  content:"";
-  position:absolute;
-  left:8px;
-  top:1px;
-  width:4px;
-  height:8px;
-  background:#fff;
-  border-radius:2px;
-}
-.logout-btn:active{
-  transform:translateY(2px);
-  box-shadow:0 2px 0 #0f1a38;
-}
-@media(max-width:390px){
-  .logout-wrap{margin:14px 0 2px}
-  .logout-btn{font-size:14px;padding:9px 30px}
-  .logout-icon{width:19px;height:19px;border-width:3px}
-}
-</style>
-
-
-<style id="logout-bottom-tight">
-.logout-wrap{margin-bottom:2px !important;}
-.logout-wrap + *{margin-top:0 !important;}
-</style>
-
 </head>
 <body>
 
@@ -834,10 +764,6 @@ body{
       <span>Bilgi</span>
     </button>
   </nav>
-
-<div class="logout-wrap">
-  <button type="button" class="logout-btn" onclick="logoutUser()"><span class="logout-icon" aria-hidden="true"></span><span>Kapat</span></button>
-</div>
 
 </main>
 
