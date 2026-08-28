@@ -5135,7 +5135,20 @@ createdAt:firebase.firestore.FieldValue.serverTimestamp(),
 acceptedAt:status==="accepted" ? firebase.firestore.FieldValue.serverTimestamp() : null
 };
 
-db.collection("challenges").add(challengeData).then(function(){
+db.collection("challenges").add(challengeData).then(function(challengeRef){
+
+if(liveChallengesData){
+liveChallengesData[challengeRef.id]=Object.assign({id:challengeRef.id},challengeData,{createdAt:{seconds:Math.floor(Date.now()/1000)},acceptedAt:challengeData.acceptedAt ? {seconds:Math.floor(Date.now()/1000)} : null});
+updateChallengeBadge();
+
+let historyScreenEl=document.getElementById("historyScreen");
+if(historyScreenEl && historyScreenEl.style.display!=="none"){
+renderOngoingList(true);
+renderHistoryList(true);
+renderChallengesList(true);
+}
+
+}
 
 let formatText=gamesCount===1 ? "tek oyunluk" : "3 oyunluk";
 
@@ -9576,7 +9589,7 @@ renderChallengesList(true);
 
 }
 
-challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).limit(15).onSnapshot(function(snap){
+challengesUnsubIncoming=db.collection("challenges").where("toUsername","==",currentUser.username).orderBy("createdAt","desc").limit(15).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
@@ -9594,7 +9607,7 @@ handleLiveUpdate();
 console.error("Meydan okuma dinleyicisi (gelen) hata:",e);
 });
 
-challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).limit(15).onSnapshot(function(snap){
+challengesUnsubOutgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).orderBy("createdAt","desc").limit(15).onSnapshot(function(snap){
 
 snap.docChanges().forEach(function(change){
 if(change.type==="removed"){
