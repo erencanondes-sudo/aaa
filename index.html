@@ -572,6 +572,12 @@ body{
 }
 
 </style>
+
+<style id="first-paint-fix">
+html:not(.layout-ready) body{visibility:hidden}
+html.layout-ready body{visibility:visible}
+</style>
+
 </head>
 <body>
 
@@ -685,6 +691,20 @@ body{
   window.addEventListener('orientationchange', function(){
     setTimeout(fitToScreen, 120);
   });
+})();
+</script>
+
+
+<script>
+(function(){
+  function ready(){
+    document.documentElement.classList.add('layout-ready');
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ready, {once:true});
+  }else{
+    ready();
+  }
 })();
 </script>
 
