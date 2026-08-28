@@ -27,7 +27,7 @@ button{font:inherit;border:0;cursor:pointer}
 
 /* Ana beyaz kart: görseldeki 35px dış boşluğa yakın */
 .app{
-  width:calc(100% - 70px);
+  width:98%;
   max-width:895px;
   min-height:calc(100vh - 82px);
   margin:40px auto 50px;
@@ -571,6 +571,68 @@ body{
   }
 }
 
+
+/* ALT YATAY MENÜ */
+.bottom-nav{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:clamp(7px,1.8vw,14px);
+  margin-top:clamp(12px,2vw,20px);
+  padding-top:clamp(10px,1.8vw,16px);
+  border-top:2px solid #eef0f4;
+}
+.bottom-nav-item{
+  background:transparent;
+  color:#34415d;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:0;
+  font-size:clamp(10px,1.8vw,15px);
+  font-weight:700;
+}
+.bottom-icon{
+  width:clamp(48px,8vw,66px);
+  height:clamp(48px,8vw,66px);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(23px,4.2vw,34px);
+  box-shadow:0 4px 9px rgba(30,45,65,.12);
+}
+.profile-bottom .bottom-icon{background:#e8f1ff}
+.friends-bottom .bottom-icon{background:#e9f8e6}
+.settings-bottom .bottom-icon{background:#fff3d8}
+.info-bottom .bottom-icon{background:#f0eaff}
+
+.profile-symbol{position:relative}
+.profile-symbol .profile-head{
+  position:absolute;
+  width:clamp(13px,2.4vw,19px);
+  height:clamp(13px,2.4vw,19px);
+  border-radius:50%;
+  background:#2b78df;
+  top:clamp(10px,1.7vw,14px);
+}
+.profile-symbol .profile-body{
+  position:absolute;
+  width:clamp(27px,4.8vw,38px);
+  height:clamp(14px,2.6vw,21px);
+  border-radius:20px 20px 12px 12px;
+  background:#2b78df;
+  bottom:clamp(9px,1.6vw,13px);
+}
+
+@media(max-width:390px){
+  .bottom-nav{gap:4px;margin-top:10px;padding-top:9px}
+  .bottom-icon{width:45px;height:45px;font-size:21px}
+  .bottom-nav-item{font-size:9px;gap:3px}
+}
+
 </style>
 
 </head>
@@ -633,19 +695,26 @@ body{
     <div class="badge">4</div><div class="arrow">›</div>
   </button>
 
-  <div class="section-title">DİĞER</div>
-
-  <button class="menu-card blue">
-    <div class="icon-circle profile-icon" aria-hidden="true"><i class="profile-head"></i><i class="profile-body"></i></div>
-    <div class="menu-copy"><b>Profil</b><span>Profilini ve istatistiklerini gör</span></div>
-    <div class="arrow">›</div>
-  </button>
-
-  <button class="menu-card red">
-    <div class="icon-circle">👥</div>
-    <div class="menu-copy"><b>Arkadaşlar</b><span>Arkadaşlarınla bağlan</span></div>
-    <div class="arrow">›</div>
-  </button>
+  <nav class="bottom-nav" aria-label="Alt menü">
+    <button class="bottom-nav-item profile-bottom" type="button">
+      <span class="bottom-icon profile-symbol" aria-hidden="true">
+        <i class="profile-head"></i><i class="profile-body"></i>
+      </span>
+      <span>Profil</span>
+    </button>
+    <button class="bottom-nav-item friends-bottom" type="button">
+      <span class="bottom-icon">👥</span>
+      <span>Arkadaşlar</span>
+    </button>
+    <button class="bottom-nav-item settings-bottom" type="button">
+      <span class="bottom-icon">⚙️</span>
+      <span>Ayarlar</span>
+    </button>
+    <button class="bottom-nav-item info-bottom" type="button">
+      <span class="bottom-icon">ⓘ</span>
+      <span>Bilgi</span>
+    </button>
+  </nav>
 </main>
 
 <script>document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
