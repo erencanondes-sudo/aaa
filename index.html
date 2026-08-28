@@ -67,6 +67,7 @@ button{font:inherit;border:0;cursor:pointer}
 .c6{right:24%;top:88px;background:#ffb70e;width:14px!important;height:9px!important;transform:rotate(34deg)}
 
 .settings{
+  display:none;
   position:absolute;right:0;top:0;
   width:64px;height:64px;border-radius:19px;
   background:#fff;color:#66748b;font-size:37px;
@@ -356,14 +357,14 @@ body{
 
 /* Menü kartları */
 .menu-card{
-  min-height:clamp(82px, 13vw, 128px);
+  min-height:clamp(76px, 11.5vw, 116px);
   border-radius:clamp(19px, 3.2vw, 29px);
-  margin-bottom:clamp(13px, 2.5vw, 25px);
-  padding:clamp(10px, 2.1vw, 18px)
+  margin-bottom:clamp(11px, 2vw, 20px);
+  padding:clamp(9px, 1.8vw, 16px)
           clamp(13px, 3.8vw, 35px);
   box-shadow:0 6px 0 rgba(0,0,0,.22),0 8px 16px rgba(25,40,60,.10);
 }
-.new{min-height:clamp(103px, 17vw, 169px)}
+.new{min-height:clamp(92px, 14.5vw, 150px)}
 .icon-circle{
   width:clamp(56px, 9.8vw, 92px);
   height:clamp(56px, 9.8vw, 92px);
@@ -415,7 +416,7 @@ body{
   .header{min-height:67px;height:72px}
   .logo{font-size:39px}
   .settings{width:43px;height:43px;font-size:25px}
-  .ad{height:122px}
+  .ad{height:100px}
   .ad-chart,.ad-coin{display:none}
   .ad-copy{padding-left:5px}
   .ad-title{font-size:17px}
@@ -483,10 +484,13 @@ body{
 }
 @media(max-width:700px){
   .play-icon{
-    border-top-width:15px;
-    border-bottom-width:15px;
-    border-left-width:22px;
-    margin-left:4px!important;
+    width:67px!important;
+    height:67px!important;
+  }
+  .play-icon::after{
+    border-top-width:13px;
+    border-bottom-width:13px;
+    border-left-width:20px;
   }
 }
 
@@ -501,7 +505,6 @@ body{
       <span class="c4"></span><span class="c5"></span><span class="c6"></span>
     </div>
     <div class="logo">Konfeti</div>
-    <button class="settings" aria-label="Ayarlar">⚙</button>
   </header>
 
   <section class="ad">
@@ -567,9 +570,7 @@ body{
   </button>
 </main>
 
-<script>
-document.querySelector('.settings').addEventListener('click',()=>alert('Ayarlar'));
-document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
+<script>document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
 </script>
 
 <script>
