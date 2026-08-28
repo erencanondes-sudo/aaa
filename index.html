@@ -53,7 +53,7 @@ button{font:inherit;border:0;cursor:pointer}
   font-weight:800;
   letter-spacing:-4px;
   color:#12366f;
-}
+;transform:translateY(3px)}
 .confetti{position:absolute;inset:0;pointer-events:none}
 .confetti span{
   position:absolute;
@@ -614,11 +614,11 @@ body{
 .profile-bottom{background:#eaf3ff}
 .friends-bottom{background:#e9f9e6}
 .settings-bottom{background:#fff3d9}
-.info-bottom{background:#f1eaff}
-.profile-bottom .bottom-icon{background:#cfe3ff}
-.friends-bottom .bottom-icon{background:#ccefc3}
-.settings-bottom .bottom-icon{background:#ffe4a8}
-.info-bottom .bottom-icon{background:#ded0ff}
+.info-bottom{background:#dfd0ff}
+.profile-bottom .bottom-icon{background:#a9ccff}
+.friends-bottom .bottom-icon{background:#e98f8f}
+.settings-bottom .bottom-icon{background:#b4bac0}
+.info-bottom .bottom-icon{background:#c1a9ff}
 
 .profile-symbol{position:relative}
 .profile-symbol .profile-head{
@@ -684,6 +684,30 @@ body{
 
 
 
+
+
+<style id="bottom-menu-color-fix">
+.bottom-nav .friends-bottom{background:#f7caca !important;}
+.bottom-nav .friends-bottom .bottom-icon{background:#e98f8f !important;}
+.bottom-nav .settings-bottom{background:#d5d9dd !important;}
+.bottom-nav .settings-bottom .bottom-icon{background:#929aa2 !important;}
+</style>
+
+
+<style id="bottom-color-strong-fix">
+.bottom-nav .profile-bottom{
+  background:#b9d5ff !important;
+}
+.bottom-nav .profile-bottom .bottom-icon{
+  background:#5d9ff5 !important;
+}
+.bottom-nav .settings-bottom{
+  background:#dfe2e5 !important;
+}
+.bottom-nav .settings-bottom .bottom-icon{
+  background:#c7ccd1 !important;
+}
+</style>
 
 </head>
 <body>
