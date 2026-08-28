@@ -217,8 +217,9 @@ html{
 body{
   width:100%;
   min-width:0;
+  height:100dvh;
   min-height:100dvh;
-  overflow-x:hidden;
+  overflow:hidden;
   padding:
     max(0px, env(safe-area-inset-top))
     max(0px, env(safe-area-inset-right))
@@ -463,6 +464,32 @@ body{
 @media (pointer:coarse){
   button{touch-action:manipulation}
 }
+
+/* Ekrana tam sığdırma */
+.app{
+  transform-origin:center top;
+  will-change:transform;
+}
+.play-icon{
+  width:0!important;
+  height:0!important;
+  border-top:22px solid transparent;
+  border-bottom:22px solid transparent;
+  border-left:31px solid #209e32;
+  border-radius:3px;
+  background:transparent!important;
+  box-shadow:none!important;
+  margin-left:6px!important;
+}
+@media(max-width:700px){
+  .play-icon{
+    border-top-width:15px;
+    border-bottom-width:15px;
+    border-left-width:22px;
+    margin-left:4px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -508,7 +535,7 @@ body{
   </section>
 
   <button class="menu-card new" onclick="newGame()">
-    <div class="icon-circle">▶</div>
+    <div class="icon-circle play-icon" aria-hidden="true"></div>
     <div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
     <div class="arrow">›</div>
   </button>
@@ -544,5 +571,44 @@ body{
 document.querySelector('.settings').addEventListener('click',()=>alert('Ayarlar'));
 document.querySelector('.ad-close').addEventListener('click',()=>document.querySelector('.ad').style.display='none');
 </script>
+
+<script>
+(function(){
+  function fitToScreen(){
+    const app = document.querySelector('.app');
+    if(!app) return;
+
+    app.style.transform = 'scale(1)';
+
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+
+    /* Keep a small visual breathing room around the white card. */
+    const horizontalRoom = Math.max(8, vw - 16);
+    const verticalRoom = Math.max(8, vh - 16);
+
+    const w = app.getBoundingClientRect().width;
+    const h = app.getBoundingClientRect().height;
+
+    let scale = Math.min(1, horizontalRoom / w, verticalRoom / h);
+
+    /* Very small screens: prioritize fitting the complete composition. */
+    if(scale < 0.999){
+      app.style.transform = 'scale(' + scale + ')';
+    }
+  }
+
+  window.addEventListener('load', function(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(fitToScreen);
+    });
+  });
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fitToScreen, 120);
+  });
+})();
+</script>
+
 </body>
 </html>
