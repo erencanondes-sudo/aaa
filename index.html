@@ -229,12 +229,12 @@ body{
 }
 
 .app{
-  width:min(980px, calc(100% - 16px));
+  width:min(1040px, calc(100% - 10px));
   max-width:895px;
   min-height:auto;
   margin:
-    clamp(12px, 3.2vh, 40px) auto
-    max(18px, env(safe-area-inset-bottom));
+    clamp(5px, 1.2vh, 16px) auto
+    max(12px, env(safe-area-inset-bottom));
   padding:clamp(16px, 3.5vw, 30px)
           clamp(12px, 4.1vw, 37px)
           clamp(18px, 4vw, 34px);
@@ -357,14 +357,14 @@ body{
 
 /* Menü kartları */
 .menu-card{
-  min-height:clamp(64px, 9.5vw, 96px);
+  min-height:clamp(60px, 8.7vw, 88px);
   border-radius:clamp(19px, 3.2vw, 29px);
-  margin-bottom:clamp(8px, 1.5vw, 14px);
+  margin-bottom:clamp(7px, 1.3vw, 12px);
   padding:clamp(9px, 1.8vw, 16px)
           clamp(13px, 3.8vw, 35px);
   box-shadow:0 6px 0 rgba(0,0,0,.22),0 8px 16px rgba(25,40,60,.10);
 }
-.new{min-height:clamp(76px, 11.8vw, 124px)}
+.new{min-height:clamp(72px, 10.8vw, 114px)}
 .icon-circle{
   width:clamp(56px, 9.8vw, 92px);
   height:clamp(56px, 9.8vw, 92px);
@@ -407,7 +407,7 @@ body{
 /* Çok dar telefonlar: iPhone SE / küçük Android */
 @media(max-width:390px){
   .app{
-    width:calc(100% - 10px);
+    width:calc(100% - 6px);
     margin-top:9px;
     border-radius:24px;
     padding-left:10px;
@@ -525,6 +525,52 @@ body{
   }
 }
 
+
+/* YENİ OYUN — baştan tasarlanmış */
+.new-game-card{
+  min-height:118px!important;
+  padding:14px 28px!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.new-play-circle{
+  width:76px;
+  height:76px;
+  min-width:76px;
+  border-radius:50%;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:27px;
+  box-shadow:0 4px 10px rgba(0,0,0,.13);
+}
+.new-play-triangle{
+  width:0;
+  height:0;
+  border-top:13px solid transparent;
+  border-bottom:13px solid transparent;
+  border-left:20px solid #209e32;
+  transform:translateX(2px);
+}
+@media(max-width:700px){
+  .new-game-card{
+    min-height:88px!important;
+    padding:10px 13px!important;
+  }
+  .new-play-circle{
+    width:58px;
+    height:58px;
+    min-width:58px;
+    margin-right:14px;
+  }
+  .new-play-triangle{
+    border-top-width:9px;
+    border-bottom-width:9px;
+    border-left-width:14px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -568,10 +614,10 @@ body{
     </div>
   </section>
 
-  <button class="menu-card new" onclick="newGame()">
-    <div class="icon-circle play-icon" aria-hidden="true"></div>
-    <div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
-    <div class="arrow">›</div>
+  <button class="menu-card new new-game-card" onclick="newGame()" aria-label="Yeni Oyun">
+    <span class="new-play-circle" aria-hidden="true"><span class="new-play-triangle"></span></span>
+    <span class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></span>
+    <span class="arrow">›</span>
   </button>
 
   <button class="menu-card purple">
