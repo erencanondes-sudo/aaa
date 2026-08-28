@@ -36,7 +36,7 @@ button{font:inherit;border:0;cursor:pointer}
   padding:30px 37px 34px;
   box-shadow:0 20px 45px rgba(0,0,0,.20);
   overflow:visible;
-}
+transform:translateY(3px);}
 
 /* LOGO */
 .header{
@@ -708,6 +708,31 @@ body{
   background:#c7ccd1 !important;
 }
 </style>
+
+
+<style id="ad-slot-fixed">
+.ad{
+  position:relative !important;
+  height:100px !important;
+}
+.ad.ad-hidden,
+.ad[style*="display: none"]{
+  display:flex !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+</style>
+<script>
+(function(){
+  const ad = document.querySelector('.ad');
+  const close = document.querySelector('.ad-close');
+  if(!ad || !close) return;
+  close.addEventListener('click', function(){
+    ad.classList.add('ad-hidden');
+  }, true);
+})();
+</script>
 
 </head>
 <body>
