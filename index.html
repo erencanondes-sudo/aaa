@@ -1708,7 +1708,7 @@ button{
 
 <div class="game">
 
-<div id="wordTopAdBanner" style="display:none;width:320px;max-width:calc(100% - 8px);height:50px;border-radius:10px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:15;">
+<div id="wordTopAdBanner" style="display:none;width:335px;height:50px;border-radius:10px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:15;">
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
 
@@ -1716,7 +1716,7 @@ button{
 
 <div id="wordTopAdBannerSpacer" style="display:none;height:30px;"></div>
 
-<div id="fakeAdBanner" style="display:none;position:absolute;left:20px;right:20px;height:144px;z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+<div id="fakeAdBanner" style="display:none;position:absolute;width:335px;height:100px;left:50%;transform:translateX(-50%);z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
 <button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
 <div id="fakeAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
@@ -2378,7 +2378,8 @@ function positionAdBanner(){
 
 if(adCachedTop!==null){
 adBannerEl.style.top=adCachedTop+"px";
-adBannerEl.style.height="96px";
+adBannerEl.style.height="100px";
+adBannerEl.style.width="335px";
 return;
 }
 
@@ -2393,13 +2394,15 @@ let targetRect=homeStats.getBoundingClientRect();
 adCachedTop=targetRect.top-gameRect.top;
 
 adBannerEl.style.top=adCachedTop+"px";
-adBannerEl.style.height="96px";
+adBannerEl.style.height="100px";
+adBannerEl.style.width="335px";
 
 }
 else{
 
 adBannerEl.style.top="130px";
-adBannerEl.style.height="96px";
+adBannerEl.style.height="100px";
+adBannerEl.style.width="335px";
 
 }
 
@@ -5053,14 +5056,67 @@ function openChallengeRandom(){
 hideAllScreens();
 document.getElementById("randomWaitScreen").style.display="block";
 
-if(inRandomQueue){
-showRandomWaitingState(randomQueueSadeMode);
-}
-else{
-resetRandomModeButtons();
 }
 
+
+function syncRandomWaitScreenState(){
+
+if(inRandomQueue){
+showRandomWaitingState(randomQueueSadeMode);
+return;
 }
+
+resetRandomModeButtons();
+
+db.collection("randomQueue").doc(currentUser.uid).get().then(function(doc){
+
+if(!doc.exists || doc.data().matchedChallengeId){
+return;
+}
+
+let data=doc.data();
+
+inRandomQueue=true;
+randomQueueSadeMode=!!data.sadeMode;
+
+showRandomWaitingState(randomQueueSadeMode);
+
+randomQueueUnsubscribe=db.collection("randomQueue").doc(currentUser.uid).onSnapshot(function(snap){
+
+if(!snap.exists || !snap.data().matchedChallengeId)return;
+
+let opponentUsername=snap.data().matchedWithUsername || "Rakip";
+
+if(randomQueueUnsubscribe){
+randomQueueUnsubscribe();
+randomQueueUnsubscribe=null;
+}
+
+db.collection("randomQueue").doc(currentUser.uid).delete().catch(function(){});
+
+inRandomQueue=false;
+
+hideAllScreens();
+document.getElementById("challengeDoneScreen").style.display="block";
+document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! "+opponentUsername+" ile meydan okuma başladı.";
+
+});
+
+}).catch(function(e){
+console.error("Kuyruk durumu kontrol edilemedi:",e);
+});
+
+}
+
+
+new MutationObserver(function(){
+
+let el=document.getElementById("randomWaitScreen");
+if(el && el.style.display!=="none"){
+syncRandomWaitScreenState();
+}
+
+}).observe(document.getElementById("randomWaitScreen"),{attributes:true,attributeFilter:["style"]});
 
 
 function resetRandomModeButtons(){
