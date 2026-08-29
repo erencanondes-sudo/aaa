@@ -3965,8 +3965,8 @@ setBadgeVisibility("dailyResultsBadge",dailyBadgeOn ? 1 : 0);
 setBadgeVisibility("weeklyTournamentBadge",(weeklyCurrentBadgeOn||weeklyPastBadgeOn) ? 1 : 0);
 setBadgeVisibility("weeklyResultsBadge",weeklyPastBadgeOn ? 1 : 0);
 
-let extra=(dailyBadgeOn?1:0)+(weeklyCurrentBadgeOn?1:0)+(weeklyPastBadgeOn?1:0);
-tournamentExtraBadgeCount=extra;
+tournamentExtraOngoingCount=weeklyCurrentBadgeOn ? 1 : 0;
+tournamentExtraPastCount=(dailyBadgeOn?1:0)+(weeklyPastBadgeOn?1:0);
 
 updateTournamentBadge();
 
@@ -9974,7 +9974,8 @@ challengeSignalVersions={};
 
 
 let liveTournamentsData=null;
-let tournamentExtraBadgeCount=0;
+let tournamentExtraOngoingCount=0;
+let tournamentExtraPastCount=0;
 
 let tournamentSignalVersions={};
 let userTournamentsUnsubscribe=null;
@@ -10063,7 +10064,7 @@ tournamentSignalVersions={};
 function updateTournamentBadge(){
 
 let now=Date.now();
-let count=0;
+let ongoingCount=0;
 let inviteCount=0;
 
 if(liveTournamentsData){
@@ -10085,25 +10086,21 @@ let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 if(!myEntry)return;
 
 let hasUnplayed=myEntry.scores.some(function(s){ return s===null; });
-if(hasUnplayed)count++;
+if(hasUnplayed)ongoingCount++;
 
 });
 
 }
 
-count+=inviteCount;
-count+=tournamentExtraBadgeCount||0;
+ongoingCount+=tournamentExtraOngoingCount||0;
+let pastCount=tournamentExtraPastCount||0;
 
-let badgeEl=document.getElementById("tournamentBadge");
-if(badgeEl){
-if(count>0){
-badgeEl.innerHTML=count;
-badgeEl.style.display="inline-block";
-}
-else{
-badgeEl.style.display="none";
-}
-}
+let homeTotal=ongoingCount+pastCount+inviteCount;
+
+setBadgeVisibility("tournamentBadge",homeTotal);
+setBadgeVisibility("tournamentOngoingBadge",ongoingCount);
+setBadgeVisibility("tournamentPastBadge",pastCount);
+setBadgeVisibility("tournamentInviteBadge",inviteCount);
 
 }
 
