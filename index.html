@@ -5047,9 +5047,20 @@ document.getElementById("detailModalContent").innerHTML=html;
 }
 
 
-let inRandomQueue=false;
-let randomQueueUnsubscribe=null;
-let randomQueueSadeMode=false;
+let inRandomQueueByMode={cetrefilli:false,klasik:false};
+let randomQueueUnsubscribeByMode={cetrefilli:null,klasik:null};
+
+function getModeKey(sadeMode){
+return sadeMode ? "klasik" : "cetrefilli";
+}
+
+function getModeBtnId(sadeMode){
+return sadeMode ? "randomKlasikBtn" : "randomCetrefilliBtn";
+}
+
+function getModeLabel(sadeMode){
+return sadeMode ? "Klasik ▶️" : "Çetrefilli ▶️";
+}
 
 function openChallengeRandom(){
 
@@ -5061,49 +5072,35 @@ document.getElementById("randomWaitScreen").style.display="block";
 
 function syncRandomWaitScreenState(){
 
-if(inRandomQueue){
-showRandomWaitingState(randomQueueSadeMode);
+[false,true].forEach(function(sadeMode){
+
+let modeKey=getModeKey(sadeMode);
+
+if(inRandomQueueByMode[modeKey]){
+showRandomWaitingState(sadeMode);
 return;
 }
 
-resetRandomModeButtons();
+resetRandomModeButton(sadeMode);
 
-db.collection("randomQueue").doc(currentUser.uid).get().then(function(doc){
+let queueId=currentUser.uid+"_"+modeKey;
+
+db.collection("randomQueue").doc(queueId).get().then(function(doc){
 
 if(!doc.exists || doc.data().matchedChallengeId){
 return;
 }
 
-let data=doc.data();
+inRandomQueueByMode[modeKey]=true;
 
-inRandomQueue=true;
-randomQueueSadeMode=!!data.sadeMode;
+showRandomWaitingState(sadeMode);
 
-showRandomWaitingState(randomQueueSadeMode);
-
-randomQueueUnsubscribe=db.collection("randomQueue").doc(currentUser.uid).onSnapshot(function(snap){
-
-if(!snap.exists || !snap.data().matchedChallengeId)return;
-
-let opponentUsername=snap.data().matchedWithUsername || "Rakip";
-
-if(randomQueueUnsubscribe){
-randomQueueUnsubscribe();
-randomQueueUnsubscribe=null;
-}
-
-db.collection("randomQueue").doc(currentUser.uid).delete().catch(function(){});
-
-inRandomQueue=false;
-
-hideAllScreens();
-document.getElementById("challengeDoneScreen").style.display="block";
-document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! "+opponentUsername+" ile meydan okuma başladı.";
-
-});
+attachRandomQueueListener(sadeMode,queueId);
 
 }).catch(function(e){
 console.error("Kuyruk durumu kontrol edilemedi:",e);
+});
+
 });
 
 }
@@ -5119,49 +5116,63 @@ syncRandomWaitScreenState();
 }).observe(document.getElementById("randomWaitScreen"),{attributes:true,attributeFilter:["style"]});
 
 
-function resetRandomModeButtons(){
+function resetRandomModeButton(sadeMode){
 
-let cetBtn=document.getElementById("randomCetrefilliBtn");
-let klaBtn=document.getElementById("randomKlasikBtn");
+let btn=document.getElementById(getModeBtnId(sadeMode));
 
-cetBtn.disabled=false;
-klaBtn.disabled=false;
-cetBtn.style.opacity="1";
-klaBtn.style.opacity="1";
-cetBtn.innerHTML="Çetrefilli ▶️";
-klaBtn.innerHTML="Klasik ▶️";
+btn.disabled=false;
+btn.style.opacity="1";
+btn.innerHTML=getModeLabel(sadeMode);
 
 }
 
 
 function showRandomWaitingState(sadeMode){
 
-let cetBtn=document.getElementById("randomCetrefilliBtn");
-let klaBtn=document.getElementById("randomKlasikBtn");
+let btn=document.getElementById(getModeBtnId(sadeMode));
 
-cetBtn.disabled=true;
-klaBtn.disabled=true;
-cetBtn.style.opacity="0.6";
-klaBtn.style.opacity="0.6";
+btn.disabled=true;
+btn.style.opacity="0.6";
+btn.innerHTML=getModeLabel(sadeMode)+" - Eşleşme Bekleniyor...";
 
-if(sadeMode){
-klaBtn.innerHTML="Klasik ▶️ - Eşleşme Bekleniyor...";
-cetBtn.innerHTML="Çetrefilli ▶️";
 }
-else{
-cetBtn.innerHTML="Çetrefilli ▶️ - Eşleşme Bekleniyor...";
-klaBtn.innerHTML="Klasik ▶️";
+
+
+function attachRandomQueueListener(sadeMode,queueId){
+
+let modeKey=getModeKey(sadeMode);
+
+randomQueueUnsubscribeByMode[modeKey]=db.collection("randomQueue").doc(queueId).onSnapshot(function(snap){
+
+if(!snap.exists || !snap.data().matchedChallengeId)return;
+
+let opponentUsername=snap.data().matchedWithUsername || "Rakip";
+
+if(randomQueueUnsubscribeByMode[modeKey]){
+randomQueueUnsubscribeByMode[modeKey]();
+randomQueueUnsubscribeByMode[modeKey]=null;
 }
+
+db.collection("randomQueue").doc(queueId).delete().catch(function(){});
+
+inRandomQueueByMode[modeKey]=false;
+
+hideAllScreens();
+document.getElementById("challengeDoneScreen").style.display="block";
+document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! "+opponentUsername+" ile meydan okuma başladı.";
+
+});
 
 }
 
 
 function selectRandomMode(sadeMode){
 
-if(inRandomQueue)return;
+let modeKey=getModeKey(sadeMode);
 
-inRandomQueue=true;
-randomQueueSadeMode=sadeMode;
+if(inRandomQueueByMode[modeKey])return;
+
+inRandomQueueByMode[modeKey]=true;
 
 showRandomWaitingState(sadeMode);
 
@@ -5171,9 +5182,10 @@ let candidates=[];
 
 snap.forEach(function(doc){
 
-if(doc.id===currentUser.uid)return;
-
 let data=doc.data();
+
+if(data.uid===currentUser.uid)return;
+
 let joinedMillis=(data.joinedAt && data.joinedAt.toMillis) ? data.joinedAt.toMillis() : 0;
 
 if(joinedMillis && (Date.now()-joinedMillis)>86400000)return;
@@ -5199,8 +5211,8 @@ joinRandomQueue(sadeMode);
 
 }).catch(function(e){
 console.error("Eşleştirme aranırken hata:",e);
-inRandomQueue=false;
-resetRandomModeButtons();
+inRandomQueueByMode[modeKey]=false;
+resetRandomModeButton(sadeMode);
 alert("Eşleştirme sırasında bir hata oluştu. Lütfen tekrar dene.");
 });
 
@@ -5209,7 +5221,9 @@ alert("Eşleştirme sırasında bir hata oluştu. Lütfen tekrar dene.");
 
 function matchWithWaitingOpponent(opponentDoc,sadeMode){
 
+let modeKey=getModeKey(sadeMode);
 let opponentData=opponentDoc.data();
+let opponentUid=opponentData.uid;
 
 selectedGameType="word";
 wordSadeMode=!!sadeMode;
@@ -5220,7 +5234,7 @@ let challengeData={
 fromUid:currentUser.uid,
 fromUsername:currentUser.username,
 toUsername:opponentData.username,
-toUid:opponentDoc.id,
+toUid:opponentUid,
 level:null,
 gameType:"word",
 gamesCount:1,
@@ -5245,7 +5259,7 @@ let matchBatch=db.batch();
 
 matchBatch.set(challengeRef,challengeData);
 writeChallengeSignal(matchBatch,currentUser.uid,challengeRef.id);
-writeChallengeSignal(matchBatch,opponentDoc.id,challengeRef.id);
+writeChallengeSignal(matchBatch,opponentUid,challengeRef.id);
 
 matchBatch.commit().then(function(){
 
@@ -5254,9 +5268,9 @@ matchedChallengeId:challengeRef.id,
 matchedWithUsername:currentUser.username
 });
 
-db.collection("randomQueue").doc(currentUser.uid).delete().catch(function(){});
+db.collection("randomQueue").doc(currentUser.uid+"_"+modeKey).delete().catch(function(){});
 
-inRandomQueue=false;
+inRandomQueueByMode[modeKey]=false;
 
 hideAllScreens();
 document.getElementById("challengeDoneScreen").style.display="block";
@@ -5264,7 +5278,7 @@ document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! 
 
 }).catch(function(e){
 console.error("Meydan okuma oluşturulamadı:",e);
-inRandomQueue=false;
+inRandomQueueByMode[modeKey]=false;
 });
 
 }
@@ -5272,9 +5286,12 @@ inRandomQueue=false;
 
 function joinRandomQueue(sadeMode){
 
-let queueRef=db.collection("randomQueue").doc(currentUser.uid);
+let modeKey=getModeKey(sadeMode);
+let queueId=currentUser.uid+"_"+modeKey;
+let queueRef=db.collection("randomQueue").doc(queueId);
 
 queueRef.set({
+uid:currentUser.uid,
 username:currentUser.username,
 joinedAt:firebase.firestore.FieldValue.serverTimestamp(),
 matchedChallengeId:null,
@@ -5282,50 +5299,31 @@ matchedWithUsername:null,
 sadeMode:!!sadeMode
 }).then(function(){
 
-randomQueueUnsubscribe=queueRef.onSnapshot(function(doc){
-
-if(!doc.exists || !doc.data().matchedChallengeId)return;
-
-let opponentUsername=doc.data().matchedWithUsername || "Rakip";
-
-if(randomQueueUnsubscribe){
-randomQueueUnsubscribe();
-randomQueueUnsubscribe=null;
-}
-
-queueRef.delete().catch(function(){});
-
-inRandomQueue=false;
-
-hideAllScreens();
-document.getElementById("challengeDoneScreen").style.display="block";
-document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! "+opponentUsername+" ile meydan okuma başladı.";
-
-},function(e){
-console.error("Sıra dinlenemedi:",e);
-inRandomQueue=false;
-document.getElementById("randomWaitScreen").innerHTML="<button class=\"back-arrow-btn\" onclick=\"window.history.back()\">←</button><button class=\"back-btn\" onclick=\"goHome()\">Ana Sayfa</button><p style=\"margin-top:40px;color:#e74c3c;font-weight:bold;\">Bağlantı hatası oluştu.<br>Lütfen tekrar dene.</p>";
-});
+attachRandomQueueListener(sadeMode,queueId);
 
 }).catch(function(e){
 console.error("Sıraya girilemedi:",e);
-inRandomQueue=false;
-document.getElementById("randomWaitScreen").innerHTML="<button class=\"back-arrow-btn\" onclick=\"window.history.back()\">←</button><button class=\"back-btn\" onclick=\"goHome()\">Ana Sayfa</button><p style=\"margin-top:40px;color:#e74c3c;font-weight:bold;\">Sıraya girilemedi.<br>Lütfen tekrar dene.</p><p style=\"font-size:0.75em;color:#636e72;\">"+(e && e.message ? e.message : "")+"</p>";
+inRandomQueueByMode[modeKey]=false;
+resetRandomModeButton(sadeMode);
+alert("Sıraya girilemedi. Lütfen tekrar dene.");
 });
 
 }
 
 
-function cancelRandomQueue(){
+function cancelRandomQueue(sadeMode){
 
-if(randomQueueUnsubscribe){
-randomQueueUnsubscribe();
-randomQueueUnsubscribe=null;
+let modeKey=getModeKey(sadeMode);
+
+if(randomQueueUnsubscribeByMode[modeKey]){
+randomQueueUnsubscribeByMode[modeKey]();
+randomQueueUnsubscribeByMode[modeKey]=null;
 }
 
-if(inRandomQueue){
-db.collection("randomQueue").doc(currentUser.uid).delete().catch(function(){});
-inRandomQueue=false;
+if(inRandomQueueByMode[modeKey]){
+db.collection("randomQueue").doc(currentUser.uid+"_"+modeKey).delete().catch(function(){});
+inRandomQueueByMode[modeKey]=false;
+resetRandomModeButton(sadeMode);
 }
 
 }
