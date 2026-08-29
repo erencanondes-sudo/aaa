@@ -9616,10 +9616,10 @@ function writeChallengeSignal(batch,uid,challengeId){
 
 if(!uid)return;
 
-let updatePayload={};
-updatePayload["ids."+challengeId]=Math.floor(Date.now()/1000);
+let idsPayload={};
+idsPayload[challengeId]=Math.floor(Date.now()/1000);
 
-batch.set(db.collection("userChallenges").doc(uid),updatePayload,{merge:true});
+batch.set(db.collection("userChallenges").doc(uid),{ids:idsPayload},{merge:true});
 
 }
 
@@ -9654,10 +9654,10 @@ function writeTournamentSignal(batch,uid,tournamentId){
 
 if(!uid)return;
 
-let updatePayload={};
-updatePayload["ids."+tournamentId]=Math.floor(Date.now()/1000);
+let idsPayload={};
+idsPayload[tournamentId]=Math.floor(Date.now()/1000);
 
-batch.set(db.collection("userTournaments").doc(uid),updatePayload,{merge:true});
+batch.set(db.collection("userTournaments").doc(uid),{ids:idsPayload},{merge:true});
 
 }
 
