@@ -1972,7 +1972,10 @@ button{
 <button class="back-arrow-btn" onclick="window.history.back()">←</button>
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
-<p class="random-wait-text" style="margin-top:40px;">Eşleşme bekleniyor</p>
+<p class="screen-title">Hangi oyunu oynamak istersin?</p>
+
+<button class="newgame" id="randomCetrefilliBtn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectRandomMode(false)">Çetrefilli ▶️</button>
+<button class="newgame" id="randomKlasikBtn" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectRandomMode(true)">Klasik ▶️</button>
 
 </div>
 
@@ -5043,24 +5046,70 @@ document.getElementById("detailModalContent").innerHTML=html;
 
 let inRandomQueue=false;
 let randomQueueUnsubscribe=null;
+let randomQueueSadeMode=false;
 
 function openChallengeRandom(){
 
-if(inRandomQueue){
-
 hideAllScreens();
 document.getElementById("randomWaitScreen").style.display="block";
 
-return;
+if(inRandomQueue){
+showRandomWaitingState(randomQueueSadeMode);
+}
+else{
+resetRandomModeButtons();
+}
 
 }
 
+
+function resetRandomModeButtons(){
+
+let cetBtn=document.getElementById("randomCetrefilliBtn");
+let klaBtn=document.getElementById("randomKlasikBtn");
+
+cetBtn.disabled=false;
+klaBtn.disabled=false;
+cetBtn.style.opacity="1";
+klaBtn.style.opacity="1";
+cetBtn.innerHTML="Çetrefilli ▶️";
+klaBtn.innerHTML="Klasik ▶️";
+
+}
+
+
+function showRandomWaitingState(sadeMode){
+
+let cetBtn=document.getElementById("randomCetrefilliBtn");
+let klaBtn=document.getElementById("randomKlasikBtn");
+
+cetBtn.disabled=true;
+klaBtn.disabled=true;
+cetBtn.style.opacity="0.6";
+klaBtn.style.opacity="0.6";
+
+if(sadeMode){
+klaBtn.innerHTML="Klasik ▶️ - Eşleşme Bekleniyor...";
+cetBtn.innerHTML="Çetrefilli ▶️";
+}
+else{
+cetBtn.innerHTML="Çetrefilli ▶️ - Eşleşme Bekleniyor...";
+klaBtn.innerHTML="Klasik ▶️";
+}
+
+}
+
+
+function selectRandomMode(sadeMode){
+
+if(inRandomQueue)return;
+
 inRandomQueue=true;
+randomQueueSadeMode=sadeMode;
 
-hideAllScreens();
-document.getElementById("randomWaitScreen").style.display="block";
+showRandomWaitingState(sadeMode);
 
-db.collection("randomQueue").where("matchedChallengeId","==",null).limit(20).get().then(function(snap){
+db.collection("randomQueue").where("matchedChallengeId","==",null).where("sadeMode","==",sadeMode).limit(20).get().then(function(snap){
 
 let candidates=[];
 
@@ -5083,30 +5132,31 @@ let opponentDoc=candidates.length>0 ? candidates[0].doc : null;
 
 if(opponentDoc){
 
-matchWithWaitingOpponent(opponentDoc);
+matchWithWaitingOpponent(opponentDoc,sadeMode);
 
 }
 else{
 
-joinRandomQueue();
+joinRandomQueue(sadeMode);
 
 }
 
 }).catch(function(e){
 console.error("Eşleştirme aranırken hata:",e);
 inRandomQueue=false;
-document.getElementById("randomWaitScreen").innerHTML="<button class=\"back-arrow-btn\" onclick=\"window.history.back()\">←</button><button class=\"back-btn\" onclick=\"goHome()\">Ana Sayfa</button><p style=\"margin-top:40px;color:#e74c3c;font-weight:bold;\">Eşleştirme sırasında bir hata oluştu.<br>Lütfen tekrar dene.</p><p style=\"font-size:0.75em;color:#636e72;\">"+(e && e.message ? e.message : "")+"</p>";
+resetRandomModeButtons();
+alert("Eşleştirme sırasında bir hata oluştu. Lütfen tekrar dene.");
 });
 
 }
 
 
-function matchWithWaitingOpponent(opponentDoc){
+function matchWithWaitingOpponent(opponentDoc,sadeMode){
 
 let opponentData=opponentDoc.data();
 
 selectedGameType="word";
-wordSadeMode=false;
+wordSadeMode=!!sadeMode;
 
 let wordData=generateWordGameData(100);
 
@@ -5127,6 +5177,7 @@ toPlayed:false
 }],
 type:"random",
 status:"accepted",
+sadeMode:!!sadeMode,
 fromLastRead:null,
 toLastRead:null,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
@@ -5163,7 +5214,7 @@ inRandomQueue=false;
 }
 
 
-function joinRandomQueue(){
+function joinRandomQueue(sadeMode){
 
 let queueRef=db.collection("randomQueue").doc(currentUser.uid);
 
@@ -5171,7 +5222,8 @@ queueRef.set({
 username:currentUser.username,
 joinedAt:firebase.firestore.FieldValue.serverTimestamp(),
 matchedChallengeId:null,
-matchedWithUsername:null
+matchedWithUsername:null,
+sadeMode:!!sadeMode
 }).then(function(){
 
 randomQueueUnsubscribe=queueRef.onSnapshot(function(doc){
