@@ -10018,6 +10018,8 @@ function writeTournamentSignal(batch,uid,tournamentId){
 
 if(!uid)return;
 
+console.log("[TANI] Turnuva isareti yaziliyor -> uid:",uid,"turnamentId:",tournamentId);
+
 let idsPayload={};
 idsPayload[tournamentId]=Math.floor(Date.now()/1000);
 
@@ -10191,6 +10193,8 @@ let data=doc.data();
 if(!data)return;
 
 let ids=data.ids || {};
+
+console.log("[TANI] Kendi userTournaments dokumanim geldi. uid:",currentUser.uid,"ids:",JSON.stringify(ids));
 
 let fetchPromises=[];
 
