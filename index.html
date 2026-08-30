@@ -3507,7 +3507,10 @@ track.style.transform="translateX(-"+(idx*33.3333)+"%)";
 
 if(tab==="ongoing")document.getElementById("tabTournamentOngoingBtn").classList.add("active");
 else if(tab==="past")document.getElementById("tabTournamentPastBtn").classList.add("active");
-else document.getElementById("tabTournamentInviteBtn").classList.add("active");
+else{
+document.getElementById("tabTournamentInviteBtn").classList.add("active");
+loadPublicTournamentsIfNeeded();
+}
 
 }
 
@@ -4730,22 +4733,58 @@ let inviteUnique=invitedList.filter(function(t){ return !myIds.has(t.id) && now<
 renderTournamentGroup(ongoingEl,ongoing,false,false);
 renderTournamentGroup(pastEl,past,true,false);
 
+lastInviteUnique=inviteUnique;
+
+if(publicTournamentsCache){
+renderInviteTabContent();
+}
+else{
+inviteEl.innerHTML="<p>Görmek için Davet sekmesine geç.</p>";
+}
+
+}
+
+
+let publicTournamentsCache=null;
+let lastInviteUnique=[];
+
+function loadPublicTournamentsIfNeeded(){
+
+if(publicTournamentsCache){
+renderInviteTabContent();
+return;
+}
+
+let inviteEl=document.getElementById("tournamentInviteList");
 inviteEl.innerHTML="<p>Yükleniyor...</p>";
 
 db.collection("tournaments").where("visibility","==","public").limit(50).get().then(function(snap){
 
-let publicList=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-let publicOpen=publicList.filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
+publicTournamentsCache=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
 
-let combined=[...inviteUnique,...publicOpen];
-let combinedUnique=Array.from(new Map(combined.map(function(t){ return [t.id,t]; })).values());
-
-renderTournamentGroup(inviteEl,combinedUnique,false,true);
+renderInviteTabContent();
 
 }).catch(function(e){
 console.error("Herkese açık turnuvalar yüklenemedi:",e);
-renderTournamentGroup(inviteEl,inviteUnique,false,true);
+renderTournamentGroup(document.getElementById("tournamentInviteList"),lastInviteUnique,false,true);
 });
+
+}
+
+
+function renderInviteTabContent(){
+
+let now=Date.now();
+let all=liveTournamentsData ? Object.values(liveTournamentsData) : [];
+let mine=all.filter(function(t){ return t.participantUids && t.participantUids.includes(currentUser.uid); });
+let myIds=new Set(mine.map(function(t){ return t.id; }));
+
+let publicOpen=(publicTournamentsCache||[]).filter(function(t){ return !myIds.has(t.id) && now<=t.expiresAtMillis; });
+
+let combined=[...lastInviteUnique,...publicOpen];
+let combinedUnique=Array.from(new Map(combined.map(function(t){ return [t.id,t]; })).values());
+
+renderTournamentGroup(document.getElementById("tournamentInviteList"),combinedUnique,false,true);
 
 }
 
