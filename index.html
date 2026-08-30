@@ -4526,6 +4526,20 @@ function openTournamentChat(tournamentId){
 
 activeTournamentChatId=tournamentId;
 
+let tForRead=liveTournamentsData ? liveTournamentsData[tournamentId] : null;
+if(tForRead){
+
+let readPayload={};
+readPayload["unreadCounts."+currentUser.uid]=0;
+
+commitTournamentUpdate(tournamentId,readPayload,tForRead).then(function(){
+updateTournamentBadge();
+}).catch(function(e){
+console.error("Turnuva okundu bilgisi güncellenemedi:",e);
+});
+
+}
+
 let html="<p class=\"screen-title\" style=\"margin-top:0;\">Turnuva Sohbeti</p>";
 html+="<div id=\"tournamentChatMessages\" style=\"max-height:300px;overflow-y:auto;margin-bottom:10px;text-align:left;\"><p>Yükleniyor...</p></div>";
 html+="<div style=\"display:flex;gap:6px;\">";
@@ -4586,6 +4600,26 @@ sentAt:firebase.firestore.FieldValue.serverTimestamp()
 }).then(function(){
 
 input.value="";
+
+let t=liveTournamentsData ? liveTournamentsData[activeTournamentChatId] : null;
+
+if(t && t.participants){
+
+let updatePayload={};
+
+t.participants.forEach(function(p){
+if(p.uid && p.uid!==currentUser.uid){
+updatePayload["unreadCounts."+p.uid]=firebase.firestore.FieldValue.increment(1);
+}
+});
+
+if(Object.keys(updatePayload).length>0){
+commitTournamentUpdate(activeTournamentChatId,updatePayload,t).catch(function(e){
+console.error("Okunmamış sayacı güncellenemedi:",e);
+});
+}
+
+}
 
 }).catch(function(e){
 console.error("Mesaj gönderilemedi:",e);
@@ -4755,7 +4789,9 @@ else if(!isPast){
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s){ return s===null; }) : -1;
 
-html+="<div class=\"btn-row\">";
+let myUnreadCount=(t.unreadCounts && t.unreadCounts[currentUser.uid]) || 0;
+
+html+="<div class=\"btn-row btn-row-triple\">";
 html+="<button class=\"challenge-play-btn view-btn\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
 
 if(nextRoundIndex!==-1){
@@ -4764,6 +4800,8 @@ html+="<button class=\"challenge-play-btn newgame-green\" onclick=\"playTourname
 else{
 html+="<button class=\"challenge-play-btn newgame-green\" disabled>Oynadın ✓</button>";
 }
+
+html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openTournamentChat('"+t.id+"')\">Mesaj 💬<span class=\"badge\" id=\"tMsgBadge-"+t.id+"\" style=\""+(myUnreadCount>0?"":"display:none;")+"\">"+myUnreadCount+"</span></button>";
 
 html+="</div>";
 
