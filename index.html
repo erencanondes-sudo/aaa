@@ -2312,7 +2312,7 @@ syncPlayingClass();
 new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
 
 let adBannerEl=document.getElementById("fakeAdBanner");
-let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","gameTypeScreen","tournamentScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
+let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
 let adCachedTop=null;
 
 let adVariants=[
@@ -3688,6 +3688,12 @@ console.error("Turnuva oluşturulamadı:",e);
 function viewTournament(tournamentId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+
+if(tournamentChatUnsubscribe){
+tournamentChatUnsubscribe();
+tournamentChatUnsubscribe=null;
+}
+document.getElementById("tournamentSidePanel").innerHTML="<p style=\"color:#636e72;font-size:0.85em;\">Yükleniyor...</p>";
 
 db.collection("tournaments").doc(tournamentId).get().then(function(doc){
 
@@ -5075,7 +5081,14 @@ html+="</div>";
 
 }
 else{
-html+="<button class=\"challenge-play-btn view-btn\" style=\"padding-top:7px;padding-bottom:7px;width:calc(100% - 30px);margin-left:15px;margin-right:15px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+
+let myUnreadCount=(t.unreadCounts && t.unreadCounts[currentUser.uid]) || 0;
+
+html+="<div class=\"btn-row\">";
+html+="<button class=\"challenge-play-btn view-btn\" style=\"padding-top:7px;padding-bottom:7px;font-size:13px;\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Görüntüle 🔍</button>";
+html+="<button class=\"challenge-play-btn message-btn\" style=\"padding-top:7px;padding-bottom:7px;font-size:13px;\" onclick=\"openTournamentChat('"+t.id+"')\">Mesaj 💬<span class=\"badge\" id=\"tMsgBadge-"+t.id+"\" style=\""+(myUnreadCount>0?"":"display:none;")+"\">"+myUnreadCount+"</span></button>";
+html+="</div>";
+
 }
 
 html+="</div>";
@@ -7455,13 +7468,13 @@ if(!mySidePlayedCurrent)ongoingActionCount++;
 let ongoingUnread=ongoingListe.reduce(function(sum,item){
 let c=item.c;
 let count=item.mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
-return sum+count;
+return sum+(count>0 ? 1 : 0);
 },0);
 
 let oyunlarimUnread=oyunlarimListe.reduce(function(sum,item){
 let c=item.c;
 let count=item.mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
-return sum+count;
+return sum+(count>0 ? 1 : 0);
 },0);
 
 let ongoingTotal=ongoingActionCount+ongoingUnread;
@@ -10416,6 +10429,7 @@ function updateTournamentBadge(){
 let now=Date.now();
 let ongoingCount=0;
 let inviteCount=0;
+let pastUnreadCount=0;
 
 if(liveTournamentsData){
 
@@ -10432,9 +10446,14 @@ return;
 if(!isParticipant)return;
 
 let unreadForMe=(t.unreadCounts && t.unreadCounts[currentUser.uid]) || 0;
-ongoingCount+=unreadForMe;
+let isPast=now>t.expiresAtMillis;
 
-if(now>t.expiresAtMillis)return;
+if(isPast){
+if(unreadForMe>0)pastUnreadCount+=1;
+return;
+}
+
+if(unreadForMe>0)ongoingCount+=1;
 
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 if(!myEntry)return;
@@ -10447,7 +10466,7 @@ if(hasUnplayed)ongoingCount++;
 }
 
 ongoingCount+=tournamentExtraOngoingCount||0;
-let pastCount=tournamentExtraPastCount||0;
+let pastCount=(tournamentExtraPastCount||0)+pastUnreadCount;
 
 let homeTotal=ongoingCount+pastCount+inviteCount;
 
