@@ -15,6 +15,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <style>
 body{
@@ -2514,12 +2515,18 @@ projectId:"eren-63abb",
 storageBucket:"eren-63abb.firebasestorage.app",
 messagingSenderId:"750087041131",
 appId:"1:750087041131:web:070444f7eacdfbd88f812e",
-measurementId:"G-W1BJ8P6GQ8"
+measurementId:"G-W1BJ8P6GQ8",
+// ÖNEMLİ: Firebase Console > Realtime Database'i etkinleştirdikten sonra
+// oradaki gerçek veritabanı URL'sini buraya yaz (Realtime Database sayfasının
+// en üstünde görünür, örn: "https://eren-63abb-default-rtdb.firebaseio.com"
+// veya "https://eren-63abb-default-rtdb.europe-west1.firebasedatabase.app").
+databaseURL:"https://eren-63abb-default-rtdb.firebaseio.com"
 };
 
 let firebaseReady=false;
 let auth=null;
 let db=null;
+let rtdb=null;
 
 try{
 
@@ -2530,6 +2537,7 @@ throw new Error("Firebase kütüphanesi yüklenemedi (script engellenmiş olabil
 firebase.initializeApp(firebaseConfig);
 auth=firebase.auth();
 db=firebase.firestore();
+rtdb=firebase.database();
 firebaseReady=true;
 
 db.enablePersistence().catch(function(err){
@@ -4823,27 +4831,25 @@ document.getElementById("tournamentSidePanel").innerHTML=html;
 
 if(tournamentChatUnsubscribe){
 tournamentChatUnsubscribe();
+tournamentChatUnsubscribe=null;
 }
 
-tournamentChatUnsubscribe=db.collection("tournaments").doc(tournamentId).collection("messages").orderBy("sentAt","asc").onSnapshot(function(snap){
+let tournamentChatRtdbRef=rtdb.ref("tournamentChats/"+tournamentId).orderByKey().limitToLast(50);
 
-let msgs=[];
-
-snap.forEach(function(doc){
-msgs.push(doc.data());
-});
+let tournamentChatValueHandler=function(snap){
 
 let msgEl=document.getElementById("tournamentChatMessages");
 if(!msgEl)return;
 
-if(msgs.length===0){
+if(!snap.exists()){
 msgEl.innerHTML="<p>Henüz mesaj yok.</p>";
 return;
 }
 
 let html="";
 
-msgs.forEach(function(m){
+snap.forEach(function(child){
+let m=child.val();
 let isMe=m.senderUsername===currentUser.username;
 html+="<p style=\"margin:4px 0;\"><b style=\""+(isMe?"color:#0984e3;":"color:#192a56;")+"\">"+m.senderUsername+":</b> "+m.text+"</p>";
 });
@@ -4851,9 +4857,15 @@ html+="<p style=\"margin:4px 0;\"><b style=\""+(isMe?"color:#0984e3;":"color:#19
 msgEl.innerHTML=html;
 msgEl.scrollTop=msgEl.scrollHeight;
 
-},function(e){
+};
+
+tournamentChatRtdbRef.on("value",tournamentChatValueHandler,function(e){
 console.error("Turnuva sohbeti yüklenemedi:",e);
 });
+
+tournamentChatUnsubscribe=function(){
+tournamentChatRtdbRef.off("value",tournamentChatValueHandler);
+};
 
 }
 
@@ -4865,10 +4877,10 @@ let text=input.value.trim();
 
 if(!text || !activeTournamentChatId)return;
 
-db.collection("tournaments").doc(activeTournamentChatId).collection("messages").add({
+rtdb.ref("tournamentChats/"+activeTournamentChatId).push({
 senderUsername:currentUser.username,
 text:text,
-sentAt:firebase.firestore.FieldValue.serverTimestamp()
+sentAt:firebase.database.ServerValue.TIMESTAMP
 }).then(function(){
 
 input.value="";
@@ -6470,23 +6482,18 @@ chatUnsubscribe();
 chatUnsubscribe=null;
 }
 
-renderChatMessages();
+let chatRtdbRef=rtdb.ref("challengeChats/"+challengeId).orderByKey().limitToLast(50);
 
-}
-
-
-function renderChatMessages(){
+let chatValueHandler=function(snap){
 
 let msgEl=document.getElementById("modalChatMessages");
-if(!msgEl || !activeChatChallengeId)return;
-
-let challenge=liveChallengesData[activeChatChallengeId];
-let messages=(challenge && challenge.chatMessages) ? challenge.chatMessages : [];
+if(!msgEl)return;
 
 let msgHtml="";
 
-messages.forEach(function(m){
+snap.forEach(function(child){
 
+let m=child.val();
 let mine=m.senderUsername===currentUser.username;
 
 msgHtml+="<div class=\"chat-bubble "+(mine?"mine":"other")+"\"><b>"+m.senderUsername+"</b>"+m.text+"</div>";
@@ -6495,6 +6502,16 @@ msgHtml+="<div class=\"chat-bubble "+(mine?"mine":"other")+"\"><b>"+m.senderUser
 
 msgEl.innerHTML=msgHtml || "<p>Henüz mesaj yok, ilk mesajı sen yaz.</p>";
 msgEl.scrollTop=msgEl.scrollHeight;
+
+};
+
+chatRtdbRef.on("value",chatValueHandler,function(e){
+console.error("Düello sohbeti yüklenemedi:",e);
+});
+
+chatUnsubscribe=function(){
+chatRtdbRef.off("value",chatValueHandler);
+};
 
 }
 
@@ -6506,26 +6523,27 @@ let text=input.value.trim();
 
 if(!text || !activeChatChallengeId)return;
 
-let challenge=liveChallengesData[activeChatChallengeId];
-let currentMessages=(challenge && challenge.chatMessages) ? challenge.chatMessages.slice() : [];
+let challengeId=activeChatChallengeId;
+let mySide=activeChatMySide;
 
-currentMessages.push({
+rtdb.ref("challengeChats/"+challengeId).push({
 senderUsername:currentUser.username,
 text:text,
-sentAt:Math.floor(Date.now()/1000)
-});
-
-if(currentMessages.length>50){
-currentMessages=currentMessages.slice(currentMessages.length-50);
-}
-
-let recipientField=activeChatMySide==="from" ? "toUnreadCount" : "fromUnreadCount";
-let updates={chatMessages:currentMessages};
-updates[recipientField]=firebase.firestore.FieldValue.increment(1);
-
-commitChallengeUpdateFor(challenge,activeChatChallengeId,updates).then(function(){
+sentAt:firebase.database.ServerValue.TIMESTAMP
+}).then(function(){
 
 input.value="";
+
+let challenge=liveChallengesData ? liveChallengesData[challengeId] : null;
+let recipientField=mySide==="from" ? "toUnreadCount" : "fromUnreadCount";
+let updates={};
+updates[recipientField]=firebase.firestore.FieldValue.increment(1);
+
+let updatePromise=challenge ? commitChallengeUpdateFor(challenge,challengeId,updates) : db.collection("challenges").doc(challengeId).update(updates);
+
+updatePromise.catch(function(e){
+console.error("Okunmamış sayacı güncellenemedi:",e);
+});
 
 }).catch(function(e){
 
@@ -7359,30 +7377,6 @@ gamesBtn.classList.add("active");
 else{
 challengesBtn.classList.add("active");
 }
-
-}
-
-
-function countUnreadMessages(challengeId,fromLastRead,toLastRead,mySide){
-
-let lastRead=mySide==="from" ? fromLastRead : toLastRead;
-
-return db.collection("challenges").doc(challengeId).collection("messages").get().then(function(snap){
-
-let count=0;
-
-snap.forEach(function(doc){
-
-let m=doc.data();
-
-if(m.senderUsername===currentUser.username)return;
-if(!lastRead || (m.sentAt && m.sentAt.seconds>lastRead.seconds))count++;
-
-});
-
-return count;
-
-});
 
 }
 
@@ -10258,11 +10252,6 @@ if(historyScreenEl && historyScreenEl.style.display!=="none"){
 renderOngoingList(true);
 renderHistoryList(true);
 renderChallengesList(true);
-}
-
-let chatModalVisible=document.getElementById("detailModalOverlay") && document.getElementById("detailModalOverlay").style.display!=="none";
-if(chatModalVisible && activeChatChallengeId){
-renderChatMessages();
 }
 
 },300);
