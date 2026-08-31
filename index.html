@@ -2123,7 +2123,10 @@ button{
 
 <p class="screen-title" id="tournamentDetailTitle">Turnuva</p>
 
-<div id="tournamentDetailContent"></div>
+<div style="display:flex;gap:10px;align-items:flex-start;">
+<div id="tournamentDetailContent" style="width:50%;box-sizing:border-box;"></div>
+<div id="tournamentSidePanel" style="width:50%;box-sizing:border-box;"></div>
+</div>
 
 </div>
 
@@ -2928,7 +2931,7 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
-currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email};
+currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
 currentUserFriends=profile.friendUsernames || [];
 
 flushPendingGameFromStorage();
@@ -2940,7 +2943,7 @@ let firstName=profile.name.trim().split(/\s+/)[0];
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
 
-loadGameHistory().then(renderHomeStats);
+renderHomeStats();
 
 startChallengesListener();
 startTournamentsListener();
@@ -2954,6 +2957,22 @@ burstHomeConfetti();
 function burstHomeConfetti(){
 
 launchMemConfetti("extra",false);
+
+}
+
+
+function applyLocalStatUpdate(entry){
+
+if(!currentUser)return;
+
+currentUser.challengeCount=(currentUser.challengeCount||0)+1;
+if(entry.result==="win")currentUser.challengeWins=(currentUser.challengeWins||0)+1;
+if(entry.gameType==="word"){
+currentUser.wordScoreSum=(currentUser.wordScoreSum||0)+entry.score;
+currentUser.wordScoreCount=(currentUser.wordScoreCount||0)+1;
+}
+
+renderHomeStats();
 
 }
 
@@ -3056,6 +3075,22 @@ gameHistory=gameHistory.slice(0,20);
 db.collection("users").doc(currentUser.uid).collection("history").add(entry).catch(function(e){
 console.error("Bekleyen oyun geçmişe eklenemedi:",e);
 });
+
+if(entry.isChallenge){
+
+let statPayload={challengeCount:firebase.firestore.FieldValue.increment(1)};
+if(entry.result==="win")statPayload.challengeWins=firebase.firestore.FieldValue.increment(1);
+if(entry.gameType==="word"){
+statPayload.wordScoreSum=firebase.firestore.FieldValue.increment(entry.score);
+statPayload.wordScoreCount=firebase.firestore.FieldValue.increment(1);
+}
+
+db.collection("users").doc(currentUser.uid).update(statPayload).catch(function(e){
+console.error("Profil istatistiği güncellenemedi:",e);
+});
+
+applyLocalStatUpdate(entry);
+}
 
 if(pending.activeChallengeId){
 
@@ -3190,6 +3225,23 @@ gameHistory=gameHistory.slice(0,30);
 }
 
 if(currentUser){
+
+if(entry.isChallenge){
+
+let statPayload={challengeCount:firebase.firestore.FieldValue.increment(1)};
+if(entry.result==="win")statPayload.challengeWins=firebase.firestore.FieldValue.increment(1);
+if(entry.gameType==="word"){
+statPayload.wordScoreSum=firebase.firestore.FieldValue.increment(entry.score);
+statPayload.wordScoreCount=firebase.firestore.FieldValue.increment(1);
+}
+
+db.collection("users").doc(currentUser.uid).update(statPayload).catch(function(e){
+console.error("Profil istatistiği güncellenemedi:",e);
+});
+
+applyLocalStatUpdate(entry);
+
+}
 
 db.collection("users").doc(currentUser.uid).collection("history").add(entry).then(function(){
 
@@ -3677,10 +3729,7 @@ html+="<button class=\"newgame newgame-green\" onclick=\"joinTournament('"+t.id+
 
 if(iJoined && !expired){
 
-html+="<div class=\"btn-row\">";
 html+="<button class=\"challenge-play-btn\" style=\"background:#8e44ad;box-shadow:0 4px 0 #6c3483;\" onclick=\"openTournamentInvite('"+t.id+"')\">Arkadaş Davet Et ➕</button>";
-html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openTournamentChat('"+t.id+"')\">Sohbet 💬</button>";
-html+="</div>";
 
 for(let i=0;i<t.format;i++){
 
@@ -3712,6 +3761,17 @@ html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickabl
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
+
+if(iJoined){
+openTournamentChat(t.id);
+}
+else{
+if(tournamentChatUnsubscribe){
+tournamentChatUnsubscribe();
+tournamentChatUnsubscribe=null;
+}
+document.getElementById("tournamentSidePanel").innerHTML="<p style=\"color:#636e72;font-size:0.85em;\">Sohbet için önce turnuvaya katıl.</p>";
+}
 
 }
 
@@ -4270,10 +4330,20 @@ let html="";
 
 entries.forEach(function(t){
 
+let myTournament=liveTournamentsData ? liveTournamentsData[t.id] : null;
+let alreadyJoined=myTournament && myTournament.participantUids && myTournament.participantUids.includes(currentUser.uid);
+
 html+="<div class=\"challenge-item\">";
 html+="<div class=\"h-top\"><span>🌍 "+t.creatorUsername+"</span><span style=\"font-size:0.85em;\">"+t.format+" oyun</span></div>";
 html+="<p style=\"margin:4px 0;font-size:0.85em;color:#636e72;\">👥 "+(t.participantCount||0)+" katılımcı</p>";
+
+if(alreadyJoined){
+html+="<button class=\"newgame\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\">Katıldın, Görüntüle 🔍</button>";
+}
+else{
 html+="<button class=\"newgame newgame-green\" onclick=\"joinTournament('"+t.id+"')\">Katıl 🏆</button>";
+}
+
 html+="</div>";
 
 });
@@ -4742,14 +4812,14 @@ console.error("Turnuva okundu bilgisi güncellenemedi:",e);
 
 }
 
-let html="<p class=\"screen-title\" style=\"margin-top:0;\">Turnuva Sohbeti</p>";
-html+="<div id=\"tournamentChatMessages\" style=\"max-height:300px;overflow-y:auto;margin-bottom:10px;text-align:left;\"><p>Yükleniyor...</p></div>";
+let html="<p style=\"font-weight:bold;margin-top:0;\">Turnuva Sohbeti</p>";
+html+="<div id=\"tournamentChatMessages\" style=\"max-height:260px;overflow-y:auto;margin-bottom:10px;text-align:left;font-size:0.85em;\"><p>Yükleniyor...</p></div>";
 html+="<div style=\"display:flex;gap:6px;\">";
 html+="<input type=\"text\" id=\"tournamentChatInput\" placeholder=\"Mesaj yaz...\" class=\"auth-input\" style=\"flex:1;margin-bottom:0;\">";
 html+="<button class=\"newgame\" style=\"width:auto;padding:10px 16px;margin-top:0;\" onclick=\"sendTournamentChatMessage()\">Gönder</button>";
 html+="</div>";
 
-openDetailModal(html);
+document.getElementById("tournamentSidePanel").innerHTML=html;
 
 if(tournamentChatUnsubscribe){
 tournamentChatUnsubscribe();
@@ -5382,7 +5452,7 @@ inRandomQueueByMode[modeKey]=true;
 
 showRandomWaitingState(sadeMode);
 
-db.collection("randomQueue").where("matchedChallengeId","==",null).where("sadeMode","==",sadeMode).limit(20).get().then(function(snap){
+db.collection("randomQueue").where("matchedChallengeId","==",null).where("sadeMode","==",sadeMode).limit(2).get().then(function(snap){
 
 let candidates=[];
 
@@ -6097,7 +6167,7 @@ return;
 errorEl.style.color="#27ae60";
 errorEl.innerHTML="Kontrol ediliyor...";
 
-db.collection("users").where("username","==",newUsername).get().then(function(snap){
+db.collection("users").where("username","==",newUsername).limit(1).get().then(function(snap){
 
 if(!snap.empty){
 errorEl.style.color="";
@@ -6191,7 +6261,7 @@ function viewUserProfile(username,from){
 
 openDetailModal("<p>Yükleniyor...</p>");
 
-db.collection("users").where("username","==",username).get().then(function(snap){
+db.collection("users").where("username","==",username).limit(1).get().then(function(snap){
 
 if(snap.empty){
 
@@ -6201,29 +6271,14 @@ return;
 }
 
 let profile=snap.docs[0].data();
-let otherUid=snap.docs[0].id;
 
-let historyPromise=db.collection("users").doc(otherUid).collection("history").get();
-
-Promise.all([historyPromise]).then(function(results){
-
-let historySnap=results[0];
-
-let games=[];
-let challengeCount=0;
-let challengeWins=0;
-
-historySnap.forEach(function(hDoc){
-let h=hDoc.data();
-games.push(h);
-if(h.isChallenge){
-challengeCount++;
-if(h.result==="win")challengeWins++;
-}
-});
+let challengeCount=profile.challengeCount||0;
+let challengeWins=profile.challengeWins||0;
+let wordScoreSum=profile.wordScoreSum||0;
+let wordScoreCount=profile.wordScoreCount||0;
 
 let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
-let avgByLevel=computeAvgByLevel(games);
+let avgScoreWord=wordScoreCount? Math.round(wordScoreSum/wordScoreCount) : 0;
 
 let isFriend=currentUserFriends.includes(username);
 
@@ -6233,17 +6288,9 @@ let friendBtn=isFriend
 
 document.getElementById("detailModalContent").innerHTML=
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
-"<p>Puan Ortalaması (Kelime): "+avgByLevel.word+"</p>"+
+"<p>Puan Ortalaması (Kelime): "+avgScoreWord+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>"+
 friendBtn;
-
-}).catch(function(e){
-
-document.getElementById("detailModalContent").innerHTML=
-"<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p>"+
-"<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>";
-
-});
 
 }).catch(function(e){
 
@@ -7874,14 +7921,11 @@ hafiza: counts.hafiza? Math.round(sums.hafiza/counts.hafiza) : 0
 
 function renderHomeStats(){
 
-let avgByLevel=computeAvgByLevel(gameHistory);
-
-let challengeGames=gameHistory.filter(g=>g.isChallenge);
-let challengeWins=challengeGames.filter(g=>g.result==="win").length;
-let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
+let successPct=currentUser.challengeCount? Math.round((currentUser.challengeWins/currentUser.challengeCount)*100) : 0;
+let avgScoreWord=currentUser.wordScoreCount? Math.round(currentUser.wordScoreSum/currentUser.wordScoreCount) : 0;
 
 document.getElementById("successPct").innerHTML="%"+successPct;
-document.getElementById("avgScoreWord").innerHTML=avgByLevel.word;
+document.getElementById("avgScoreWord").innerHTML=avgScoreWord;
 
 }
 
@@ -10397,6 +10441,10 @@ return;
 }
 
 if(!isParticipant)return;
+
+let unreadForMe=(t.unreadCounts && t.unreadCounts[currentUser.uid]) || 0;
+ongoingCount+=unreadForMe;
+
 if(now>t.expiresAtMillis)return;
 
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
@@ -10422,43 +10470,9 @@ setBadgeVisibility("tournamentInviteBadge",inviteCount);
 }
 
 
-let challengesOnlyCache=null;
-let challengesOnlyCacheTime=0;
-
 function fetchChallengesOnly(){
 
-if(liveChallengesData){
-return Promise.resolve(Object.assign({},liveChallengesData));
-}
-
-let now=Date.now();
-
-if(challengesOnlyCache && (now-challengesOnlyCacheTime)<2000){
-return challengesOnlyCache;
-}
-
-let incoming=db.collection("challenges").where("toUsername","==",currentUser.username).get();
-let outgoing=db.collection("challenges").where("fromUsername","==",currentUser.username).get();
-
-challengesOnlyCacheTime=now;
-
-challengesOnlyCache=Promise.all([incoming,outgoing]).then(function(results){
-
-let all={};
-
-results[0].forEach(function(doc){ all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-results[1].forEach(function(doc){ if(!all[doc.id])all[doc.id]=normalizeChallenge(Object.assign({id:doc.id},doc.data())); });
-
-return all;
-
-}).catch(function(e){
-
-challengesOnlyCache=null;
-throw e;
-
-});
-
-return challengesOnlyCache;
+return Promise.resolve(liveChallengesData ? Object.assign({},liveChallengesData) : {});
 
 }
 
