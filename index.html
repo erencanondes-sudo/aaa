@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-
 <html lang="tr">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Konfeti</title>
-<link href="manifest.json?v=2" rel="manifest"/>
-<meta content="#0984e3" name="theme-color"/>
-<link href="icon-192.png?v=2" rel="apple-touch-icon"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Konfeti" name="apple-mobile-web-app-title"/>
+
+<link rel="manifest" href="manifest.json?v=2">
+<meta name="theme-color" content="#0984e3">
+<link rel="apple-touch-icon" href="icon-192.png?v=2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Konfeti">
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <style>
 body{
     font-family:Arial,sans-serif;
@@ -1700,761 +1702,119 @@ button{
 }
 
 </style>
-<style id="merged-home-design">:root{--navy:#0d3574;--text:#17366f;--green1:#4bc83b;--green2:#209c2b;--purple1:#9650d4;--purple2:#682bb1;--orange1:#ffae1b;--orange2:#f27d06;--blue1:#2b95ec;--blue2:#116ed1;--red1:#f45d50;--red2:#e8342b;}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-button{font:inherit;border:0;cursor:pointer}
-/* Ana beyaz kart: görseldeki 35px dış boşluğa yakın */
-.game.homewide{
-  width:98%;
-  max-width:895px;
-  min-height:calc(100vh - 82px);
-  margin:40px auto 50px;
-  background:#fff;
-  border-radius:52px;
-  padding:30px 37px 34px;
-  box-shadow:0 20px 45px rgba(0,0,0,.20);
-  overflow:visible;
-transform:translateY(6px);}
-/* LOGO */
-#homeScreen .home-header{
-  height:135px;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-#homeScreen .home-logo{
-  position:relative;
-  font-size:78px;
-  line-height:1;
-  font-weight:800;
-  letter-spacing:-4px;
-  color:#12366f;
-}
-#homeScreen .home-confetti{position:absolute;inset:0;pointer-events:none;position:relative;top:0px;}
-#homeScreen .home-confetti span{
-  position:absolute;
-  width:14px;height:29px;border-radius:3px;
-}
-#homeScreen .home-confetti .c1{left:20%;top:8px;background:#ff9715;transform:rotate(-34deg)}
-#homeScreen .home-confetti .c2{left:18%;top:55px;background:#8244bd;width:17px!important;height:9px!important;transform:rotate(12deg)}
-#homeScreen .home-confetti .c3{left:24%;top:81px;background:#70c824;width:15px!important;height:10px!important;transform:rotate(-32deg)}
-#homeScreen .home-confetti .c4{right:21%;top:8px;background:#218de3;transform:rotate(35deg)}
-#homeScreen .home-confetti .c5{right:19%;top:57px;background:#85ca18;width:16px!important;height:10px!important;transform:rotate(5deg)}
-#homeScreen .home-confetti .c6{right:24%;top:78px;background:#ffb70e;width:14px!important;height:9px!important;transform:rotate(34deg)}
-#homeScreen .home-settings{
-  display:none;
-  position:absolute;right:0;top:0;
-  width:64px;height:64px;border-radius:19px;
-  background:#fff;color:#66748b;font-size:37px;
-  box-shadow:0 8px 20px rgba(28,45,70,.13);
-  display:flex;align-items:center;justify-content:center;
-}
-/* REKLAM */
-#homeScreen .home-ad{
-  height:200px;
-  margin:4px 0 34px;
-  border-radius:28px;
-  position:relative;
-  overflow:hidden;
-  color:#fff;
-  background:linear-gradient(108deg,#ffa800 0%,#f28b0b 26%,#35bd4d 65%,#f1ae0a 100%);
-  box-shadow:0 10px 20px rgba(20,35,45,.22);
-  display:flex;align-items:center;
-  padding:22px 30px;
-}
-#homeScreen .home-ad:before{
-  content:"";position:absolute;inset:0;
-  background:
-   radial-gradient(circle at 12% 48%,rgba(255,255,255,.08),transparent 25%),
-   radial-gradient(circle at 80% 18%,rgba(255,255,255,.08),transparent 22%);
-}
-#homeScreen .home-ad-label{position:absolute;top:27px;left:0;right:0;text-align:center;font-size:21px}
-#homeScreen .home-ad-chart{font-size:72px;width:135px;text-align:center;position:relative;z-index:1}
-#homeScreen .home-ad-copy{position:relative;z-index:1;flex:1;text-align:left;padding-top:18px}
-#homeScreen .home-ad-title{font-size:36px;font-weight:800;white-space:nowrap}
-#homeScreen .home-ad-sub{font-size:24px;margin-top:12px}
-#homeScreen .home-ad-coin{font-size:68px;width:120px;text-align:center;position:relative;z-index:1}
-#homeScreen .home-ad-btn{
-  position:relative;z-index:1;
-  background:#fff;color:#ef7e12;
-  border-radius:40px;padding:17px 35px;
-  font-size:25px;font-weight:800;
-  white-space:nowrap;
-}
-#homeScreen .home-ad-close{
-  position:absolute;right:15px;top:14px;z-index:2;
-  width:50px;height:50px;border-radius:50%;
-  background:rgba(255,255,255,.28);color:#fff;
-  font-size:39px;line-height:1;
-}
-/* HOŞ GELDİN KARTI */
-#homeScreen .home-welcome{
-  min-height:206px;
-  margin-bottom:31px;
-  border-radius:29px;
-  background:#fff;
-  box-shadow:0 10px 25px rgba(26,46,75,.13);
-  display:flex;align-items:center;
-  padding:26px 34px;
-}
-#homeScreen .home-avatar{
-  width:150px;height:150px;flex:none;
-  border-radius:50%;
-  background:linear-gradient(145deg,#e9edf3,#d8e1eb);
-  display:flex;align-items:center;justify-content:center;
-  font-size:88px;position:relative;
-}
-#homeScreen .home-online{
-  position:absolute;right:6px;bottom:8px;
-  width:32px;height:32px;border-radius:50%;
-  background:#42bb3e;border:5px solid #fff;
-}
-#homeScreen .home-welcome-content{flex:1;padding-left:42px}
-#homeScreen #welcomeText{font-size:37px;font-weight:800;margin-bottom:25px}
-#homeScreen .home-stats{display:flex;align-items:center}
-#homeScreen .home-stat{display:flex;align-items:center;gap:15px;flex:1}
-#homeScreen .home-stat-icon{font-size:49px}
-#homeScreen .home-stat b{display:block;font-size:31px}
-#homeScreen .home-stat small{display:block;color:#53627d;font-size:20px;margin-top:4px}
-#homeScreen .home-vline{height:62px;width:2px;background:#e5e8ee;margin:0 28px}
-/* BUTONLAR */
-#homeScreen .home-menu-card{
-  width:100%;
-  min-height:128px;
-  border-radius:29px;
-  color:#fff;
-  margin-bottom:25px;
-  display:flex;align-items:center;
-  padding:18px 35px;
-  text-align:left;
-  box-shadow:0 7px 0 rgba(0,0,0,.22),0 9px 18px rgba(25,40,60,.10);
-  transition:transform .1s,filter .1s;
-  position:relative;overflow:hidden;
-}
-#homeScreen .home-menu-card:active{transform:translateY(4px);filter:brightness(.96)}
-#homeScreen .home-new{min-height:169px;background:linear-gradient(105deg,var(--green1),var(--green2))}
-#homeScreen .home-purple{background:linear-gradient(105deg,var(--purple1),var(--purple2))}
-#homeScreen .home-orange{background:linear-gradient(105deg,var(--orange1),var(--orange2))}
-#homeScreen .home-blue{background:linear-gradient(105deg,var(--blue1),var(--blue2))}
-#homeScreen .home-red{background:linear-gradient(105deg,var(--red1),var(--red2))}
-#homeScreen .home-icon-circle{
-  width:92px;height:92px;border-radius:50%;
-  flex:none;margin-right:35px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(85,20,150,.24);
-  font-size:49px;
-}
-#homeScreen .home-new .home-icon-circle{
-  width:102px;height:102px;
-  background:#fff;color:#209e32;
-  font-size:52px;
-  box-shadow:0 5px 11px rgba(0,0,0,.12);
-}
-#homeScreen .home-menu-copy{flex:1}
-#homeScreen .home-menu-copy b{display:block;font-size:37px;font-weight:800}
-#homeScreen .home-menu-copy span{display:block;font-size:22px;margin-top:7px}
-#homeScreen .home-arrow{font-size:48px;font-weight:300;margin-left:20px}
-#homeScreen .home-menu-card .home-badge{
-  min-width:60px;height:60px;padding:0 15px;
-  border-radius:50%;
-  background:#ed4937;
-  display:flex;align-items:center;justify-content:center;
-  font-size:29px;font-weight:800;
-  box-shadow:0 3px 7px rgba(0,0,0,.17);
-}
-#homeScreen .home-section-title{
-  display:flex;align-items:center;gap:17px;
-  color:#9ca6b7;font-size:20px;font-weight:700;
-  margin:7px 0 22px;
-}
-#homeScreen .home-section-title:before,#homeScreen .home-section-title:after{content:"";height:2px;background:#e8ebef;flex:1}
-/* =========================================================
-   TÜM TELEFON / TABLET UYUMLULUĞU
-   - iPhone SE'den büyük telefonlara
-   - Android küçük/büyük ekranlara
-   - yatay kullanım
-   - çentik / safe-area
-   - dinamik ekran yüksekliği
-   ========================================================= */
+</head>
 
-html{
-  width:100%;
-  min-width:0;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-}
-.game.homewide{
-  width:97%;
-  max-width:895px;
-  min-height:auto;
-  margin:
-    clamp(5px, 1.2vh, 16px) auto
-    max(12px, env(safe-area-inset-bottom));
-  padding:clamp(16px, 3.5vw, 30px)
-          clamp(12px, 4.1vw, 37px)
-          clamp(18px, 4vw, 34px);
-  border-radius:clamp(24px, 5vw, 52px);
-}
-/* Logo alanı */
-#homeScreen .home-header{
-  height:clamp(72px, 14vw, 135px);
-  min-height:72px;
-}
-#homeScreen .home-logo{
-  font-size:clamp(42px, 8.7vw, 78px);
-  letter-spacing:clamp(-3px, -.45vw, -4px);
-}
-#homeScreen .home-settings{
-  width:clamp(46px, 7.2vw, 64px);
-  height:clamp(46px, 7.2vw, 64px);
-  border-radius:clamp(14px, 2.1vw, 19px);
-  font-size:clamp(27px, 4vw, 37px);
-}
-/* Reklam */
-#homeScreen .home-ad{
-  height:100px;
-  margin:clamp(3px, 1vw, 4px) 0 clamp(20px, 3.5vw, 34px);
-  border-radius:clamp(19px, 3.1vw, 28px);
-  padding:clamp(12px, 2.5vw, 22px)
-          clamp(12px, 3.4vw, 30px);
-  gap:clamp(7px, 1.5vw, 18px);
-}
-#homeScreen .home-ad-label{
-  top:clamp(13px, 3vw, 27px);
-  font-size:clamp(12px, 2.3vw, 21px);
-}
-#homeScreen .home-ad-chart{
-  font-size:clamp(36px, 7.5vw, 72px);
-  width:clamp(55px, 14vw, 135px);
-}
-#homeScreen .home-ad-copy{
-  padding-top:clamp(9px, 2vw, 18px);
-  min-width:0;
-}
-#homeScreen .home-ad-title{
-  font-size:clamp(17px, 3.8vw, 36px);
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-#homeScreen .home-ad-sub{
-  font-size:clamp(11px, 2.5vw, 24px);
-  margin-top:clamp(4px, 1.2vw, 12px);
-  white-space:nowrap;
-}
-#homeScreen .home-ad-coin{
-  font-size:clamp(29px, 7vw, 68px);
-  width:clamp(45px, 12vw, 120px);
-}
-#homeScreen .home-ad-btn{
-  font-size:clamp(12px, 2.6vw, 25px);
-  padding:clamp(9px, 1.9vw, 17px)
-          clamp(10px, 3.9vw, 35px);
-}
-#homeScreen .home-ad-close{
-  width:clamp(34px, 5.5vw, 50px);
-  height:clamp(34px, 5.5vw, 50px);
-  font-size:clamp(26px, 4.3vw, 39px);
-  right:clamp(7px, 1.5vw, 15px);
-  top:clamp(7px, 1.5vw, 14px);
-}
-/* Hoş geldin */
-#homeScreen .home-welcome{
-  min-height:clamp(114px, 20vw, 190px);
-  margin-bottom:clamp(18px, 3.2vw, 31px);
-  border-radius:clamp(19px, 3.2vw, 29px);
-  padding:clamp(12px, 2.7vw, 22px)
-          clamp(12px, 3.5vw, 30px);
-}
-#homeScreen .home-avatar{
-  width:clamp(72px, 13.5vw, 138px);
-  height:clamp(72px, 13.5vw, 138px);
-  font-size:clamp(42px, 7.8vw, 80px);
-}
-#homeScreen .home-online{
-  width:clamp(19px, 3.4vw, 32px);
-  height:clamp(19px, 3.4vw, 32px);
-  border-width:clamp(3px, .55vw, 5px);
-  right:clamp(1px, .6vw, 6px);
-  bottom:clamp(2px, .8vw, 8px);
-}
-#homeScreen .home-welcome-content{
-  padding-left:clamp(12px, 4.5vw, 42px);
-  min-width:0;
-}
-#homeScreen #welcomeText{
-  font-size:clamp(18px, 3.8vw, 34px);
-  margin-bottom:clamp(10px, 2.8vw, 25px);
-  white-space:nowrap;
-}
-#homeScreen .home-stats{min-width:0}
-#homeScreen .home-stat{
-  gap:clamp(5px, 1.6vw, 15px);
-  min-width:0;
-}
-#homeScreen .home-stat-icon{
-  font-size:clamp(25px, 5.4vw, 49px);
-  flex:none;
-}
-#homeScreen .home-stat b{
-  font-size:clamp(18px, 3.5vw, 31px);
-}
-#homeScreen .home-stat small{
-  font-size:clamp(10px, 2.2vw, 20px);
-  white-space:nowrap;
-}
-#homeScreen .home-vline{
-  height:clamp(40px, 7vw, 62px);
-  margin:0 clamp(7px, 3vw, 28px);
-}
-/* Menü kartları */
-#homeScreen .home-menu-card{
-  min-height:clamp(60px, 8.7vw, 88px);
-  border-radius:clamp(19px, 3.2vw, 29px);
-  margin-bottom:clamp(8px, 1.3vw, 13px);
-  padding:clamp(9px, 1.8vw, 16px)
-          clamp(13px, 3.8vw, 35px);
-  box-shadow:0 6px 0 rgba(0,0,0,.22),0 8px 16px rgba(25,40,60,.10);
-}
-#homeScreen .home-new{min-height:clamp(72px, 10.8vw, 114px)}
-#homeScreen .home-icon-circle{
-  width:clamp(56px, 9.8vw, 92px);
-  height:clamp(56px, 9.8vw, 92px);
-  margin-right:clamp(13px, 3.8vw, 35px);
-  font-size:clamp(29px, 5.2vw, 49px);
-}
-#homeScreen .home-new .home-icon-circle{
-  width:clamp(65px, 10.8vw, 102px);
-  height:clamp(65px, 10.8vw, 102px);
-  font-size:clamp(33px, 5.7vw, 52px);
-}
-#homeScreen .home-menu-copy{min-width:0}
-#homeScreen .home-menu-copy b{
-  font-size:clamp(22px, 4.1vw, 37px);
-  line-height:1.08;
-}
-#homeScreen .home-menu-copy span{
-  font-size:clamp(12px, 2.45vw, 22px);
-  margin-top:clamp(3px, .8vw, 7px);
-  line-height:1.2;
-}
-#homeScreen .home-arrow{
-  font-size:clamp(31px, 5.3vw, 48px);
-  margin-left:clamp(7px, 2vw, 20px);
-  flex:none;
-}
-#homeScreen .home-menu-card .home-badge{
-  min-width:clamp(40px, 6.7vw, 60px);
-  height:clamp(40px, 6.7vw, 60px);
-  font-size:clamp(18px, 3.1vw, 29px);
-  padding:0 clamp(9px, 1.7vw, 15px);
-  flex:none;
-}
-#homeScreen .home-section-title{
-  font-size:clamp(13px, 2.4vw, 20px);
-  gap:clamp(8px, 1.8vw, 17px);
-  margin:clamp(2px, .8vw, 7px) 0 clamp(12px, 2.4vw, 22px);
-}
-/* Çok dar telefonlar: iPhone SE / küçük Android */
-@media(max-width:390px){
-  .app{
-    width:calc(100% - 6px);
-    margin-top:9px;
-    border-radius:24px;
-    padding-left:10px;
-    padding-right:10px;
-  }
-  .header{min-height:67px;height:72px}
-  .logo{font-size:39px}
-  .settings{width:43px;height:43px;font-size:25px}
-  .ad{height:100px}
-  .ad-chart,.ad-coin{display:none}
-  .ad-copy{padding-left:5px}
-  .ad-title{font-size:17px}
-  .ad-sub{font-size:11px}
-  .ad-btn{font-size:11px;padding:8px 9px}
-  .welcome{padding:12px 10px}
-  .avatar{width:70px;height:70px;font-size:42px}
-  .welcome-content{padding-left:9px}
-  .greeting{font-size:18px}
-  .stat-icon{font-size:23px}
-  .stat b{font-size:17px}
-  .stat small{font-size:9px}
-  .vline{margin:0 5px}
-  .menu-card{padding-left:10px;padding-right:10px}
-  .icon-circle{margin-right:11px}
-  .menu-copy b{font-size:20px}
-  .menu-copy span{font-size:11px}
-  .arrow{font-size:29px}
-}
-/* Yatay telefon */
-@media (orientation:landscape) and (max-height:600px){
-  .app{
-    width:min(760px,calc(100% - 28px));
-    margin:12px auto;
-    padding:14px 18px 18px;
-  }
-  .header{height:72px}
-  .ad{height:100px;margin-bottom:16px}
-  .welcome{min-height:100px;margin-bottom:16px}
-  .avatar{width:72px;height:72px}
-  .menu-card{min-height:66px;margin-bottom:9px}
-  .new{min-height:78px}
-  .icon-circle{width:50px;height:50px}
-  .new .icon-circle{width:58px;height:58px}
-  .menu-copy b{font-size:21px}
-  .menu-copy span{font-size:11px}
-}
-/* Tablet / geniş telefon: tasarım gereksiz büyümesin */
-@media(min-width:701px) and (max-width:950px){
-  .app{width:calc(100% - 40px)}
-}
-/* Dokunmatik cihazlarda butonlar rahat tıklansın */
-@media (pointer:coarse){
-  button{touch-action:manipulation}
-}
-/* Ekrana tam sığdırma */
-.game.homewide{
-  transform-origin:center top;
-  will-change:transform;
-}
-#homeScreen .home-play-icon{
-  width:0!important;
-  height:0!important;
-  border-top:22px solid transparent;
-  border-bottom:22px solid transparent;
-  border-left:31px solid #209e32;
-  border-radius:3px;
-  background:transparent!important;
-  box-shadow:none!important;
-  margin-left:6px!important;
-}
-@media(max-width:700px){
-#homeScreen .home-play-icon{
-    width:67px!important;
-    height:67px!important;
-  }
-#homeScreen .home-play-icon::after{
-    border-top-width:13px;
-    border-bottom-width:13px;
-    border-left-width:20px;
-  }}
-/* Profil ikonu: mavi butonda beyaz, net ve emoji-font bağımsız */
-#homeScreen .home-profile-icon{
-  position:relative;
-  background:rgba(0,73,155,.42)!important;
-}
-#homeScreen .home-profile-icon .profile-head{
-  position:absolute;
-  width:25px;height:25px;
-  border-radius:50%;
-  background:#fff;
-  left:50%;top:18px;
-  transform:translateX(-50%);
-}
-#homeScreen .home-profile-icon .profile-body{
-  position:absolute;
-  width:48px;height:25px;
-  border-radius:28px 28px 18px 18px;
-  background:#fff;
-  left:50%;bottom:16px;
-  transform:translateX(-50%);
-}
-@media(max-width:700px){
-#homeScreen .home-profile-icon .profile-head{
-    width:16px;height:16px;top:11px;
-  }
-#homeScreen .home-profile-icon .profile-body{
-    width:32px;height:17px;bottom:10px;
-  }}
-/* YENİ OYUN — baştan tasarlanmış */
-#homeScreen .home-new-game-card{
-  min-height:118px!important;
-  padding:14px 28px!important;
-  display:flex!important;
-  align-items:center!important;
-}
-#homeScreen .home-new-play-circle{
-  width:76px;
-  height:76px;
-  min-width:76px;
-  border-radius:50%;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-right:27px;
-  box-shadow:0 4px 10px rgba(0,0,0,.13);
-}
-#homeScreen .home-new-play-triangle{
-  width:0;
-  height:0;
-  border-top:13px solid transparent;
-  border-bottom:13px solid transparent;
-  border-left:20px solid #209e32;
-  transform:translateX(2px);
-}
-@media(max-width:700px){
-#homeScreen .home-new-game-card{
-    min-height:88px!important;
-    padding:10px 13px!important;
-  }
-#homeScreen .home-new-play-circle{
-    width:58px;
-    height:58px;
-    min-width:58px;
-    margin-right:14px;
-  }
-#homeScreen .home-new-play-triangle{
-    border-top-width:9px;
-    border-bottom-width:9px;
-    border-left-width:14px;
-  }}
-/* ALT MENÜ - DAHA BÜYÜK VE RENKLİ */
-#homeScreen .home-bottom-nav{
-  width:100%;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:clamp(9px,2.2vw,18px);
-  margin-top:clamp(14px,2.5vw,22px);
-  padding-top:clamp(12px,2vw,18px);
-  border-top:2px solid #e7ebf1;
-}
-#homeScreen .home-bottom-nav-item{
-  border:0;
-  min-height:clamp(82px,12vw,108px);
-  border-radius:22px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  padding:8px 4px;
-  color:#26364d;
-  font-size:clamp(11px,2vw,16px);
-  font-weight:800;
-  cursor:pointer;
-  box-shadow:0 4px 10px rgba(35,50,75,.10);
-  transition:transform .12s ease;
-}
-#homeScreen .home-bottom-nav-item:active{transform:scale(.96)}
-#homeScreen .home-bottom-icon{
-  width:clamp(54px,9.5vw,72px);
-  height:clamp(54px,9.5vw,72px);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:clamp(27px,5vw,38px);
-  box-shadow:0 3px 7px rgba(30,45,65,.13);
-}
-#homeScreen .home-profile-bottom{background:#eaf3ff}
-#homeScreen .home-friends-bottom{background:#e9f9e6}
-#homeScreen .home-settings-bottom{background:#fff3d9}
-#homeScreen .home-info-bottom{background:#dfd0ff}
-#homeScreen .home-profile-bottom .home-bottom-icon{background:#a9ccff}
-#homeScreen .home-friends-bottom .home-bottom-icon{background:#e98f8f}
-#homeScreen .home-settings-bottom .home-bottom-icon{background:#b4bac0}
-#homeScreen .home-info-bottom .home-bottom-icon{background:#c1a9ff}
-#homeScreen .home-profile-symbol{position:relative}
-#homeScreen .home-profile-symbol .profile-head{
-  position:absolute;
-  width:clamp(15px,2.7vw,21px);
-  height:clamp(15px,2.7vw,21px);
-  border-radius:50%;
-  background:#2674d9;
-  top:clamp(11px,1.9vw,15px);
-}
-#homeScreen .home-profile-symbol .profile-body{
-  position:absolute;
-  width:clamp(31px,5.3vw,41px);
-  height:clamp(17px,2.9vw,23px);
-  border-radius:22px 22px 12px 12px;
-  background:#2674d9;
-  bottom:clamp(10px,1.8vw,14px);
-}
-@media(max-width:390px){
-#homeScreen .home-bottom-nav{gap:6px;margin-top:12px;padding-top:10px}
-#homeScreen .home-bottom-nav-item{
-    min-height:76px;
-    border-radius:18px;
-    font-size:9px;
-    gap:4px;
-  }
-#homeScreen .home-bottom-icon{width:50px;height:50px;font-size:24px}}
-/* Alt navigasyon tüm cihazlarda görünür */
-#homeScreen .home-bottom-nav{
-  display:grid !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-/* ===== Birleştirilmiş anasayfa: yalnızca homeScreen ===== */
-.game.homewide{
-  width:97%;
-  max-width:895px;
-  margin:clamp(5px,1.2vh,16px) auto max(12px,env(safe-area-inset-bottom));
-  padding:clamp(16px,3.5vw,30px) clamp(12px,4.1vw,37px) clamp(18px,4vw,34px);
-  border-radius:clamp(24px,5vw,52px);
-  box-shadow:0 20px 45px rgba(0,0,0,.20);
-}
-.game.homewide #homeScreen{
-  width:100%;
-}
-@media(max-width:390px){
-  .game.homewide{
-    width:calc(100% - 6px);
-    margin-top:9px;
-    border-radius:24px;
-    padding-left:10px;
-    padding-right:10px;
-  }
-}
-@media (orientation:landscape) and (max-height:600px){
-  .game.homewide{
-    width:min(760px,calc(100% - 28px));
-    margin:12px auto;
-    padding:14px 18px 18px;
-  }
-}
-@media(min-width:701px) and (max-width:950px){
-  .game.homewide{width:calc(100% - 40px)}
-}
-
-/* Tasarımın ikinci istatistik alanı mevcut çalışan oyundaki
-   "Puan Ortalaması (Kelime)" verisini kullanmaya devam eder. */
-#homeScreen #avgScoreWord{font-variant-numeric:tabular-nums}
-
-/* Gerçek uygulama reklam sistemi tarafından kullanılan üst reklam
-   gerektiğinde tasarımın reklam alanının üzerinde çalışmaya devam eder. */
-#homeScreen .home-ad{position:relative;z-index:1}
-</style></head>
 <body>
+
 <div class="game">
+
 <div id="wordTopAdBanner" style="display:none;width:335px;height:50px;border-radius:10px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:15;">
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
+
 <h1 id="mainTitle">Konfeti</h1>
+
 <div id="wordTopAdBannerSpacer" style="display:none;height:30px;"></div>
+
 <div id="fakeAdBanner" style="display:none;position:absolute;width:335px;height:100px;left:50%;transform:translateX(-50%);z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
 <button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
 <div id="fakeAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
+
 <div class="loading" id="sessionCheckScreen" style="display:flex;">
 <div class="spinner"></div>
 <p>Yükleniyor...</p>
 </div>
+
 <div id="authScreen" style="display:none;">
+
 <div id="registerForm" style="display:none;">
+
 <h2>Üyelik Girişi</h2>
+
 <p class="auth-info">Devam etmek için lütfen kayıt olun.</p>
-<input class="auth-input" id="regName" placeholder="Ad Soyad" type="text"/>
-<input autocomplete="email" class="auth-input" id="regEmail" name="email" placeholder="E-posta" type="email"/>
-<input autocomplete="username" class="auth-input" id="regUsername" name="username" placeholder="Kullanıcı Adı" type="text"/>
-<input autocomplete="new-password" class="auth-input" id="regPassword" name="new-password" placeholder="Şifre" type="password"/>
-<input autocomplete="new-password" class="auth-input" id="regPasswordConfirm" name="new-password-confirm" onkeydown="if(event.key==='Enter')registerUser();" placeholder="Şifre Onayı" type="password"/>
-<p class="auth-error" id="authError"></p>
+
+<input type="text" id="regName" class="auth-input" placeholder="Ad Soyad">
+<input type="email" id="regEmail" class="auth-input" placeholder="E-posta" autocomplete="email" name="email">
+<input type="text" id="regUsername" class="auth-input" placeholder="Kullanıcı Adı" autocomplete="username" name="username">
+<input type="password" id="regPassword" class="auth-input" placeholder="Şifre" autocomplete="new-password" name="new-password">
+<input type="password" id="regPasswordConfirm" class="auth-input" placeholder="Şifre Onayı" autocomplete="new-password" name="new-password-confirm" onkeydown="if(event.key==='Enter')registerUser();">
+
+<p id="authError" class="auth-error"></p>
+
 <button class="newgame" id="registerBtn" onclick="registerUser()">Kayıt Ol 📝</button>
+
 <p class="auth-toggle">Zaten hesabın var mı? <a onclick="showLoginForm()">Giriş Yap 🔑</a></p>
+
 </div>
+
 <div id="loginForm">
+
 <h2>Giriş Yap</h2>
-<input autocomplete="username" class="auth-input" id="loginEmail" name="username" placeholder="E-posta" type="email"/>
-<input autocomplete="current-password" class="auth-input" id="loginPassword" name="current-password" onkeydown="if(event.key==='Enter')loginUser();" placeholder="Şifre" type="password"/>
-<p class="auth-error" id="loginError"></p>
+
+<input type="email" id="loginEmail" class="auth-input" placeholder="E-posta" autocomplete="username" name="username">
+<input type="password" id="loginPassword" class="auth-input" placeholder="Şifre" autocomplete="current-password" name="current-password" onkeydown="if(event.key==='Enter')loginUser();">
+
+<p id="loginError" class="auth-error"></p>
+
 <button class="newgame" id="loginBtn" onclick="loginUser()">Giriş Yap 🔑</button>
+
 <p class="auth-toggle">Şifreni mi unuttun? <a onclick="showForgotPasswordForm()">Şifremi Unuttum</a></p>
+
 <p class="auth-toggle-strong">Hesabın yok mu? <a onclick="showRegisterForm()">Kayıt Ol 📝</a></p>
+
 </div>
+
 <div id="forgotPasswordForm" style="display:none;">
+
 <h2>Şifremi Unuttum</h2>
+
 <p class="auth-info">Kayıtlı e-posta adresini gir, sana bir şifre sıfırlama bağlantısı gönderelim.</p>
-<input autocomplete="email" class="auth-input" id="forgotEmail" name="email" onkeydown="if(event.key==='Enter')sendPasswordReset();" placeholder="E-posta" type="email"/>
-<p class="auth-error" id="forgotError"></p>
+
+<input type="email" id="forgotEmail" class="auth-input" placeholder="E-posta" autocomplete="email" name="email" onkeydown="if(event.key==='Enter')sendPasswordReset();">
+
+<p id="forgotError" class="auth-error"></p>
+
 <button class="newgame" onclick="sendPasswordReset()">Sıfırlama Bağlantısı Gönder</button>
+
 <p class="auth-toggle">Şifreni hatırladın mı? <a onclick="showLoginForm()">Giriş Yap</a></p>
+
 </div>
+
 </div>
+
 <div id="homeScreen" style="display:none;">
-<div class="home-header">
-<div class="home-confetti">
-<span class="c1"></span><span class="c2"></span><span class="c3"></span>
-<span class="c4"></span><span class="c5"></span><span class="c6"></span>
+
+<div class="stats">
+<p>Başarı Yüzdesi: <span id="successPct">%0</span></p>
+<p>Puan Ortalaması (Kelime): <span id="avgScoreWord">0</span></p>
 </div>
-<div class="home-logo">Konfeti</div>
+
+<p id="welcomeText" class="welcome-text"></p>
+
+<div class="profile-icon">👤</div>
+
+<button class="newgame newgame-green" onclick="openGameTypeChoice()">Yeni Oyun ▶️</button>
+<button class="newgame history-btn" onclick="showHistory()">Oyunlarım 🏠<span class="badge" id="historyBadge" style="display:none;">0</span></button>
+<button class="newgame tournament-btn" onclick="showTournaments()">Turnuva 🏆<span class="badge" id="tournamentBadge" style="display:none;">0</span></button>
+<button class="newgame profile-btn" onclick="showProfile()">Profil <span>👤</span></button>
+<button class="newgame friends-btn" onclick="showFriends()">Arkadaşlar 👥</button>
+
 </div>
-<section class="home-ad">
-<div class="home-ad-label">REKLAM</div>
-<div class="home-ad-chart">📈</div>
-<div class="home-ad-copy">
-<div class="home-ad-title">Kripto ile Kazan! 🚀</div>
-<div class="home-ad-sub">Bugünün fırsatlarını kaçırma.</div>
-</div>
-<div class="home-ad-coin">₿ 💰</div>
-<button class="home-ad-btn" type="button">YATIRIM YAP</button>
-<button aria-label="Reklamı kapat" class="home-ad-close" type="button">×</button>
-</section>
-<section class="home-welcome">
-<div class="home-avatar">👤<i class="home-online"></i></div>
-<div class="home-welcome-content">
-<p class="home-greeting" id="welcomeText"></p>
-<div class="home-stats">
-<div class="home-stat">
-<div class="home-stat-icon">🏆</div>
-<div><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div>
-</div>
-<div class="home-vline"></div>
-<div class="home-stat">
-<div class="home-stat-icon">🎮</div>
-<div><b id="avgScoreWord">0</b><small>Oyun İstatistiği</small></div>
-</div>
-</div>
-</div>
-</section>
-<button aria-label="Yeni Oyun" class="home-menu-card home-new home-new-game-card" onclick="openGameTypeChoice()">
-<span aria-hidden="true" class="home-new-play-circle"><span class="home-new-play-triangle"></span></span>
-<span class="home-menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></span>
-<span class="home-arrow">›</span>
-</button>
-<button class="home-menu-card home-purple" onclick="showHistory()" type="button">
-<div class="home-icon-circle">🎮</div>
-<div class="home-menu-copy"><b>Oyunlarım</b><span>Devam eden oyunların</span></div>
-<div class="home-badge" id="historyBadge" style="display:none;">0</div>
-<div class="home-arrow">›</div>
-</button>
-<button class="home-menu-card home-orange" onclick="showTournaments()" type="button">
-<div class="home-icon-circle">🏆</div>
-<div class="home-menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
-<div class="home-badge" id="tournamentBadge" style="display:none;">0</div>
-<div class="home-arrow">›</div>
-</button>
-<nav aria-label="Alt menü" class="home-bottom-nav">
-<button class="home-bottom-nav-item home-profile-bottom" onclick="showProfile()" type="button">
-<span aria-hidden="true" class="home-bottom-icon home-profile-symbol">
-<i class="profile-head"></i><i class="profile-body"></i>
-</span>
-<span>Profil</span>
-</button>
-<button class="home-bottom-nav-item home-friends-bottom" onclick="showFriends()" type="button">
-<span class="home-bottom-icon">👥</span>
-<span>Arkadaşlar</span>
-</button>
-<button class="home-bottom-nav-item home-settings-bottom" type="button">
-<span class="home-bottom-icon">⚙️</span>
-<span>Ayarlar</span>
-</button>
-<button class="home-bottom-nav-item home-info-bottom" type="button">
-<span class="home-bottom-icon">ⓘ</span>
-<span>Bilgi</span>
-</button>
-</nav>
-</div>
+
 <div id="profileScreen" style="display:none;">
+
+
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
+
 <h2 style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">Profil</h2>
+
 <div style="height:10px;"></div>
+
 <div class="profile-icon">👤</div>
+
 <div class="stats">
 <p>Ad Soyad: <span id="profileName"></span></p>
 <p>Kullanıcı Adı: <span id="profileUsername"></span></p>
@@ -2462,128 +1822,224 @@ html{
 <p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
 <p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
 </div>
+
 <button class="challenge-play-btn btn-compact" onclick="showChangePasswordForm()">Şifre Değiştir 🔒</button>
+
 <div id="changePasswordForm" style="display:none;">
-<input autocomplete="current-password" class="auth-input" id="currentPassword" name="current-password" placeholder="Mevcut Şifre" type="password"/>
-<input autocomplete="new-password" class="auth-input" id="newPassword" name="new-password" placeholder="Yeni Şifre" type="password"/>
-<input autocomplete="new-password" class="auth-input" id="newPasswordConfirm" name="new-password-confirm" onkeydown="if(event.key==='Enter')changePassword();" placeholder="Yeni Şifre Onayı" type="password"/>
-<p class="auth-error" id="changePasswordError"></p>
+
+<input type="password" id="currentPassword" class="auth-input" placeholder="Mevcut Şifre" autocomplete="current-password" name="current-password">
+<input type="password" id="newPassword" class="auth-input" placeholder="Yeni Şifre" autocomplete="new-password" name="new-password">
+<input type="password" id="newPasswordConfirm" class="auth-input" placeholder="Yeni Şifre Onayı" autocomplete="new-password" name="new-password-confirm" onkeydown="if(event.key==='Enter')changePassword();">
+
+<p id="changePasswordError" class="auth-error"></p>
+
 <div class="btn-row">
 <button class="challenge-play-btn" onclick="changePassword()">Kaydet</button>
 <button class="challenge-play-btn view-btn" onclick="hideChangePasswordForm()">Vazgeç</button>
 </div>
+
 </div>
-<button class="challenge-play-btn btn-compact" onclick="showChangeUsernameForm()" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;">Kullanıcı Adı Değiştir ✏️</button>
+
+<button class="challenge-play-btn btn-compact" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="showChangeUsernameForm()">Kullanıcı Adı Değiştir ✏️</button>
+
 <div id="changeUsernameForm" style="display:none;">
+
 <p style="font-size:13px;color:#e17055;">Not: Kullanıcı adını değiştirirsen, mevcut arkadaşlarının seni bulması veya geçmiş meydan okumaların doğru görünmesi etkilenebilir.</p>
-<input autocomplete="off" class="auth-input" id="newUsername" onkeydown="if(event.key==='Enter')changeUsername();" placeholder="Yeni Kullanıcı Adı" type="text"/>
-<p class="auth-error" id="changeUsernameError"></p>
+
+<input type="text" id="newUsername" class="auth-input" placeholder="Yeni Kullanıcı Adı" autocomplete="off" onkeydown="if(event.key==='Enter')changeUsername();">
+
+<p id="changeUsernameError" class="auth-error"></p>
+
 <div class="btn-row">
 <button class="challenge-play-btn" onclick="changeUsername()">Kaydet</button>
 <button class="challenge-play-btn view-btn" onclick="hideChangeUsernameForm()">Vazgeç</button>
 </div>
+
 </div>
+
 <button class="challenge-play-btn decline-btn btn-compact" onclick="logoutUser()">Çıkış Yap 🚪</button>
+
 </div>
+
 <div id="otherProfileScreen" style="display:none;">
+
 <button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
 <h2>Kullanıcı Profili</h2>
+
 <div class="profile-icon">👤</div>
+
 <div class="stats" id="otherProfileContent"></div>
+
 </div>
+
 <div id="friendsScreen" style="display:none;">
+
+
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
+
 <h2 style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">Arkadaşlar</h2>
+
 <div style="height:10px;"></div>
+
 <div id="friendsList"></div>
+
 </div>
+
 <div id="viewChallengeScreen" style="display:none;">
+
 <button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
 <h2>Meydan Okuma Detayı</h2>
+
 <div class="stats" id="viewChallengeContent"></div>
+
 </div>
+
 <div id="chatScreen" style="display:none;">
+
 <button class="back-btn" onclick="goBackFromDetail()">Geri</button>
+
 <h2 id="chatWithText">Mesajlar</h2>
+
 <div class="chat-messages" id="chatMessages"></div>
+
 <div class="chat-input-row">
-<input class="auth-input" id="chatInput" placeholder="Mesaj yaz..." type="text"/>
+<input type="text" id="chatInput" class="auth-input" placeholder="Mesaj yaz...">
 <button class="challenge-play-btn" onclick="sendChatMessage()">Gönder</button>
 </div>
+
 </div>
+
 <div id="gameTypeScreen" style="display:none;">
+
+
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
-<button class="newgame challenge-brown" onclick="openChallengeGameType()" style="margin-top:20px;">Meydan Oku ⚔️</button>
-<button class="newgame" id="selectWordBtn" onclick="openWordModeChoice()" style="margin-top:20px;">Oyna ▶️</button>
+
+<button class="newgame challenge-brown" style="margin-top:20px;" onclick="openChallengeGameType()">Meydan Oku ⚔️</button>
+
+<button class="newgame" id="selectWordBtn" style="margin-top:20px;" onclick="openWordModeChoice()">Oyna ▶️</button>
+
 </div>
+
 <div id="wordModeChoiceScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title" style="margin-top:70px;">Hangi oyunu oynamak istersin?</p>
-<button class="newgame" onclick="selectGameType('word',false)" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;">Çetrefilli ▶️</button>
-<button class="newgame" id="selectWordBtnSade" onclick="selectGameType('word',true)" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;">Klasik ▶️</button>
+
+<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectGameType('word',false)">Çetrefilli ▶️</button>
+<button class="newgame" id="selectWordBtnSade" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectGameType('word',true)">Klasik ▶️</button>
+
 </div>
+
 <div id="challengeModeChoiceScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Hangi oyunu oynamak istersin?</p>
-<button class="newgame" onclick="selectChallengeMode(false)" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;">Çetrefilli ▶️</button>
-<button class="newgame" onclick="selectChallengeMode(true)" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;">Klasik ▶️</button>
+
+<button class="newgame" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectChallengeMode(false)">Çetrefilli ▶️</button>
+<button class="newgame" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectChallengeMode(true)">Klasik ▶️</button>
+
 </div>
+
+
 <div id="challengeTypeScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title" style="margin-top:70px;">Kime meydan okumak istersin?</p>
-<button class="newgame challenge-btn newgame-green" onclick="openChallengeFriend()" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;">Arkadaşınla Oyna 👥</button>
-<button class="newgame challenge-btn" onclick="openChallengeRandom()" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;">Rastgele Oyna <span style="font-size:0.85em;">🔀</span></button>
-<button class="newgame challenge-btn" onclick="openChallengeComputer()" style="background:#7f8c8d;box-shadow:0 4px 0 #5f6a6a;padding-top:12.5px;padding-bottom:12.5px;font-size:22px;">Bilgisayara Karşı Oyna 💻</button>
+
+<button class="newgame challenge-btn newgame-green" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="openChallengeFriend()">Arkadaşınla Oyna 👥</button>
+<button class="newgame challenge-btn" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="openChallengeRandom()">Rastgele Oyna <span style="font-size:0.85em;">🔀</span></button>
+<button class="newgame challenge-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #5f6a6a;padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="openChallengeComputer()">Bilgisayara Karşı Oyna 💻</button>
+
 </div>
+
 <div id="randomWaitScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Hangi oyunu oynamak istersin?</p>
-<button class="newgame" id="randomCetrefilliBtn" onclick="selectRandomMode(false)" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;">Çetrefilli ▶️</button>
-<button class="newgame" id="randomKlasikBtn" onclick="selectRandomMode(true)" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;">Klasik ▶️</button>
+
+<button class="newgame" id="randomCetrefilliBtn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="selectRandomMode(false)">Çetrefilli ▶️</button>
+<button class="newgame" id="randomKlasikBtn" style="margin-top:12px;background:#e67e22;box-shadow:0 4px 0 #ba6218;" onclick="selectRandomMode(true)">Klasik ▶️</button>
+
 </div>
+
 <div id="challengeFriendScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Arkadaşının kullanıcı adı</p>
-<input class="auth-input" id="challengeUsername" placeholder="Kullanıcı Adı" type="text"/>
-<p class="auth-error" id="challengeFriendError"></p>
+
+<input type="text" id="challengeUsername" class="auth-input" placeholder="Kullanıcı Adı">
+
+<p id="challengeFriendError" class="auth-error"></p>
+
 <button class="newgame challenge-btn" onclick="confirmChallengeFriend()">Devam Et</button>
+
 <p style="margin-top:16px;font-weight:bold;">Arkadaşların</p>
 <div id="challengeFriendsList"><p>Yükleniyor...</p></div>
+
 </div>
+
 <div class="level-select" id="challengeLevelScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p id="challengeLevelText" style="margin-top:380px;">Hangi seviyede meydan okuyacaksın?</p>
+
 <button class="level-btn level-easy" onclick="selectChallengeLevel('easy')">Kolay</button>
 <button class="level-btn level-medium" onclick="selectChallengeLevel('medium')">Orta</button>
 <button class="level-btn level-hard" onclick="selectChallengeLevel('hard')">Zor</button>
+
 </div>
+
 <div class="level-select" id="challengeFormatScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p style="margin-top:380px;">Kaç oyunluk meydan okumak istersin?</p>
+
 <button class="level-btn level-easy" onclick="createChallenge(1)">Tek Oyun</button>
 <button class="level-btn level-medium" onclick="createChallenge(3)">3 Oyun</button>
 <button class="level-btn level-hard" onclick="createChallenge(10)">10 Oyun</button>
+
 </div>
+
 <div id="challengeDoneScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
-<div class="envelope-anim" id="challengeEnvelope" style="font-size:60px;margin:20px 0;">✉️</div>
+
+<div id="challengeEnvelope" class="envelope-anim" style="font-size:60px;margin:20px 0;">✉️</div>
+
 <p class="screen-title" id="challengeDoneText"></p>
+
 <button class="newgame" onclick="goToHistoryFromChallengeDone()">Oyunlarım 🎮</button>
+
 </div>
+
 <div id="historyScreen" style="display:none;">
+
+
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
+
 <div class="tab-buttons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
-<button class="tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')" style="flex:0.8;">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabGamesBtn" onclick="switchHistoryTab('games')" style="flex:1.4;">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')" style="flex:0.8;">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
+<button class="tab-btn active" id="tabOngoingBtn" style="flex:0.8;" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabGamesBtn" style="flex:1.4;" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabChallengesBtn" style="flex:0.8;" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
+
 <div id="tabButtonsSpacer" style="height:50px;"></div>
+
 <div class="history-tabs-viewport" id="historyTabsViewport">
 <div class="history-tabs-track animated" id="historyTabsTrack">
 <div class="history-tab-panel" id="ongoingList"></div>
@@ -2591,25 +2047,34 @@ html{
 <div class="history-tab-panel" id="challengesList"></div>
 </div>
 </div>
+
 </div>
+
 <div id="tournamentScreen" style="display:none;">
+
+
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
+
 <div class="tab-buttons" id="tournamentTopButtons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
-<button class="tab-btn" onclick="openTournamentCreate()" style="flex:1;background:#f39c12;color:white;">Turnuva Oluştur 🏆</button>
-<button class="tab-btn" onclick="joinWeeklyTournament()" style="flex:1;background:#9b59b6;color:white;">Haftalık Turnuva 📅<span class="badge" id="weeklyTournamentBadge" style="display:none;">0</span></button>
+<button class="tab-btn" style="flex:1;background:#f39c12;color:white;" onclick="openTournamentCreate()">Turnuva Oluştur 🏆</button>
+<button class="tab-btn" style="flex:1;background:#9b59b6;color:white;" onclick="joinWeeklyTournament()">Haftalık Turnuva 📅<span class="badge" id="weeklyTournamentBadge" style="display:none;">0</span></button>
 </div>
+
 <div id="tournamentDailyRow" style="position:absolute;top:262px;left:12px;right:12px;margin:0;display:flex;justify-content:center;gap:8px;">
-<button class="tab-btn" onclick="joinDailyTournament()" style="flex:1;background:#00b894;color:white;">Günlük Turnuva ☀️<span class="badge" id="dailyTournamentBadge" style="display:none;">0</span></button>
-<button class="tab-btn" onclick="openOpenTournamentsScreen()" style="flex:1;background:#0984e3;color:white;">Açık Turnuvalar 🌍</button>
+<button class="tab-btn" style="flex:1;background:#00b894;color:white;" onclick="joinDailyTournament()">Günlük Turnuva ☀️<span class="badge" id="dailyTournamentBadge" style="display:none;">0</span></button>
+<button class="tab-btn" style="flex:1;background:#0984e3;color:white;" onclick="openOpenTournamentsScreen()">Açık Turnuvalar 🌍</button>
 </div>
+
 <div id="tournamentTopSpacer" style="height:50px;"></div>
+
 <div class="tab-buttons" id="tournamentTabButtons" style="position:relative;">
-<button class="tab-btn active" id="tabTournamentOngoingBtn" onclick="switchTournamentTab('ongoing')" style="flex:1;">Turnuvalar<span class="badge" id="tournamentOngoingBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabTournamentPastBtn" onclick="switchTournamentTab('past')" style="flex:1;">Geçmiş<span class="badge" id="tournamentPastBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabTournamentInviteBtn" onclick="switchTournamentTab('invite')" style="flex:1;">Davet<span class="badge" id="tournamentInviteBadge" style="display:none;">0</span></button>
+<button class="tab-btn active" id="tabTournamentOngoingBtn" style="flex:1;" onclick="switchTournamentTab('ongoing')">Turnuvalar<span class="badge" id="tournamentOngoingBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabTournamentPastBtn" style="flex:1;" onclick="switchTournamentTab('past')">Geçmiş<span class="badge" id="tournamentPastBadge" style="display:none;">0</span></button>
+<button class="tab-btn" id="tabTournamentInviteBtn" style="flex:1;" onclick="switchTournamentTab('invite')">Davet<span class="badge" id="tournamentInviteBadge" style="display:none;">0</span></button>
 </div>
+
 <div class="history-tabs-viewport" id="tournamentTabsViewport">
 <div class="history-tabs-track animated" id="tournamentTabsTrack">
 <div class="history-tab-panel" id="tournamentOngoingList"></div>
@@ -2617,34 +2082,59 @@ html{
 <div class="history-tab-panel" id="tournamentInviteList"></div>
 </div>
 </div>
+
 </div>
+
 <div id="tournamentCreateScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Turnuva Formatı</p>
+
 <button class="newgame" onclick="selectTournamentFormat(1)">Tek Oyunluk</button>
-<button class="newgame" onclick="selectTournamentFormat(3)" style="margin-top:12px;">3 Oyunluk</button>
+<button class="newgame" style="margin-top:12px;" onclick="selectTournamentFormat(3)">3 Oyunluk</button>
+
 </div>
+
 <div id="tournamentVisibilityScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Turnuva Görünürlüğü</p>
+
 <button class="newgame newgame-green" onclick="createTournament('public')">Herkese Açık 🌍</button>
-<button class="newgame" onclick="createTournament('private')" style="margin-top:12px;background:#636e72;box-shadow:0 4px 0 #444b4d;">Kapalı (Davetle) 🔒</button>
+<button class="newgame" style="margin-top:12px;background:#636e72;box-shadow:0 4px 0 #444b4d;" onclick="createTournament('private')">Kapalı (Davetle) 🔒</button>
+
 </div>
+
 <div id="openTournamentsScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title">Açık Turnuvalar</p>
+
 <div id="openTournamentsList"><p>Yükleniyor...</p></div>
+
 </div>
+
 <div id="tournamentDetailScreen" style="display:none;">
+
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
+
 <p class="screen-title" id="tournamentDetailTitle">Turnuva</p>
+
 <div id="tournamentDetailContent"></div>
+
 </div>
+
 <div id="playArea" style="display:none;">
+
+
 <div class="info" id="sharedInfoBar">
 <div>Süre: <span id="time">120</span></div>
 <div>Puan: <span id="score">0</span></div>
 </div>
+
 <div class="level-select" id="levelSelect">
 <button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 <p>Seviye seç</p>
@@ -2652,40 +2142,60 @@ html{
 <button class="level-btn level-medium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" onclick="newGame('hard')">Zor</button>
 </div>
+
 <div class="loading" id="loading">
 <div class="spinner"></div>
 <p>Oyun hazırlanıyor...</p>
 </div>
+
 <div id="gameContent">
+
 <div class="level-select" id="mathInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:6px;">
 <button class="level-btn level-easy" id="mathLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="mathLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="mathLevelHard" onclick="newGame('hard')">Zor</button>
 </div>
+
 <div class="target" id="target"><span class="target-label">Hedef</span>→---</div>
+
 <div class="cards" id="cards"></div>
+
 <div id="operation">
 Sayı seçiniz
 </div>
+
+
 <div class="operations">
 <button onclick="setOperator('+')">+</button>
 <button onclick="setOperator('-')">−</button>
 <button onclick="setOperator('*')">×</button>
 <button onclick="setOperator('/')">÷</button>
 </div>
+
+
 <div class="bottom-buttons">
+
 <button class="undo" onclick="undo()">↶</button>
+
 <button class="equal" onclick="calculate()">=</button>
+
 </div>
+
 <p id="message"></p>
+
 <button class="solution-btn" id="solutionBtn" onclick="showSolution()" style="display:none;">Çözümü Göster</button>
+
 <div id="solutionBox"></div>
+
 </div>
+
 <div id="wordGameContent" style="display:none;position:relative;">
+
 <div class="btn-row" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:80%;">
-<button class="challenge-play-btn" onclick="startFreshWordGame(false)" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Çetrefilli</button>
-<button class="challenge-play-btn" onclick="startFreshWordGame(true)" style="background:#e67e22;box-shadow:0 4px 0 #ba6218;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Klasik</button>
+<button class="challenge-play-btn" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" onclick="startFreshWordGame(false)">Çetrefilli</button>
+<button class="challenge-play-btn" style="background:#e67e22;box-shadow:0 4px 0 #ba6218;font-size:17px;line-height:20px;padding:5.5px 4px;flex:none;width:calc(50% - 4px);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" onclick="startFreshWordGame(true)">Klasik</button>
 </div>
+
 <div class="word-info">
 <div class="word-info-top">
 <div style="justify-self:start;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
@@ -2697,31 +2207,47 @@ Sayı seçiniz
 <p id="wordMessage" style="grid-column:3;justify-self:start;margin-left:10px;position:relative;top:32px;visibility:hidden;">Harflerden kelime türetiniz!</p>
 </div>
 </div>
+
 <div id="wordOperation">
 Harf seçiniz
 </div>
+
 <div class="cards word-cards" id="wordCards"></div>
+
 <div class="bottom-buttons">
+
 <button class="undo word-undo-btn" onclick="wordUndo()">↶</button>
+
 <button class="equal word-check-btn" onclick="checkWord()">✓ Kontrol Et</button>
+
 <button class="shuffle-icon word-shuffle-btn" onclick="shuffleWordTiles()" title="Harfleri karıştır">🔀</button>
+
 </div>
+
 <div class="btn-row" style="margin-top:25px;align-items:center;">
-<button class="solution-btn" id="showWordsBtn" onclick="showWordsList()" style="display:none;margin-top:0;flex:1;font-size:16px;white-space:nowrap;">Kelimeleri Göster</button>
-<button class="challenge-play-btn" id="wordContinuePlayBtn" onclick="continueWordFreePlay()" style="display:none;flex:1;padding:14px;font-size:16px;font-weight:bold;margin-top:0;white-space:nowrap;">Devam Et ▶️</button>
+<button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:0;flex:1;font-size:16px;white-space:nowrap;" onclick="showWordsList()">Kelimeleri Göster</button>
+<button class="challenge-play-btn" id="wordContinuePlayBtn" style="display:none;flex:1;padding:14px;font-size:16px;font-weight:bold;margin-top:0;white-space:nowrap;" onclick="continueWordFreePlay()">Devam Et ▶️</button>
 </div>
 <div id="wordsBox"></div>
+
 </div>
+
 <div id="hafizaGameContent" style="display:none;">
+
 <div class="level-select" id="hafizaInlineLevelSelect" style="display:flex;flex-direction:row;justify-content:center;gap:10px;padding:0;margin-bottom:15px;">
 <button class="level-btn level-easy" id="hafizaLevelEasy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" id="hafizaLevelMedium" onclick="newGame('medium')">Orta</button>
 <button class="level-btn level-hard" id="hafizaLevelHard" onclick="newGame('hard')">Zor</button>
 </div>
+
 <p id="hafizaMessage">Kartlara tıkla ve eşleri bul!</p>
+
 <div class="mem-cards" id="hafizaCardsArea"></div>
-<button class="newgame" id="hafizaNewGameBtn" onclick="newGame(currentLevel)" style="margin:40px auto 0 auto;display:block;">🔄 Yeni Oyun</button>
+
+<button class="newgame" id="hafizaNewGameBtn" style="margin:40px auto 0 auto;display:block;" onclick="newGame(currentLevel)">🔄 Yeni Oyun</button>
+
 </div>
+
 <div class="modal-overlay" id="closeModal">
 <div class="modal-box">
 <p id="closeModalText"></p>
@@ -2731,26 +2257,34 @@ Harf seçiniz
 </div>
 </div>
 </div>
+
 <div class="modal-overlay" id="jokerModal" onclick="if(event.target===this)cancelJokerPick()">
 <div class="modal-box" style="margin-top:100px;">
 <p>Joker hangi harf olsun?</p>
 <div class="mini-keyboard" id="miniKeyboard"></div>
 </div>
 </div>
+
 </div>
+
 </div>
+
 <div class="win-banner" id="winBanner"></div>
-<div class="detail-modal-overlay" id="detailModalOverlay" onclick="if(event.target===this)closeDetailModal();" style="display:none;">
+
+<div id="detailModalOverlay" class="detail-modal-overlay" style="display:none;" onclick="if(event.target===this)closeDetailModal();">
 <div class="detail-modal-box">
 <button class="detail-modal-close" onclick="closeDetailModal()">✕</button>
 <div id="detailModalContent"></div>
 </div>
 </div>
+
 <div class="win-banner" id="wordScoreBanner" style="background:#44bd32;box-shadow:0 8px 0 #2f8a22;padding:36px 20px;width:300px;box-sizing:border-box;">
 <div id="wordScoreBannerTitle" style="font-size:20px;letter-spacing:1px;">PUAN</div>
 <div id="wordScoreBannerValue" style="font-size:68px;line-height:1.1;">0</div>
 <div id="wordScoreBannerRating" style="font-size:22px;font-weight:bold;min-height:28px;margin-top:6px;"></div>
 </div>
+
+
 <script>
 
 (function(){
@@ -12034,37 +11568,6 @@ refreshHistoryLists();
 });
 
 </script>
-<script>
-(function(){
-  function syncHomeLayout(){
-    var game=document.querySelector('.game');
-    var home=document.getElementById('homeScreen');
-    if(!game || !home) return;
-    var visible=getComputedStyle(home).display !== 'none';
-    game.classList.toggle('homewide', visible);
-  }
-  function bind(){
-    var home=document.getElementById('homeScreen');
-    if(!home) return;
-    syncHomeLayout();
-    new MutationObserver(syncHomeLayout).observe(home,{attributes:true,attributeFilter:['style','class']});
-    window.addEventListener('resize',syncHomeLayout);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind);
-  else bind();
-})();
-</script><script>
-(function(){
-  function bindHomeAd(){
-    var c=document.querySelector('#homeScreen .home-ad-close');
-    var a=document.querySelector('#homeScreen .home-ad');
-    if(c && a && !c.dataset.bound){
-      c.dataset.bound='1';
-      c.addEventListener('click',function(){a.style.display='none';});
-    }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindHomeAd);
-  else bindHomeAd();
-})();
-</script></body>
+
+</body>
 </html>
