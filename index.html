@@ -22,7 +22,7 @@ body{
     font-family:Arial,sans-serif;
     background:#0b2369;
     margin:0;
-    padding:15px 1%;
+    padding:15px 1.5%;
     user-select:none;
     -webkit-user-select:none;
     -moz-user-select:none;
@@ -39,7 +39,7 @@ input,textarea{
 .game{
     max-width:520px;
     margin:auto;
-    background:white;
+    background:#f4f6fb;
     border-radius:20px;
     padding:20px;
     text-align:center;
@@ -49,7 +49,7 @@ input,textarea{
 
 .game.playing{
     background-image:none;
-    background-color:white;
+    background-color:#f4f6fb;
 }
 
 @keyframes adFloatBounce{
@@ -1977,10 +1977,12 @@ button{
     display:flex;align-items:center;justify-content:center;
     color:#0055ff;
     font-size:16px;
+    font-variant-emoji:text;
 }
 #historyScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0}
 #historyScreen .oy-username{
     font-size:15px;font-weight:700;color:#0b2b6b;line-height:1.1;
+    text-decoration:none;
 }
 #historyScreen .oy-status{
     background:transparent;
@@ -8050,7 +8052,7 @@ html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
-html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+typeSuffix+"</span></div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span></div>";
 html+="<span class=\"oy-status\">"+resultLabel+" · "+myTotal+"-"+opponentTotal+"</span>";
 html+="</div>";
 
@@ -8193,7 +8195,7 @@ html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
-html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+typeSuffix+"</span></div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span></div>";
 html+="<span class=\"oy-status\">"+statusText+"</span>";
 html+="</div>";
 
@@ -8326,7 +8328,7 @@ html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
-html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+typeSuffix+"</span></div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+"</span></div>";
 
 if(c.status==="pending" && mySide==="to"){
 html+="<span class=\"oy-status\">📩 "+remainingHours+" saat</span>";
