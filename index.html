@@ -16,6 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
 body{
@@ -1979,7 +1980,7 @@ button{
     font-size:16px;
     font-variant-emoji:text;
 }
-#historyScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0}
+#historyScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
 #historyScreen .oy-username{
     font-size:15px;font-weight:700;color:#0b2b6b;line-height:1.1;
     text-decoration:none;
@@ -2000,7 +2001,7 @@ button{
 #historyScreen .oy-actions{display:flex;gap:6px}
 #historyScreen .oy-btn{
     flex:1;
-    padding:9px 0;
+    padding:10px 0;
     border-radius:12px;
     font-size:12px;font-weight:800;
     border:0;
@@ -8057,9 +8058,9 @@ html+="<span class=\"oy-status\">"+resultLabel+" · "+myTotal+"-"+opponentTotal+
 html+="</div>";
 
 html+="<div class=\"oy-actions\">";
-html+="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\">👁 Görüntüle</button>";
+html+="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
 html+="<button class=\"oy-btn oy-btn-brown\" onclick=\""+meydanOkuOnclick+"\">⚔️ Meydan Oku</button>";
-html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">💬 Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 html+="</div>";
 
 html+="</div>";
@@ -8207,17 +8208,17 @@ let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
 let alreadyStarted=!!currentGame[mySideStartedField];
 
 if(alreadyStarted){
-playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">▶ Devam Et</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
 }
 else{
-playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">▶ Oyna</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
 }
 
 }
 
-let viewButtonHtml="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\">👁 Görüntüle</button>";
+let viewButtonHtml="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
 
-let messageButtonHtml="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\">💬 Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+let messageButtonHtml="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 
 html+="<div class=\"oy-actions\">"+viewButtonHtml+playButtonHtml+messageButtonHtml+"</div>";
 
