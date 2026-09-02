@@ -1834,29 +1834,29 @@ button{
 #homeScreen .bottom-nav{
     width:100%;
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
+    grid-template-columns:repeat(4,1fr);
+    gap:7px;
     margin-top:9px;
     padding-top:12px;
     border-top:2px solid #e7ebf1;
 }
 #homeScreen .bottom-nav-item{
     border:0;
-    min-height:62px;
-    border-radius:14px;
+    min-height:64px;
+    border-radius:13px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:4px;padding:6px 4px;
+    gap:4px;padding:6px 2px;
     color:#26364d;
-    font-size:12px;font-weight:800;
+    font-size:10px;font-weight:800;
     cursor:pointer;font-family:inherit;
     box-shadow:0 3px 7px rgba(35,50,75,.10);
     transition:transform .12s ease;
 }
 #homeScreen .bottom-nav-item:active{transform:scale(.96)}
 #homeScreen .bottom-icon{
-    width:36px;height:36px;border-radius:50%;
+    width:32px;height:32px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:18px;
+    font-size:16px;
 }
 #homeScreen .profile-bottom{background:#eaf3ff}
 #homeScreen .friends-bottom{background:#fbe0e0}
@@ -1867,10 +1867,168 @@ button{
 #homeScreen .settings-bottom .bottom-icon{background:#b4bac0}
 #homeScreen .info-bottom .bottom-icon{background:#c1a9ff}
 
+@media(max-width:390px){
+#homeScreen .bottom-nav{gap:4px}
+#homeScreen .bottom-nav-item{min-height:56px;border-radius:10px;font-size:8.5px;gap:3px}
+#homeScreen .bottom-icon{width:26px;height:26px;font-size:13px}
+}
+
+/* ===== OYUNLARIM (historyScreen) - YENİ TASARIM ===== */
+
+#historyScreen .oy-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+}
+#historyScreen .oy-tab-btn{
+    height:42px;
+    border-radius:13px;
+    display:flex;align-items:center;justify-content:center;
+    gap:4px;
+    font-weight:700;
+    font-size:11.5px;
+    cursor:pointer;
+    border:0;
+    position:relative;
+    white-space:nowrap;
+    padding:0 6px;
+    font-family:inherit;
+    flex:1;
+}
+#historyScreen .oy-tab-btn.oy-tab-wide{flex:1.45}
+#historyScreen .oy-tab-btn{
+    background:#e1e9f7;
+    color:#0b2b6b;
+    box-shadow:0 4px 0 #b7c9e8;
+}
+#historyScreen .oy-tab-btn.active{
+    background:#0055ff;
+    color:#fff;
+    box-shadow:0 4px 0 #003cc7;
+}
+#historyScreen .oy-tab-btn .badge{
+    position:absolute!important;
+    top:-6px!important;right:-4px!important;
+    background:#ff0044!important;
+    color:#fff;
+    font-size:10.5px;font-weight:700;
+    width:19px;height:19px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #f4f6fb;
+    box-shadow:none;
+    padding:0;
+}
+
+#historyScreen #ongoingList,
+#historyScreen #historyList,
+#historyScreen #challengesList{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+#historyScreen .oy-card{
+    background:#fff;
+    border-radius:18px;
+    padding:13px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+#historyScreen .oy-shield{
+    width:42px;height:58px;
+    background:linear-gradient(180deg,#3d5099 0%,#1a285c 100%);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    position:relative;
+    clip-path:polygon(0% 20%,50% 0%,100% 20%,100% 80%,50% 100%,0% 80%);
+    filter:drop-shadow(0px 4px 5px rgba(0,0,0,.25));
+}
+#historyScreen .oy-shield-inner{
+    width:35px;height:49px;
+    background:linear-gradient(180deg,#2b3b75 0%,#121c42 100%);
+    clip-path:polygon(0% 20%,50% 0%,100% 20%,100% 80%,50% 100%,0% 80%);
+    display:flex;align-items:center;justify-content:center;
+}
+#historyScreen .oy-swords{
+    font-size:24px;
+    line-height:1;
+    filter:drop-shadow(0px 2px 3px rgba(0,0,0,.4));
+}
+
+#historyScreen .oy-content{flex-grow:1;min-width:0}
+#historyScreen .oy-card-header{
+    display:flex;align-items:flex-start;
+    gap:7px;
+    margin-bottom:9px;
+}
+#historyScreen .oy-avatar{
+    width:30px;height:30px;flex-shrink:0;
+    background:#dce7ff;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+}
+#historyScreen .oy-user-info{flex-grow:1;padding-top:5px;min-width:0}
+#historyScreen .oy-username{
+    font-size:14px;font-weight:700;color:#0b2b6b;line-height:1.1;
+}
+#historyScreen .oy-status{
+    color:#000;
+    font-size:10.5px;font-weight:600;
+    margin-left:auto;
+    white-space:nowrap;
+    margin-top:3px;
+    text-align:right;
+    flex-shrink:0;
+    padding-left:6px;
+}
+
+#historyScreen .oy-actions{display:flex;gap:6px}
+#historyScreen .oy-btn{
+    flex:1;
+    padding:8px 0;
+    border-radius:11px;
+    font-size:11px;font-weight:800;
+    border:0;
+    display:flex;align-items:center;justify-content:center;
+    gap:3px;
+    cursor:pointer;
+    position:relative;top:0;
+    transition:top .1s ease;
+    font-family:inherit;
+    white-space:nowrap;
+}
+#historyScreen .oy-btn:active{top:2px}
+#historyScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;box-shadow:0 3px 0 #c2d2e9}
+#historyScreen .oy-btn-play{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-msg{background:#00bfa5;color:#fff;box-shadow:0 3px 0 #00897b;position:relative}
+#historyScreen .oy-btn-brown{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-accept{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-decline{background:#ff0044;color:#fff;box-shadow:0 3px 0 #b8003a}
+
+#historyScreen .oy-btn-msg .badge{
+    position:absolute!important;
+    top:-6px!important;right:-4px!important;
+    background:#ff0044!important;
+    color:#fff;
+    font-size:10px;font-weight:700;
+    min-width:17px;width:17px;height:17px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #fff;
+    box-shadow:none;
+    padding:0;
+}
+
 </style>
 </head>
 
 <body>
+
 
 <div class="game">
 
@@ -2240,17 +2398,11 @@ button{
 
 <div id="historyScreen" style="display:none;">
 
-
-<div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
+<div class="oy-tabs">
+<button class="oy-tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')">🎮 Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
+<button class="oy-tab-btn oy-tab-wide" id="tabGamesBtn" onclick="switchHistoryTab('games')">🕐 Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
+<button class="oy-tab-btn" id="tabChallengesBtn" onclick="switchHistoryTab('challenges')">💬 İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
 </div>
-
-<div class="tab-buttons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
-<button class="tab-btn active" id="tabOngoingBtn" style="flex:0.8;" onclick="switchHistoryTab('ongoing')">Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabGamesBtn" style="flex:1.4;" onclick="switchHistoryTab('games')">Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
-<button class="tab-btn" id="tabChallengesBtn" style="flex:0.8;" onclick="switchHistoryTab('challenges')">İstekler<span class="badge" id="tabBadge" style="display:none;">0</span></button>
-</div>
-
-<div id="tabButtonsSpacer" style="height:50px;"></div>
 
 <div class="history-tabs-viewport" id="historyTabsViewport">
 <div class="history-tabs-track animated" id="historyTabsTrack">
@@ -7032,13 +7184,6 @@ document.getElementById("tabOngoingBtn").classList.add("active");
 document.getElementById("tabGamesBtn").classList.remove("active");
 document.getElementById("tabChallengesBtn").classList.remove("active");
 
-let tabButtonsEl=document.querySelector("#historyScreen .tab-buttons");
-let anaWrapperEl=document.querySelector("#historyScreen > div");
-let tabButtonsBottom=tabButtonsEl.getBoundingClientRect().bottom;
-let anaWrapperBottom=anaWrapperEl.getBoundingClientRect().bottom;
-let neededSpacer=(tabButtonsBottom-anaWrapperBottom)+8;
-document.getElementById("tabButtonsSpacer").style.height=Math.max(neededSpacer,20)+"px";
-
 renderOngoingList();
 renderHistoryList();
 renderChallengesList();
@@ -7866,19 +8011,11 @@ let myTotal=mySide==="from" ? fromTotal : toTotal;
 let opponentTotal=mySide==="from" ? toTotal : fromTotal;
 
 let totalGames=c.games.length;
-let formatLabel=totalGames===1 ? "" : " · "+totalGames+" Oyun";
-
-let html="";
-
-html+="<div class=\"challenge-item\">";
-html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span><span>"+(c.gameType==="word"?"Kelime":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":LEVEL_NAMES[c.level])+formatLabel+"</span></div>";
 
 let resultLabel;
-if(myTotal>opponentTotal)resultLabel=totalGames===1 ? "🎉 Kazandın" : "🎉 Seriyi kazandın";
-else if(myTotal<opponentTotal)resultLabel=totalGames===1 ? "😔 Kaybettin" : "😔 Seriyi kaybettin";
+if(myTotal>opponentTotal)resultLabel=totalGames===1 ? "🎉 Kazandın" : "🎉 Seri kazanıldı";
+else if(myTotal<opponentTotal)resultLabel=totalGames===1 ? "😔 Kaybettin" : "😔 Seri kaybedildi";
 else resultLabel=totalGames===1 ? "🤝 Berabere" : "🤝 Seri berabere";
-
-html+="<div class=\"h-bottom\">"+resultLabel+" · Sen: "+myTotal+" — Rakip: "+opponentTotal+"</div>";
 
 let meydanOkuOnclick;
 
@@ -7892,12 +8029,26 @@ else{
 meydanOkuOnclick="challengeFromProfile('"+otherName+"')";
 }
 
-html+="<div class=\"btn-row btn-row-triple\">";
-html+="<button class=\"challenge-play-btn view-btn\" onclick=\"viewChallenge('"+c.id+"')\">Görüntüle 🔍</button>";
-html+="<button class=\"challenge-play-btn challenge-brown\" onclick=\""+meydanOkuOnclick+"\">Meydan Oku ⚔️</button>";
-html+="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">Mesaj 💬<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+
+let html="";
+
+html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-content\">";
+html+="<div class=\"oy-card-header\">";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+typeSuffix+"</span></div>";
+html+="<span class=\"oy-status\">"+resultLabel+" · "+myTotal+"-"+opponentTotal+"</span>";
 html+="</div>";
 
+html+="<div class=\"oy-actions\">";
+html+="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\">👁️ Görüntüle</button>";
+html+="<button class=\"oy-btn oy-btn-brown\" onclick=\""+meydanOkuOnclick+"\">⚔️ Meydan Oku</button>";
+html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\">💬 Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+html+="</div>";
+
+html+="</div>";
 html+="</div>";
 
 return html;
@@ -8014,19 +8165,25 @@ let elapsedHours=Math.floor((now-c.acceptedAt.seconds)/3600);
 remainingHours=Math.max(0,48-elapsedHours);
 }
 
-html+="<div class=\"challenge-item\">";
-html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span><span>"+(c.gameType==="word"?"Kelime":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":"İşlem ("+LEVEL_NAMES[c.level]+")")+formatLabel+"</span></div>";
+let statusText;
 
 if(mySidePlayedCurrent){
-
-html+="<div class=\"h-bottom\">Sen "+(currentGameIndex+1)+". oyunu oynadın · Rakip bekleniyor ("+remainingHours+" saat içinde tamamlanmalı)</div>";
-
+statusText=(currentGameIndex+1)+". oyun ⏳ "+remainingHours+" saat";
 }
 else{
-
-html+="<div class=\"h-bottom\">"+currentGameIndex+"/"+totalGames+" ("+remainingHours+" saat içinde oynamalısın)</div>";
-
+statusText=currentGameIndex+"/"+totalGames+" ⏳ "+remainingHours+" saat";
 }
+
+let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+
+html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-content\">";
+html+="<div class=\"oy-card-header\">";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+typeSuffix+"</span></div>";
+html+="<span class=\"oy-status\">"+statusText+"</span>";
+html+="</div>";
 
 let playButtonHtml="";
 
@@ -8036,20 +8193,21 @@ let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
 let alreadyStarted=!!currentGame[mySideStartedField];
 
 if(alreadyStarted){
-playButtonHtml="<button class=\"challenge-play-btn\" style=\"background:#e74c3c;box-shadow:0 4px 0 #c0392b;\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">Devam Et ▶️</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">▶️ Devam Et</button>";
 }
 else{
-playButtonHtml="<button class=\"challenge-play-btn\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">Oyna ▶️</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\">▶️ Oyna</button>";
 }
 
 }
 
-let viewButtonHtml="<button class=\"challenge-play-btn view-btn\" onclick=\"viewChallenge('"+c.id+"')\">Görüntüle 🔍</button>";
+let viewButtonHtml="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\">👁️ Görüntüle</button>";
 
-let messageButtonHtml="<button class=\"challenge-play-btn message-btn\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\">Mesaj 💬<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+let messageButtonHtml="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\">💬 Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 
-html+="<div class=\"btn-row btn-row-triple\">"+viewButtonHtml+playButtonHtml+messageButtonHtml+"</div>";
+html+="<div class=\"oy-actions\">"+viewButtonHtml+playButtonHtml+messageButtonHtml+"</div>";
 
+html+="</div>";
 html+="</div>";
 
 });
@@ -8149,32 +8307,45 @@ let elapsedHours=Math.floor((now-c.createdAt.seconds)/3600);
 remainingHours=Math.max(0,48-elapsedHours);
 }
 
-html+="<div class=\"challenge-item\">";
-html+="<div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+typeSuffix+"</span><span>"+(c.gameType==="word"?"Kelime Bulma":c.gameType==="hafiza"?"Hafıza ("+LEVEL_NAMES[c.level]+")":LEVEL_NAMES[c.level])+formatLabel+"</span></div>";
+let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+
+html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-content\">";
+html+="<div class=\"oy-card-header\">";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+typeSuffix+"</span></div>";
+
+if(c.status==="pending" && mySide==="to"){
+html+="<span class=\"oy-status\">📩 "+remainingHours+" saat</span>";
+}
+else if(c.status==="pending" && mySide==="from"){
+html+="<span class=\"oy-status\">⏳ "+remainingHours+" saat</span>";
+}
+else if(c.status==="expired"){
+html+="<span class=\"oy-status\">⌛ Süresi doldu</span>";
+}
+else if(c.status==="declined"){
+html+="<span class=\"oy-status\">🚫 Reddedildi</span>";
+}
+
+html+="</div>";
 
 if(c.status==="pending" && mySide==="to"){
 
-html+="<div class=\"h-bottom\">Sana meydan okuma isteği geldi ("+remainingHours+" saat içinde cevap vermelisin) 📩</div>";
-html+="<button class=\"challenge-play-btn btn-compact\" onclick=\"respondChallenge('"+c.id+"',true)\">Kabul Et ✅</button>";
-html+="<button class=\"challenge-play-btn decline-btn btn-compact\" onclick=\"respondChallenge('"+c.id+"',false)\">Reddet ❌</button>";
+html+="<div class=\"oy-actions\">";
+html+="<button class=\"oy-btn oy-btn-accept\" onclick=\"respondChallenge('"+c.id+"',true)\">✅ Kabul Et</button>";
+html+="<button class=\"oy-btn oy-btn-decline\" onclick=\"respondChallenge('"+c.id+"',false)\">❌ Reddet</button>";
+html+="</div>";
 
 }
 else if(c.status==="pending" && mySide==="from"){
 
-html+="<div class=\"h-bottom\">Kabul bekleniyor... ("+remainingHours+" saat içinde cevap verilmezse iptal olur) ⏳</div>";
-
-}
-else if(c.status==="expired"){
-
-html+="<div class=\"h-bottom\">Süresi doldu (48 saat içinde cevaplanmadı) ⌛</div>";
-
-}
-else if(c.status==="declined"){
-
-html+="<div class=\"h-bottom\">Reddedildi 🚫</div>";
+html+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;\">Kabul bekleniyor, "+remainingHours+" saat içinde cevap verilmezse iptal olur.</div>";
 
 }
 
+html+="</div>";
 html+="</div>";
 
 });
