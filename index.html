@@ -1702,6 +1702,171 @@ button{
     100%{transform:translateY(-320px) rotate(360deg) scale(1.2);opacity:0;}
 }
 
+/* ===== ANA SAYFA - YENİ TASARIM (sadece #homeScreen içini etkiler) ===== */
+
+/* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
+#globalHeader{
+    height:60px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+#globalHeader .hs-logo{
+    position:relative;
+    font-size:38px;
+    line-height:1;
+    font-weight:800;
+    letter-spacing:-2px;
+    color:#12366f;
+    margin:0;
+}
+#globalHeader .hs-confetti{position:absolute;inset:0;pointer-events:none;}
+#globalHeader .hs-confetti span{position:absolute;width:8px;height:16px;border-radius:2px;}
+#globalHeader .hc1{left:16%;top:2px;background:#ff9715;transform:rotate(-34deg)}
+#globalHeader .hc2{left:13%;top:26px;background:#8244bd;width:10px!important;height:5px!important;transform:rotate(12deg)}
+#globalHeader .hc3{left:21%;top:38px;background:#70c824;width:9px!important;height:6px!important;transform:rotate(-32deg)}
+#globalHeader .hc4{right:16%;top:2px;background:#218de3;transform:rotate(35deg)}
+#globalHeader .hc5{right:13%;top:27px;background:#85ca18;width:9px!important;height:6px!important;transform:rotate(5deg)}
+#globalHeader .hc6{right:21%;top:36px;background:#ffb70e;width:8px!important;height:5px!important;transform:rotate(34deg)}
+
+#homeScreen .welcome{
+    min-height:100px;
+    margin-bottom:16px;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 8px 18px rgba(26,46,75,.13);
+    display:flex;align-items:center;
+    padding:14px 16px;
+}
+#homeScreen .avatar{
+    width:70px;height:70px;flex:none;
+    border-radius:50%;
+    background:linear-gradient(145deg,#e9edf3,#d8e1eb);
+    display:flex;align-items:center;justify-content:center;
+    font-size:40px;position:relative;
+    margin:0;
+}
+#homeScreen .avatar .online{
+    position:absolute;right:1px;bottom:2px;
+    width:15px;height:15px;border-radius:50%;
+    background:#42bb3e;border:3px solid #fff;
+    box-sizing:border-box;
+}
+#homeScreen .welcome-content{flex:1;padding-left:14px;min-width:0}
+#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 9px 0;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .stats{
+    background:transparent!important;
+    padding:0!important;
+    height:auto!important;
+    margin:0!important;
+    display:flex;align-items:center;
+    overflow:visible!important;
+}
+#homeScreen .stats p{margin:0}
+#homeScreen .stat{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+#homeScreen .stat-icon{font-size:20px;flex:none}
+#homeScreen .stat b{display:block;font-size:15px;color:#172f62;line-height:1.15;font-weight:800;}
+#homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:1px;white-space:nowrap}
+#homeScreen .vline{height:28px;width:1px;background:#e5e8ee;margin:0 10px;flex:none}
+
+#homeScreen .menu-card{
+    width:100%;
+    min-height:60px;
+    border-radius:18px;
+    color:#fff;
+    margin-bottom:11px;
+    display:flex;align-items:center;
+    padding:10px 16px;
+    text-align:left;
+    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
+    transition:transform .1s,filter .1s;
+    position:relative;overflow:hidden;
+    border:0;cursor:pointer;font-family:inherit;
+}
+#homeScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#homeScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#4bc83b,#209c2b)}
+#homeScreen .menu-card.purple{background:linear-gradient(105deg,#9650d4,#682bb1)}
+#homeScreen .menu-card.orange{background:linear-gradient(105deg,#ffae1b,#f27d06)}
+
+#homeScreen .icon-circle{
+    width:42px;height:42px;border-radius:50%;
+    flex:none;margin-right:15px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.22);
+    font-size:23px;
+}
+#homeScreen .new-play-circle{
+    width:50px;height:50px;min-width:50px;
+    border-radius:50%;
+    background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    margin-right:16px;
+    box-shadow:0 3px 8px rgba(0,0,0,.13);
+}
+#homeScreen .new-play-triangle{
+    width:0;height:0;
+    border-top:9px solid transparent;
+    border-bottom:9px solid transparent;
+    border-left:14px solid #209e32;
+    transform:translateX(2px);
+}
+#homeScreen .menu-copy{flex:1;min-width:0}
+#homeScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
+#homeScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
+#homeScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
+
+#homeScreen .badge{
+    position:static!important;
+    min-width:25px;height:25px;line-height:25px;
+    padding:0 6px;
+    border-radius:50%;
+    background:#ed4937!important;
+    text-align:center;
+    font-size:12.5px;font-weight:800;
+    box-shadow:0 2px 5px rgba(0,0,0,.17);
+    margin-left:6px;
+    color:#fff;
+    box-sizing:border-box;
+    flex:none;
+}
+
+#homeScreen .bottom-nav{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-top:9px;
+    padding-top:12px;
+    border-top:2px solid #e7ebf1;
+}
+#homeScreen .bottom-nav-item{
+    border:0;
+    min-height:62px;
+    border-radius:14px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;padding:6px 4px;
+    color:#26364d;
+    font-size:12px;font-weight:800;
+    cursor:pointer;font-family:inherit;
+    box-shadow:0 3px 7px rgba(35,50,75,.10);
+    transition:transform .12s ease;
+}
+#homeScreen .bottom-nav-item:active{transform:scale(.96)}
+#homeScreen .bottom-icon{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;
+}
+#homeScreen .profile-bottom{background:#eaf3ff}
+#homeScreen .friends-bottom{background:#fbe0e0}
+#homeScreen .settings-bottom{background:#e4e6e9}
+#homeScreen .info-bottom{background:#ece2ff}
+#homeScreen .profile-bottom .bottom-icon{background:#a9ccff}
+#homeScreen .friends-bottom .bottom-icon{background:#e98f8f}
+#homeScreen .settings-bottom .bottom-icon{background:#b4bac0}
+#homeScreen .info-bottom .bottom-icon{background:#c1a9ff}
+
 </style>
 </head>
 
@@ -1713,7 +1878,13 @@ button{
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
 
-<h1 id="mainTitle">Konfeti</h1>
+<div id="globalHeader">
+<div class="hs-confetti">
+<span class="hc1"></span><span class="hc2"></span><span class="hc3"></span>
+<span class="hc4"></span><span class="hc5"></span><span class="hc6"></span>
+</div>
+<h1 id="mainTitle" class="hs-logo">Konfeti</h1>
+</div>
 
 <div id="wordTopAdBannerSpacer" style="display:none;height:30px;"></div>
 
@@ -1721,6 +1892,8 @@ button{
 <button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
 <div id="fakeAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
+
+<div id="adBannerSpacer" style="display:none;height:121px;"></div>
 
 <div class="loading" id="sessionCheckScreen" style="display:flex;">
 <div class="spinner"></div>
@@ -1738,6 +1911,7 @@ button{
 <input type="text" id="regName" class="auth-input" placeholder="Ad Soyad">
 <input type="email" id="regEmail" class="auth-input" placeholder="E-posta" autocomplete="email" name="email">
 <input type="text" id="regUsername" class="auth-input" placeholder="Kullanıcı Adı" autocomplete="username" name="username">
+<select id="regCountry" class="auth-input"><option value="">Ülke seç...</option></select>
 <input type="password" id="regPassword" class="auth-input" placeholder="Şifre" autocomplete="new-password" name="new-password">
 <input type="password" id="regPasswordConfirm" class="auth-input" placeholder="Şifre Onayı" autocomplete="new-password" name="new-password-confirm" onkeydown="if(event.key==='Enter')registerUser();">
 
@@ -1786,20 +1960,56 @@ button{
 
 <div id="homeScreen" style="display:none;">
 
+<div class="welcome">
+<div class="avatar">👤<i class="online"></i></div>
+<div class="welcome-content">
+<p id="welcomeText" class="welcome-text"></p>
 <div class="stats">
-<p>Başarı Yüzdesi: <span id="successPct">%0</span></p>
-<p>Puan Ortalaması (Kelime): <span id="avgScoreWord">0</span></p>
+<div class="stat"><div class="stat-icon">🏆</div><div><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div></div>
+<div class="vline"></div>
+<div class="stat"><div class="stat-icon">🔤</div><div><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
+</div>
+</div>
 </div>
 
-<p id="welcomeText" class="welcome-text"></p>
+<button class="menu-card new" onclick="openGameTypeChoice()">
+<div class="new-play-circle"><div class="new-play-triangle"></div></div>
+<div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
+<div class="arrow">›</div>
+</button>
 
-<div class="profile-icon">👤</div>
+<button class="menu-card purple" onclick="showHistory()">
+<div class="icon-circle">🎮</div>
+<div class="menu-copy"><b>Oyunlarım</b><span>Devam eden oyunların</span></div>
+<span class="badge" id="historyBadge" style="display:none;">0</span>
+<div class="arrow">›</div>
+</button>
 
-<button class="newgame newgame-green" onclick="openGameTypeChoice()">Yeni Oyun ▶️</button>
-<button class="newgame history-btn" onclick="showHistory()">Oyunlarım 🏠<span class="badge" id="historyBadge" style="display:none;">0</span></button>
-<button class="newgame tournament-btn" onclick="showTournaments()">Turnuva 🏆<span class="badge" id="tournamentBadge" style="display:none;">0</span></button>
-<button class="newgame profile-btn" onclick="showProfile()">Profil <span>👤</span></button>
-<button class="newgame friends-btn" onclick="showFriends()">Arkadaşlar 👥</button>
+<button class="menu-card orange" onclick="showTournaments()">
+<div class="icon-circle">🏆</div>
+<div class="menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
+<span class="badge" id="tournamentBadge" style="display:none;">0</span>
+<div class="arrow">›</div>
+</button>
+
+<nav class="bottom-nav">
+<button class="bottom-nav-item profile-bottom" onclick="showProfile()">
+<span class="bottom-icon">👤</span>
+<span>Profil</span>
+</button>
+<button class="bottom-nav-item friends-bottom" onclick="showFriends()">
+<span class="bottom-icon">👥</span>
+<span>Arkadaşlar</span>
+</button>
+<button class="bottom-nav-item settings-bottom" onclick="showSettings()">
+<span class="bottom-icon">⚙️</span>
+<span>Ayarlar</span>
+</button>
+<button class="bottom-nav-item info-bottom" onclick="showInfo()">
+<span class="bottom-icon">ⓘ</span>
+<span>Bilgi</span>
+</button>
+</nav>
 
 </div>
 
@@ -1807,7 +2017,6 @@ button{
 
 
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
 <h2 style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">Profil</h2>
@@ -1819,6 +2028,7 @@ button{
 <div class="stats">
 <p>Ad Soyad: <span id="profileName"></span></p>
 <p>Kullanıcı Adı: <span id="profileUsername"></span></p>
+<p>Ülke: <span id="profileCountry"></span></p>
 <p>E-posta: <span id="profileEmail"></span></p>
 <p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
 <p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
@@ -1878,7 +2088,6 @@ button{
 
 
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
 <h2 style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">Arkadaşlar</h2>
@@ -1886,6 +2095,18 @@ button{
 <div style="height:10px;"></div>
 
 <div id="friendsList"></div>
+
+</div>
+
+<div id="settingsScreen" style="display:none;">
+
+<h2>Ayarlar</h2>
+
+</div>
+
+<div id="infoScreen" style="display:none;">
+
+<h2>Bilgi</h2>
 
 </div>
 
@@ -1918,7 +2139,6 @@ button{
 
 
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
 <button class="newgame challenge-brown" style="margin-top:20px;" onclick="openChallengeGameType()">Meydan Oku ⚔️</button>
@@ -1929,7 +2149,6 @@ button{
 
 <div id="wordModeChoiceScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title" style="margin-top:70px;">Hangi oyunu oynamak istersin?</p>
 
@@ -1940,7 +2159,6 @@ button{
 
 <div id="challengeModeChoiceScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Hangi oyunu oynamak istersin?</p>
 
@@ -1952,7 +2170,6 @@ button{
 
 <div id="challengeTypeScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title" style="margin-top:70px;">Kime meydan okumak istersin?</p>
 
@@ -1964,7 +2181,6 @@ button{
 
 <div id="randomWaitScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Hangi oyunu oynamak istersin?</p>
 
@@ -1975,7 +2191,6 @@ button{
 
 <div id="challengeFriendScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Arkadaşının kullanıcı adı</p>
 
@@ -1992,7 +2207,6 @@ button{
 
 <div class="level-select" id="challengeLevelScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p id="challengeLevelText" style="margin-top:380px;">Hangi seviyede meydan okuyacaksın?</p>
 
@@ -2004,7 +2218,6 @@ button{
 
 <div class="level-select" id="challengeFormatScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p style="margin-top:380px;">Kaç oyunluk meydan okumak istersin?</p>
 
@@ -2016,7 +2229,6 @@ button{
 
 <div id="challengeDoneScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <div id="challengeEnvelope" class="envelope-anim" style="font-size:60px;margin:20px 0;">✉️</div>
 
@@ -2030,7 +2242,6 @@ button{
 
 
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
 <div class="tab-buttons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
@@ -2055,7 +2266,6 @@ button{
 
 
 <div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 </div>
 
 <div class="tab-buttons" id="tournamentTopButtons" style="position:absolute;top:215.875px;left:12px;right:12px;margin:0;">
@@ -2088,7 +2298,6 @@ button{
 
 <div id="tournamentCreateScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Turnuva Formatı</p>
 
@@ -2099,7 +2308,6 @@ button{
 
 <div id="tournamentVisibilityScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Turnuva Görünürlüğü</p>
 
@@ -2110,7 +2318,6 @@ button{
 
 <div id="openTournamentsScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title">Açık Turnuvalar</p>
 
@@ -2120,7 +2327,6 @@ button{
 
 <div id="tournamentDetailScreen" style="display:none;">
 
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 
 <p class="screen-title" id="tournamentDetailTitle">Turnuva</p>
 
@@ -2140,7 +2346,6 @@ button{
 </div>
 
 <div class="level-select" id="levelSelect">
-<button class="back-btn" onclick="goHome()">Ana Sayfa</button>
 <p>Seviye seç</p>
 <button class="level-btn level-easy" onclick="newGame('easy')">Kolay</button>
 <button class="level-btn level-medium" onclick="newGame('medium')">Orta</button>
@@ -2312,7 +2517,7 @@ syncPlayingClass();
 new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
 
 let adBannerEl=document.getElementById("fakeAdBanner");
-let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
+let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
 let adCachedTop=null;
 
 let adVariants=[
@@ -2380,28 +2585,15 @@ adBannerEl.style.width="335px";
 return;
 }
 
-let homeScreenEl=document.getElementById("homeScreen");
-let homeVisible=homeScreenEl.style.display!=="none" && homeScreenEl.style.display!=="";
-
-if(homeVisible){
-
 let gameRect=document.querySelector(".game").getBoundingClientRect();
-let homeStats=document.querySelector("#homeScreen .stats");
-let targetRect=homeStats.getBoundingClientRect();
-adCachedTop=targetRect.top-gameRect.top;
+let headerEl=document.getElementById("globalHeader");
+let headerRect=headerEl.getBoundingClientRect();
+
+adCachedTop=headerRect.bottom-gameRect.top;
 
 adBannerEl.style.top=adCachedTop+"px";
 adBannerEl.style.height="100px";
 adBannerEl.style.width="335px";
-
-}
-else{
-
-adBannerEl.style.top="130px";
-adBannerEl.style.height="100px";
-adBannerEl.style.width="335px";
-
-}
 
 }
 
@@ -2412,6 +2604,8 @@ let anyMenuVisible=adMenuScreenIds.some(function(id){
 let el=document.getElementById(id);
 return el.style.display!=="none" && el.style.display!=="";
 });
+
+let spacerEl=document.getElementById("adBannerSpacer");
 
 if(anyMenuVisible){
 
@@ -2424,10 +2618,13 @@ else if(adCachedTop===null){
 positionAdBanner();
 }
 
+spacerEl.style.display="block";
+
 }
 else{
 
 adBannerEl.style.display="none";
+spacerEl.style.display="none";
 
 }
 
@@ -2444,6 +2641,7 @@ new MutationObserver(syncAdBanner).observe(el,{attributes:true,attributeFilter:[
 function closeFakeAdBanner(){
 
 document.getElementById("fakeAdBanner").style.display="none";
+document.getElementById("adBannerSpacer").style.display="none";
 
 }
 
@@ -2840,10 +3038,11 @@ return;
 let name=document.getElementById("regName").value.trim();
 let email=document.getElementById("regEmail").value.trim();
 let username=document.getElementById("regUsername").value.trim().toLowerCase();
+let country=document.getElementById("regCountry").value;
 let password=document.getElementById("regPassword").value;
 let passwordConfirm=document.getElementById("regPasswordConfirm").value;
 
-if(!name || !email || !username || !password || !passwordConfirm){
+if(!name || !email || !username || !country || !password || !passwordConfirm){
 errorEl.innerHTML="Lütfen tüm alanları doldurun.";
 return;
 }
@@ -2874,7 +3073,7 @@ document.getElementById("registerBtn").disabled=true;
 
 withTimeout(auth.createUserWithEmailAndPassword(email,password),15000).then(function(cred){
 
-let profile={name:name,username:username,email:email};
+let profile={name:name,username:username,email:email,country:country};
 
 return db.collection("users").doc(cred.user.uid).set(profile).then(function(){
 
@@ -2939,7 +3138,7 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
-currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
+currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,country:profile.country||null,challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
 currentUserFriends=profile.friendUsernames || [];
 
 flushPendingGameFromStorage();
@@ -3012,7 +3211,7 @@ let activeChatChallengeId=null;
 let activeChatMySide=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","playArea"];
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","settingsScreen","infoScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","playArea"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -3021,6 +3220,116 @@ let chatUnsubscribe=null;
 const RANDOM_OPPONENTS=["Rakip_Ece","Rakip_Kaan","Rakip_Zeynep","Rakip_Mert","Rakip_Elif","Rakip_Deniz"];
 
 const LEVEL_NAMES={easy:"Kolay",medium:"Orta",hard:"Zor"};
+
+const COUNTRY_LIST=[
+{code:"TR",name:"Türkiye"},
+{code:"DE",name:"Almanya"},
+{code:"US",name:"Amerika Birleşik Devletleri"},
+{code:"AZ",name:"Azerbaycan"},
+{code:"BE",name:"Belçika"},
+{code:"BG",name:"Bulgaristan"},
+{code:"CA",name:"Kanada"},
+{code:"CN",name:"Çin"},
+{code:"DK",name:"Danimarka"},
+{code:"EG",name:"Mısır"},
+{code:"FI",name:"Finlandiya"},
+{code:"FR",name:"Fransa"},
+{code:"GE",name:"Gürcistan"},
+{code:"GR",name:"Yunanistan"},
+{code:"NL",name:"Hollanda"},
+{code:"IN",name:"Hindistan"},
+{code:"IQ",name:"Irak"},
+{code:"IR",name:"İran"},
+{code:"ES",name:"İspanya"},
+{code:"SE",name:"İsveç"},
+{code:"CH",name:"İsviçre"},
+{code:"IT",name:"İtalya"},
+{code:"JP",name:"Japonya"},
+{code:"KZ",name:"Kazakistan"},
+{code:"QA",name:"Katar"},
+{code:"KE",name:"Kenya"},
+{code:"KG",name:"Kırgızistan"},
+{code:"KW",name:"Kuveyt"},
+{code:"HU",name:"Macaristan"},
+{code:"MD",name:"Moldova"},
+{code:"NO",name:"Norveç"},
+{code:"UZ",name:"Özbekistan"},
+{code:"PK",name:"Pakistan"},
+{code:"PL",name:"Polonya"},
+{code:"PT",name:"Portekiz"},
+{code:"RO",name:"Romanya"},
+{code:"RU",name:"Rusya"},
+{code:"SA",name:"Suudi Arabistan"},
+{code:"RS",name:"Sırbistan"},
+{code:"SY",name:"Suriye"},
+{code:"TJ",name:"Tacikistan"},
+{code:"TM",name:"Türkmenistan"},
+{code:"UA",name:"Ukrayna"},
+{code:"GB",name:"Birleşik Krallık"},
+{code:"AE",name:"Birleşik Arap Emirlikleri"},
+{code:"AU",name:"Avustralya"},
+{code:"AT",name:"Avusturya"},
+{code:"BA",name:"Bosna Hersek"},
+{code:"BR",name:"Brezilya"},
+{code:"CY",name:"Kıbrıs"},
+{code:"CZ",name:"Çekya"},
+{code:"AL",name:"Arnavutluk"},
+{code:"MK",name:"Kuzey Makedonya"},
+{code:"IE",name:"İrlanda"},
+{code:"IL",name:"İsrail"},
+{code:"JO",name:"Ürdün"},
+{code:"KR",name:"Güney Kore"},
+{code:"LB",name:"Lübnan"},
+{code:"MA",name:"Fas"},
+{code:"MX",name:"Meksika"},
+{code:"MY",name:"Malezya"},
+{code:"NZ",name:"Yeni Zelanda"},
+{code:"SG",name:"Singapur"},
+{code:"SK",name:"Slovakya"},
+{code:"SI",name:"Slovenya"},
+{code:"TN",name:"Tunus"},
+{code:"ZA",name:"Güney Afrika"},
+{code:"OTHER",name:"Diğer"},
+{code:"XX",name:"Belirtmek istemiyorum"}
+];
+
+function countryFlagEmoji(code){
+
+if(!code)return "";
+
+if(code==="XX")return "🏳️";
+if(code==="OTHER")return "🌐";
+
+if(code.length!==2)return "";
+
+let base=127397;
+
+return String.fromCodePoint(code.charCodeAt(0)+base,code.charCodeAt(1)+base);
+
+}
+
+
+function getCountryName(code){
+
+let found=COUNTRY_LIST.find(function(c){ return c.code===code; });
+return found ? found.name : "";
+
+}
+
+
+(function populateCountrySelect(){
+
+let sel=document.getElementById("regCountry");
+if(!sel)return;
+
+COUNTRY_LIST.forEach(function(c){
+let opt=document.createElement("option");
+opt.value=c.code;
+opt.textContent=c.name;
+sel.appendChild(opt);
+});
+
+})();
 
 
 function savePendingGameToStorage(entry){
@@ -4087,7 +4396,7 @@ html+="<p>Kimse oynamamış.</p>";
 }
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div></div>";
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span><span>"+p.totalScore+" puan</span></div></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -4299,7 +4608,7 @@ html+="<p>Kimse oynamamış.</p>";
 }
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+(p.score||0)+" puan</span></div></div>";
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span><span>"+(p.score||0)+" puan</span></div></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -4429,7 +4738,7 @@ return;
 }
 
 let updatedParticipants=t.participants.slice();
-updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,score:null,joinedAt:Date.now()});
+updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,country:currentUser.country||null,score:null,joinedAt:Date.now()});
 
 dailyRef.update({
 participantUids:firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
@@ -4491,7 +4800,7 @@ html+="<p>Henüz kimse oynamadı.</p>";
 }
 
 sorted.forEach(function(p,idx){
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+(p.score||0)+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">1/1 oyun · Ort: "+(p.score||0)+"</p></div>";
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span><span>"+(p.score||0)+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">1/1 oyun · Ort: "+(p.score||0)+"</p></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -4637,7 +4946,7 @@ return;
 }
 
 let updatedParticipants=t.participants.slice();
-updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,dailyScores:new Array(7).fill(null),totalScore:0,joinedAt:Date.now()});
+updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,country:currentUser.country||null,dailyScores:new Array(7).fill(null),totalScore:0,joinedAt:Date.now()});
 
 weeklyRef.update({
 participantUids:firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
@@ -4716,7 +5025,7 @@ html+="<p>Henüz kimse oynamadı.</p>";
 sorted.forEach(function(p,idx){
 let playedCount=p.dailyScores.filter(function(s){ return s!==null; }).length;
 let avgScore=playedCount>0 ? Math.round(p.totalScore/playedCount) : 0;
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+p.username+"</span><span>"+p.totalScore+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">"+playedCount+"/7 oyun · Ort: "+avgScore+"</p></div>";
+html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(idx+1)+". "+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span><span>"+p.totalScore+" puan</span></div><p style=\"margin:4px 0 0 0;font-size:0.8em;color:#636e72;\">"+playedCount+"/7 oyun · Ort: "+avgScore+"</p></div>";
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
@@ -6268,6 +6577,7 @@ document.getElementById("changePasswordForm").style.display="none";
 
 document.getElementById("profileName").innerHTML=currentUser.name;
 document.getElementById("profileUsername").innerHTML=currentUser.username;
+document.getElementById("profileCountry").innerHTML=currentUser.country ? (countryFlagEmoji(currentUser.country)+" "+getCountryName(currentUser.country)) : "-";
 document.getElementById("profileEmail").innerHTML=currentUser.email;
 
 let avgByLevel=computeAvgByLevel(gameHistory);
@@ -6332,6 +6642,22 @@ hideAllScreens();
 document.getElementById("friendsScreen").style.display="block";
 
 renderFriendsList();
+
+}
+
+
+function showSettings(){
+
+hideAllScreens();
+document.getElementById("settingsScreen").style.display="block";
+
+}
+
+
+function showInfo(){
+
+hideAllScreens();
+document.getElementById("infoScreen").style.display="block";
 
 }
 
@@ -10239,12 +10565,46 @@ return batch.commit();
 let userDocUnsubscribe=null;
 let challengeSignalVersions={};
 
+function loadPersistedSignalCache(uid,storageKey){
+
+try{
+
+let raw=localStorage.getItem(storageKey+"_"+uid);
+if(!raw)return {versions:{},data:{}};
+
+let parsed=JSON.parse(raw);
+return {versions:parsed.versions || {},data:parsed.data || {}};
+
+}catch(e){
+
+console.error("Önbellek okunamadı:",storageKey,e);
+return {versions:{},data:{}};
+
+}
+
+}
+
+function savePersistedSignalCache(uid,storageKey,versions,data){
+
+try{
+
+localStorage.setItem(storageKey+"_"+uid,JSON.stringify({versions:versions,data:data}));
+
+}catch(e){
+
+console.error("Önbellek kaydedilemedi:",storageKey,e);
+
+}
+
+}
+
 function startChallengesListener(){
 
 if(userDocUnsubscribe)return;
 
-liveChallengesData={};
-challengeSignalVersions={};
+let cached=loadPersistedSignalCache(currentUser.uid,"konfeti_challenges");
+liveChallengesData=cached.data;
+challengeSignalVersions=cached.versions;
 
 let handleLiveUpdateTimeout=null;
 
@@ -10278,6 +10638,13 @@ if(!data)return;
 
 let ids=data.ids || {};
 
+Object.keys(challengeSignalVersions).forEach(function(challengeId){
+if(!Object.prototype.hasOwnProperty.call(ids,challengeId)){
+delete challengeSignalVersions[challengeId];
+delete liveChallengesData[challengeId];
+}
+});
+
 let fetchPromises=[];
 
 Object.keys(ids).forEach(function(challengeId){
@@ -10308,16 +10675,85 @@ console.error("Meydan okuma okunamadı:",challengeId,e);
 });
 
 if(fetchPromises.length===0){
+pruneChallengeSignalIds();
 handleLiveUpdate();
 return;
 }
 
 Promise.all(fetchPromises).then(function(){
+pruneChallengeSignalIds();
+savePersistedSignalCache(currentUser.uid,"konfeti_challenges",challengeSignalVersions,liveChallengesData);
 handleLiveUpdate();
 });
 
 },function(e){
 console.error("Kullanıcı düello dinleyicisi hata:",e);
+});
+
+}
+
+
+function pruneChallengeSignalIds(){
+
+if(!liveChallengesData || !currentUser)return;
+
+let ongoing=[];
+let history=[];
+let requests=[];
+
+Object.keys(liveChallengesData).forEach(function(id){
+
+let c=liveChallengesData[id];
+if(!c)return;
+
+if(c.status==="accepted"){
+
+let allDone=c.games && c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+
+if(allDone){
+history.push({id:id,time:(c.completedAt?c.completedAt.seconds:(c.createdAt?c.createdAt.seconds:0))});
+}
+else{
+ongoing.push({id:id,time:(c.createdAt?c.createdAt.seconds:0)});
+}
+
+}
+else{
+
+requests.push({id:id,time:(c.createdAt?c.createdAt.seconds:0)});
+
+}
+
+});
+
+let excessIds=[];
+
+[ongoing,history,requests].forEach(function(list){
+
+list.sort(function(a,b){ return b.time-a.time; });
+
+if(list.length>20){
+list.slice(20).forEach(function(item){ excessIds.push(item.id); });
+}
+
+});
+
+if(excessIds.length===0)return;
+
+excessIds.forEach(function(id){
+delete liveChallengesData[id];
+delete challengeSignalVersions[id];
+});
+
+savePersistedSignalCache(currentUser.uid,"konfeti_challenges",challengeSignalVersions,liveChallengesData);
+
+let updatePayload={};
+excessIds.forEach(function(id){
+updatePayload["ids."+id]=firebase.firestore.FieldValue.delete();
+});
+
+db.collection("userChallenges").doc(currentUser.uid).update(updatePayload).catch(function(e){
+console.error("Eski meydan okuma kayıtları temizlenemedi:",e);
 });
 
 }
@@ -10347,8 +10783,9 @@ function startTournamentsListener(){
 
 if(userTournamentsUnsubscribe)return;
 
-liveTournamentsData={};
-tournamentSignalVersions={};
+let cached=loadPersistedSignalCache(currentUser.uid,"konfeti_tournaments");
+liveTournamentsData=cached.data;
+tournamentSignalVersions=cached.versions;
 
 userTournamentsUnsubscribe=db.collection("userTournaments").doc(currentUser.uid).onSnapshot(function(doc){
 
@@ -10402,7 +10839,10 @@ afterFetch();
 return;
 }
 
-Promise.all(fetchPromises).then(afterFetch);
+Promise.all(fetchPromises).then(function(){
+savePersistedSignalCache(currentUser.uid,"konfeti_tournaments",tournamentSignalVersions,liveTournamentsData);
+afterFetch();
+});
 
 },function(e){
 console.error("Kullanıcı turnuva dinleyicisi hata:",e);
