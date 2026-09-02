@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>Konfeti</title>
 
 <link rel="manifest" href="manifest.json?v=2">
@@ -2261,9 +2262,9 @@ button{
 /* ===== ALT MENÜ (tüm menü ekranlarında sabit) ===== */
 
 :root{
-    --bn-nav-height:clamp(78px,16vw,110px);
-    --bn-home-size:clamp(95px,22vw,135px);
-    --bn-icon-size:clamp(23px,6vw,31px);
+    --bn-nav-height:clamp(62px,12.5vw,86px);
+    --bn-home-size:clamp(80px,18vw,112px);
+    --bn-icon-size:clamp(21px,5.5vw,28px);
     --bn-active-color:#1f5fc7;
     --bn-inactive-color:#4d5869;
     --bn-side-shift:clamp(6px,2vw,14px);
@@ -2298,7 +2299,7 @@ button{
 .bn-item:active{transform:scale(.90);}
 
 .bn-item>i{
-    position:relative;top:6px;
+    position:relative;top:4px;
     font-size:var(--bn-icon-size);
     color:var(--bn-inactive-color);
     transition:color .2s ease,transform .2s ease;
@@ -2351,7 +2352,7 @@ button{
 }
 
 @media(max-width:320px){
-:root{--bn-nav-height:72px;--bn-home-size:88px;--bn-icon-size:21px;--bn-side-shift:5px;}
+:root{--bn-nav-height:58px;--bn-home-size:70px;--bn-icon-size:19px;--bn-side-shift:5px;}
 }
 
 </style>
