@@ -1740,44 +1740,50 @@ button{
 #globalHeader .hc6{right:21%;top:36px;background:#ffb70e;width:8px!important;height:5px!important;transform:rotate(34deg)}
 
 #homeScreen .welcome{
-    min-height:100px;
-    margin-bottom:16px;
-    border-radius:18px;
+    min-height:113px;
+    margin-bottom:17px;
+    border-radius:16px;
     background:#fff;
-    box-shadow:0 8px 18px rgba(26,46,75,.13);
+    box-shadow:0 6px 14px rgba(26,46,75,.13);
     display:flex;align-items:center;
-    padding:14px 16px;
+    padding:14px 19px;
 }
 #homeScreen .avatar{
-    width:70px;height:70px;flex:none;
+    width:82px;height:82px;flex:none;
     border-radius:50%;
     background:linear-gradient(145deg,#e9edf3,#d8e1eb);
     display:flex;align-items:center;justify-content:center;
-    font-size:40px;position:relative;
+    font-size:48px;position:relative;
     margin:0;
 }
 #homeScreen .avatar .online{
-    position:absolute;right:1px;bottom:2px;
-    width:15px;height:15px;border-radius:50%;
+    position:absolute;right:3px;bottom:4px;
+    width:17px;height:17px;border-radius:50%;
     background:#42bb3e;border:3px solid #fff;
     box-sizing:border-box;
 }
-#homeScreen .welcome-content{flex:1;padding-left:14px;min-width:0}
-#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 9px 0;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .welcome-content{flex:1;padding-left:23px;min-width:0}
+#homeScreen .welcome-text{font-size:20px;font-weight:800;margin:0 0 14px 0;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #homeScreen .stats{
-    background:transparent!important;
-    padding:0!important;
-    height:auto!important;
-    margin:0!important;
-    display:flex;align-items:center;
-    overflow:visible!important;
+    background:none;
+    border-radius:0;
+    padding:0;
+    margin-bottom:0;
+    height:auto;
+    overflow:visible;
+    box-sizing:border-box;
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-start;
+    align-items:center;
+    min-width:0;
 }
-#homeScreen .stats p{margin:0}
-#homeScreen .stat{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
-#homeScreen .stat-icon{font-size:20px;flex:none}
-#homeScreen .stat b{display:block;font-size:15px;color:#172f62;line-height:1.15;font-weight:800;}
-#homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:1px;white-space:nowrap}
-#homeScreen .vline{height:28px;width:1px;background:#e5e8ee;margin:0 10px;flex:none}
+#homeScreen .stat{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+#homeScreen .stat-icon{font-size:27px;flex:none;}
+#homeScreen .stat-text{min-width:0;overflow:hidden;}
+#homeScreen .stat b{display:block;font-size:17px;color:#172f62;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .stat small{display:block;color:#53627d;font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 15px;flex:none;}
 
 #homeScreen .menu-card{
     width:100%;
@@ -2278,9 +2284,13 @@ button{
     display:none;
     grid-template-columns:repeat(5,1fr);
     align-items:center;
-    background:#f4f6fb;
+    background:#f4f6fb!important;
+    filter:none;
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    opacity:1;
     border-radius:clamp(24px,6vw,40px) clamp(24px,6vw,40px) 0 0;
-    box-shadow:0 -8px 30px rgba(20,45,90,.15);
+    box-shadow:0 -4px 12px rgba(20,45,90,.05);
     padding:0 max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left));
     z-index:9999;
 }
@@ -2454,9 +2464,9 @@ button{
 <div class="welcome-content">
 <p id="welcomeText" class="welcome-text"></p>
 <div class="stats">
-<div class="stat"><div class="stat-icon">🏆</div><div><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div></div>
+<div class="stat"><div class="stat-icon">🏆</div><div class="stat-text"><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div></div>
 <div class="vline"></div>
-<div class="stat"><div class="stat-icon">🔤</div><div><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
+<div class="stat"><div class="stat-icon">🔤</div><div class="stat-text"><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
 </div>
 </div>
 </div>
