@@ -2271,15 +2271,17 @@ button{
     --bn-nav-height:clamp(62px,12.5vw,86px);
     --bn-home-size:clamp(80px,18vw,112px);
     --bn-icon-size:clamp(21px,5.5vw,28px);
-    --bn-active-color:#1f5fc7;
+    --bn-active-color:#1c2733;
     --bn-inactive-color:#4d5869;
     --bn-side-shift:clamp(6px,2vw,14px);
 }
 
 .bn-nav{
     position:fixed;
-    left:0;bottom:0;
-    width:100%;
+    left:0;right:0;bottom:0;
+    width:97%;
+    max-width:520px;
+    margin-left:auto;margin-right:auto;
     height:calc(var(--bn-nav-height) + env(safe-area-inset-bottom));
     display:none;
     grid-template-columns:repeat(5,1fr);
@@ -2324,11 +2326,11 @@ button{
 
 .bn-home-circle{
     position:absolute;
-    bottom:calc(50% - (var(--bn-home-size) * 0.15));
+    bottom:calc(50% - (var(--bn-home-size) * 0.02));
     width:var(--bn-home-size);
     aspect-ratio:1;
     border-radius:50%;
-    background:linear-gradient(145deg,#ffffff,#eef2f8);
+    background:#f4f6fb;
     box-shadow:0 -5px 20px rgba(30,55,100,.18),inset 0 1px 3px rgba(255,255,255,.9);
     display:flex;align-items:center;justify-content:center;
 }
@@ -2339,27 +2341,11 @@ button{
 }
 .bn-home.active .bn-home-circle i{color:var(--bn-active-color);}
 
-.bn-home-indicator{
-    position:absolute;
-    bottom:clamp(16px,3vw,22px);
-    width:clamp(45px,12vw,65px);
-    height:clamp(4px,1.2vw,6px);
-    border-radius:20px;
-    background:var(--bn-active-color);
-    opacity:0;
-    transition:opacity .2s ease;
-}
-.bn-home.active .bn-home-indicator{opacity:1;}
-
 .bn-profile>i{transform:translateX(var(--bn-side-shift));}
 .bn-profile.active>i{color:var(--bn-active-color);transform:translateX(var(--bn-side-shift));}
 
 .bn-exit>i{transform:scaleX(-1);}
 .bn-exit.active>i{color:var(--bn-active-color);transform:scaleX(-1);}
-
-@media(min-width:768px){
-.bn-nav{max-width:650px;left:50%;transform:translateX(-50%);}
-}
 
 @media(max-width:320px){
 :root{--bn-nav-height:58px;--bn-home-size:70px;--bn-icon-size:19px;--bn-side-shift:5px;}
@@ -3013,7 +2999,6 @@ Harf seçiniz
 
 <button class="bn-item bn-home" onclick="goHome()" aria-label="Anasayfa">
 <div class="bn-home-circle"><i class="fa-solid fa-house"></i></div>
-<div class="bn-home-indicator"></div>
 </button>
 
 <button class="bn-item bn-profile" onclick="showFriends()" aria-label="Arkadaşlar">
