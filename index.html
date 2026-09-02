@@ -2181,6 +2181,7 @@ button{
 }
 #tournamentDetailScreen .td-user-subtext{font-size:9.5px;color:#7b8fae;}
 #tournamentDetailScreen .td-score-info{text-align:right;font-size:9.5px;color:#7b8fae;flex:none;padding-left:6px;}
+#tournamentDetailScreen .td-score-number{font-size:15px;font-weight:800;color:#fff;}
 
 </style>
 </head>
@@ -2637,11 +2638,7 @@ button{
 
 <div id="tournamentDetailScreen" style="display:none;">
 
-<div class="td-header">
-<button class="td-header-icon" onclick="showTournaments()">&larr;</button>
-<div class="td-header-title" id="tournamentDetailTitle">Turnuva</div>
-<div class="td-header-icon">i</div>
-</div>
+<div class="td-header-title" id="tournamentDetailTitle" style="display:none;">Turnuva</div>
 
 <div class="td-grid-row">
 <div class="td-left-column" id="tournamentDetailContent"></div>
@@ -4408,10 +4405,10 @@ boardHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
 boardHtml+="<div class=\"td-avatar\">👤</div>";
 boardHtml+="<div class=\"td-user-details\">";
 boardHtml+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+p.username+"</span>";
-boardHtml+="<span class=\"td-user-subtext\">"+p.totalScore+" puan</span>";
+boardHtml+="<span class=\"td-user-subtext\">"+playedCount+"/"+t.format+" ort.puan:"+avgScore+"</span>";
 boardHtml+="</div>";
 boardHtml+="</div>";
-boardHtml+="<div class=\"td-score-info\"><div>"+playedCount+"/"+t.format+" oyun</div><div>Ort: "+avgScore+"</div></div>";
+boardHtml+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+p.totalScore+"</span></div>";
 boardHtml+="</div>";
 
 });
