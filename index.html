@@ -2478,7 +2478,7 @@ button{
 <div id="homeScreen" style="display:none;">
 
 <div class="welcome" onclick="showProfile()" style="cursor:pointer;">
-<div class="avatar">👤<i class="online"></i></div>
+<div class="avatar"><span id="homeAvatarIcon">👤</span><i class="online"></i></div>
 <div class="welcome-content">
 <p id="welcomeText" class="welcome-text"></p>
 <div class="stats">
@@ -2580,7 +2580,8 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div style="height:10px;"></div>
 
-<div class="profile-icon">👤</div>
+<div class="profile-icon" id="profileIcon" onclick="openAvatarPicker()" style="cursor:pointer;">👤</div>
+<p style="text-align:center;font-size:0.8em;color:#636e72;margin-top:-6px;">Değiştirmek için dokun</p>
 
 <div class="stats">
 <p>Ad Soyad: <span id="profileName"></span></p>
@@ -3807,7 +3808,7 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
-currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,country:profile.country||null,challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
+currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,country:profile.country||null,avatarEmoji:profile.avatarEmoji||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
 currentUserFriends=profile.friendUsernames || [];
 
 flushPendingGameFromStorage();
@@ -3820,6 +3821,7 @@ setBottomNavActive("home");
 let firstName=profile.name.trim().split(/\s+/)[0];
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
+document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 renderHomeStats();
 
@@ -7366,6 +7368,53 @@ console.error("Çıkış yapılamadı:",e);
 }
 
 
+const AVATAR_EMOJI_CHOICES=["👤","😀","😎","🤓","🥳","😺","🐶","🦊","🐼","🐨","🦁","🐯","🐸","🐵","🦄","🐙","🦋","🌟","🔥","⚡","🎮","🎨","🎧","⚽","🏀","🎯","🚀","👑","🍀","🌈","😁","😅","🤩","🥸","🤠","🥷","🧙","🧛","🧟","👻","👽","🤖","🎃","💀","😇","🙃","🤪","😜","🐱","🐭","🐹","🐰","🦝","🐻","🐷","🐮","🐔","🐧","🐦","🦉","🦇","🐺","🦓","🦒","🐘","🦏","🦛","🐴","🐝","🦖","🐬","🐳","🐊","🐢","🦂","🕷️","🦀","🐠","🦈","🍉","🍕","🍔","🌮","🍩","🍿","🎲","🃏","🏆","🥇","🛸","🛹","🎸","🥁","🎬"];
+
+function openAvatarPicker(){
+
+let html="";
+
+html+="<p class=\"screen-title\" style=\"margin-top:0;\">Profil Simgesi Seç</p>";
+html+="<div style=\"display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px;\">";
+
+AVATAR_EMOJI_CHOICES.forEach(function(emoji){
+
+html+="<button onclick=\"selectAvatarEmoji('"+emoji+"')\" style=\"font-size:28px;background:#f1f2f6;border:0;border-radius:12px;padding:10px 0;cursor:pointer;\">"+emoji+"</button>";
+
+});
+
+html+="</div>";
+
+openDetailModal(html);
+
+}
+
+
+function selectAvatarEmoji(emoji){
+
+db.collection("users").doc(currentUser.uid).update({
+avatarEmoji:emoji
+}).then(function(){
+
+currentUser.avatarEmoji=emoji;
+
+let profileIconEl=document.getElementById("profileIcon");
+if(profileIconEl)profileIconEl.innerHTML=emoji;
+
+let homeAvatarEl=document.getElementById("homeAvatarIcon");
+if(homeAvatarEl)homeAvatarEl.innerHTML=emoji;
+
+hideDetailModal();
+
+}).catch(function(e){
+
+console.error("Profil simgesi güncellenemedi:",e);
+
+});
+
+}
+
+
 function showProfile(){
 
 hideAllScreens();
@@ -7376,6 +7425,7 @@ document.getElementById("profileName").innerHTML=currentUser.name;
 document.getElementById("profileUsername").innerHTML=currentUser.username;
 document.getElementById("profileCountry").innerHTML=currentUser.country ? (countryFlagEmoji(currentUser.country)+" "+getCountryName(currentUser.country)) : "-";
 document.getElementById("profileEmail").innerHTML=currentUser.email;
+document.getElementById("profileIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 let avgByLevel=computeAvgByLevel(gameHistory);
 
@@ -7419,6 +7469,7 @@ let friendBtn=isFriend
 : (from!=="istekler" ? "<button class=\"challenge-play-btn add-friend-btn btn-compact\" onclick=\"addFriend('"+profile.username+"',this)\">Arkadaş Ekle ➕</button>" : "");
 
 document.getElementById("detailModalContent").innerHTML=
+"<div style=\"font-size:48px;margin-bottom:6px;\">"+(profile.avatarEmoji||"👤")+"</div>"+
 "<p>Ad Soyad: "+profile.name+"</p><p>Kullanıcı Adı: "+profile.username+"</p><p>Başarı Yüzdesi: %"+successPct+"</p>"+
 "<p>Puan Ortalaması (Kelime): "+avgScoreWord+"</p>"+
 "<button class=\"challenge-play-btn challenge-brown btn-compact\" onclick=\"challengeFromProfile('"+profile.username+"')\">Meydan Oku ⚔️</button>"+
