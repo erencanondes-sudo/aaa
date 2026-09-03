@@ -2269,7 +2269,6 @@ button{
 
 :root{
     --bn-nav-height:clamp(48px,9.5vw,64px);
-    --bn-home-size:clamp(38px,8vw,52px);
     --bn-icon-size:clamp(21px,5.5vw,28px);
     --bn-icon-bottom-gap:clamp(8px,2vw,12px);
     --bn-active-color:#1c2733;
@@ -2326,24 +2325,6 @@ button{
 .bn-tournament>i{transform:translateX(calc(var(--bn-side-shift) * -1));}
 .bn-tournament.active>i{color:var(--bn-active-color);transform:translateX(calc(var(--bn-side-shift) * -1));}
 
-.bn-home{z-index:10;}
-
-.bn-home-circle{
-    width:44px;
-    height:44px;
-    flex:none;
-    border-radius:50%;
-    background:#f4f6fb;
-    box-shadow:none;
-    display:flex;align-items:center;justify-content:center;
-}
-.bn-home-circle i{
-    font-size:24px;
-    color:var(--bn-inactive-color);
-    transition:color .2s ease,transform .2s ease;
-}
-.bn-home.active .bn-home-circle i{color:var(--bn-active-color);}
-
 .bn-profile>i{transform:translateX(var(--bn-side-shift));}
 .bn-profile.active>i{color:var(--bn-active-color);transform:translateX(var(--bn-side-shift));}
 
@@ -2351,7 +2332,7 @@ button{
 .bn-exit.active>i{color:var(--bn-active-color);transform:scaleX(-1);}
 
 @media(max-width:320px){
-:root{--bn-nav-height:44px;--bn-home-size:36px;--bn-icon-size:18px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
+:root{--bn-nav-height:44px;--bn-icon-size:18px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
 }
 
 </style>
@@ -3001,7 +2982,7 @@ Harf seçiniz
 </button>
 
 <button class="bn-item bn-home" onclick="goHome()" aria-label="Anasayfa">
-<div class="bn-home-circle"><i class="fa-solid fa-house"></i></div>
+<i class="fa-solid fa-house"></i>
 </button>
 
 <button class="bn-item bn-profile" onclick="showFriends()" aria-label="Arkadaşlar">
