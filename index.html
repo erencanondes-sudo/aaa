@@ -21,14 +21,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
+html{
+    height:100%;
+    overflow:hidden;
+}
 body{
     font-family:Arial,sans-serif;
     background:#0b2369;
     margin:0;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
     padding-top:15px;
     padding-right:1.5%;
     padding-bottom:calc(var(--bn-nav-height) + env(safe-area-inset-bottom));
     padding-left:1.5%;
+    box-sizing:border-box;
     user-select:none;
     -webkit-user-select:none;
     -moz-user-select:none;
@@ -50,9 +58,12 @@ input,textarea{
     padding:20px;
     text-align:center;
     position:relative;
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
     min-height:calc(100vh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
     min-height:calc(100dvh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
+    max-height:calc(100vh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
+    max-height:calc(100dvh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
     box-sizing:border-box;
 }
 
