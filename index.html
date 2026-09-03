@@ -2282,6 +2282,7 @@ button{
     width:97%;
     max-width:520px;
     margin-left:auto;margin-right:auto;
+    box-sizing:border-box;
     height:calc(var(--bn-nav-height) + env(safe-area-inset-bottom));
     display:none;
     grid-template-columns:repeat(5,1fr);
@@ -2326,12 +2327,12 @@ button{
 
 .bn-home-circle{
     position:absolute;
-    bottom:calc(50% - (var(--bn-home-size) * 0.02));
+    bottom:calc(50% - (var(--bn-home-size) / 2));
     width:var(--bn-home-size);
     aspect-ratio:1;
     border-radius:50%;
     background:#f4f6fb;
-    box-shadow:0 -5px 20px rgba(30,55,100,.18),inset 0 1px 3px rgba(255,255,255,.9);
+    box-shadow:none;
     display:flex;align-items:center;justify-content:center;
 }
 .bn-home-circle i{
