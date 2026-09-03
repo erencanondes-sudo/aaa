@@ -1827,7 +1827,7 @@ button{
 }
 #homeScreen .settings-card,
 #homeScreen .info-card{
-    min-height:78px;
+    min-height:60px;
     background:#fff;
     border-radius:22px;
     display:flex;
@@ -1845,13 +1845,13 @@ button{
     box-shadow:0 2px 0 rgba(160,170,185,.18),0 5px 12px rgba(30,45,70,.08);
 }
 #homeScreen .card-icon{
-    width:58px;min-width:58px;height:65px;
+    width:40px;min-width:40px;height:40px;
     display:flex;align-items:center;justify-content:center;
     margin-right:7px;
     background:transparent;
 }
-#homeScreen .settings-card .card-icon svg{width:50px;height:50px;fill:#2874c7;}
-#homeScreen .info-card .card-icon svg{width:50px;height:50px;color:#f39a00;}
+#homeScreen .settings-card .card-icon svg{width:32px;height:32px;fill:#2874c7;}
+#homeScreen .info-card .card-icon svg{width:32px;height:32px;color:#f39a00;}
 #homeScreen .card-content{flex:1;min-width:0;}
 #homeScreen .card-title{font-size:18px;font-weight:700;color:#293d5a;margin-bottom:5px;}
 #homeScreen .card-description{font-size:12px;line-height:1.4;color:#607087;}
@@ -3128,11 +3128,27 @@ testEl.style.height="0";
 testEl.style.paddingBottom="env(safe-area-inset-bottom)";
 document.body.appendChild(testEl);
 
-let val=parseFloat(getComputedStyle(testEl).paddingBottom) || 0;
+let safeAreaVal=parseFloat(getComputedStyle(testEl).paddingBottom) || 0;
 
 document.body.removeChild(testEl);
 
-return val>0;
+if(safeAreaVal>0){
+return true;
+}
+
+let isAndroid=/Android/i.test(navigator.userAgent);
+
+if(isAndroid && window.screen && window.screen.height && window.innerHeight){
+
+let diff=window.screen.height-window.innerHeight;
+
+if(diff>=90){
+return true;
+}
+
+}
+
+return false;
 
 }catch(e){
 
