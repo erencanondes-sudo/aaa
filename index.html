@@ -1757,7 +1757,7 @@ button{
     background:#fff;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
     display:flex;align-items:center;
-    padding:9px 19px;
+    padding:9px 19px 9px 10px;
 }
 #homeScreen .avatar{
     width:58px;height:58px;flex:none;
@@ -1823,12 +1823,11 @@ button{
     gap:10px;
     padding:14px 5px 20px;
     margin:20px 0;
-    border-top:2px solid #e4e7ed;
     border-bottom:2px solid #e4e7ed;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card{
-    min-height:105px;
+    min-height:78px;
     background:#fff;
     border-radius:22px;
     display:flex;
@@ -2486,14 +2485,14 @@ button{
 
 <div id="homeScreen" style="display:none;">
 
-<div class="welcome">
+<div class="welcome" onclick="showProfile()" style="cursor:pointer;">
 <div class="avatar">👤<i class="online"></i></div>
 <div class="welcome-content">
 <p id="welcomeText" class="welcome-text"></p>
 <div class="stats">
 <div class="stat"><div class="stat-icon">🏆</div><div class="stat-text"><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div></div>
 <div class="vline"></div>
-<div class="stat"><div class="stat-icon">🔤</div><div class="stat-text"><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
+<div class="stat"><div class="stat-icon">📊</div><div class="stat-text"><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
 </div>
 </div>
 </div>
@@ -3117,6 +3116,33 @@ new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attri
 
 let adBannerEl=document.getElementById("fakeAdBanner");
 let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
+
+function deviceHasSystemNavBar(){
+
+try{
+
+let testEl=document.createElement("div");
+testEl.style.position="fixed";
+testEl.style.bottom="0";
+testEl.style.height="0";
+testEl.style.paddingBottom="env(safe-area-inset-bottom)";
+document.body.appendChild(testEl);
+
+let val=parseFloat(getComputedStyle(testEl).paddingBottom) || 0;
+
+document.body.removeChild(testEl);
+
+return val>0;
+
+}catch(e){
+
+return false;
+
+}
+
+}
+
+const hasSystemNavBar=deviceHasSystemNavBar();
 let adCachedTop=null;
 
 let adVariants=[
@@ -3219,7 +3245,10 @@ positionAdBanner();
 }
 
 spacerEl.style.display="block";
+
+if(!hasSystemNavBar){
 bottomNavEl.classList.add("bn-visible");
+}
 
 }
 else{
