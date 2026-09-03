@@ -4717,7 +4717,7 @@ rounds:rounds,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
 expiresAtMillis:now+durationMillis,
 participantUids:[currentUser.uid],
-participants:[{uid:currentUser.uid,username:currentUser.username,scores:new Array(pendingTournament.format).fill(null),startedAts:new Array(pendingTournament.format).fill(null),progresses:new Array(pendingTournament.format).fill(null),totalScore:0,joinedAt:now}],
+participants:[{uid:currentUser.uid,username:currentUser.username,avatarEmoji:currentUser.avatarEmoji||"👤",scores:new Array(pendingTournament.format).fill(null),startedAts:new Array(pendingTournament.format).fill(null),progresses:new Array(pendingTournament.format).fill(null),totalScore:0,joinedAt:now}],
 invitedUsernames:[]
 };
 
@@ -4851,7 +4851,7 @@ let rankClass=idx===0?"td-rank-1":(idx===1?"td-rank-2":(idx===2?"td-rank-3":""))
 boardHtml+="<div class=\"td-leaderboard-item\">";
 boardHtml+="<div class=\"td-user-info-group\">";
 boardHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
-boardHtml+="<div class=\"td-avatar\">👤</div>";
+boardHtml+="<div class=\"td-avatar\">"+(p.avatarEmoji||"👤")+"</div>";
 boardHtml+="<div class=\"td-user-details\">";
 boardHtml+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+p.username+"</span>";
 boardHtml+="<span class=\"td-user-subtext\">"+playedCount+"/"+t.format+" ort.puan:"+avgScore+"</span>";
@@ -4891,7 +4891,7 @@ let t=doc.data();
 if(t.participantUids.includes(currentUser.uid))return;
 
 let updatedParticipants=t.participants.slice();
-updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,scores:new Array(t.format).fill(null),startedAts:new Array(t.format).fill(null),progresses:new Array(t.format).fill(null),totalScore:0,joinedAt:Date.now()});
+updatedParticipants.push({uid:currentUser.uid,username:currentUser.username,avatarEmoji:currentUser.avatarEmoji||"👤",scores:new Array(t.format).fill(null),startedAts:new Array(t.format).fill(null),progresses:new Array(t.format).fill(null),totalScore:0,joinedAt:Date.now()});
 
 let signalData=Object.assign({},t,{participantUids:t.participantUids.concat([currentUser.uid])});
 
@@ -6642,8 +6642,10 @@ let wordData=generateWordGameData(100);
 let challengeData={
 fromUid:currentUser.uid,
 fromUsername:currentUser.username,
+fromAvatarEmoji:currentUser.avatarEmoji||"👤",
 toUsername:opponentData.username,
 toUid:opponentUid,
+toAvatarEmoji:opponentData.avatarEmoji||"👤",
 level:null,
 gameType:"word",
 gamesCount:1,
@@ -6824,6 +6826,7 @@ toPlayed:type==="computer"
 let challengeData={
 fromUid:currentUser.uid,
 fromUsername:currentUser.username,
+fromAvatarEmoji:currentUser.avatarEmoji||"👤",
 toUsername:toUsername,
 level:level,
 gameType:gameType,
@@ -6838,18 +6841,28 @@ createdAt:firebase.firestore.FieldValue.serverTimestamp(),
 acceptedAt:status==="accepted" ? firebase.firestore.FieldValue.serverTimestamp() : null
 };
 
-let toUidPromise=type==="computer" ? Promise.resolve(null) : getUidForUsername(toUsername);
+let toUidPromise=type==="computer" ? Promise.resolve({uid:null,avatarEmoji:null}) : db.collection("users").where("username","==",toUsername).limit(1).get().then(function(snap){
 
-toUidPromise.then(function(toUid){
+if(snap.empty)return {uid:null,avatarEmoji:null};
 
-challengeData.toUid=toUid;
+let d=snap.docs[0];
+usernameToUidCache[toUsername]=d.id;
+
+return {uid:d.id,avatarEmoji:d.data().avatarEmoji||null};
+
+});
+
+toUidPromise.then(function(opponentInfo){
+
+challengeData.toUid=opponentInfo.uid;
+challengeData.toAvatarEmoji=opponentInfo.avatarEmoji||"👤";
 
 let challengeRef=db.collection("challenges").doc();
 let batch=db.batch();
 
 batch.set(challengeRef,challengeData);
 writeChallengeSignal(batch,currentUser.uid,challengeRef.id);
-writeChallengeSignal(batch,toUid,challengeRef.id);
+writeChallengeSignal(batch,opponentInfo.uid,challengeRef.id);
 
 return batch.commit().then(function(){ return challengeRef; });
 
@@ -8729,7 +8742,7 @@ else{
 meydanOkuOnclick="challengeFromProfile('"+otherName+"')";
 }
 
-let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 let html="";
 
@@ -8874,7 +8887,7 @@ else{
 statusText=currentGameIndex+"/"+totalGames+" ⏳ "+remainingHours+" saat";
 }
 
-let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
 html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
@@ -9007,7 +9020,7 @@ let elapsedHours=Math.floor((now-c.createdAt.seconds)/3600);
 remainingHours=Math.max(0,48-elapsedHours);
 }
 
-let avatarEmoji=c.type==="computer" ? "🤖" : "👤";
+let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
 html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
