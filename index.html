@@ -27,7 +27,7 @@ html{
 }
 body{
     font-family:Arial,sans-serif;
-    background:#0b2369;
+    background:#0b1329;
     margin:0;
     height:100vh;
     height:100dvh;
@@ -1814,6 +1814,8 @@ button{
 #homeScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#4bc83b,#209c2b)}
 #homeScreen .menu-card.purple{background:linear-gradient(105deg,#9650d4,#682bb1)}
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#ffae1b,#f27d06)}
+#homeScreen .menu-card.red{background:linear-gradient(105deg,#f45d50,#e8342b)}
+#homeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
 #homeScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -2342,6 +2344,9 @@ button{
 .bn-exit>i{transform:scaleX(-1);}
 .bn-exit.active>i{color:var(--bn-active-color);transform:scaleX(-1);}
 
+.bn-home>i,
+.bn-exit>i{font-size:calc(var(--bn-icon-size) * 1.3);}
+
 @media(max-width:320px){
 :root{--bn-nav-height:44px;--bn-icon-size:18px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
 }
@@ -2472,24 +2477,13 @@ button{
 <div class="arrow">›</div>
 </button>
 
-<nav class="bottom-nav">
-<button class="bottom-nav-item profile-bottom" onclick="showProfile()">
-<span class="bottom-icon">👤</span>
-<span>Profil</span>
+<div class="home-divider"></div>
+
+<button class="menu-card red" onclick="showFriends()">
+<div class="icon-circle">👥</div>
+<div class="menu-copy"><b>Arkadaşlar</b><span>Arkadaşlarını gör, davet et</span></div>
+<div class="arrow">›</div>
 </button>
-<button class="bottom-nav-item friends-bottom" onclick="showFriends()">
-<span class="bottom-icon">👥</span>
-<span>Arkadaşlar</span>
-</button>
-<button class="bottom-nav-item settings-bottom" onclick="showSettings()">
-<span class="bottom-icon">⚙️</span>
-<span>Ayarlar</span>
-</button>
-<button class="bottom-nav-item info-bottom" onclick="showInfo()">
-<span class="bottom-icon">ⓘ</span>
-<span>Bilgi</span>
-</button>
-</nav>
 
 </div>
 
