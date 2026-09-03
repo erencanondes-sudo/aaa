@@ -2329,10 +2329,9 @@ button{
 .bn-home{z-index:10;}
 
 .bn-home-circle{
-    position:absolute;
-    bottom:var(--bn-icon-bottom-gap);
     width:var(--bn-home-size);
     aspect-ratio:1;
+    flex:none;
     border-radius:50%;
     background:#f4f6fb;
     box-shadow:none;
@@ -3009,7 +3008,7 @@ Harf seçiniz
 <i class="fa-solid fa-user-group"></i>
 </button>
 
-<button class="bn-item bn-exit" onclick="window.history.back()" aria-label="Geri">
+<button class="bn-item bn-exit" onclick="bottomNavBack()" aria-label="Geri">
 <i class="fa-solid fa-right-from-bracket"></i>
 </button>
 
@@ -4277,6 +4276,69 @@ el.classList.remove("active");
 
 let el=document.querySelector(".bn-"+name);
 if(el)el.classList.add("active");
+
+}
+
+
+const SCREEN_PARENT_MAP={
+historyScreen:"home",
+profileScreen:"home",
+friendsScreen:"home",
+settingsScreen:"home",
+infoScreen:"home",
+gameTypeScreen:"home",
+tournamentScreen:"home",
+tournamentCreateScreen:"tournament",
+tournamentVisibilityScreen:"tournament",
+openTournamentsScreen:"tournament",
+tournamentDetailScreen:"tournament"
+};
+
+function syncBottomNavForScreen(screenId){
+
+if(screenId==="homeScreen")setBottomNavActive("home");
+else if(screenId==="historyScreen")setBottomNavActive("games");
+else if(screenId==="tournamentScreen" || screenId==="tournamentDetailScreen" || screenId==="tournamentCreateScreen" || screenId==="tournamentVisibilityScreen" || screenId==="openTournamentsScreen")setBottomNavActive("tournament");
+else if(screenId==="friendsScreen")setBottomNavActive("profile");
+else{
+document.querySelectorAll(".bn-item").forEach(function(el){
+el.classList.remove("active");
+});
+}
+
+}
+
+
+function bottomNavBack(){
+
+let currentScreenId=null;
+
+for(let i=0;i<SCREEN_IDS.length;i++){
+let el=document.getElementById(SCREEN_IDS[i]);
+if(el.style.display && el.style.display!=="none"){
+currentScreenId=SCREEN_IDS[i];
+break;
+}
+}
+
+if(currentScreenId==="homeScreen"){
+window.close();
+return;
+}
+
+let parent=SCREEN_PARENT_MAP[currentScreenId];
+
+if(parent==="home"){
+goHome();
+return;
+}
+
+if(parent==="tournament"){
+showTournaments();
+return;
+}
+
+window.history.back();
 
 }
 
@@ -12731,6 +12793,8 @@ hideAllScreens();
 suppressScreenPush=false;
 
 document.getElementById(prev.id).style.display=prev.display;
+
+syncBottomNavForScreen(prev.id);
 
 if(prev.id==="homeScreen"){
 renderHomeStats();
