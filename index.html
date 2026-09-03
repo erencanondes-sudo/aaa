@@ -1817,33 +1817,46 @@ button{
 #homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
-#homeScreen .mini-card-row{
-    display:flex;
+#homeScreen .settings-info-section{
+    display:grid;
+    grid-template-columns:1fr 1fr;
     gap:10px;
-    margin-top:0;
+    padding:14px 5px 20px;
+    margin:20px 0;
+    border-top:2px solid #e4e7ed;
+    border-bottom:2px solid #e4e7ed;
 }
-#homeScreen .mini-card{
-    flex:1;
-    min-width:0;
+#homeScreen .settings-card,
+#homeScreen .info-card{
+    min-height:105px;
     background:#fff;
-    border-radius:16px;
-    padding:12px;
-    display:flex;flex-direction:column;gap:3px;
-    box-shadow:0 3px 8px rgba(26,46,75,.08);
-    border:0;cursor:pointer;font-family:inherit;text-align:left;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    padding:10px;
+    box-sizing:border-box;
+    cursor:pointer;
+    border:0;font-family:inherit;text-align:left;
+    box-shadow:0 7px 0 rgba(160,170,185,.20),0 10px 22px rgba(30,45,70,.10);
+    transition:all .2s ease;
 }
-#homeScreen .mini-top-row{display:flex;align-items:center;gap:7px;min-width:0;}
-#homeScreen .mini-icon-circle{
-    width:30px;height:30px;flex:none;
-    border-radius:50%;
+#homeScreen .settings-card:active,
+#homeScreen .info-card:active{
+    transform:translateY(5px);
+    box-shadow:0 2px 0 rgba(160,170,185,.18),0 5px 12px rgba(30,45,70,.08);
+}
+#homeScreen .card-icon{
+    width:58px;min-width:58px;height:65px;
     display:flex;align-items:center;justify-content:center;
-    font-size:14px;
+    margin-right:7px;
+    background:transparent;
 }
-#homeScreen .mini-blue{background:#2b95ec;}
-#homeScreen .mini-orange{background:#f7a600;}
-#homeScreen .mini-top-row b{flex:1;min-width:0;font-size:13.5px;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#homeScreen .mini-arrow{font-size:17px;color:#a7b0c0;flex:none;font-weight:300;}
-#homeScreen .mini-subtitle{font-size:9.5px;color:#7b8798;padding-left:37px;line-height:1.25;}
+#homeScreen .settings-card .card-icon svg{width:50px;height:50px;fill:#2874c7;}
+#homeScreen .info-card .card-icon svg{width:50px;height:50px;color:#f39a00;}
+#homeScreen .card-content{flex:1;min-width:0;}
+#homeScreen .card-title{font-size:18px;font-weight:700;color:#293d5a;margin-bottom:5px;}
+#homeScreen .card-description{font-size:12px;line-height:1.4;color:#607087;}
+#homeScreen .card-arrow{font-size:27px;font-weight:300;color:#344b68;margin-left:5px;}
 
 #homeScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -2513,25 +2526,54 @@ button{
 <div class="arrow">›</div>
 </button>
 
-<div class="mini-card-row">
+<div class="settings-info-section">
 
-<button class="mini-card" onclick="showSettings()">
-<div class="mini-top-row">
-<div class="mini-icon-circle mini-blue">⚙️</div>
-<b>Ayarlar</b>
-<span class="mini-arrow">›</span>
+<div class="settings-card" onclick="showSettings()">
+<div class="card-icon">
+<svg viewBox="0 0 24 24" aria-label="Ayarlar">
+<path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.07-.94
+l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32
+c-.12-.22-.37-.31-.6-.22l-2.39.96
+c-.5-.38-1.03-.69-1.62-.93L14.5 2.81
+C14.47 2.57 14.25 2.4 14 2.4h-4
+c-.25 0-.46.17-.5.41L9.14 5.36
+c-.59.24-1.13.55-1.62.93l-2.39-.96
+c-.23-.09-.48 0-.6.22L2.61 8.87
+c-.12.21-.07.47.12.61l2.03 1.58
+c-.05.31-.08.63-.08.94s.03.63.08.94
+l-2.03 1.58c-.19.14-.24.4-.12.61
+l1.92 3.32c.12.22.37.31.6.22
+l2.39-.96c.49.38 1.03.69 1.62.93
+l.36 2.55c.04.24.25.41.5.41h4
+c.25 0 .47-.17.5-.41l.36-2.55
+c.59-.24 1.13-.55 1.62-.93l2.39.96
+c.23.09.48 0 .6-.22l1.92-3.32
+c.11-.21.06-.47-.12-.61l-2.04-1.58z
+M12 15.5A3.5 3.5 0 1 1 12 8
+a3.5 3.5 0 0 1 0 7.5z"></path>
+</svg>
 </div>
-<span class="mini-subtitle">Uygulama ayarlarını kişiselleştir</span>
-</button>
+<div class="card-content">
+<div class="card-title">Ayarlar</div>
+<div class="card-description">Uygulama ayarlarını<br>kişiselleştir</div>
+</div>
+<div class="card-arrow">›</div>
+</div>
 
-<button class="mini-card" onclick="showInfo()">
-<div class="mini-top-row">
-<div class="mini-icon-circle mini-orange">ℹ️</div>
-<b>Bilgi</b>
-<span class="mini-arrow">›</span>
+<div class="info-card" onclick="showInfo()">
+<div class="card-icon">
+<svg viewBox="0 0 24 24" aria-label="Bilgi" fill="none">
+<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2"></circle>
+<circle cx="12" cy="7.4" r="1.25" fill="currentColor"></circle>
+<rect x="10.8" y="10" width="2.4" height="7" rx="1.2" fill="currentColor"></rect>
+</svg>
 </div>
-<span class="mini-subtitle">Yardım, kuralları ve hakkında</span>
-</button>
+<div class="card-content">
+<div class="card-title">Bilgi</div>
+<div class="card-description">Yardım, kurallar ve<br>hakkında</div>
+</div>
+<div class="card-arrow">›</div>
+</div>
 
 </div>
 
