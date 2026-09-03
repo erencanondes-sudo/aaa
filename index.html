@@ -1821,9 +1821,8 @@ button{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-    padding:14px 5px 20px;
-    margin:20px 0;
-    border-bottom:2px solid #e4e7ed;
+    padding:14px 5px 4px;
+    margin:8px 0 0 0;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card{
@@ -2167,6 +2166,13 @@ button{
 }
 #tournamentScreen .tm-title-arrow-row .tm-card-title, #historyScreen .tm-title-arrow-row .tm-card-title{text-align:center;}
 #tournamentScreen .tm-arrow-spacer, #historyScreen .tm-arrow-spacer{width:17px;flex:none;}
+
+#historyScreen .tm-title-arrow-row{
+    flex-direction:column;
+    gap:0;
+}
+#historyScreen .tm-arrow-spacer{display:none;}
+#historyScreen .tm-title-arrow-row .tm-card-title{text-align:center;}
 #tournamentScreen .tm-card .badge, #historyScreen .tm-card .badge{
     position:absolute!important;
     top:-6px!important;right:-6px!important;
@@ -3196,13 +3202,11 @@ if(safeAreaVal>0){
 return true;
 }
 
-let isAndroid=/Android/i.test(navigator.userAgent);
+if(window.screen && window.screen.height && window.innerHeight){
 
-if(isAndroid && window.screen && window.screen.height && window.innerHeight){
+let fark=window.screen.height-window.innerHeight;
 
-let diff=window.screen.height-window.innerHeight;
-
-if(diff>=90){
+if(fark>80){
 return true;
 }
 
@@ -3218,7 +3222,19 @@ return false;
 
 }
 
-const hasSystemNavBar=deviceHasSystemNavBar();
+let hasSystemNavBar=deviceHasSystemNavBar();
+
+function updateSystemNavBarDetection(){
+
+hasSystemNavBar=deviceHasSystemNavBar();
+syncAdBanner();
+
+}
+
+window.addEventListener("resize",updateSystemNavBarDetection);
+window.addEventListener("orientationchange",function(){
+setTimeout(updateSystemNavBarDetection,300);
+});
 let adCachedTop=null;
 
 let adVariants=[
