@@ -1853,9 +1853,9 @@ button{
 #homeScreen .settings-card .card-icon svg{width:32px;height:32px;fill:#2874c7;}
 #homeScreen .info-card .card-icon svg{width:32px;height:32px;color:#f39a00;}
 #homeScreen .card-content{flex:1;min-width:0;}
-#homeScreen .card-title{font-size:18px;font-weight:700;color:#293d5a;margin-bottom:5px;}
-#homeScreen .card-description{font-size:12px;line-height:1.4;color:#607087;}
-#homeScreen .card-arrow{font-size:27px;font-weight:300;color:#344b68;margin-left:5px;}
+#homeScreen .card-title{font-size:13px;font-weight:700;color:#293d5a;margin-bottom:2px;}
+#homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
+#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
 
 #homeScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -2108,35 +2108,35 @@ button{
     padding:0;
 }
 
-/* ===== TURNUVA MENÜSÜ - ÜST 4 KART (tournamentScreen) ===== */
+/* ===== TURNUVA MENÜSÜ VE OYUNLARIM - ÜST 4 KART (tournamentScreen, historyScreen) ===== */
 
-#tournamentScreen .tm-grid-cards{
+#tournamentScreen .tm-grid-cards, #historyScreen .tm-grid-cards{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:7px;
     margin-bottom:18px;
 }
-#tournamentScreen .tm-card{
+#tournamentScreen .tm-card, #historyScreen .tm-card{
     font-family:'Nunito',-apple-system,sans-serif;
     border-radius:16px;
-    padding:10px 4px 7px 4px;
-    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
-    height:104px;
+    padding:10px 4px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;
     cursor:pointer;
     border:0;
     position:relative;
     transition:transform .1s ease;
     box-shadow:inset 0 2px 4px rgba(255,255,255,.4),0 6px 12px rgba(0,0,0,.25);
 }
-#tournamentScreen .tm-card:active{transform:translateY(1px);}
-#tournamentScreen .tm-card-yellow{background:linear-gradient(180deg,#fbbf24 0%,#d97706 100%);}
-#tournamentScreen .tm-card-purple{background:linear-gradient(180deg,#a855f7 0%,#6d28d9 100%);}
-#tournamentScreen .tm-card-green{background:linear-gradient(180deg,#34d399 0%,#047857 100%);}
-#tournamentScreen .tm-card-blue{background:linear-gradient(180deg,#38bdf8 0%,#0284c7 100%);}
+#tournamentScreen .tm-card, #historyScreen .tm-card:active{transform:translateY(1px);}
+#tournamentScreen .tm-card-yellow, #historyScreen .tm-card-yellow{background:linear-gradient(180deg,#fbbf24 0%,#d97706 100%);}
+#tournamentScreen .tm-card-purple, #historyScreen .tm-card-purple{background:linear-gradient(180deg,#a855f7 0%,#6d28d9 100%);}
+#tournamentScreen .tm-card-green, #historyScreen .tm-card-green{background:linear-gradient(180deg,#34d399 0%,#047857 100%);}
+#tournamentScreen .tm-card-blue, #historyScreen .tm-card-blue{background:linear-gradient(180deg,#38bdf8 0%,#0284c7 100%);}
 
-#tournamentScreen .tm-card-icon{font-size:22px;line-height:1;}
+#tournamentScreen .tm-card-icon, #historyScreen .tm-card-icon{font-size:22px;line-height:1;}
 
-#tournamentScreen .tm-calendar-badge{
+#tournamentScreen .tm-calendar-badge, #historyScreen .tm-calendar-badge{
     background:#fff;color:#0f172a;
     border-top:3px solid #ef4444;
     border-radius:5px;
@@ -2144,22 +2144,30 @@ button{
     text-align:center;
     box-shadow:0 2px 4px rgba(0,0,0,.2);
 }
-#tournamentScreen .tm-calendar-month{font-size:5.5px;font-weight:900;color:#ef4444;letter-spacing:.4px;}
-#tournamentScreen .tm-calendar-day{font-size:10px;font-weight:900;line-height:1;}
+#tournamentScreen .tm-calendar-month, #historyScreen .tm-calendar-month{font-size:5.5px;font-weight:900;color:#ef4444;letter-spacing:.4px;}
+#tournamentScreen .tm-calendar-day, #historyScreen .tm-calendar-day{font-size:10px;font-weight:900;line-height:1;}
 
-#tournamentScreen .tm-card-title{
+#tournamentScreen .tm-card-title, #historyScreen .tm-card-title{
     color:#fff;font-size:9.5px;font-weight:900;
     text-align:center;line-height:1.15;
     text-shadow:0 1px 2px rgba(0,0,0,.3);
 }
-#tournamentScreen .tm-card-arrow{
+#tournamentScreen .tm-card-arrow, #historyScreen .tm-card-arrow{
     width:17px;height:17px;
+    flex:none;
     background:rgba(255,255,255,.25);
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
     color:#fff;font-size:8px;font-weight:900;
 }
-#tournamentScreen .tm-card .badge{
+#tournamentScreen .tm-title-arrow-row, #historyScreen .tm-title-arrow-row{
+    display:flex;align-items:center;justify-content:center;
+    gap:6px;
+    width:100%;
+}
+#tournamentScreen .tm-title-arrow-row .tm-card-title, #historyScreen .tm-title-arrow-row .tm-card-title{text-align:center;}
+#tournamentScreen .tm-arrow-spacer, #historyScreen .tm-arrow-spacer{width:17px;flex:none;}
+#tournamentScreen .tm-card .badge, #historyScreen .tm-card .badge{
     position:absolute!important;
     top:-6px!important;right:-6px!important;
     background:#ff0044!important;
@@ -2805,6 +2813,46 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div id="historyScreen" style="display:none;">
 
+<div class="tm-grid-cards">
+
+<button class="tm-card tm-card-yellow" onclick="openGameTypeChoice()">
+<div class="tm-card-icon">🎮</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
+<div class="tm-card-title">Yeni<br>Oyun</div>
+<div class="tm-card-arrow">❯</div>
+</div>
+</button>
+
+<button class="tm-card tm-card-purple" onclick="openChallengeFriend()">
+<div class="tm-card-icon">👥</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
+<div class="tm-card-title">Arkadaşınla<br>Oyna</div>
+<div class="tm-card-arrow">❯</div>
+</div>
+</button>
+
+<button class="tm-card tm-card-green" onclick="openChallengeRandom()">
+<div class="tm-card-icon">🔀</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
+<div class="tm-card-title">Rastgele<br>Oyna</div>
+<div class="tm-card-arrow">❯</div>
+</div>
+</button>
+
+<button class="tm-card tm-card-blue" onclick="openChallengeComputer()">
+<div class="tm-card-icon">💻</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
+<div class="tm-card-title">Bilgisayarla<br>Oyna</div>
+<div class="tm-card-arrow">❯</div>
+</div>
+</button>
+
+</div>
+
 <div class="oy-tabs">
 <button class="oy-tab-btn active" id="tabOngoingBtn" onclick="switchHistoryTab('ongoing')"><i class="fa-solid fa-gamepad"></i> Oyunlar<span class="badge" id="ongoingBadge" style="display:none;">0</span></button>
 <button class="oy-tab-btn oy-tab-wide" id="tabGamesBtn" onclick="switchHistoryTab('games')"><i class="fa-solid fa-clock"></i> Geçmiş Oyunlar<span class="badge" id="gamesBadge" style="display:none;">0</span></button>
@@ -2827,28 +2875,40 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <button class="tm-card tm-card-yellow" onclick="openTournamentCreate()">
 <div class="tm-card-icon">🏆</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
 <div class="tm-card-title">Turnuva<br>Oluştur</div>
 <div class="tm-card-arrow">❯</div>
+</div>
 </button>
 
 <button class="tm-card tm-card-purple" onclick="joinWeeklyTournament()">
 <div class="tm-calendar-badge"><div class="tm-calendar-month" id="tmWeeklyMonth">TEM</div><div class="tm-calendar-day" id="tmWeeklyDay">1</div></div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
 <div class="tm-card-title">Haftalık<br>Turnuva</div>
 <div class="tm-card-arrow">❯</div>
+</div>
 <span class="badge" id="weeklyTournamentBadge" style="display:none;">0</span>
 </button>
 
 <button class="tm-card tm-card-green" onclick="joinDailyTournament()">
 <div class="tm-card-icon">☀️</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
 <div class="tm-card-title">Günlük<br>Turnuva</div>
 <div class="tm-card-arrow">❯</div>
+</div>
 <span class="badge" id="dailyTournamentBadge" style="display:none;">0</span>
 </button>
 
 <button class="tm-card tm-card-blue" onclick="openOpenTournamentsScreen()">
 <div class="tm-card-icon">🌍</div>
+<div class="tm-title-arrow-row">
+<div class="tm-arrow-spacer"></div>
 <div class="tm-card-title">Açık<br>Turnuvalar</div>
 <div class="tm-card-arrow">❯</div>
+</div>
 </button>
 
 </div>
