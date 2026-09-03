@@ -34,7 +34,7 @@ body{
     overflow:hidden;
     padding-top:15px;
     padding-right:1.5%;
-    padding-bottom:calc(var(--bn-nav-height) + env(safe-area-inset-bottom));
+    padding-bottom:0;
     padding-left:1.5%;
     box-sizing:border-box;
     user-select:none;
@@ -60,10 +60,10 @@ input,textarea{
     position:relative;
     overflow-y:auto;
     overflow-x:hidden;
-    min-height:calc(100vh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
-    min-height:calc(100dvh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
-    max-height:calc(100vh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
-    max-height:calc(100dvh - 15px - var(--bn-nav-height) - env(safe-area-inset-bottom));
+    min-height:calc(100vh - 15px);
+    min-height:calc(100dvh - 15px);
+    max-height:calc(100vh - 15px);
+    max-height:calc(100dvh - 15px);
     box-sizing:border-box;
 }
 
