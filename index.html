@@ -2560,7 +2560,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </svg>
 </div>
 <div class="card-content">
-<div class="card-title">Ayarlar</div>
+<div class="card-title">Uygulamanı Kişiselleştir</div>
 <div class="card-description">Uygulama ayarlarını<br>kişiselleştir</div>
 </div>
 <div class="card-arrow">›</div>
@@ -13001,28 +13001,54 @@ stopMathTargetConfettiRain();
 stopAllSounds();
 clearAllConfetti();
 
+let currentScreenId=null;
+
+for(let i=0;i<SCREEN_IDS.length;i++){
+let el=document.getElementById(SCREEN_IDS[i]);
+if(el.style.display && el.style.display!=="none"){
+currentScreenId=SCREEN_IDS[i];
+break;
+}
+}
+
+let targetId=null;
+let targetDisplay="block";
+
+if(currentScreenId && SCREEN_PARENT_MAP.hasOwnProperty(currentScreenId)){
+
+let parent=SCREEN_PARENT_MAP[currentScreenId];
+targetId=(parent==="tournament") ? "tournamentScreen" : "homeScreen";
+screenNavStack.length=0;
+
+}
+else{
+
 if(screenNavStack.length===0){
 return;
 }
 
-playClickSoundBack();
-
 let prev=screenNavStack.pop();
+targetId=prev.id;
+targetDisplay=prev.display;
+
+}
+
+playClickSoundBack();
 
 suppressScreenPush=true;
 hideAllScreens();
 suppressScreenPush=false;
 
-document.getElementById(prev.id).style.display=prev.display;
+document.getElementById(targetId).style.display=targetDisplay;
 
-syncBottomNavForScreen(prev.id);
+syncBottomNavForScreen(targetId);
 
-if(prev.id==="homeScreen"){
+if(targetId==="homeScreen"){
 renderHomeStats();
 updateChallengeBadge();
 }
 
-if(prev.id==="historyScreen"){
+if(targetId==="historyScreen"){
 
 let refreshHistoryLists=function(){
 renderOngoingList();
@@ -13038,6 +13064,10 @@ else{
 refreshHistoryLists();
 }
 
+}
+
+if(targetId==="tournamentScreen"){
+renderTournamentLists();
 }
 
 });
