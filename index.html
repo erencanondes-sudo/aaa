@@ -21,13 +21,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
+*{
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+}
+*::-webkit-scrollbar{
+    display:none;
+    width:0;
+    height:0;
+}
 html{
     height:100%;
     overflow:hidden;
 }
 body{
     font-family:Arial,sans-serif;
-    background:#0b1329;
+    background:#1a2b52;
     margin:0;
     height:100vh;
     height:100dvh;
@@ -1770,7 +1779,7 @@ button{
 #homeScreen .avatar .online{
     position:absolute;right:2px;bottom:2px;
     width:12px;height:12px;border-radius:50%;
-    background:#42bb3e;border:2px solid #fff;
+    background:#42bb3e;
     box-sizing:border-box;
 }
 #homeScreen .welcome-content{flex:1;padding-left:16px;min-width:0}
@@ -1801,7 +1810,7 @@ button{
     min-height:60px;
     border-radius:18px;
     color:#fff;
-    margin-bottom:11px;
+    margin-bottom:7px;
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
@@ -1945,7 +1954,7 @@ button{
 #historyScreen .oy-tabs, #tournamentScreen .oy-tabs{
     display:flex;
     gap:6px;
-    margin-bottom:20px;
+    margin-bottom:13px;
 }
 #historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn{
     height:44px;
@@ -1996,22 +2005,22 @@ button{
 #tournamentScreen #tournamentInviteList{
     display:flex;
     flex-direction:column;
-    gap:16px;
+    gap:10px;
 }
 
 #historyScreen .oy-card, #tournamentScreen .oy-card{
     background:#fff;
     border-radius:20px;
-    padding:14px;
+    padding:10px;
     position:relative;
     box-shadow:0 2px 8px rgba(0,0,0,.02);
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:9px;
 }
 
 #historyScreen .oy-shield, #tournamentScreen .oy-shield{
-    width:48px;height:66px;
+    width:39px;height:54px;
     background:linear-gradient(180deg,#3d5099 0%,#1a285c 100%);
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
@@ -2020,14 +2029,14 @@ button{
     filter:drop-shadow(0px 4px 5px rgba(0,0,0,.25));
 }
 #historyScreen .oy-shield-inner, #tournamentScreen .oy-shield-inner{
-    width:40px;height:56px;
+    width:33px;height:46px;
     background:linear-gradient(180deg,#2b3b75 0%,#121c42 100%);
     clip-path:polygon(0% 20%,50% 0%,100% 20%,100% 80%,50% 100%,0% 80%);
     display:flex;align-items:center;justify-content:center;
     position:relative;
 }
 #historyScreen .oy-swords, #tournamentScreen .oy-swords{
-    font-size:28px;
+    font-size:22px;
     z-index:3;
     line-height:1;
     filter:drop-shadow(0px 2px 3px rgba(0,0,0,.4));
@@ -2041,15 +2050,21 @@ button{
     margin-bottom:10px;
 }
 #historyScreen .oy-avatar, #tournamentScreen .oy-avatar{
-    width:34px;height:34px;flex-shrink:0;
+    width:28px;height:28px;flex-shrink:0;
     background:#dce7ff;
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
     color:#0055ff;
-    font-size:16px;
+    font-size:14px;
     font-variant-emoji:text;
 }
 #historyScreen .oy-user-info, #tournamentScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
+
+/* Oyunlarım kartlarında kalkan kaldırıldı, profil simgesi büyütüldü (yalnızca historyScreen) */
+#historyScreen .oy-avatar{
+    width:54px;height:54px;
+    font-size:26px;
+}
 #historyScreen .oy-username, #tournamentScreen .oy-username{
     font-size:15px;font-weight:700;color:#0b2b6b;line-height:1.1;
     text-decoration:none;
@@ -2314,7 +2329,7 @@ button{
 
 :root{
     --bn-nav-height:clamp(48px,9.5vw,64px);
-    --bn-icon-size:clamp(21px,5.5vw,28px);
+    --bn-icon-size:clamp(24px,6.2vw,31px);
     --bn-icon-bottom-gap:clamp(8px,2vw,12px);
     --bn-active-color:#1c2733;
     --bn-inactive-color:#4d5869;
@@ -2380,7 +2395,7 @@ button{
 .bn-exit>i{font-size:calc(var(--bn-icon-size) * 1.3);}
 
 @media(max-width:320px){
-:root{--bn-nav-height:44px;--bn-icon-size:18px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
+:root{--bn-nav-height:44px;--bn-icon-size:20px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
 }
 
 </style>
@@ -8747,10 +8762,9 @@ let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmo
 let html="";
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span></div>";
 html+="<span class=\"oy-status\">"+resultLabel+" · "+myTotal+"-"+opponentTotal+"</span>";
 html+="</div>";
@@ -8890,10 +8904,9 @@ statusText=currentGameIndex+"/"+totalGames+" ⏳ "+remainingHours+" saat";
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span></div>";
 html+="<span class=\"oy-status\">"+statusText+"</span>";
 html+="</div>";
@@ -9023,10 +9036,9 @@ remainingHours=Math.max(0,48-elapsedHours);
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">⚔️</span></div></div>";
+html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+"</span></div>";
 
 if(c.status==="pending" && mySide==="to"){
