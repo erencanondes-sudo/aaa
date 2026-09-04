@@ -1798,16 +1798,16 @@ button{
     align-items:center;
     min-width:0;
 }
-#homeScreen .stat{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
-#homeScreen .stat-icon{font-size:27px;flex:none;}
+#homeScreen .stat{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+#homeScreen .stat-icon{font-size:20px;flex:none;}
 #homeScreen .stat-text{min-width:0;overflow:hidden;}
 #homeScreen .stat b{display:block;font-size:17px;color:#172f62;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#homeScreen .stat small{display:block;color:#53627d;font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 15px;flex:none;}
+#homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
+#homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 8px;flex:none;}
 
 #homeScreen .menu-card, #gameTypeScreen .menu-card{
     width:100%;
-    min-height:60px;
+    min-height:68px;
     border-radius:18px;
     color:#fff;
     margin-bottom:7px;
@@ -1823,7 +1823,8 @@ button{
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
 #homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
-#homeScreen .menu-card.red, #gameTypeScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
+#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
+#gameTypeScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
 #homeScreen .settings-info-section{
@@ -2000,6 +2001,7 @@ button{
 #historyScreen #ongoingList,
 #historyScreen #historyList,
 #historyScreen #challengesList,
+#friendsScreen #friendsList,
 #tournamentScreen #tournamentOngoingList,
 #tournamentScreen #tournamentPastList,
 #tournamentScreen #tournamentInviteList{
@@ -2008,7 +2010,7 @@ button{
     gap:10px;
 }
 
-#historyScreen .oy-card, #tournamentScreen .oy-card{
+#historyScreen .oy-card, #tournamentScreen .oy-card, #friendsScreen .oy-card{
     background:#fff;
     border-radius:20px;
     padding:10px;
@@ -2043,13 +2045,13 @@ button{
     user-select:none;
 }
 
-#historyScreen .oy-content, #tournamentScreen .oy-content{flex-grow:1;min-width:0}
-#historyScreen .oy-card-header, #tournamentScreen .oy-card-header{
+#historyScreen .oy-content, #tournamentScreen .oy-content, #friendsScreen .oy-content{flex-grow:1;min-width:0}
+#historyScreen .oy-card-header, #tournamentScreen .oy-card-header, #friendsScreen .oy-card-header{
     display:flex;align-items:flex-start;
     gap:8px;
     margin-bottom:10px;
 }
-#historyScreen .oy-avatar, #tournamentScreen .oy-avatar{
+#historyScreen .oy-avatar, #tournamentScreen .oy-avatar, #friendsScreen .oy-avatar{
     width:28px;height:28px;flex-shrink:0;
     background:#dce7ff;
     border-radius:50%;
@@ -2058,17 +2060,26 @@ button{
     font-size:14px;
     font-variant-emoji:text;
 }
-#historyScreen .oy-user-info, #tournamentScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
+#historyScreen .oy-user-info, #tournamentScreen .oy-user-info, #friendsScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
 
-/* Oyunlarım kartlarında kalkan kaldırıldı, profil simgesi büyütüldü (yalnızca historyScreen) */
-#historyScreen .oy-avatar{
+/* Oyunlarım kartlarında kalkan kaldırıldı, profil simgesi büyütüldü (historyScreen ve friendsScreen) */
+#historyScreen .oy-avatar, #friendsScreen .oy-avatar{
     width:54px;height:54px;
     font-size:26px;
 }
-#historyScreen .oy-username, #tournamentScreen .oy-username{
+#friendsScreen .oy-card-header{align-items:flex-end;}
+#friendsScreen .oy-avatar{width:44px;height:44px;font-size:21px;}
+#friendsScreen .oy-card{padding:8px;}
+#historyScreen .oy-username, #tournamentScreen .oy-username, #friendsScreen .oy-username{
     font-size:15px;font-weight:700;color:#0b2b6b;line-height:1.1;
     text-decoration:none;
 }
+#friendsScreen .oy-username{font-size:16px;}
+#friendsScreen .friend-stats-row{
+    display:flex;align-items:center;gap:6px;
+    font-size:12px;color:#53627d;margin-top:4px;
+}
+#friendsScreen .friend-stats-sep{color:#c3cbdb;}
 #historyScreen .oy-status, #tournamentScreen .oy-status{
     background:transparent;
     color:#000;
@@ -2499,7 +2510,7 @@ button{
 <div class="stats">
 <div class="stat"><div class="stat-icon">🏆</div><div class="stat-text"><b id="successPct">%0</b><small>Başarı Yüzdesi</small></div></div>
 <div class="vline"></div>
-<div class="stat"><div class="stat-icon">📊</div><div class="stat-text"><b id="avgScoreWord">0</b><small>Puan Ort. (Kelime)</small></div></div>
+<div class="stat"><div class="stat-icon">📊</div><div class="stat-text"><b id="avgScoreWord">0</b><small>Puan Ortalaması</small></div></div>
 </div>
 </div>
 </div>
@@ -2583,6 +2594,8 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
+<div style="height:1px;background:#f4f6fb;"></div>
+
 </div>
 
 <div id="profileScreen" style="display:none;">
@@ -2660,12 +2673,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="friendsScreen" style="display:none;">
 
 
-<div style="margin-top:7px;height:144px;display:flex;align-items:center;justify-content:center;">
-</div>
-
-<h2 style="position:absolute;top:215.875px;left:20px;right:20px;margin:0;">Arkadaşlar</h2>
-
-<div style="height:10px;"></div>
+<h2 style="margin:40px 0 14px 9px;text-align:left;display:flex;align-items:flex-end;gap:8px;"><span style="position:relative;top:-4px;">👥</span> Arkadaşlar</h2>
 
 <div id="friendsList"></div>
 
@@ -3849,7 +3857,7 @@ setBottomNavActive("home");
 
 let firstName=profile.name.trim().split(/\s+/)[0];
 
-document.getElementById("welcomeText").innerHTML="Hoş geldin "+firstName;
+document.getElementById("welcomeText").innerHTML="Hoş geldin, can 👋";
 document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 renderHomeStats();
@@ -4417,6 +4425,8 @@ document.getElementById("homeScreen").style.display="none";
 document.getElementById("profileScreen").style.display="none";
 document.getElementById("otherProfileScreen").style.display="none";
 document.getElementById("friendsScreen").style.display="none";
+document.getElementById("settingsScreen").style.display="none";
+document.getElementById("infoScreen").style.display="none";
 document.getElementById("viewChallengeScreen").style.display="none";
 document.getElementById("chatScreen").style.display="none";
 document.getElementById("gameTypeScreen").style.display="none";
@@ -7565,15 +7575,56 @@ return;
 
 }
 
+list.innerHTML="<p>Yükleniyor...</p>";
+
+let fetches=currentUserFriends.map(function(name){
+
+return db.collection("users").where("username","==",name).limit(1).get().then(function(snap){
+
+if(snap.empty){
+return {name:name,successPct:0,avgScoreWord:0};
+}
+
+let profile=snap.docs[0].data();
+let challengeCount=profile.challengeCount||0;
+let challengeWins=profile.challengeWins||0;
+let wordScoreSum=profile.wordScoreSum||0;
+let wordScoreCount=profile.wordScoreCount||0;
+
+let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
+let avgScoreWord=wordScoreCount? Math.round(wordScoreSum/wordScoreCount) : 0;
+
+return {name:name,successPct:successPct,avgScoreWord:avgScoreWord};
+
+}).catch(function(e){
+return {name:name,successPct:0,avgScoreWord:0};
+});
+
+});
+
+Promise.all(fetches).then(function(results){
+
 let html="";
 
-currentUserFriends.forEach(function(name){
+results.forEach(function(r){
 
-html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickable-name\" onclick=\"viewUserProfile('"+name+"','friends')\">"+name+"</span></div></div>";
+html+="<div class=\"oy-card\" style=\"cursor:pointer;\" onclick=\"viewUserProfile('"+r.name+"','friends')\">";
+html+="<div class=\"oy-avatar\">👤</div>";
+html+="<div class=\"oy-content\">";
+html+="<div class=\"oy-card-header\">";
+html+="<div class=\"oy-user-info\" style=\"margin-left:5px;margin-top:2px;\">";
+html+="<span class=\"oy-username\" style=\"position:relative;top:-1px;\">"+r.name+"</span>";
+html+="<div class=\"friend-stats-row\">🏆 %"+r.successPct+" <span class=\"friend-stats-sep\">|</span> 📊 <span style=\"position:relative;top:1px;\">"+r.avgScoreWord+"</span></div>";
+html+="</div>";
+html+="</div>";
+html+="</div>";
+html+="</div>";
 
 });
 
 list.innerHTML=html;
+
+});
 
 }
 
