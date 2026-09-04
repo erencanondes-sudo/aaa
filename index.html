@@ -3160,7 +3160,11 @@ let safeAreaVal=parseFloat(getComputedStyle(testEl).paddingBottom) || 0;
 
 document.body.removeChild(testEl);
 
-if(safeAreaVal>0){
+// Büyük bir safe-area değeri klasik 3 tuşlu/çubuklu gezinmeyi işaret eder.
+// Jest (gesture) navigasyonunda bazı cihaz/tarayıcılarda (ör. Samsung Internet)
+// küçük ama sıfırdan farklı bir değer dönebiliyor; bunu "çubuk var" saymamak
+// için eşik yükseltildi.
+if(safeAreaVal>30){
 return true;
 }
 
@@ -3195,6 +3199,9 @@ syncAdBanner();
 
 window.addEventListener("resize",updateSystemNavBarDetection);
 window.addEventListener("orientationchange",function(){
+setTimeout(updateSystemNavBarDetection,300);
+});
+window.addEventListener("load",function(){
 setTimeout(updateSystemNavBarDetection,300);
 });
 let adCachedTop=null;
