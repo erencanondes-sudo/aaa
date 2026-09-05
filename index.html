@@ -2126,6 +2126,7 @@ button{
 #historyScreen .oy-btn, #tournamentScreen .oy-btn:active{top:2px}
 #historyScreen .oy-btn-view, #tournamentScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;box-shadow:0 3px 0 #c2d2e9}
 #historyScreen .oy-btn-play, #tournamentScreen .oy-btn-play{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-continue{background:#e74c3c;color:#fff;box-shadow:0 3px 0 #b93a2d}
 #historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg{background:#00bfa5;color:#fff;box-shadow:0 3px 0 #00897b}
 #historyScreen .oy-btn-brown, #tournamentScreen .oy-btn-brown{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
 #historyScreen .oy-btn-accept, #tournamentScreen .oy-btn-accept{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
@@ -2355,8 +2356,8 @@ button{
     --bn-nav-height:clamp(48px,9.5vw,64px);
     --bn-icon-size:clamp(24px,6.2vw,31px);
     --bn-icon-bottom-gap:clamp(8px,2vw,12px);
-    --bn-active-color:#1c2733;
-    --bn-inactive-color:#4d5869;
+    --bn-active-color:#f4f6fb;
+    --bn-inactive-color:#8a94a6;
     --bn-side-shift:clamp(6px,2vw,14px);
 }
 
@@ -2370,7 +2371,7 @@ button{
     height:calc(var(--bn-nav-height) + env(safe-area-inset-bottom));
     display:none;
     align-items:flex-start;
-    background:#f4f6fb!important;
+    background:#1c2733!important;
     filter:none;
     -webkit-backdrop-filter:none;
     backdrop-filter:none;
@@ -9077,7 +9078,7 @@ let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
 let alreadyStarted=!!currentGame[mySideStartedField];
 
 if(alreadyStarted){
-playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-continue\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
 }
 else{
 playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
