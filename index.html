@@ -1831,7 +1831,7 @@ button{
 #homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
-#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#homeScreen .menu-card.purple, #gameTypeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
 #homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
@@ -2724,7 +2724,15 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="gameTypeScreen" style="display:none;">
 
 
-<p class="screen-title" style="margin-top:40px;">Hangi oyunu oynamak istersin?</p>
+<p class="screen-title" style="margin-top:40px;">Arkadaşınla, rastgele bir oyuncuyla veya bilgisayara karşı oynamak için meydan okumak ister misin?</p>
+
+<button class="menu-card purple" style="margin-top:16px;" onclick="animatedNav(this,openChallengeType)">
+<div class="icon-circle">⚔️</div>
+<div class="menu-copy"><b>Meydan Oku</b><span>Kiminle oynayacağını seç</span></div>
+<div class="arrow">›</div>
+</button>
+
+<p class="screen-title" style="margin-top:28px;">Hangi oyunu oynamak istersin?</p>
 
 <button class="menu-card new" style="margin-top:16px;" onclick="animatedNav(this,function(){selectGameType('word',true)})">
 <div class="icon-circle">🔤</div>
