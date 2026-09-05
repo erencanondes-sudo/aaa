@@ -1814,7 +1814,7 @@ button{
 #homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
 #homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 8px;flex:none;}
 
-#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card{
+#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card, #challengeTypeScreen .menu-card{
     width:100%;
     min-height:68px;
     border-radius:18px;
@@ -1828,14 +1828,15 @@ button{
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
 }
-#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
-#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
-#homeScreen .menu-card.purple, #gameTypeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
+#homeScreen .menu-card.purple, #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
+#challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
 #homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
-#gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
-#homeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
+#gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
+#homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
 #homeScreen .settings-info-section{
     display:grid;
@@ -1878,7 +1879,7 @@ button{
 #homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
 #homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
 
-#homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle{
+#homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
     flex:none;margin-right:15px;
     display:flex;align-items:center;justify-content:center;
@@ -1900,10 +1901,10 @@ button{
     border-left:14px solid #209e32;
     transform:translateX(2px);
 }
-#homeScreen .menu-copy, #gameTypeScreen .menu-copy, #challengeModeChoiceScreen .menu-copy, #randomWaitScreen .menu-copy{flex:1;min-width:0}
-#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
-#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
-#homeScreen .arrow, #gameTypeScreen .arrow, #challengeModeChoiceScreen .arrow, #randomWaitScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
+#homeScreen .menu-copy, #gameTypeScreen .menu-copy, #challengeModeChoiceScreen .menu-copy, #randomWaitScreen .menu-copy, #challengeTypeScreen .menu-copy{flex:1;min-width:0}
+#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b, #challengeTypeScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
+#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span, #challengeTypeScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
+#homeScreen .arrow, #gameTypeScreen .arrow, #challengeModeChoiceScreen .arrow, #randomWaitScreen .arrow, #challengeTypeScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
 
 #homeScreen .badge{
     position:static!important;
@@ -2724,25 +2725,23 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="gameTypeScreen" style="display:none;">
 
 
-<p class="screen-title" style="margin-top:40px;">Arkadaşınla, rastgele bir oyuncuyla veya bilgisayara karşı oynamak için meydan okumak ister misin?</p>
-
-<button class="menu-card purple" style="margin-top:16px;" onclick="animatedNav(this,openChallengeType)">
+<button class="menu-card purple" style="margin-top:40px;" onclick="animatedNav(this,openChallengeType)">
 <div class="icon-circle">⚔️</div>
 <div class="menu-copy"><b>Meydan Oku</b><span>Kiminle oynayacağını seç</span></div>
 <div class="arrow">›</div>
 </button>
 
-<p class="screen-title" style="margin-top:28px;">Hangi oyunu oynamak istersin?</p>
+<div class="home-divider" style="margin:16px 0;"></div>
 
-<button class="menu-card new" style="margin-top:16px;" onclick="animatedNav(this,function(){selectGameType('word',true)})">
+<button class="menu-card new" style="margin-top:0;" onclick="animatedNav(this,function(){selectGameType('word',true)})">
 <div class="icon-circle">🔤</div>
-<div class="menu-copy"><b>Klasik</b><span>Sabit harfler</span></div>
+<div class="menu-copy"><b>Klasik (Tekli Mod)</b><span>Sabit harfler</span></div>
 <div class="arrow">›</div>
 </button>
 
 <button class="menu-card red" style="margin-top:12px;" onclick="animatedNav(this,function(){selectGameType('word',false)})">
 <div class="icon-circle">💥</div>
-<div class="menu-copy"><b>Çetrefilli</b><span>Harf can sistemi</span></div>
+<div class="menu-copy"><b>Çetrefilli (Tekli Mod)</b><span>Harf can sistemi</span></div>
 <div class="arrow">›</div>
 </button>
 
@@ -2781,11 +2780,25 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="challengeTypeScreen" style="display:none;">
 
 
-<p class="screen-title" style="margin-top:70px;">Kime meydan okumak istersin?</p>
+<p class="screen-title" style="margin-top:40px;">Kime meydan okumak istersin?</p>
 
-<button class="newgame challenge-btn newgame-green" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="animatedNav(this,openChallengeFriend)">Arkadaşınla Oyna 👥</button>
-<button class="newgame challenge-btn" style="padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="animatedNav(this,openChallengeRandom)">Rastgele Oyna <span style="font-size:0.85em;">🔀</span></button>
-<button class="newgame challenge-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #5f6a6a;padding-top:12.5px;padding-bottom:12.5px;font-size:22px;" onclick="animatedNav(this,openChallengeComputer)">Bilgisayara Karşı Oyna 💻</button>
+<button class="menu-card purple" style="margin-top:16px;" onclick="animatedNav(this,openChallengeFriend)">
+<div class="icon-circle">👥</div>
+<div class="menu-copy"><b>Arkadaşınla Oyna</b><span>Kullanıcı adı girerek meydan oku</span></div>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card new" style="margin-top:12px;" onclick="animatedNav(this,openChallengeRandom)">
+<div class="icon-circle">🔀</div>
+<div class="menu-copy"><b>Rastgele Oyna</b><span>Rastgele bir rakiple eşleş</span></div>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card blue" style="margin-top:12px;" onclick="animatedNav(this,openChallengeComputer)">
+<div class="icon-circle">💻</div>
+<div class="menu-copy"><b>Bilgisayara Karşı Oyna</b><span>Bilgisayarla oyna</span></div>
+<div class="arrow">›</div>
+</button>
 
 </div>
 
