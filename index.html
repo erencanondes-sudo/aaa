@@ -6741,13 +6741,26 @@ alert("Eşleştirme sırasında bir hata oluştu. Lütfen tekrar dene.");
 function matchWithWaitingOpponent(opponentDoc,sadeMode){
 
 let modeKey=getModeKey(sadeMode);
-let opponentData=opponentDoc.data();
-let opponentUid=opponentData.uid;
+let opponentRef=opponentDoc.ref;
 
 selectedGameType="word";
 wordSadeMode=!!sadeMode;
 
 let wordData=generateWordGameData(100);
+let challengeRef=db.collection("challenges").doc();
+
+db.runTransaction(function(tx){
+
+return tx.get(opponentRef).then(function(freshDoc){
+
+if(!freshDoc.exists || freshDoc.data().matchedChallengeId){
+let err=new Error("OPPONENT_TAKEN");
+err.opponentTaken=true;
+throw err;
+}
+
+let opponentData=freshDoc.data();
+let opponentUid=opponentData.uid;
 
 let challengeData={
 fromUid:currentUser.uid,
@@ -6776,19 +6789,17 @@ updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
 acceptedAt:firebase.firestore.FieldValue.serverTimestamp()
 };
 
-let challengeRef=db.collection("challenges").doc();
-let matchBatch=db.batch();
+tx.set(challengeRef,challengeData);
+tx.update(opponentRef,{matchedChallengeId:challengeRef.id,matchedWithUsername:currentUser.username});
 
-matchBatch.set(challengeRef,challengeData);
-writeChallengeSignal(matchBatch,currentUser.uid,challengeRef.id);
-writeChallengeSignal(matchBatch,opponentUid,challengeRef.id);
+writeChallengeSignal(tx,currentUser.uid,challengeRef.id);
+writeChallengeSignal(tx,opponentUid,challengeRef.id);
 
-matchBatch.commit().then(function(){
+return opponentData;
 
-opponentDoc.ref.update({
-matchedChallengeId:challengeRef.id,
-matchedWithUsername:currentUser.username
 });
+
+}).then(function(opponentData){
 
 db.collection("randomQueue").doc(currentUser.uid+"_"+modeKey).delete().catch(function(){});
 
@@ -6799,8 +6810,16 @@ document.getElementById("challengeDoneScreen").style.display="block";
 document.getElementById("challengeDoneText").innerHTML="🎉 Eşleşme bulundu! "+opponentData.username+" ile meydan okuma başladı.";
 
 }).catch(function(e){
+
+if(e && e.opponentTaken){
+joinRandomQueue(sadeMode);
+return;
+}
+
 console.error("Meydan okuma oluşturulamadı:",e);
 inRandomQueueByMode[modeKey]=false;
+resetRandomModeButton(sadeMode);
+
 });
 
 }
