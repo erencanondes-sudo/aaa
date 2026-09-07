@@ -4129,7 +4129,7 @@ setBottomNavActive("home");
 
 let firstName=profile.name.trim().split(/\s+/)[0];
 
-document.getElementById("welcomeText").innerHTML="Hoş geldin, can 👋";
+document.getElementById("welcomeText").innerHTML="Hoş geldin, "+firstName+" 👋";
 document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 renderHomeStats();
