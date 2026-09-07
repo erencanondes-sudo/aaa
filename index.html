@@ -452,6 +452,7 @@ button{
     font-weight:bold;
     margin:0 0 5px 0;
 }
+#challengeFormatScreen.level-select{gap:5px;}
 
 #mathInlineLevelSelect .level-btn{
     padding-top:13px;
@@ -1814,7 +1815,7 @@ button{
 #homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
 #homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 8px;flex:none;}
 
-#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card, #challengeTypeScreen .menu-card{
+#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card, #challengeTypeScreen .menu-card, #challengeFriendScreen .menu-card, #challengeFormatScreen .menu-card{
     width:100%;
     min-height:68px;
     border-radius:18px;
@@ -1828,14 +1829,37 @@ button{
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
 }
-#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active, #challengeFriendScreen .menu-card:active, #challengeFormatScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
-#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
-#homeScreen .menu-card.purple, #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
+#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#challengeFriendScreen .menu-card.white{
+    min-height:60px;
+    background:#fff;
+    color:#1a2b52;
+    box-shadow:0 3px 0 rgba(20,30,50,.06),0 4px 10px rgba(25,40,60,.06);
+    border:1px solid #eef1f6;
+}
+#challengeFriendScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
+#challengeFriendScreen .menu-card.white .icon-circle{background:#eef2f9;font-size:20px;}
+#challengeFriendScreen .menu-card.white .menu-copy b{color:#1a2b52;}
+#challengeFriendScreen .menu-card.white .arrow{color:#c3cbdb;}
+.challenge-continue-btn{
+    width:auto!important;
+    min-width:140px;
+    min-height:44px!important;
+    padding:8px 20px!important;
+    margin:0 auto!important;
+    justify-content:center;
+}
+.challenge-continue-btn .menu-copy{flex:none;}
+.challenge-continue-btn .arrow{margin-left:8px;}
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
+#challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
 #homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
-#gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
+#gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
 #homeScreen .settings-info-section{
@@ -1879,7 +1903,7 @@ button{
 #homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
 #homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
 
-#homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle{
+#homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle, #challengeFriendScreen .icon-circle, #challengeFormatScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
     flex:none;margin-right:15px;
     display:flex;align-items:center;justify-content:center;
@@ -1901,10 +1925,10 @@ button{
     border-left:14px solid #209e32;
     transform:translateX(2px);
 }
-#homeScreen .menu-copy, #gameTypeScreen .menu-copy, #challengeModeChoiceScreen .menu-copy, #randomWaitScreen .menu-copy, #challengeTypeScreen .menu-copy{flex:1;min-width:0}
-#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b, #challengeTypeScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
-#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span, #challengeTypeScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
-#homeScreen .arrow, #gameTypeScreen .arrow, #challengeModeChoiceScreen .arrow, #randomWaitScreen .arrow, #challengeTypeScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
+#homeScreen .menu-copy, #gameTypeScreen .menu-copy, #challengeModeChoiceScreen .menu-copy, #randomWaitScreen .menu-copy, #challengeTypeScreen .menu-copy, #challengeFriendScreen .menu-copy, #challengeFormatScreen .menu-copy{flex:1;min-width:0}
+#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b, #challengeTypeScreen .menu-copy b, #challengeFriendScreen .menu-copy b, #challengeFormatScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
+#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span, #challengeTypeScreen .menu-copy span, #challengeFriendScreen .menu-copy span, #challengeFormatScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
+#homeScreen .arrow, #gameTypeScreen .arrow, #challengeModeChoiceScreen .arrow, #randomWaitScreen .arrow, #challengeTypeScreen .arrow, #challengeFriendScreen .arrow, #challengeFormatScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
 
 #homeScreen .badge{
     position:static!important;
@@ -2827,16 +2851,18 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="challengeFriendScreen" style="display:none;">
 
 
-<p class="screen-title">Arkadaşının kullanıcı adı</p>
+<p class="screen-title" style="margin-top:40px;margin-bottom:6px;margin-left:8px;text-align:left;">Kullanıcı adı giriniz:</p>
 
-<input type="text" id="challengeUsername" class="auth-input" placeholder="Kullanıcı Adı">
+<input type="text" id="challengeUsername" class="auth-input" style="margin-bottom:4px;" placeholder="Kullanıcı Adı">
 
-<p id="challengeFriendError" class="auth-error"></p>
+<p id="challengeFriendError" class="auth-error" style="min-height:0;margin:0 0 6px 0;"></p>
 
-<button class="newgame challenge-btn" onclick="confirmChallengeFriend()">Devam Et</button>
+<button class="menu-card new challenge-continue-btn" onclick="animatedNav(this,confirmChallengeFriend)">
+<div class="menu-copy"><b>Devam Et</b></div>
+<div class="arrow">›</div>
+</button>
 
-<p style="margin-top:16px;font-weight:bold;">Arkadaşların</p>
-<div id="challengeFriendsList"><p>Yükleniyor...</p></div>
+<div id="challengeFriendsList" style="margin-top:32px;"><p>Yükleniyor...</p></div>
 
 </div>
 
@@ -2854,11 +2880,25 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="level-select" id="challengeFormatScreen" style="display:none;">
 
 
-<p style="margin-top:380px;">Kaç oyunluk meydan okumak istersin?</p>
+<p class="screen-title" style="margin-top:40px;margin-bottom:20px;">Kaç oyunluk meydan okumak istersin?</p>
 
-<button class="level-btn level-easy" onclick="createChallenge(1)">Tek Oyun</button>
-<button class="level-btn level-medium" onclick="createChallenge(3)">3 Oyun</button>
-<button class="level-btn level-hard" onclick="createChallenge(10)">10 Oyun</button>
+<button class="menu-card new" onclick="animatedNav(this,function(){createChallenge(1)})">
+<div class="icon-circle">1️⃣</div>
+<div class="menu-copy"><b>Tek Oyun</b><span>1 round'luk meydan okuma</span></div>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card orange" onclick="animatedNav(this,function(){createChallenge(3)})">
+<div class="icon-circle">3️⃣</div>
+<div class="menu-copy"><b>3 Oyun</b><span>3 round'luk meydan okuma</span></div>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card red" onclick="animatedNav(this,function(){createChallenge(10)})">
+<div class="icon-circle">🔟</div>
+<div class="menu-copy"><b>10 Oyun</b><span>10 round'luk meydan okuma</span></div>
+<div class="arrow">›</div>
+</button>
 
 </div>
 
@@ -3427,33 +3467,13 @@ document.getElementById("wordTopAdBannerContent").innerHTML=wordTopAdVariants[wo
 
 function syncWordTopAdBanner(){
 
-let wordScreenEl=document.getElementById("wordGameContent");
-let playAreaEl=document.getElementById("playArea");
 let bannerEl=document.getElementById("wordTopAdBanner");
 let spacerEl=document.getElementById("wordTopAdBannerSpacer");
 let titleEl=document.getElementById("mainTitle");
 
-let playAreaVisible=playAreaEl.style.display!=="none" && playAreaEl.style.display!=="";
-let isVisible=playAreaVisible && wordScreenEl.style.display!=="none" && wordScreenEl.style.display!=="";
-
-if(isVisible){
-
-if(bannerEl.style.display==="none"){
-fillWordTopAd();
-}
-
-bannerEl.style.display="block";
-spacerEl.style.display="block";
-titleEl.style.marginTop="-4px";
-
-}
-else{
-
 bannerEl.style.display="none";
-titleEl.style.marginTop="";
 spacerEl.style.display="none";
-
-}
+titleEl.style.marginTop="";
 
 }
 
@@ -6391,12 +6411,31 @@ let listEl=document.getElementById("challengeFriendsList");
 
 if(currentUserFriends.length===0){
 listEl.innerHTML="<p>Henüz bir arkadaşın yok.</p>";
+return;
 }
-else{
-listEl.innerHTML=currentUserFriends.map(function(username){
-return "<button class=\"challenge-play-btn\" style=\"margin-top:8px;\" onclick=\"document.getElementById('challengeUsername').value='"+username+"';\">"+username+"</button>";
+
+listEl.innerHTML="<p>Yükleniyor...</p>";
+
+let fetches=currentUserFriends.map(function(username){
+
+return db.collection("users").where("username","==",username).limit(1).get().then(function(snap){
+
+let avatarEmoji=(!snap.empty && snap.docs[0].data().avatarEmoji) ? snap.docs[0].data().avatarEmoji : "👤";
+return {username:username,avatarEmoji:avatarEmoji};
+
+}).catch(function(e){
+return {username:username,avatarEmoji:"👤"};
+});
+
+});
+
+Promise.all(fetches).then(function(results){
+
+listEl.innerHTML=results.map(function(r){
+return "<button class=\"menu-card white\" style=\"margin-top:8px;\" onclick=\"document.getElementById('challengeUsername').value='"+r.username+"';\"><div class=\"icon-circle\">"+r.avatarEmoji+"</div><div class=\"menu-copy\"><b>"+r.username+"</b></div><div class=\"arrow\">›</div></button>";
 }).join("");
-}
+
+});
 
 }
 
