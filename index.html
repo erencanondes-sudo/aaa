@@ -1440,21 +1440,23 @@ button{
 #wordGameContent .pill-header{
     background-color:#1e3a8a;
     color:#fff;
-    padding:2px 10px;
+    padding:2px 6px;
     border-radius:8px;
     font-weight:800;
-    font-size:8.5px;
-    display:flex;
-    align-items:center;
-    gap:4px;
+    font-size:7.5px;
+    text-align:center;
     margin-bottom:3px;
+    max-width:100%;
     white-space:nowrap;
+    box-sizing:border-box;
 }
 
 #wordGameContent .dist-table{
     width:100%;
+    height:110px;
     display:flex;
     flex-direction:column;
+    justify-content:flex-start;
     gap:2px;
 }
 
@@ -1469,10 +1471,11 @@ button{
     font-weight:700;
     color:#334155;
     height:12px;
+    flex:none;
 }
-#wordGameContent .dist-row .label{text-align:left;}
+#wordGameContent .dist-row .label{text-align:left;font-size:8px;font-weight:700;}
 #wordGameContent .dist-row .arrow{color:#3b82f6;font-weight:900;font-size:7.5px;text-align:center;padding:0 3px;}
-#wordGameContent .dist-row .count{color:#1e293b;text-align:right;}
+#wordGameContent .dist-row .count{color:#1e293b;text-align:right;font-size:8px;font-weight:700;}
 
 #wordGameContent .words-icon{
     width:26px;height:26px;
@@ -3254,7 +3257,7 @@ Sayı seçiniz
 </div>
 
 <div class="section distribution-section">
-<div class="pill-header"><i class="fa-solid fa-chart-simple"></i><span>KELİME DAĞILIMI</span></div>
+<div class="pill-header">KELİME DAĞILIMI</div>
 <div class="dist-table" id="wordLengthBreakdown" style="visibility:hidden;"></div>
 </div>
 
