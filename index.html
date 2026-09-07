@@ -1359,8 +1359,141 @@ button{
     font-variant-numeric:tabular-nums;
 }
 
-#wordTimeValue{
-    color:#e84118;
+#wordGameContent .unified-panel{
+    background:#ffffff;
+    border-radius:16px;
+    padding:10px 12px;
+    width:100%;
+    box-shadow:0 6px 16px rgba(0,0,0,.10);
+    display:grid;
+    grid-template-columns:1fr 1.3fr 1fr;
+    gap:8px;
+    align-items:center;
+    position:relative;
+}
+
+#wordGameContent .unified-panel .section{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    padding:2px 0;
+}
+
+#wordGameContent .divider-left, #wordGameContent .divider-right{
+    position:absolute;
+    top:15%;
+    bottom:15%;
+    width:1px;
+    background:linear-gradient(180deg,rgba(226,232,240,.2) 0%,#cbd5e1 50%,rgba(226,232,240,.2) 100%);
+}
+#wordGameContent .divider-left{left:31.5%;}
+#wordGameContent .divider-right{right:31.5%;}
+
+#wordGameContent .timer-icon{
+    width:24px;height:24px;
+    background:linear-gradient(135deg,#ff6b35,#f03e3e);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:12px;
+}
+
+#wordGameContent .section-label{
+    color:#5c6b8a;
+    font-size:9.5px;
+    font-weight:800;
+    letter-spacing:.3px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+#wordGameContent .timer-number{
+    color:#e03131;
+    font-size:26px;
+    font-weight:900;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+}
+
+#wordGameContent .bar-bg{
+    width:80%;
+    height:5px;
+    background-color:#f1f5f9;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:2px;
+}
+
+#wordGameContent .bar-fill-orange{
+    height:100%;
+    background:linear-gradient(90deg,#ff6b35,#f03e3e);
+    border-radius:10px;
+    transition:width .3s ease;
+}
+
+#wordGameContent .distribution-section{
+    justify-content:flex-start;
+    padding:0 2px;
+}
+
+#wordGameContent .pill-header{
+    background-color:#1e3a8a;
+    color:#fff;
+    padding:2px 10px;
+    border-radius:8px;
+    font-weight:800;
+    font-size:8.5px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    margin-bottom:3px;
+    white-space:nowrap;
+}
+
+#wordGameContent .dist-table{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+#wordGameContent .dist-row{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    background-color:#f8fafc;
+    padding:0 8px;
+    border-radius:4px;
+    font-size:8px;
+    font-weight:700;
+    color:#334155;
+    height:12px;
+}
+#wordGameContent .dist-row .label{text-align:left;}
+#wordGameContent .dist-row .arrow{color:#3b82f6;font-weight:900;font-size:7.5px;text-align:center;padding:0 3px;}
+#wordGameContent .dist-row .count{color:#1e293b;text-align:right;}
+
+#wordGameContent .words-icon{
+    width:26px;height:26px;
+    color:#2563eb;
+    font-size:18px;
+    display:flex;align-items:center;justify-content:center;
+}
+
+#wordGameContent .words-number{
+    color:#1d4ed8;
+    font-size:26px;
+    font-weight:900;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+}
+
+#wordGameContent .bar-fill-blue{
+    height:100%;
+    background:linear-gradient(90deg,#3b82f6,#1d4ed8);
+    border-radius:10px;
+    transition:width .3s ease;
 }
 
 #wordScoreItem{
@@ -3110,10 +3243,30 @@ Sayı seçiniz
 </div>
 
 <div class="word-info">
-<div class="word-info-top">
-<div style="justify-self:start;"><span>KALAN SÜRE</span><span class="value" id="wordTimeValue">120</span></div>
-<div id="wordLengthBreakdown" style="justify-self:center;font-size:11px;color:#192a56;line-height:1.35;text-align:center;height:105px;overflow:hidden;visibility:hidden;"></div>
-<div style="justify-self:end;position:relative;left:2px;"><span>KALAN KELİME</span><span class="value" id="wordTarget">--</span></div>
+<div class="word-info-top unified-panel" id="wordInfoPanel">
+<div class="divider-left"></div>
+
+<div class="section">
+<div class="timer-icon"><i class="fa-solid fa-stopwatch"></i></div>
+<div class="section-label">KALAN SÜRE</div>
+<div class="timer-number" id="wordTimeValue">120</div>
+<div class="bar-bg"><div class="bar-fill-orange" id="wordTimeBar" style="width:100%;"></div></div>
+</div>
+
+<div class="section distribution-section">
+<div class="pill-header"><i class="fa-solid fa-chart-simple"></i><span>KELİME DAĞILIMI</span></div>
+<div class="dist-table" id="wordLengthBreakdown" style="visibility:hidden;"></div>
+</div>
+
+<div class="divider-right"></div>
+
+<div class="section">
+<div class="words-icon"><i class="fa-solid fa-book-open"></i></div>
+<div class="section-label">KALAN KELİME</div>
+<div class="words-number" id="wordTarget">--</div>
+<div class="bar-bg"><div class="bar-fill-blue" id="wordTargetBar" style="width:100%;"></div></div>
+</div>
+
 </div>
 <div class="word-info-bottom" style="margin-top:-6px;">
 <div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:31px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;"><span style="position:relative;top:19px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:9px;"><span id="wordScoreValue">0</span></span></span></div>
@@ -5123,6 +5276,7 @@ document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 document.getElementById("wordTimeValue").innerHTML=resumeTime||120;
+document.getElementById("wordTimeBar").style.width=Math.max(0,Math.min(100,((resumeTime||120)/120)*100))+"%";
 document.getElementById("wordScoreValue").innerHTML=score;
 
 let startedAtPromise=Promise.resolve();
@@ -5740,6 +5894,7 @@ document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordTimeBar").style.width="100%";
 document.getElementById("wordScoreValue").innerHTML=0;
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
@@ -5964,6 +6119,7 @@ document.getElementById("gameContent").style.display="none";
 document.getElementById("hafizaGameContent").style.display="none";
 document.getElementById("wordGameContent").style.display="block";
 document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordTimeBar").style.width="100%";
 document.getElementById("wordScoreValue").innerHTML=0;
 
 startWordRound({baseLetters:round.baseLetters,achievable:round.achievable});
@@ -9792,6 +9948,11 @@ return;
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
+let timeBarEl=document.getElementById("wordTimeBar");
+if(timeBarEl){
+let timePct=Math.max(0,Math.min(100,(time/120)*100));
+timeBarEl.style.width=timePct+"%";
+}
 
 if(time<=90){
 document.getElementById("showWordsBtn").style.display="inline-block";
@@ -10050,6 +10211,12 @@ let remaining=wordAchievable.length-wordFound.size;
 
 document.getElementById("wordTarget").innerHTML=remaining;
 
+let targetBarEl=document.getElementById("wordTargetBar");
+if(targetBarEl){
+let pct=wordAchievable.length? Math.max(0,Math.min(100,(remaining/wordAchievable.length)*100)) : 100;
+targetBarEl.style.width=pct+"%";
+}
+
 let breakdownEl=document.getElementById("wordLengthBreakdown");
 if(breakdownEl.style.visibility==="visible"){
 renderWordLengthBreakdown();
@@ -10189,7 +10356,7 @@ else{
 
 el.innerHTML=lengths.map(function(len){
 let count=remainingCounts[len]||0;
-return "<div class=\"word-length-line\" data-length=\""+len+"\">"+len+" harfli → "+count+" adet</div>";
+return "<div class=\"dist-row word-length-line\" data-length=\""+len+"\"><span class=\"label\">"+len+" harfli</span><span class=\"arrow\">→</span><span class=\"count\">"+count+" adet</span></div>";
 }).join("");
 
 }
@@ -10582,6 +10749,7 @@ clearInterval(timer);
 time=0;
 
 document.getElementById("wordTimeValue").innerHTML=0;
+document.getElementById("wordTimeBar").style.width="0%";
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
@@ -12118,8 +12286,10 @@ document.getElementById("sharedInfoBar").style.display="none";
 document.getElementById("wordMessage").innerHTML="";
 document.getElementById("wordOperation").innerHTML="Harf seçiniz";
 document.getElementById("wordTarget").innerHTML="--";
+document.getElementById("wordTargetBar").style.width="100%";
 document.getElementById("wordScoreValue").innerHTML=0;
 document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordTimeBar").style.width="100%";
 document.getElementById("wordCards").innerHTML="";
 document.getElementById("showWordsBtn").style.display="none";
 document.getElementById("wordContinuePlayBtn").style.display="none";
@@ -12860,6 +13030,11 @@ if(document.visibilityState==="visible" && gameActive && !resultRecorded && sele
 time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 
 document.getElementById("wordTimeValue").innerHTML=time;
+let timeBarEl=document.getElementById("wordTimeBar");
+if(timeBarEl){
+let timePct=Math.max(0,Math.min(100,(time/120)*100));
+timeBarEl.style.width=timePct+"%";
+}
 
 if(time<=90){
 document.getElementById("showWordsBtn").style.display="inline-block";
