@@ -1131,9 +1131,9 @@ button{
 }
 
 .word-mode-toggle{
-    display:flex!important;
-    flex-direction:row!important;
-    flex-wrap:nowrap!important;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
 }
 .word-mode-toggle .word-mode-btn{
     flex:1;
@@ -7370,6 +7370,7 @@ document.getElementById("playArea").style.display="block";
 
 if(selectedGameType==="word"){
 document.getElementById("wordGameContent").style.display="block";
+document.getElementById("wordNewGameBtn").style.display="none";
 }
 else if(selectedGameType==="hafiza"){
 document.getElementById("hafizaGameContent").style.display="block";
@@ -10083,7 +10084,7 @@ document.getElementById("wordGameContent").style.display="block";
 playClickSoundNewgame();
 
 let inManagedContext=activeChallengeId || activeTournamentId || activeWeeklyRoundIndex!==null || activeDailyTournament;
-document.getElementById("wordNewGameBtn").style.display=inManagedContext ? "none" : "block";
+document.getElementById("wordNewGameBtn").style.display=inManagedContext ? "none" : "flex";
 syncWordModeButtons();
 
 if(restoredProgress){
