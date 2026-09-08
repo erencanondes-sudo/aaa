@@ -5953,6 +5953,8 @@ html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickabl
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
 
+openTournamentChat(t.id);
+
 }
 
 
@@ -6178,6 +6180,8 @@ html+="<div class=\"challenge-item\"><div class=\"h-top\"><span class=\"clickabl
 });
 
 document.getElementById("tournamentDetailContent").innerHTML=html;
+
+openTournamentChat(t.id);
 
 }
 
@@ -12036,11 +12040,22 @@ let otherUsername=mySide==="from" ? newChallengeData.toUsername : newChallengeDa
 if(isNewChallenge){
 
 if(newChallengeData.fromUid!==currentUser.uid){
+
+if(newChallengeData.status==="pending"){
+showTopNotification("📨 "+otherUsername+" sana meydan okudu! İstek geldi");
+}
+else{
 showTopNotification("🎮 "+otherUsername+" ile yeni bir oyun açıldı!");
 }
 
 }
+
+}
 else if(oldChallengeData){
+
+if(oldChallengeData.status==="pending" && newChallengeData.status==="accepted"){
+showTopNotification("🎮 "+otherUsername+" ile oyun açıldı!");
+}
 
 let myUnreadField=mySide==="from" ? "fromUnreadCount" : "toUnreadCount";
 let oldUnread=oldChallengeData[myUnreadField]||0;
