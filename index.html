@@ -2306,6 +2306,22 @@ button{
     width:54px;height:54px;
     font-size:26px;
 }
+#historyScreen .oy-avatar{background:#c7d9f7;}
+#historyScreen .oy-avatar-ring{
+    width:58px;height:58px;
+    border-radius:50%;
+    padding:2.5px;
+    box-sizing:border-box;
+    background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    flex-shrink:0;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+}
+#historyScreen .oy-avatar-ring .oy-avatar{
+    width:100%;height:100%;
+    border:2px solid #fff;
+    box-sizing:border-box;
+}
 #friendsScreen .oy-card-header{align-items:flex-end;}
 #friendsScreen .oy-avatar{width:44px;height:44px;font-size:21px;}
 #friendsScreen .oy-card{padding:8px;}
@@ -2463,7 +2479,7 @@ button{
 
 #tournamentDetailScreen .td-grid-row{
     display:grid;
-    grid-template-columns:1fr 2fr;
+    grid-template-columns:0.7fr 2.3fr;
     gap:10px;
     align-items:start;
     margin-bottom:16px;
@@ -2513,7 +2529,7 @@ button{
     border-radius:16px;
     padding:10px;
     display:flex;flex-direction:column;
-    height:324px;
+    height:430px;
     box-sizing:border-box;
 }
 #tournamentDetailScreen .td-chat-header{font-size:10px;color:#0088ff;font-weight:800;margin-bottom:6px;letter-spacing:.5px;}
@@ -6271,9 +6287,26 @@ activeWeeklyRoundIndex=null;
 let activeTournamentChatId=null;
 let tournamentChatUnsubscribe=null;
 
+const TOURNAMENT_CHAT_COLORS=["#00d2ff","#ff6b6b","#ffd93d","#6bff8a","#c77dff","#ff9f43","#4ecdc4","#ff5da2","#a0e426","#7f9cf5"];
+let tournamentChatUserColors={};
+let tournamentChatColorIndex=0;
+
+function getTournamentChatUserColor(username){
+
+if(!tournamentChatUserColors[username]){
+tournamentChatUserColors[username]=TOURNAMENT_CHAT_COLORS[tournamentChatColorIndex % TOURNAMENT_CHAT_COLORS.length];
+tournamentChatColorIndex++;
+}
+
+return tournamentChatUserColors[username];
+
+}
+
 function openTournamentChat(tournamentId){
 
 activeTournamentChatId=tournamentId;
+tournamentChatUserColors={};
+tournamentChatColorIndex=0;
 
 let tForRead=liveTournamentsData ? liveTournamentsData[tournamentId] : null;
 if(tForRead){
@@ -6329,7 +6362,7 @@ let mm=String(d.getMinutes()).padStart(2,"0");
 timeText=hh+":"+mm;
 }
 
-html+="<div class=\"td-chat-msg\"><div><span class=\"td-chat-user\">"+m.senderUsername+":</span><span class=\"td-chat-text\">"+m.text+"</span></div><span class=\"td-chat-time\">"+timeText+"</span></div>";
+html+="<div class=\"td-chat-msg\"><div><span class=\"td-chat-user\" style=\"color:"+getTournamentChatUserColor(m.senderUsername)+";\">"+m.senderUsername+":</span><span class=\"td-chat-text\">"+m.text+"</span></div><span class=\"td-chat-time\">"+timeText+"</span></div>";
 
 });
 
@@ -9218,7 +9251,7 @@ let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmo
 let html="";
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span></div>";
@@ -9362,7 +9395,7 @@ statusText=currentGameIndex+"/"+totalGames+" ⏳ "+remainingHours+" saat";
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span></div>";
@@ -9494,7 +9527,7 @@ remainingHours=Math.max(0,48-elapsedHours);
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
 html+="<div class=\"oy-card\">";
-html+="<div class=\"oy-avatar\">"+avatarEmoji+"</div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','istekler')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+"</span></div>";
