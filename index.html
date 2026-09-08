@@ -12030,10 +12030,6 @@ if(cDoc.exists){
 let newChallengeData=normalizeChallenge(Object.assign({id:cDoc.id},cDoc.data()));
 liveChallengesData[challengeId]=newChallengeData;
 
-let playAreaVisible=document.getElementById("playArea").style.display==="block";
-
-if(playAreaVisible){
-
 let mySide=newChallengeData.fromUid===currentUser.uid ? "from" : "to";
 let otherUsername=mySide==="from" ? newChallengeData.toUsername : newChallengeData.fromUsername;
 
@@ -12052,8 +12048,6 @@ let newUnread=newChallengeData[myUnreadField]||0;
 
 if(newUnread>oldUnread){
 showTopNotification("💬 "+otherUsername+" kullanıcısından mesajın var");
-}
-
 }
 
 }
