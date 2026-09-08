@@ -35,6 +35,29 @@ button{
     -webkit-tap-highlight-color:transparent;
     outline:none;
 }
+.top-notif-banner{
+    position:fixed;
+    top:0;left:0;right:0;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#1a2b52;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    text-align:center;
+    padding:0 16px;
+    box-sizing:border-box;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+    transform:translateY(-100%);
+    transition:transform .35s ease;
+    z-index:99999;
+}
+.top-notif-banner.show{
+    transform:translateY(0);
+}
 html{
     height:100%;
     overflow:hidden;
@@ -2638,6 +2661,8 @@ button{
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
 
+<div id="topNotifBanner" class="top-notif-banner"></div>
+
 <div id="globalHeader">
 <div class="hs-confetti">
 <span class="hc1"></span><span class="hc2"></span><span class="hc3"></span>
@@ -4808,6 +4833,25 @@ setTimeout(function(){
 el.classList.remove("menu-card-pressed");
 callback();
 },200);
+
+}
+
+
+let topNotifTimer=null;
+
+function showTopNotification(text){
+
+let el=document.getElementById("topNotifBanner");
+if(!el)return;
+
+el.innerHTML=text;
+el.classList.add("show");
+
+if(topNotifTimer)clearTimeout(topNotifTimer);
+
+topNotifTimer=setTimeout(function(){
+el.classList.remove("show");
+},3500);
 
 }
 
@@ -7183,6 +7227,9 @@ let level=pendingChallenge.level;
 let status=type==="friend" ? "pending" : "accepted";
 let gameType=selectedGameType;
 
+let durationMillis=gamesCount===1 ? 86400000 : (gamesCount===3 ? 172800000 : 604800000);
+let expiresAtMillis=Date.now()+durationMillis;
+
 let games=[];
 
 for(let i=0;i<gamesCount;i++){
@@ -7218,7 +7265,8 @@ fromLastRead:null,
 toLastRead:null,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
 updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
-acceptedAt:status==="accepted" ? firebase.firestore.FieldValue.serverTimestamp() : null
+acceptedAt:status==="accepted" ? firebase.firestore.FieldValue.serverTimestamp() : null,
+expiresAtMillis:expiresAtMillis
 };
 
 let toUidPromise=type==="computer" ? Promise.resolve({uid:null,avatarEmoji:null}) : db.collection("users").where("username","==",toUsername).limit(1).get().then(function(snap){
@@ -7261,7 +7309,8 @@ renderChallengesList(true);
 
 }
 
-let formatText=gamesCount===1 ? "tek oyunluk" : "3 oyunluk";
+let formatText=gamesCount===1 ? "tek oyunluk" : (gamesCount===3 ? "3 oyunluk" : "10 oyunluk");
+let durationText=gamesCount===1 ? "24 saat" : (gamesCount===3 ? "48 saat" : "1 hafta");
 
 let messageText;
 
@@ -7272,7 +7321,7 @@ else if(type==="computer"){
 messageText="🤖 Bilgisayara karşı "+formatText+" meydan okuma başladı!<br>Oyunlarım menüsünden oynayabilirsin.";
 }
 else{
-messageText="🎉 "+toUsername+" için "+formatText+" meydan okuma oluşturuldu!<br>48 saat içinde oynamalısın, yoksa iptal olur.";
+messageText="🎉 "+toUsername+" için "+formatText+" meydan okuma oluşturuldu!<br>"+durationText+" içinde oynamalısın, yoksa iptal olur.";
 }
 
 if(inModal){
@@ -7403,7 +7452,8 @@ docPromise.then(function(doc){
 let ch=normalizeChallenge(doc.data());
 
 let currentGameIndex=ch.games.findIndex(function(g){
-return !(g.fromPlayed && g.toPlayed);
+let myPlayed=side==="from" ? g.fromPlayed : g.toPlayed;
+return !myPlayed;
 });
 
 if(currentGameIndex===-1){
@@ -7414,14 +7464,6 @@ return;
 }
 
 let currentGame=ch.games[currentGameIndex];
-let mySidePlayedCurrent=side==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
-
-if(mySidePlayedCurrent){
-
-renderOngoingList();
-return;
-
-}
 
 let gType=ch.gameType || "math";
 let startedAtField=side==="from" ? "fromStartedAt" : "toStartedAt";
@@ -8922,35 +8964,38 @@ moves:hafizaMoves
 
 function checkAndForfeitExpiredRound(c){
 
-let currentGameIndex=c.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
-
-if(currentGameIndex===-1)return Promise.resolve(false);
-
 let gameType=c.gameType || "math";
 
 if(gameType!=="math" && gameType!=="word")return Promise.resolve(false);
 
-let g=c.games[currentGameIndex];
-let updates={};
+let updatedGames=c.games.slice();
 let changed=false;
+
+updatedGames.forEach(function(g,idx){
+
+let updates={};
+let gameChanged=false;
 
 if(!g.fromPlayed && g.fromStartedAt && (Date.now()-g.fromStartedAt)/1000>=120){
 updates.fromScore=0;
 updates.fromPlayed=true;
-changed=true;
+gameChanged=true;
 }
 
 if(!g.toPlayed && g.toStartedAt && (Date.now()-g.toStartedAt)/1000>=120){
 updates.toScore=0;
 updates.toPlayed=true;
+gameChanged=true;
+}
+
+if(gameChanged){
+updatedGames[idx]=Object.assign({},g,updates);
 changed=true;
 }
 
-if(!changed)return Promise.resolve(false);
+});
 
-let updatedGame=Object.assign({},g,updates);
-let updatedGames=c.games.slice();
-updatedGames[currentGameIndex]=updatedGame;
+if(!changed)return Promise.resolve(false);
 
 c.games=updatedGames;
 
@@ -9213,7 +9258,6 @@ let all=data.all;
 let friendNames=data.friendNames;
 
 let now=Math.floor(Date.now()/1000);
-let FORTY_EIGHT_HOURS=48*60*60;
 
 let items=Object.values(all).filter(function(c){ return c.status==="accepted"; });
 
@@ -9225,7 +9269,10 @@ items.forEach(function(c){
 
 let allDone=c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
 
-if(c.acceptedAt && !allDone && (now-c.acceptedAt.seconds)>FORTY_EIGHT_HOURS){
+let expiryMillis=c.expiresAtMillis || (c.acceptedAt ? (c.acceptedAt.seconds+48*60*60)*1000 : null);
+let isExpired=expiryMillis && Date.now()>expiryMillis;
+
+if(isExpired && !allDone){
 
 let updatedGames=c.games.map(function(g){
 
@@ -11969,6 +12016,9 @@ let version=ids[challengeId];
 
 if(challengeSignalVersions[challengeId]===version)return;
 
+let isNewChallenge=!Object.prototype.hasOwnProperty.call(challengeSignalVersions,challengeId);
+let oldChallengeData=liveChallengesData[challengeId];
+
 challengeSignalVersions[challengeId]=version;
 
 fetchPromises.push(
@@ -11976,7 +12026,38 @@ fetchPromises.push(
 db.collection("challenges").doc(challengeId).get().then(function(cDoc){
 
 if(cDoc.exists){
-liveChallengesData[challengeId]=normalizeChallenge(Object.assign({id:cDoc.id},cDoc.data()));
+
+let newChallengeData=normalizeChallenge(Object.assign({id:cDoc.id},cDoc.data()));
+liveChallengesData[challengeId]=newChallengeData;
+
+let playAreaVisible=document.getElementById("playArea").style.display==="block";
+
+if(playAreaVisible){
+
+let mySide=newChallengeData.fromUid===currentUser.uid ? "from" : "to";
+let otherUsername=mySide==="from" ? newChallengeData.toUsername : newChallengeData.fromUsername;
+
+if(isNewChallenge){
+
+if(newChallengeData.fromUid!==currentUser.uid){
+showTopNotification("🎮 "+otherUsername+" ile yeni bir oyun açıldı!");
+}
+
+}
+else if(oldChallengeData){
+
+let myUnreadField=mySide==="from" ? "fromUnreadCount" : "toUnreadCount";
+let oldUnread=oldChallengeData[myUnreadField]||0;
+let newUnread=newChallengeData[myUnreadField]||0;
+
+if(newUnread>oldUnread){
+showTopNotification("💬 "+otherUsername+" kullanıcısından mesajın var");
+}
+
+}
+
+}
+
 }
 else{
 delete liveChallengesData[challengeId];
