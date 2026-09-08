@@ -2043,6 +2043,36 @@ button{
     box-shadow:0 3px 0 rgba(20,30,50,.06),0 4px 10px rgba(25,40,60,.06);
     border:1px solid #eef1f6;
 }
+#detailModalContent .menu-card{
+    width:auto;
+    min-width:140px;
+    min-height:44px;
+    border-radius:16px;
+    color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:8px 20px;
+    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
+    transition:transform .2s,filter .2s;
+    border:0;cursor:pointer;font-family:inherit;
+}
+#detailModalContent .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#detailModalContent .menu-card.new{background:linear-gradient(105deg,#35b233,#209c2b)}
+#detailModalContent .menu-copy b{font-size:15px;font-weight:800;}
+#profileScreen .menu-card{
+    width:auto;
+    min-width:96px;
+    min-height:44px;
+    border-radius:16px;
+    color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:8px 16px;
+    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
+    transition:transform .2s,filter .2s;
+    border:0;cursor:pointer;font-family:inherit;
+}
+#profileScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#profileScreen .menu-card.new{background:linear-gradient(105deg,#35b233,#209c2b)}
+#profileScreen .menu-copy b{font-size:14px;font-weight:800;}
 #challengeFriendScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
 #challengeFriendScreen .menu-card.white .icon-circle{background:#eef2f9;font-size:20px;}
 #challengeFriendScreen .menu-card.white .menu-copy b{color:#1a2b52;}
@@ -2739,6 +2769,8 @@ button{
 
 <p class="auth-toggle-strong">Hesabın yok mu? <a onclick="showRegisterForm()">Kayıt Ol 📝</a></p>
 
+<p class="auth-toggle" style="margin-top:14px;"><a onclick="continueAsGuest()">Üye olmadan devam et</a></p>
+
 </div>
 
 <div id="forgotPasswordForm" style="display:none;">
@@ -2867,8 +2899,16 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <p>Kullanıcı Adı: <span id="profileUsername"></span></p>
 <p>Ülke: <span id="profileCountry"></span></p>
 <p>E-posta: <span id="profileEmail"></span></p>
+<div id="profileStatsRealSection">
 <p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
 <p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
+</div>
+<div id="profileGuestPrompt" style="display:none;align-items:center;gap:10px;margin-top:6px;">
+<button class="menu-card new" style="width:auto;min-width:96px;min-height:44px;margin-bottom:0;flex:none;" onclick="goToSignupFromBanner()">
+<div class="menu-copy" style="text-align:center;"><b>Üye Ol</b></div>
+</button>
+<span style="font-size:11.5px;color:#57606f;line-height:1.4;">Üye girişi yaparak düello oyunlarına ve turnuvalara katılarak diğer kişilerle oynayabilir ve sohbet edebilirsin</span>
+</div>
 </div>
 
 <button class="challenge-play-btn btn-compact" onclick="showChangePasswordForm()">Şifre Değiştir 🔒</button>
@@ -2972,7 +3012,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <p class="screen-title" style="margin-top:40px;">Nasıl oynamak istersin?</p>
 
-<button class="menu-card purple" style="margin-top:16px;" onclick="animatedNav(this,openChallengeType)">
+<button class="menu-card purple" style="margin-top:16px;" onclick="requireMemberNav(this,openChallengeType)">
 <div class="icon-circle">⚔️</div>
 <div class="menu-copy"><b>Meydan Oku</b><span>Kiminle oynayacağını seç</span></div>
 <div class="arrow">›</div>
@@ -3137,22 +3177,22 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div class="tm-grid-cards">
 
-<button class="tm-card tm-card-yellow" onclick="animatedNav(this,openGameTypeChoice)">
+<button class="tm-card tm-card-yellow" onclick="requireOnlineNav(this,openGameTypeChoice)">
 <div class="tm-card-icon">🎮</div>
 <div class="tm-card-title">Yeni<br>Oyun</div>
 </button>
 
-<button class="tm-card tm-card-purple" onclick="animatedNav(this,openChallengeFriend)">
+<button class="tm-card tm-card-purple" onclick="requireMemberNav(this,openChallengeFriend)">
 <div class="tm-card-icon">👥</div>
 <div class="tm-card-title">Arkadaşınla<br>Oyna</div>
 </button>
 
-<button class="tm-card tm-card-green" onclick="animatedNav(this,openChallengeRandom)">
+<button class="tm-card tm-card-green" onclick="requireMemberNav(this,openChallengeRandom)">
 <div class="tm-card-icon">🔀</div>
 <div class="tm-card-title">Rastgele<br>Oyna</div>
 </button>
 
-<button class="tm-card tm-card-blue" onclick="animatedNav(this,openChallengeComputer)">
+<button class="tm-card tm-card-blue" onclick="requireMemberNav(this,openChallengeComputer)">
 <div class="tm-card-icon">💻</div>
 <div class="tm-card-title">Bilgisayarla<br>Oyna</div>
 </button>
@@ -3179,24 +3219,24 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div class="tm-grid-cards">
 
-<button class="tm-card tm-card-yellow" onclick="animatedNav(this,openTournamentCreate)">
+<button class="tm-card tm-card-yellow" onclick="requireMemberNav(this,openTournamentCreate)">
 <div class="tm-card-icon">🏆</div>
 <div class="tm-card-title">Turnuva<br>Oluştur</div>
 </button>
 
-<button class="tm-card tm-card-purple" onclick="animatedNav(this,joinWeeklyTournament)">
+<button class="tm-card tm-card-purple" onclick="requireMemberNav(this,joinWeeklyTournament)">
 <div class="tm-calendar-badge"><div class="tm-calendar-month" id="tmWeeklyMonth">TEM</div><div class="tm-calendar-day" id="tmWeeklyDay">1</div></div>
 <div class="tm-card-title">Haftalık<br>Turnuva</div>
 <span class="badge" id="weeklyTournamentBadge" style="display:none;">0</span>
 </button>
 
-<button class="tm-card tm-card-green" onclick="animatedNav(this,joinDailyTournament)">
+<button class="tm-card tm-card-green" onclick="requireMemberNav(this,joinDailyTournament)">
 <div class="tm-card-icon">☀️</div>
 <div class="tm-card-title">Günlük<br>Turnuva</div>
 <span class="badge" id="dailyTournamentBadge" style="display:none;">0</span>
 </button>
 
-<button class="tm-card tm-card-blue" onclick="animatedNav(this,openOpenTournamentsScreen)">
+<button class="tm-card tm-card-blue" onclick="requireMemberNav(this,openOpenTournamentsScreen)">
 <div class="tm-card-icon">🌍</div>
 <div class="tm-card-title">Açık<br>Turnuvalar</div>
 </button>
@@ -3552,6 +3592,26 @@ setTimeout(updateSystemNavBarDetection,300);
 window.addEventListener("load",function(){
 setTimeout(updateSystemNavBarDetection,300);
 });
+
+function refreshOnlineDependentScreens(){
+
+let historyScreenEl=document.getElementById("historyScreen");
+if(historyScreenEl && historyScreenEl.style.display!=="none"){
+renderOngoingList();
+renderHistoryList();
+renderChallengesList();
+}
+
+let tournamentScreenEl=document.getElementById("tournamentScreen");
+if(tournamentScreenEl && tournamentScreenEl.style.display!=="none"){
+renderTournamentLists();
+}
+
+}
+
+window.addEventListener("online",refreshOnlineDependentScreens);
+window.addEventListener("offline",refreshOnlineDependentScreens);
+
 let adCachedTop=null;
 
 let adVariants=[
@@ -3776,6 +3836,14 @@ auth.onAuthStateChanged(function(user){
 
 if(user){
 
+if(!navigator.onLine){
+
+document.getElementById("sessionCheckScreen").style.display="none";
+onLoginSuccess(user.uid,{});
+return;
+
+}
+
 db.collection("users").doc(user.uid).get().then(function(doc){
 
 let profile=doc.data();
@@ -3794,7 +3862,13 @@ document.getElementById("authScreen").style.display="block";
 console.error("Oturum geri yüklenemedi:",e);
 
 document.getElementById("sessionCheckScreen").style.display="none";
+
+if(!navigator.onLine){
+onLoginSuccess(user.uid,{});
+}
+else{
 document.getElementById("authScreen").style.display="block";
+}
 
 });
 
@@ -4158,7 +4232,11 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 function onLoginSuccess(uid,profile){
 
-currentUser={uid:uid,name:profile.name,username:profile.username,email:profile.email,country:profile.country||null,avatarEmoji:profile.avatarEmoji||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
+profile=profile||{};
+
+let isGuest=!uid;
+
+currentUser={uid:uid,isGuest:isGuest,name:profile.name||"",username:profile.username||"",email:profile.email||"",country:profile.country||null,avatarEmoji:profile.avatarEmoji||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0};
 currentUserFriends=profile.friendUsernames || [];
 
 flushPendingGameFromStorage();
@@ -4168,18 +4246,68 @@ document.getElementById("homeScreen").style.display="block";
 
 setBottomNavActive("home");
 
-let firstName=profile.name.trim().split(/\s+/)[0];
+let firstName=isGuest ? "misafir" : ((profile.name||"").trim().split(/\s+/)[0]||"");
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin, "+firstName+" 👋";
 document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 renderHomeStats();
 
+if(!isGuest){
 startChallengesListener();
 startTournamentsListener();
 loadTournamentStatusBadges();
+}
 
 burstHomeConfetti();
+
+}
+
+
+function continueAsGuest(){
+
+document.getElementById("sessionCheckScreen").style.display="none";
+onLoginSuccess(null,{});
+
+}
+
+
+function showMemberRequiredBanner(){
+
+let html="";
+
+html+="<div style=\"text-align:center;padding:6px 4px 2px 4px;\">";
+html+="<div style=\"font-size:34px;margin-bottom:8px;\">⚠️</div>";
+html+="<p style=\"font-size:16px;font-weight:800;color:#192a56;margin:0 0 16px 0;\">Üye girişi yapmanız gerekiyor</p>";
+html+="<button class=\"menu-card new\" style=\"margin:0 auto 14px auto;\" onclick=\"goToSignupFromBanner()\">";
+html+="<div class=\"menu-copy\" style=\"text-align:center;\"><b>Üye Ol</b></div>";
+html+="</button>";
+html+="<p style=\"font-size:12.5px;color:#57606f;line-height:1.5;margin:0;\">Üye girişi yaparak düello oyunlarına ve turnuvalara katılarak diğer kişilerle oynayabilir ve sohbet edebilirsin</p>";
+html+="</div>";
+
+openDetailModal(html);
+
+}
+
+
+function goToSignupFromBanner(){
+
+hideDetailModal();
+hideAllScreens();
+document.getElementById("authScreen").style.display="block";
+showRegisterForm();
+
+}
+
+
+function requireMemberNav(el,callback){
+
+if(currentUser && currentUser.isGuest){
+showMemberRequiredBanner();
+return;
+}
+
+requireOnlineNav(el,callback);
 
 }
 
@@ -4868,6 +4996,18 @@ if(topNotifTimer)clearTimeout(topNotifTimer);
 topNotifTimer=setTimeout(function(){
 el.classList.remove("show");
 },3500);
+
+}
+
+
+function requireOnlineNav(el,callback){
+
+if(!navigator.onLine){
+showTopNotification("📡 İnternet bağlantısı olmadığı için devam edilemiyor.");
+return;
+}
+
+animatedNav(el,callback);
 
 }
 
@@ -6510,6 +6650,14 @@ let ongoingEl=document.getElementById("tournamentOngoingList");
 let pastEl=document.getElementById("tournamentPastList");
 let inviteEl=document.getElementById("tournamentInviteList");
 
+if(!navigator.onLine){
+let offlineMsg="<p>İnternet bağlantısı olmadığı için oyunlar listelenemiyor.</p>";
+ongoingEl.innerHTML=offlineMsg;
+pastEl.innerHTML=offlineMsg;
+inviteEl.innerHTML=offlineMsg;
+return;
+}
+
 let now=Date.now();
 
 let all=liveTournamentsData ? Object.values(liveTournamentsData) : [];
@@ -7334,7 +7482,7 @@ return batch.commit().then(function(){ return challengeRef; });
 }).then(function(challengeRef){
 
 if(liveChallengesData){
-liveChallengesData[challengeRef.id]=Object.assign({id:challengeRef.id},challengeData,{createdAt:{seconds:Math.floor(Date.now()/1000)},acceptedAt:challengeData.acceptedAt ? {seconds:Math.floor(Date.now()/1000)} : null});
+liveChallengesData[challengeRef.id]=Object.assign({id:challengeRef.id},challengeData,{createdAt:{seconds:Math.floor(Date.now()/1000)},updatedAt:{seconds:Math.floor(Date.now()/1000)},acceptedAt:challengeData.acceptedAt ? {seconds:Math.floor(Date.now()/1000)} : null});
 updateChallengeBadge();
 
 let historyScreenEl=document.getElementById("historyScreen");
@@ -7900,6 +8048,17 @@ document.getElementById("profileCountry").innerHTML=currentUser.country ? (count
 document.getElementById("profileEmail").innerHTML=currentUser.email;
 document.getElementById("profileIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
+if(currentUser.isGuest){
+
+document.getElementById("profileStatsRealSection").style.display="none";
+document.getElementById("profileGuestPrompt").style.display="flex";
+
+}
+else{
+
+document.getElementById("profileStatsRealSection").style.display="block";
+document.getElementById("profileGuestPrompt").style.display="none";
+
 let avgByLevel=computeAvgByLevel(gameHistory);
 
 let challengeGames=gameHistory.filter(function(g){return g.isChallenge;});
@@ -7908,6 +8067,8 @@ let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.l
 
 document.getElementById("profileSuccessPct").innerHTML="%"+successPct;
 document.getElementById("profileAvgScoreWord").innerHTML=avgByLevel.word;
+
+}
 
 }
 
@@ -9285,6 +9446,11 @@ function renderOngoingList(silent){
 
 let list=document.getElementById("ongoingList");
 
+if(!navigator.onLine){
+list.innerHTML="<p>İnternet bağlantısı olmadığı için oyunlar listelenemiyor.</p>";
+return;
+}
+
 if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
 }
@@ -9447,6 +9613,11 @@ list.innerHTML="<p>Oyunlar yüklenemedi: "+e.message+"</p>";
 function renderChallengesList(silent){
 
 let list=document.getElementById("challengesList");
+
+if(!navigator.onLine){
+list.innerHTML="<p>İnternet bağlantısı olmadığı için oyunlar listelenemiyor.</p>";
+return;
+}
 
 if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
@@ -9653,6 +9824,11 @@ document.getElementById("avgScoreWord").innerHTML=avgScoreWord;
 function renderHistoryList(silent){
 
 let list=document.getElementById("historyList");
+
+if(!navigator.onLine){
+list.innerHTML="<p>İnternet bağlantısı olmadığı için oyunlar listelenemiyor.</p>";
+return;
+}
 
 if(!silent){
 list.innerHTML="<p>Yükleniyor...</p>";
