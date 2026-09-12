@@ -1175,32 +1175,42 @@ button{
     flex-direction:row;
     align-items:center;
     justify-content:center;
-    gap:8px;
+    gap:6px;
     background:linear-gradient(100deg,#55dc43,#1da92b);
     color:#fff;
     border:0;
-    border-radius:30px;
-    padding:14px 10px;
-    height:56px;
-    box-shadow:0 6px 0 #14751d,0 9px 20px rgba(0,0,0,.25);
+    border-radius:20px;
+    padding:6px 8px;
+    height:36px;
+    box-shadow:0 4px 0 #14751d,0 6px 12px rgba(0,0,0,.25);
     cursor:pointer;
     font-family:inherit;
     min-width:0;
     transition:transform .12s,box-shadow .12s;
 }
 .word-mode-toggle .word-mode-btn:active{
-    transform:translateY(4px);
+    transform:translateY(2px);
     box-shadow:0 2px 0 #14751d;
 }
 .word-mode-toggle .word-mode-btn .word-mode-icon{
-    width:28px;height:28px;
-    border-radius:50%;
-    background:transparent;
     display:flex;align-items:center;justify-content:center;
-    font-size:22px;
     flex:none;
 }
-.word-mode-toggle .word-mode-btn .word-mode-label{font-size:19px;font-weight:800;white-space:nowrap;}
+.word-mode-toggle .word-mode-btn .new-play-circle{
+    width:22px;height:22px;min-width:22px;
+    border-radius:50%;
+    background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+.word-mode-toggle .word-mode-btn .new-play-triangle{
+    width:0;height:0;
+    border-top:4.5px solid transparent;
+    border-bottom:4.5px solid transparent;
+    border-left:7px solid #209e32;
+    transform:translateX(1px);
+}
+.word-mode-toggle .word-mode-btn .word-mode-label{font-size:14px;font-weight:800;white-space:nowrap;}
 
 .btn-row .challenge-play-btn{
     flex:1;
@@ -1323,8 +1333,9 @@ button{
 
 .word-cards .card.used{
     background:linear-gradient(145deg,#8e43df,#6824b8);
-    box-shadow:0 6px 0 #4b1787,0 9px 16px rgba(0,0,0,.3);
+    box-shadow:0 2px 0 #4b1787;
     cursor:default;
+    transform:translateY(4px);
 }
 
 .word-cards .card.used:active{
@@ -1340,12 +1351,20 @@ button{
 .word-cards .card.joker.used{
     background:linear-gradient(145deg,#ff9d22,#e36a08);
     color:#fff;
-    box-shadow:0 6px 0 #a94900,0 9px 16px rgba(0,0,0,.3);
+    box-shadow:0 2px 0 #a94900;
+    transform:translateY(4px);
 }
 
 .word-cards .card:active{
     transform:translateY(4px);
     box-shadow:0 2px 0 #0565aa;
+}
+.word-cards .card.tile-pressed{
+    transform:translateY(4px);
+    box-shadow:0 2px 0 #0565aa;
+}
+.word-cards .card.joker.tile-pressed{
+    box-shadow:0 2px 0 #bb8a00;
 }
 .word-cards .card.used:active{
     box-shadow:0 2px 0 #4b1787;
@@ -3446,9 +3465,9 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<div class="btn-row word-mode-toggle" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:80%;">
+<div class="btn-row word-mode-toggle" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:55%;">
 <button class="word-mode-btn active" onclick="startFreshWordGame(wordSadeMode)">
-<div class="word-mode-icon">▶</div>
+<div class="word-mode-icon"><div class="new-play-circle"><div class="new-play-triangle"></div></div></div>
 <div class="word-mode-label">Yeni Oyun</div>
 </button>
 </div>
