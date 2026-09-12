@@ -75,7 +75,7 @@ html{
 }
 body{
     font-family:Arial,sans-serif;
-    background:#0a182f;
+    background:#1a2b52;
     margin:0;
     height:100vh;
     height:100dvh;
@@ -1993,13 +1993,71 @@ button{
 
 /* ===== ANA SAYFA - YENİ TASARIM (sadece #homeScreen içini etkiler) ===== */
 
-/* Anasayfa aktifken (body.home-active) genel kart zemini (2. arkaplan) koyulaşıyor - diğer ekranlar etkilenmiyor */
-body.home-active .game{
-    background:#1c2f50;
-}
-body.home-active #globalHeader .hs-logo{
-    color:#ffffff;
-}
+/* ===== KOYU MOD (body.dark-mode) - sadece anasayfa + alt menü + genel body zemini etkileniyor ===== */
+body.dark-mode{background:#0a182f;}
+body.dark-mode .bn-nav{background:#0a182f!important;}
+body.dark-mode .game:not(.playing){background:#1c2f50;}
+body.dark-mode #globalHeader .hs-logo{color:#ffffff;}
+body.dark-mode #homeScreen .welcome{background:#2e4570;}
+body.dark-mode #homeScreen .found-words-count{color:#ffffff;}
+body.dark-mode #homeScreen .welcome-text{color:#ffffff;}
+body.dark-mode #homeScreen .stat b{color:#ffffff;}
+body.dark-mode #homeScreen .stat small{color:#aab7cf;}
+body.dark-mode #homeScreen .vline{background:rgba(255,255,255,.18);}
+body.dark-mode #homeScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.purple{box-shadow:0 5px 0 #4c2175,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.orange{box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.red{box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .settings-card,
+body.dark-mode #homeScreen .info-card{background:#2e4570;box-shadow:0 6px 0 #3c5782,0 10px 22px rgba(0,0,0,.20);}
+body.dark-mode #homeScreen .settings-card:active,
+body.dark-mode #homeScreen .info-card:active,
+body.dark-mode #homeScreen .settings-card.menu-card-pressed,
+body.dark-mode #homeScreen .info-card.menu-card-pressed{box-shadow:0 2px 0 #3c5782,0 5px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .card-title{color:#ffffff;}
+body.dark-mode #homeScreen .card-description{color:#aab7cf;}
+body.dark-mode #homeScreen .card-arrow{color:#c7d2e8;}
+
+/* Koyu mod - Oyunlarım (historyScreen) */
+body.dark-mode #historyScreen .oy-card,
+body.dark-mode #tournamentScreen .oy-card,
+body.dark-mode #friendsScreen .oy-card{background:#2e4570;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+body.dark-mode #historyScreen .oy-username,
+body.dark-mode #tournamentScreen .oy-username,
+body.dark-mode #friendsScreen .oy-username{color:#ffffff;}
+body.dark-mode #historyScreen .oy-word-count{color:#ffffff;}
+body.dark-mode #historyScreen .oy-status,
+body.dark-mode #tournamentScreen .oy-status{color:#c7d2e8;}
+body.dark-mode #historyScreen .oy-status-type{color:#c7d2e8;}
+body.dark-mode #historyScreen .oy-tab-btn,
+body.dark-mode #tournamentScreen .oy-tab-btn{background:#223a5e;color:#ffffff;box-shadow:0 4px 0 #0d1b34;}
+body.dark-mode #historyScreen .oy-tab-btn.active,
+body.dark-mode #tournamentScreen .oy-tab-btn.active{background:#0055ff;color:#fff;box-shadow:0 4px 0 #003cc7;}
+body.dark-mode #historyScreen .oy-btn-view,
+body.dark-mode #tournamentScreen .oy-btn-view{background:#2e4570;color:#ffffff;box-shadow:0 3px 0 #1c2c48;}
+body.dark-mode #friendsScreen .friend-stats-row{color:#c7d2e8;}
+body.dark-mode #friendsScreen .friend-stats-sep{color:#5c7099;}
+body.dark-mode #openTournamentsScreen .challenge-item{background:#2e4570;}
+body.dark-mode #openTournamentsScreen .challenge-item .h-top{color:#ffffff;}
+body.dark-mode #openTournamentsScreen .challenge-item p{color:#c7d2e8;}
+body.dark-mode .screen-title{color:#ffffff;}
+
+/* Koyu mod - Yeni Oyun alt ekranlarındaki renkli butonların dolgusu (anasayfadakiyle aynı) */
+body.dark-mode #gameTypeScreen .menu-card.new,
+body.dark-mode #challengeModeChoiceScreen .menu-card.new,
+body.dark-mode #randomWaitScreen .menu-card.new,
+body.dark-mode #challengeTypeScreen .menu-card.new,
+body.dark-mode #challengeFriendScreen .menu-card.new,
+body.dark-mode #challengeFormatScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #gameTypeScreen .menu-card.purple,
+body.dark-mode #challengeTypeScreen .menu-card.purple{box-shadow:0 5px 0 #4c2175,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #challengeFormatScreen .menu-card.orange{box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #gameTypeScreen .menu-card.red,
+body.dark-mode #challengeModeChoiceScreen .menu-card.red,
+body.dark-mode #randomWaitScreen .menu-card.red,
+body.dark-mode #challengeTypeScreen .menu-card.red,
+body.dark-mode #challengeFormatScreen .menu-card.red{box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0 6px 12px rgba(0,0,0,.15);}
 
 /* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
 #globalHeader{
@@ -2031,7 +2089,7 @@ body.home-active #globalHeader .hs-logo{
     min-height:80px;
     margin-bottom:17px;
     border-radius:16px;
-    background:#2e4570;
+    background:#fff;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
     display:flex;align-items:center;
     padding:9px 19px 9px 10px;
@@ -2042,7 +2100,7 @@ body.home-active #globalHeader .hs-logo{
     top:8px;right:12px;
     font-size:12px;
     font-weight:800;
-    color:#ffffff;
+    color:#192a56;
 }
 #homeScreen .avatar{
     width:58px;height:58px;flex:none;
@@ -2059,7 +2117,7 @@ body.home-active #globalHeader .hs-logo{
     box-sizing:border-box;
 }
 #homeScreen .welcome-content{flex:1;padding-left:16px;min-width:0}
-#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 10px 0;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;}
+#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 10px 0;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;}
 #homeScreen .stats{
     background:none;
     border-radius:0;
@@ -2077,9 +2135,9 @@ body.home-active #globalHeader .hs-logo{
 #homeScreen .stat{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
 #homeScreen .stat-icon{font-size:20px;flex:none;}
 #homeScreen .stat-text{min-width:0;overflow:hidden;}
-#homeScreen .stat b{display:block;font-size:17px;color:#ffffff;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#homeScreen .stat small{display:block;color:#aab7cf;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
-#homeScreen .vline{height:34px;width:1px;background:rgba(255,255,255,.18);margin:0 8px;flex:none;}
+#homeScreen .stat b{display:block;font-size:17px;color:#172f62;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
+#homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 8px;flex:none;}
 
 #homeScreen .guest-prompt-row{
     display:flex;
@@ -2119,7 +2177,7 @@ body.home-active #globalHeader .hs-logo{
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
-    box-shadow:0 5px 0 #d9dde3,0 6px 12px rgba(0,0,0,.15);
+    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
     transition:transform .2s,filter .2s;
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
@@ -2127,8 +2185,8 @@ body.home-active #globalHeader .hs-logo{
 #homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active, #challengeFriendScreen .menu-card:active, #challengeFormatScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
-#homeScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);margin-bottom:8px;}
-#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);box-shadow:0 5px 0 #52247f,0 6px 12px rgba(0,0,0,.15);margin-bottom:9px;}
+#homeScreen .menu-card.new{margin-bottom:8px;}
+#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);margin-bottom:8px;}
 #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #challengeFriendScreen .menu-card.white{
     min-height:60px;
@@ -2181,12 +2239,32 @@ body.home-active #globalHeader .hs-logo{
 }
 .challenge-continue-btn .menu-copy{flex:none;}
 .challenge-continue-btn .arrow{margin-left:8px;}
-#homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06);box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
+#homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
-#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b);box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
+#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
+
+#settingsScreen .settings-section{margin-top:24px;text-align:left;}
+#settingsScreen .settings-label{font-size:13px;font-weight:700;color:#53627d;margin:0 0 10px 4px;}
+#settingsScreen .theme-toggle-row{display:flex;gap:10px;}
+#settingsScreen .theme-toggle-btn{
+    flex:1;
+    padding:14px 8px;
+    border-radius:16px;
+    border:2px solid #e5e8ee;
+    background:#fff;
+    color:#293d5a;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    transition:all .2s ease;
+}
+#settingsScreen .theme-toggle-icon{font-size:22px;}
+#settingsScreen .theme-toggle-btn.active{border-color:#2874c7;background:#eaf3ff;color:#12366f;}
 
 #homeScreen .settings-info-section{
     display:grid;
@@ -2198,7 +2276,7 @@ body.home-active #globalHeader .hs-logo{
 #homeScreen .settings-card,
 #homeScreen .info-card{
     min-height:60px;
-    background:#2e4570;
+    background:#fff;
     border-radius:22px;
     display:flex;
     align-items:center;
@@ -2206,7 +2284,7 @@ body.home-active #globalHeader .hs-logo{
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
-    box-shadow:0 6px 0 #3c5782,0 10px 22px rgba(0,0,0,.20);
+    box-shadow:0 6px 0 rgba(160,170,185,.20),0 10px 22px rgba(30,45,70,.10);
     transition:all .2s ease;
 }
 #homeScreen .settings-card:active,
@@ -2214,7 +2292,7 @@ body.home-active #globalHeader .hs-logo{
 #homeScreen .settings-card.menu-card-pressed,
 #homeScreen .info-card.menu-card-pressed{
     transform:translateY(5px);
-    box-shadow:0 2px 0 #3c5782,0 5px 12px rgba(0,0,0,.15);
+    box-shadow:0 2px 0 rgba(160,170,185,.18),0 5px 12px rgba(30,45,70,.08);
 }
 #homeScreen .card-icon{
     width:40px;min-width:40px;height:40px;
@@ -2225,9 +2303,9 @@ body.home-active #globalHeader .hs-logo{
 #homeScreen .settings-card .card-icon svg{width:32px;height:32px;fill:#2874c7;}
 #homeScreen .info-card .card-icon svg{width:32px;height:32px;color:#f39a00;}
 #homeScreen .card-content{flex:1;min-width:0;}
-#homeScreen .card-title{font-size:13px;font-weight:700;color:#ffffff;margin-bottom:2px;}
-#homeScreen .card-description{font-size:9px;line-height:1.25;color:#aab7cf;}
-#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#c7d2e8;margin-left:5px;}
+#homeScreen .card-title{font-size:13px;font-weight:700;color:#293d5a;margin-bottom:2px;}
+#homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
+#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
 
 #homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle, #challengeFriendScreen .icon-circle, #challengeFormatScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -2452,7 +2530,7 @@ body.home-active #globalHeader .hs-logo{
     flex-shrink:0;gap:3px;
 }
 #historyScreen .oy-word-count{
-    font-size:10px;font-weight:700;color:#0055ff;
+    font-size:10px;font-weight:700;color:#000000;
     line-height:1;white-space:nowrap;
 }
 #friendsScreen .oy-card-header{align-items:flex-end;}
@@ -3092,6 +3170,14 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <h2>Ayarlar</h2>
 
+<div class="settings-section">
+<p class="settings-label">Görünüm</p>
+<div class="theme-toggle-row">
+<button class="theme-toggle-btn" id="themeLightBtn" onclick="setTheme('light')"><span class="theme-toggle-icon">☀️</span>Açık Mod</button>
+<button class="theme-toggle-btn" id="themeDarkBtn" onclick="setTheme('dark')"><span class="theme-toggle-icon">🌙</span>Koyu Mod</button>
+</div>
+</div>
+
 </div>
 
 <div id="infoScreen" style="display:none;">
@@ -3623,6 +3709,46 @@ Harf seçiniz
 
 
 <script>
+
+/* Koyu/Açık mod: sayfa ilk çizilmeden önce kaydedilmiş tercih uygulanıyor */
+(function(){
+let savedTheme=localStorage.getItem("konfetiTheme")||"light";
+if(savedTheme==="dark"){
+document.body.classList.add("dark-mode");
+}
+})();
+
+function updateThemeToggleUI(mode){
+
+let lightBtn=document.getElementById("themeLightBtn");
+let darkBtn=document.getElementById("themeDarkBtn");
+
+if(!lightBtn || !darkBtn)return;
+
+lightBtn.classList.toggle("active",mode!=="dark");
+darkBtn.classList.toggle("active",mode==="dark");
+
+}
+
+function applyThemeMode(mode){
+
+if(mode==="dark"){
+document.body.classList.add("dark-mode");
+}
+else{
+document.body.classList.remove("dark-mode");
+}
+
+updateThemeToggleUI(mode);
+
+}
+
+function setTheme(mode){
+
+localStorage.setItem("konfetiTheme",mode);
+applyThemeMode(mode);
+
+}
 
 (function(){
 
@@ -8333,6 +8459,7 @@ function showSettings(){
 
 hideAllScreens();
 document.getElementById("settingsScreen").style.display="block";
+updateThemeToggleUI(document.body.classList.contains("dark-mode") ? "dark" : "light");
 
 }
 
@@ -8745,6 +8872,7 @@ setBottomNavActive("games");
 
 hideAllScreens();
 document.getElementById("historyScreen").style.display="block";
+document.body.classList.add("home-active");
 
 currentHistoryTab="ongoing";
 
@@ -14095,6 +14223,13 @@ hideAllScreens();
 suppressScreenPush=false;
 
 document.getElementById(targetId).style.display=targetDisplay;
+
+if(targetId==="homeScreen" || targetId==="historyScreen"){
+document.body.classList.add("home-active");
+}
+else{
+document.body.classList.remove("home-active");
+}
 
 syncBottomNavForScreen(targetId);
 
