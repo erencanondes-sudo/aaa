@@ -2438,6 +2438,14 @@ button{
     border:2px solid #fff;
     box-sizing:border-box;
 }
+#historyScreen .oy-avatar-col{
+    display:flex;flex-direction:column;align-items:center;
+    flex-shrink:0;gap:3px;
+}
+#historyScreen .oy-word-count{
+    font-size:10px;font-weight:700;color:#0055ff;
+    line-height:1;white-space:nowrap;
+}
 #friendsScreen .oy-card-header{align-items:flex-end;}
 #friendsScreen .oy-avatar{width:44px;height:44px;font-size:21px;}
 #friendsScreen .oy-card{padding:8px;}
@@ -9556,7 +9564,7 @@ console.error("Bildirim sayısı güncellenemedi:",e);
 }
 
 
-function buildCompletedChallengeHtml(c,otherName,mySide,friendNames){
+function buildCompletedChallengeHtml(c,otherName,mySide,friendNames,wordCount){
 
 let typeLabel=friendNames.has(otherName) ? "Arkadaş" : (c.type==="computer" ? "Bilgisayar" : (c.type==="random" ? "Rastgele" : null));
 let typeSuffix=typeLabel ? " ("+typeLabel+")" : "";
@@ -9587,11 +9595,15 @@ meydanOkuOnclick="challengeFromProfile('"+otherName+"')";
 }
 
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
+let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wordCount||0)+"</div>";
 
 let html="";
 
 html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-avatar-col\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
+html+=wordCountHtml;
+html+="</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\">"+otherName+"</span></div>";
@@ -9705,6 +9717,13 @@ list.innerHTML="<p>Şu an oynamayı bekleyen bir oyunun yok.</p>";
 return;
 }
 
+let otherNamesForCount=items.filter(function(c){ return c.type!=="computer"; }).map(function(c){
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+return mySide==="from" ? c.toUsername : c.fromUsername;
+});
+
+fetchWordCountsForUsernames(otherNamesForCount).then(function(wordCounts){
+
 let html="";
 
 items.forEach(function(c){
@@ -9740,9 +9759,13 @@ statusText=currentGameIndex+"/"+totalGames+" ⏳ "+remainingHours+" saat";
 statusText+=(c.gameType==="word" ? "<span class=\"oy-status-type\">"+(c.sadeMode?"Klasik":"Çetrefilli")+"</span>" : "");
 
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
+let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wordCounts[otherName]||0)+"</div>";
 
 html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-avatar-col\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
+html+=wordCountHtml;
+html+="</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\">"+otherName+"</span></div>";
@@ -9779,6 +9802,8 @@ html+="</div>";
 list.innerHTML=html;
 
 updateChatBadgesForItems(items);
+
+});
 
 });
 
@@ -10043,6 +10068,20 @@ return c.status==="accepted" && c.games.every(function(g){ return g.fromPlayed &
 
 });
 
+if(completedChallenges.length===0){
+
+list.innerHTML="<p>Henüz oynanmış bir oyun yok.</p>";
+return;
+
+}
+
+let otherNamesForCount=completedChallenges.filter(function(c){ return c.type!=="computer"; }).map(function(c){
+let mySide=c.fromUsername===currentUser.username ? "from" : "to";
+return mySide==="from" ? c.toUsername : c.fromUsername;
+});
+
+fetchWordCountsForUsernames(otherNamesForCount).then(function(wordCounts){
+
 let combined=[];
 
 completedChallenges.forEach(function(c){
@@ -10052,18 +10091,11 @@ let otherName=mySide==="from" ? c.toUsername : c.fromUsername;
 
 let time=c.completedAt? c.completedAt.seconds : (c.createdAt? c.createdAt.seconds : 0);
 
-let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames);
+let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames,wordCounts[otherName]||0);
 
 combined.push({time:time,html:html,c:c});
 
 });
-
-if(combined.length===0){
-
-list.innerHTML="<p>Henüz oynanmış bir oyun yok.</p>";
-return;
-
-}
 
 combined.sort(function(a,b){ return b.time-a.time; });
 
@@ -10074,6 +10106,8 @@ combined=combined.slice(0,20);
 list.innerHTML=combined.map(function(x){return x.html;}).join("");
 
 updateChatBadgesForItems(completedChallenges);
+
+});
 
 }).catch(function(e){
 
@@ -12768,6 +12802,42 @@ function fetchChallengesAndFriends(){
 return Promise.all([fetchChallengesOnly(),fetchFriendsOnly()]).then(function(results){
 
 return {all:results[0],friendNames:results[1]};
+
+});
+
+}
+
+
+function fetchWordCountsForUsernames(usernames){
+
+let unique=Array.from(new Set(usernames)).filter(function(u){ return !!u; });
+
+if(unique.length===0){
+return Promise.resolve({});
+}
+
+let chunks=[];
+
+for(let i=0;i<unique.length;i+=10){
+chunks.push(unique.slice(i,i+10));
+}
+
+let queries=chunks.map(function(chunk){
+return db.collection("users").where("username","in",chunk).get();
+});
+
+return Promise.all(queries).then(function(snaps){
+
+let map={};
+
+snaps.forEach(function(snap){
+snap.forEach(function(doc){
+let data=doc.data();
+map[data.username]=(data.foundWordsList||[]).length;
+});
+});
+
+return map;
 
 });
 
