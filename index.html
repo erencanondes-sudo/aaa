@@ -75,7 +75,7 @@ html{
 }
 body{
     font-family:Arial,sans-serif;
-    background:#1a2b52;
+    background:#0a182f;
     margin:0;
     height:100vh;
     height:100dvh;
@@ -1993,6 +1993,14 @@ button{
 
 /* ===== ANA SAYFA - YENİ TASARIM (sadece #homeScreen içini etkiler) ===== */
 
+/* Anasayfa aktifken (body.home-active) genel kart zemini (2. arkaplan) koyulaşıyor - diğer ekranlar etkilenmiyor */
+body.home-active .game{
+    background:#1c2f50;
+}
+body.home-active #globalHeader .hs-logo{
+    color:#ffffff;
+}
+
 /* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
 #globalHeader{
     height:60px;
@@ -2023,7 +2031,7 @@ button{
     min-height:80px;
     margin-bottom:17px;
     border-radius:16px;
-    background:#fff;
+    background:#2e4570;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
     display:flex;align-items:center;
     padding:9px 19px 9px 10px;
@@ -2034,7 +2042,7 @@ button{
     top:8px;right:12px;
     font-size:12px;
     font-weight:800;
-    color:#192a56;
+    color:#ffffff;
 }
 #homeScreen .avatar{
     width:58px;height:58px;flex:none;
@@ -2051,7 +2059,7 @@ button{
     box-sizing:border-box;
 }
 #homeScreen .welcome-content{flex:1;padding-left:16px;min-width:0}
-#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 10px 0;color:#172f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;}
+#homeScreen .welcome-text{font-size:18px;font-weight:800;margin:0 0 10px 0;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;}
 #homeScreen .stats{
     background:none;
     border-radius:0;
@@ -2069,9 +2077,9 @@ button{
 #homeScreen .stat{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
 #homeScreen .stat-icon{font-size:20px;flex:none;}
 #homeScreen .stat-text{min-width:0;overflow:hidden;}
-#homeScreen .stat b{display:block;font-size:17px;color:#172f62;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#homeScreen .stat small{display:block;color:#53627d;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
-#homeScreen .vline{height:34px;width:1px;background:#e5e8ee;margin:0 8px;flex:none;}
+#homeScreen .stat b{display:block;font-size:17px;color:#ffffff;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#homeScreen .stat small{display:block;color:#aab7cf;font-size:10px;margin-top:2px;line-height:1.15;white-space:normal;}
+#homeScreen .vline{height:34px;width:1px;background:rgba(255,255,255,.18);margin:0 8px;flex:none;}
 
 #homeScreen .guest-prompt-row{
     display:flex;
@@ -2111,7 +2119,7 @@ button{
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
-    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
+    box-shadow:0 5px 0 #d9dde3,0 6px 12px rgba(0,0,0,.15);
     transition:transform .2s,filter .2s;
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
@@ -2119,7 +2127,8 @@ button{
 #homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active, #challengeFriendScreen .menu-card:active, #challengeFormatScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
-#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+#homeScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);margin-bottom:8px;}
+#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);box-shadow:0 5px 0 #52247f,0 6px 12px rgba(0,0,0,.15);margin-bottom:9px;}
 #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #challengeFriendScreen .menu-card.white{
     min-height:60px;
@@ -2172,10 +2181,10 @@ button{
 }
 .challenge-continue-btn .menu-copy{flex:none;}
 .challenge-continue-btn .arrow{margin-left:8px;}
-#homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
+#homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06);box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
 #challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
-#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
+#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b);box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
@@ -2189,7 +2198,7 @@ button{
 #homeScreen .settings-card,
 #homeScreen .info-card{
     min-height:60px;
-    background:#fff;
+    background:#2e4570;
     border-radius:22px;
     display:flex;
     align-items:center;
@@ -2197,7 +2206,7 @@ button{
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
-    box-shadow:0 7px 0 rgba(160,170,185,.20),0 10px 22px rgba(30,45,70,.10);
+    box-shadow:0 6px 0 #3c5782,0 10px 22px rgba(0,0,0,.20);
     transition:all .2s ease;
 }
 #homeScreen .settings-card:active,
@@ -2205,7 +2214,7 @@ button{
 #homeScreen .settings-card.menu-card-pressed,
 #homeScreen .info-card.menu-card-pressed{
     transform:translateY(5px);
-    box-shadow:0 2px 0 rgba(160,170,185,.18),0 5px 12px rgba(30,45,70,.08);
+    box-shadow:0 2px 0 #3c5782,0 5px 12px rgba(0,0,0,.15);
 }
 #homeScreen .card-icon{
     width:40px;min-width:40px;height:40px;
@@ -2216,9 +2225,9 @@ button{
 #homeScreen .settings-card .card-icon svg{width:32px;height:32px;fill:#2874c7;}
 #homeScreen .info-card .card-icon svg{width:32px;height:32px;color:#f39a00;}
 #homeScreen .card-content{flex:1;min-width:0;}
-#homeScreen .card-title{font-size:13px;font-weight:700;color:#293d5a;margin-bottom:2px;}
-#homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
-#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
+#homeScreen .card-title{font-size:13px;font-weight:700;color:#ffffff;margin-bottom:2px;}
+#homeScreen .card-description{font-size:9px;line-height:1.25;color:#aab7cf;}
+#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#c7d2e8;margin-left:5px;}
 
 #homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle, #challengeFriendScreen .icon-circle, #challengeFormatScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -4348,6 +4357,7 @@ flushPendingGameFromStorage();
 
 document.getElementById("authScreen").style.display="none";
 document.getElementById("homeScreen").style.display="block";
+document.body.classList.add("home-active");
 
 setBottomNavActive("home");
 
@@ -4978,6 +4988,7 @@ break;
 }
 
 document.getElementById("homeScreen").style.display="none";
+document.body.classList.remove("home-active");
 document.getElementById("profileScreen").style.display="none";
 document.getElementById("otherProfileScreen").style.display="none";
 document.getElementById("friendsScreen").style.display="none";
@@ -5170,7 +5181,7 @@ if(idx>-1)topNotifActive.splice(idx,1);
 setTimeout(function(){
 topNotifPlaying=false;
 processTopNotifQueue();
-},200);
+},400);
 
 }
 
@@ -5236,6 +5247,7 @@ activeChallengeGameIndex=null;
 hideAllScreens();
 
 document.getElementById("homeScreen").style.display="block";
+document.body.classList.add("home-active");
 
 screenNavStack=[];
 
