@@ -766,7 +766,7 @@ button{
     width:90px;
     height:90px;
     border-radius:50%;
-    background:#dfe6e9;
+    background:#3182ce;
     font-size:46px;
     display:flex;
     align-items:center;
@@ -2004,16 +2004,16 @@ body.dark-mode #homeScreen .welcome-text{color:#ffffff;}
 body.dark-mode #homeScreen .stat b{color:#ffffff;}
 body.dark-mode #homeScreen .stat small{color:#aab7cf;}
 body.dark-mode #homeScreen .vline{background:rgba(255,255,255,.18);}
-body.dark-mode #homeScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
-body.dark-mode #homeScreen .menu-card.purple{box-shadow:0 5px 0 #4c2175,0 6px 12px rgba(0,0,0,.15);}
-body.dark-mode #homeScreen .menu-card.orange{box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
-body.dark-mode #homeScreen .menu-card.red{box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.new{--menu-fill-color:#125f19;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.purple{--menu-fill-color:#4c2175;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.orange{--menu-fill-color:#8f4b03;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .menu-card.red{--menu-fill-color:#891e19;--menu-blur-color:rgba(0,0,0,.15);}
 body.dark-mode #homeScreen .settings-card,
-body.dark-mode #homeScreen .info-card{background:#2e4570;box-shadow:0 6px 0 #3c5782,0 10px 22px rgba(0,0,0,.20);}
+body.dark-mode #homeScreen .info-card{background:#2e4570;--card-fill-color:#3d5478;--card-blur-color:rgba(0,0,0,.20);}
 body.dark-mode #homeScreen .settings-card:active,
 body.dark-mode #homeScreen .info-card:active,
 body.dark-mode #homeScreen .settings-card.menu-card-pressed,
-body.dark-mode #homeScreen .info-card.menu-card-pressed{box-shadow:0 2px 0 #3c5782,0 5px 12px rgba(0,0,0,.15);}
+body.dark-mode #homeScreen .info-card.menu-card-pressed{--card-fill-color-active:#3d5478;--card-blur-color-active:rgba(0,0,0,.15);}
 body.dark-mode #homeScreen .card-title{color:#ffffff;}
 body.dark-mode #homeScreen .card-description{color:#aab7cf;}
 body.dark-mode #homeScreen .card-arrow{color:#c7d2e8;}
@@ -2021,7 +2021,7 @@ body.dark-mode #homeScreen .card-arrow{color:#c7d2e8;}
 /* Koyu mod - Oyunlarım (historyScreen) */
 body.dark-mode #historyScreen .oy-card,
 body.dark-mode #tournamentScreen .oy-card,
-body.dark-mode #friendsScreen .oy-card{background:#2e4570;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+body.dark-mode #friendsScreen .oy-card{background:#2e4570;--oy-card-shadow:rgba(0,0,0,.15);}
 body.dark-mode #historyScreen .oy-username,
 body.dark-mode #tournamentScreen .oy-username,
 body.dark-mode #friendsScreen .oy-username{color:#ffffff;}
@@ -2029,12 +2029,10 @@ body.dark-mode #historyScreen .oy-word-count{color:#ffffff;}
 body.dark-mode #historyScreen .oy-status,
 body.dark-mode #tournamentScreen .oy-status{color:#c7d2e8;}
 body.dark-mode #historyScreen .oy-status-type{color:#c7d2e8;}
-body.dark-mode #historyScreen .oy-tab-btn,
-body.dark-mode #tournamentScreen .oy-tab-btn{background:#223a5e;color:#ffffff;box-shadow:0 4px 0 #0d1b34;}
-body.dark-mode #historyScreen .oy-tab-btn.active,
-body.dark-mode #tournamentScreen .oy-tab-btn.active{background:#0055ff;color:#fff;box-shadow:0 4px 0 #003cc7;}
+body.dark-mode #historyScreen .oy-tab-btn:not(.active),
+body.dark-mode #tournamentScreen .oy-tab-btn:not(.active){background:#223a5e;color:#ffffff;--tab-shadow-color:#0d1b34;}
 body.dark-mode #historyScreen .oy-btn-view,
-body.dark-mode #tournamentScreen .oy-btn-view{background:#2e4570;color:#ffffff;box-shadow:0 3px 0 #1c2c48;}
+body.dark-mode #tournamentScreen .oy-btn-view{background:#2e4570;color:#ffffff;--btn-view-shadow:#1c2c48;}
 body.dark-mode #friendsScreen .friend-stats-row{color:#c7d2e8;}
 body.dark-mode #friendsScreen .friend-stats-sep{color:#5c7099;}
 body.dark-mode #openTournamentsScreen .challenge-item{background:#2e4570;}
@@ -2054,16 +2052,16 @@ body.dark-mode #challengeModeChoiceScreen .menu-card.new,
 body.dark-mode #randomWaitScreen .menu-card.new,
 body.dark-mode #challengeTypeScreen .menu-card.new,
 body.dark-mode #challengeFriendScreen .menu-card.new,
-body.dark-mode #challengeFormatScreen .menu-card.new{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #challengeFormatScreen .menu-card.new{--menu-fill-color:#125f19;--menu-blur-color:rgba(0,0,0,.15);}
 body.dark-mode #gameTypeScreen .menu-card.purple,
-body.dark-mode #challengeTypeScreen .menu-card.purple{box-shadow:0 5px 0 #4c2175,0 6px 12px rgba(0,0,0,.15);}
-body.dark-mode #challengeFormatScreen .menu-card.orange{box-shadow:0 5px 0 #8f4b03,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #challengeTypeScreen .menu-card.purple{--menu-fill-color:#4c2175;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #challengeFormatScreen .menu-card.orange{--menu-fill-color:#8f4b03;--menu-blur-color:rgba(0,0,0,.15);}
 body.dark-mode #gameTypeScreen .menu-card.red,
 body.dark-mode #challengeModeChoiceScreen .menu-card.red,
 body.dark-mode #randomWaitScreen .menu-card.red,
 body.dark-mode #challengeTypeScreen .menu-card.red,
-body.dark-mode #challengeFormatScreen .menu-card.red{box-shadow:0 5px 0 #891e19,0 6px 12px rgba(0,0,0,.15);}
-body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0 6px 12px rgba(0,0,0,.15);}
+body.dark-mode #challengeFormatScreen .menu-card.red{--menu-fill-color:#891e19;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--menu-blur-color:rgba(0,0,0,.15);}
 
 /* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
 #globalHeader{
@@ -2111,7 +2109,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
 #homeScreen .avatar{
     width:58px;height:58px;flex:none;
     border-radius:50%;
-    background:linear-gradient(145deg,#e9edf3,#d8e1eb);
+    background:#3182ce;
     display:flex;align-items:center;justify-content:center;
     font-size:32px;position:relative;
     margin:0;
@@ -2183,7 +2181,9 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
-    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
+    --menu-fill-color:rgba(0,0,0,.20);
+    --menu-blur-color:rgba(25,40,60,.10);
+    box-shadow:0 5px 0 var(--menu-fill-color),0 6px 12px var(--menu-blur-color);
     transition:transform .2s,filter .2s;
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
@@ -2290,7 +2290,9 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
-    box-shadow:0 6px 0 rgba(160,170,185,.20),0 10px 22px rgba(30,45,70,.10);
+    --card-fill-color:rgba(160,170,185,.20);
+    --card-blur-color:rgba(30,45,70,.10);
+    box-shadow:0 5px 0 var(--card-fill-color),0 10px 22px var(--card-blur-color);
     transition:all .2s ease;
 }
 #homeScreen .settings-card:active,
@@ -2298,7 +2300,9 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
 #homeScreen .settings-card.menu-card-pressed,
 #homeScreen .info-card.menu-card-pressed{
     transform:translateY(5px);
-    box-shadow:0 2px 0 rgba(160,170,185,.18),0 5px 12px rgba(30,45,70,.08);
+    --card-fill-color-active:rgba(160,170,185,.18);
+    --card-blur-color-active:rgba(30,45,70,.08);
+    box-shadow:0 2px 0 var(--card-fill-color-active),0 5px 12px var(--card-blur-color-active);
 }
 #homeScreen .card-icon{
     width:40px;min-width:40px;height:40px;
@@ -2424,7 +2428,8 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
 #historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn{
     background:#e1e9f7;
     color:#0b2b6b;
-    box-shadow:0 4px 0 #b7c9e8;
+    --tab-shadow-color:#b7c9e8;
+    box-shadow:0 4px 0 var(--tab-shadow-color);
 }
 #historyScreen .oy-tab-btn.active, #tournamentScreen .oy-tab-btn.active{
     background:#0055ff;
@@ -2463,7 +2468,8 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     border-radius:20px;
     padding:10px;
     position:relative;
-    box-shadow:0 2px 8px rgba(0,0,0,.02);
+    --oy-card-shadow:rgba(0,0,0,.02);
+    box-shadow:0 2px 8px var(--oy-card-shadow);
     display:flex;
     align-items:center;
     gap:9px;
@@ -2501,7 +2507,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
 }
 #historyScreen .oy-avatar, #tournamentScreen .oy-avatar, #friendsScreen .oy-avatar{
     width:28px;height:28px;flex-shrink:0;
-    background:#dce7ff;
+    background:#3182ce;
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
     color:#0055ff;
@@ -2515,7 +2521,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     width:54px;height:54px;
     font-size:26px;
 }
-#historyScreen .oy-avatar{background:#c7d9f7;}
+#historyScreen .oy-avatar{background:#3182ce;}
 #historyScreen .oy-avatar-ring{
     width:58px;height:58px;
     border-radius:50%;
@@ -2591,7 +2597,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     font-variant-emoji:text;
 }
 #historyScreen .oy-btn, #tournamentScreen .oy-btn:active{top:2px}
-#historyScreen .oy-btn-view, #tournamentScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;box-shadow:0 3px 0 #c2d2e9}
+#historyScreen .oy-btn-view, #tournamentScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;--btn-view-shadow:#c2d2e9;box-shadow:0 3px 0 var(--btn-view-shadow)}
 #historyScreen .oy-btn-play, #tournamentScreen .oy-btn-play{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
 #historyScreen .oy-btn-continue{background:#e74c3c;color:#fff;box-shadow:0 3px 0 #b93a2d}
 #historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg{background:#00bfa5;color:#fff;box-shadow:0 3px 0 #00897b}
@@ -2683,11 +2689,11 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     text-align:left;
 }
 
-#tournamentDetailScreen .td-header{
+#tournamentDetailScreen .td-header, #challengeDetailScreen .td-header{
     display:flex;justify-content:space-between;align-items:center;
     margin-bottom:16px;
 }
-#tournamentDetailScreen .td-header-icon{
+#tournamentDetailScreen .td-header-icon, #challengeDetailScreen .td-header-icon{
     width:32px;height:32px;flex:none;
     border-radius:50%;
     background:rgba(255,255,255,.1);
@@ -2695,24 +2701,24 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     cursor:pointer;
     border:0;color:#fff;font-size:15px;font-family:inherit;
 }
-#tournamentDetailScreen .td-header-title{
+#tournamentDetailScreen .td-header-title, #challengeDetailScreen .td-header-title{
     flex:1;text-align:center;
     font-size:15px;font-weight:800;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     padding:0 8px;
 }
 
-#tournamentDetailScreen .td-grid-row{
+#tournamentDetailScreen .td-grid-row, #challengeDetailScreen .td-grid-row{
     display:grid;
     grid-template-columns:0.7fr 2.3fr;
     gap:10px;
     align-items:start;
     margin-bottom:16px;
 }
-#tournamentDetailScreen .td-left-column{
+#tournamentDetailScreen .td-left-column, #challengeDetailScreen .td-left-column{
     display:flex;flex-direction:column;gap:10px;
 }
-#tournamentDetailScreen .td-lastweek-btn{
+#tournamentDetailScreen .td-lastweek-btn, #challengeDetailScreen .td-lastweek-btn{
     width:100%;
     border-radius:14px;
     padding:8px 10px;
@@ -2725,28 +2731,28 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     box-shadow:0 4px 0 rgba(0,0,0,.20);
     position:relative;
 }
-#tournamentDetailScreen .td-lastweek-btn:active{transform:translateY(3px);filter:brightness(.96)}
-#tournamentDetailScreen .td-card{
+#tournamentDetailScreen .td-lastweek-btn:active, #challengeDetailScreen .td-lastweek-btn:active{transform:translateY(3px);filter:brightness(.96)}
+#tournamentDetailScreen .td-card, #challengeDetailScreen .td-card{
     background:#101a38;
     border:1px solid #1c2b54;
     border-radius:16px;
     padding:6px 10px;
     box-sizing:border-box;
 }
-#tournamentDetailScreen .td-timer-card{
+#tournamentDetailScreen .td-timer-card, #challengeDetailScreen .td-timer-card{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;
     min-height:64px;
 }
-#tournamentDetailScreen .td-trophy-icon{font-size:18px;margin-bottom:2px;}
-#tournamentDetailScreen .td-timer-subtitle{font-size:9.5px;color:#7b8fae;}
-#tournamentDetailScreen .td-timer-title{font-size:10.5px;font-weight:800;}
-#tournamentDetailScreen .td-timer-clock{font-size:11px;font-weight:800;margin-top:2px;white-space:nowrap;}
-#tournamentDetailScreen .td-timer-unit{font-size:8.5px;color:#7b8fae;margin-right:2px;}
+#tournamentDetailScreen .td-trophy-icon, #challengeDetailScreen .td-trophy-icon{font-size:18px;margin-bottom:2px;}
+#tournamentDetailScreen .td-timer-subtitle, #challengeDetailScreen .td-timer-subtitle{font-size:9.5px;color:#7b8fae;}
+#tournamentDetailScreen .td-timer-title, #challengeDetailScreen .td-timer-title{font-size:10.5px;font-weight:800;}
+#tournamentDetailScreen .td-timer-clock, #challengeDetailScreen .td-timer-clock{font-size:11px;font-weight:800;margin-top:2px;white-space:nowrap;}
+#tournamentDetailScreen .td-timer-unit, #challengeDetailScreen .td-timer-unit{font-size:8.5px;color:#7b8fae;margin-right:2px;}
 
-#tournamentDetailScreen .td-btn-purple,
-#tournamentDetailScreen .td-btn-green,
-#tournamentDetailScreen .td-btn-locked{
+#tournamentDetailScreen .td-btn-purple, #challengeDetailScreen .td-btn-purple,
+#tournamentDetailScreen .td-btn-green, #challengeDetailScreen .td-btn-green,
+#tournamentDetailScreen .td-btn-locked, #challengeDetailScreen .td-btn-locked{
     border-radius:16px;
     padding:10px 6px;
     text-align:center;
@@ -2758,13 +2764,13 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     border:0;color:#fff;font-family:inherit;width:100%;
     box-sizing:border-box;
 }
-#tournamentDetailScreen .td-btn-purple{background:linear-gradient(135deg,#8a2be2,#4b0082);}
-#tournamentDetailScreen .td-btn-green{background:linear-gradient(135deg,#2ecc71,#27ae60);}
-#tournamentDetailScreen .td-btn-green:disabled{opacity:.55;cursor:default;}
-#tournamentDetailScreen .td-btn-locked{background:#26314f;color:#7b8fae;opacity:.7;cursor:default;}
-#tournamentDetailScreen .td-play-icon{font-size:16px;}
-#tournamentDetailScreen .td-days-list{display:flex;flex-direction:column;gap:8px;}
-#tournamentDetailScreen .td-day-card{
+#tournamentDetailScreen .td-btn-purple, #challengeDetailScreen .td-btn-purple{background:linear-gradient(135deg,#8a2be2,#4b0082);}
+#tournamentDetailScreen .td-btn-green, #challengeDetailScreen .td-btn-green{background:linear-gradient(135deg,#2ecc71,#27ae60);}
+#tournamentDetailScreen .td-btn-green:disabled, #challengeDetailScreen .td-btn-green:disabled{opacity:.55;cursor:default;}
+#tournamentDetailScreen .td-btn-locked, #challengeDetailScreen .td-btn-locked{background:#26314f;color:#7b8fae;opacity:.7;cursor:default;}
+#tournamentDetailScreen .td-play-icon, #challengeDetailScreen .td-play-icon{font-size:16px;}
+#tournamentDetailScreen .td-days-list, #challengeDetailScreen .td-days-list{display:flex;flex-direction:column;gap:8px;}
+#tournamentDetailScreen .td-day-card, #challengeDetailScreen .td-day-card{
     width:92%;
     margin:0 auto;
     min-height:32px;
@@ -2779,14 +2785,13 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{box-shadow:0 5px 0 #013b5a,0
     border:0;cursor:pointer;font-family:inherit;
     box-sizing:border-box;
 }
-#tournamentDetailScreen .td-day-card:active{transform:translateY(3px);filter:brightness(.96)}
-#tournamentDetailScreen .td-day-card.playable{background:linear-gradient(105deg,#35b233,#209c2b)}
-body.dark-mode #tournamentDetailScreen .td-day-card.playable{box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
-#tournamentDetailScreen .td-day-card.played{background:linear-gradient(105deg,#35b233,#209c2b);opacity:.55;cursor:default;}
-#tournamentDetailScreen .td-day-card.played:active{transform:none;filter:none;}
-#tournamentDetailScreen .td-day-card.locked{background:#26314f;color:#7b8fae;cursor:default;box-shadow:0 5px 0 rgba(0,0,0,.15);}
-#tournamentDetailScreen .td-day-card.locked:active{transform:none;filter:none;}
-#tournamentDetailScreen .td-day-icon-circle{
+#tournamentDetailScreen .td-day-card:active, #challengeDetailScreen .td-day-card:active{transform:translateY(3px);filter:brightness(.96)}
+#tournamentDetailScreen .td-day-card.playable, #challengeDetailScreen .td-day-card.playable{background:linear-gradient(105deg,#35b233,#209c2b);box-shadow:0 5px 0 #125f19,0 6px 12px rgba(0,0,0,.15);}
+#tournamentDetailScreen .td-day-card.played, #challengeDetailScreen .td-day-card.played{background:linear-gradient(105deg,#35b233,#209c2b);opacity:.55;cursor:default;}
+#tournamentDetailScreen .td-day-card.played:active, #challengeDetailScreen .td-day-card.played:active{transform:none;filter:none;}
+#tournamentDetailScreen .td-day-card.locked, #challengeDetailScreen .td-day-card.locked{background:#26314f;color:#7b8fae;cursor:default;box-shadow:0 5px 0 rgba(0,0,0,.15);}
+#tournamentDetailScreen .td-day-card.locked:active, #challengeDetailScreen .td-day-card.locked:active{transform:none;filter:none;}
+#tournamentDetailScreen .td-day-icon-circle, #challengeDetailScreen .td-day-icon-circle{
     width:18px;height:18px;min-width:18px;
     border-radius:50%;
     background:#fff;
@@ -2796,18 +2801,18 @@ body.dark-mode #tournamentDetailScreen .td-day-card.playable{box-shadow:0 5px 0 
     font-size:9px;
     flex:none;
 }
-#tournamentDetailScreen .td-day-triangle{
+#tournamentDetailScreen .td-day-triangle, #challengeDetailScreen .td-day-triangle{
     width:0;height:0;
     border-top:3.5px solid transparent;
     border-bottom:3.5px solid transparent;
     border-left:5.5px solid #209e32;
     transform:translateX(1px);
 }
-#tournamentDetailScreen .td-day-card.locked .td-day-icon-circle{background:rgba(255,255,255,.15);}
-#tournamentDetailScreen .td-day-label{flex:1;min-width:0;font-size:11px;font-weight:800;}
-#tournamentDetailScreen .td-day-arrow{font-size:20px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
+#tournamentDetailScreen .td-day-card.locked .td-day-icon-circle, #challengeDetailScreen .td-day-card.locked .td-day-icon-circle{background:rgba(255,255,255,.15);}
+#tournamentDetailScreen .td-day-label, #challengeDetailScreen .td-day-label{flex:1;min-width:0;font-size:11px;font-weight:800;}
+#tournamentDetailScreen .td-day-arrow, #challengeDetailScreen .td-day-arrow{font-size:20px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
 
-#tournamentDetailScreen .td-chat-card{
+#tournamentDetailScreen .td-chat-card, #challengeDetailScreen .td-chat-card{
     background:#101a38;
     border:1px solid #1c2b54;
     border-radius:16px;
@@ -2816,65 +2821,81 @@ body.dark-mode #tournamentDetailScreen .td-day-card.playable{box-shadow:0 5px 0 
     height:430px;
     box-sizing:border-box;
 }
-#tournamentDetailScreen .td-chat-header{font-size:10px;color:#0088ff;font-weight:800;margin-bottom:6px;letter-spacing:.5px;}
-#tournamentDetailScreen .td-chat-messages{flex:1;overflow-y:auto;font-size:11px;display:flex;flex-direction:column;gap:5px;}
-#tournamentDetailScreen .td-chat-msg{display:flex;justify-content:space-between;gap:6px;}
-#tournamentDetailScreen .td-chat-user{color:#0088ff;font-weight:800;margin-right:3px;}
-#tournamentDetailScreen .td-chat-text{color:#d1d5db;word-break:break-word;}
-#tournamentDetailScreen .td-chat-time{color:#4b5563;font-size:8.5px;flex:none;white-space:nowrap;padding-top:1px;}
-#tournamentDetailScreen .td-chat-input-container{display:flex;gap:5px;margin-top:7px;}
-#tournamentDetailScreen .td-chat-input{
+#challengeDetailScreen .td-chat-card{height:340px;}
+#challengeDetailScreen .cd-title-avatar{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;
+    background:#3182ce;
+    font-size:13px;
+    margin-right:6px;
+    vertical-align:middle;
+    position:relative;top:-2px;
+}
+#challengeDetailScreen .cd-title-text{
+    display:inline-block;
+    vertical-align:middle;
+    position:relative;top:2px;
+}
+#tournamentDetailScreen .td-chat-header, #challengeDetailScreen .td-chat-header{font-size:10px;color:#0088ff;font-weight:800;margin-bottom:6px;letter-spacing:.5px;}
+#tournamentDetailScreen .td-chat-messages, #challengeDetailScreen .td-chat-messages{flex:1;overflow-y:auto;font-size:11px;display:flex;flex-direction:column;gap:5px;}
+#tournamentDetailScreen .td-chat-msg, #challengeDetailScreen .td-chat-msg{display:flex;justify-content:space-between;gap:6px;}
+#tournamentDetailScreen .td-chat-user, #challengeDetailScreen .td-chat-user{color:#0088ff;font-weight:800;margin-right:3px;}
+#tournamentDetailScreen .td-chat-text, #challengeDetailScreen .td-chat-text{color:#d1d5db;word-break:break-word;}
+#tournamentDetailScreen .td-chat-time, #challengeDetailScreen .td-chat-time{color:#4b5563;font-size:8.5px;flex:none;white-space:nowrap;padding-top:1px;}
+#tournamentDetailScreen .td-chat-input-container, #challengeDetailScreen .td-chat-input-container{display:flex;gap:5px;margin-top:7px;}
+#tournamentDetailScreen .td-chat-input, #challengeDetailScreen .td-chat-input{
     background:#0b1329;border:1px solid #1c2b54;border-radius:16px;
     padding:6px 11px;color:#fff;font-size:10px;flex:1;font-family:inherit;
     min-width:0;
 }
-#tournamentDetailScreen .td-chat-input::placeholder{color:#5b6b8c;}
-#tournamentDetailScreen .td-chat-send{
+#tournamentDetailScreen .td-chat-input::placeholder, #challengeDetailScreen .td-chat-input::placeholder{color:#5b6b8c;}
+#tournamentDetailScreen .td-chat-send, #challengeDetailScreen .td-chat-send{
     background:#0088ff;border:0;border-radius:50%;
     width:26px;height:26px;color:#fff;
     display:flex;align-items:center;justify-content:center;
     font-size:11px;cursor:pointer;flex:none;
 }
 
-#tournamentDetailScreen .td-leaderboard-section{
+#tournamentDetailScreen .td-leaderboard-section, #challengeDetailScreen .td-leaderboard-section{
     display:flex;flex-direction:column;gap:8px;
 }
-#tournamentDetailScreen .td-section-title{
+#tournamentDetailScreen .td-section-title, #challengeDetailScreen .td-section-title{
     font-size:11px;color:#7b8fae;font-weight:800;letter-spacing:.5px;
 }
-#tournamentDetailScreen .td-leaderboard-list{display:flex;flex-direction:column;gap:8px;}
-#tournamentDetailScreen .td-leaderboard-item{
+#challengeDetailScreen .td-section-title{text-align:left;padding-left:4px;}
+#tournamentDetailScreen .td-leaderboard-list, #challengeDetailScreen .td-leaderboard-list{display:flex;flex-direction:column;gap:8px;}
+#tournamentDetailScreen .td-leaderboard-item, #challengeDetailScreen .td-leaderboard-item{
     background:#101a38;border:1px solid #1c2b54;border-radius:16px;
     padding:8px 12px;
     display:flex;align-items:center;justify-content:space-between;
     box-sizing:border-box;
 }
-#tournamentDetailScreen .td-user-info-group{display:flex;align-items:center;gap:8px;min-width:0;}
-#tournamentDetailScreen .td-rank-badge{
+#tournamentDetailScreen .td-user-info-group, #challengeDetailScreen .td-user-info-group{display:flex;align-items:center;gap:8px;min-width:0;}
+#tournamentDetailScreen .td-rank-badge, #challengeDetailScreen .td-rank-badge{
     width:24px;height:24px;border-radius:50%;flex:none;
     display:flex;align-items:center;justify-content:center;
     font-weight:800;font-size:12px;
     background:#1c2b54;color:#7b8fae;
 }
-#tournamentDetailScreen .td-rank-1{background:#ffb800;color:#000;}
-#tournamentDetailScreen .td-rank-2{background:#a0aec0;color:#000;}
-#tournamentDetailScreen .td-rank-3{background:#dd6b20;color:#000;}
-#tournamentDetailScreen .td-avatar{
+#tournamentDetailScreen .td-rank-1, #challengeDetailScreen .td-rank-1{background:#ffb800;color:#000;}
+#tournamentDetailScreen .td-rank-2, #challengeDetailScreen .td-rank-2{background:#a0aec0;color:#000;}
+#tournamentDetailScreen .td-rank-3, #challengeDetailScreen .td-rank-3{background:#dd6b20;color:#000;}
+#tournamentDetailScreen .td-avatar, #challengeDetailScreen .td-avatar{
     width:32px;height:32px;border-radius:50%;flex:none;
     background:#3182ce;
     display:flex;align-items:center;justify-content:center;
     font-size:15px;
 }
-#tournamentDetailScreen .td-user-details{display:flex;flex-direction:column;min-width:0;text-align:left;}
-#tournamentDetailScreen .td-user-name{
+#tournamentDetailScreen .td-user-details, #challengeDetailScreen .td-user-details{display:flex;flex-direction:column;min-width:0;text-align:left;}
+#tournamentDetailScreen .td-user-name, #challengeDetailScreen .td-user-name{
     font-size:12px;font-weight:800;color:#fff;
     text-decoration:none;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;
     cursor:pointer;
 }
-#tournamentDetailScreen .td-user-subtext{font-size:9.5px;color:#7b8fae;}
-#tournamentDetailScreen .td-score-info{text-align:right;font-size:9.5px;color:#7b8fae;flex:none;padding-left:6px;}
-#tournamentDetailScreen .td-score-number{font-size:15px;font-weight:800;color:#fff;}
+#tournamentDetailScreen .td-user-subtext, #challengeDetailScreen .td-user-subtext{font-size:9.5px;color:#7b8fae;}
+#tournamentDetailScreen .td-score-info, #challengeDetailScreen .td-score-info{text-align:right;font-size:9.5px;color:#7b8fae;flex:none;padding-left:6px;}
+#tournamentDetailScreen .td-score-number, #challengeDetailScreen .td-score-number{font-size:15px;font-weight:800;color:#fff;}
 
 /* ===== ALT MENÜ (tüm menü ekranlarında sabit) ===== */
 
@@ -3570,6 +3591,19 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
+<div id="challengeDetailScreen" style="display:none;">
+
+<div class="td-header-title" id="challengeDetailTitle">Düello</div>
+
+<div class="td-grid-row">
+<div class="td-left-column" id="challengeDetailContent"></div>
+<div class="td-chat-card" id="challengeDetailSidePanel"></div>
+</div>
+
+<div class="td-leaderboard-section" id="challengeDetailBottomSection"></div>
+
+</div>
+
 <div id="playArea" style="display:none;">
 
 
@@ -3836,7 +3870,7 @@ syncPlayingClass();
 new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
 
 let adBannerEl=document.getElementById("fakeAdBanner");
-let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen"];
+let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","challengeDetailScreen"];
 
 function deviceHasSystemNavBar(){
 
@@ -4671,9 +4705,12 @@ let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let activeChatChallengeId=null;
 let activeChatMySide=null;
+let activeChallengeDetailId=null;
+let activeChallengeDetailMySide=null;
+let challengeDetailChatUnsubscribe=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","settingsScreen","infoScreen","viewChallengeScreen","chatScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","playArea","authScreen"];
+const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","settingsScreen","infoScreen","viewChallengeScreen","chatScreen","challengeDetailScreen","gameTypeScreen","wordModeChoiceScreen","challengeTypeScreen","challengeModeChoiceScreen","randomWaitScreen","challengeFriendScreen","challengeLevelScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentScreen","tournamentCreateScreen","tournamentVisibilityScreen","tournamentDetailScreen","openTournamentsScreen","playArea","authScreen"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -5187,6 +5224,7 @@ document.getElementById("settingsScreen").style.display="none";
 document.getElementById("infoScreen").style.display="none";
 document.getElementById("viewChallengeScreen").style.display="none";
 document.getElementById("chatScreen").style.display="none";
+document.getElementById("challengeDetailScreen").style.display="none";
 document.getElementById("gameTypeScreen").style.display="none";
 document.getElementById("wordModeChoiceScreen").style.display="none";
 document.getElementById("challengeModeChoiceScreen").style.display="none";
@@ -5235,7 +5273,8 @@ tournamentScreen:"home",
 tournamentCreateScreen:"tournament",
 tournamentVisibilityScreen:"tournament",
 openTournamentsScreen:"tournament",
-tournamentDetailScreen:"tournament"
+tournamentDetailScreen:"tournament",
+challengeDetailScreen:"home"
 };
 
 function syncBottomNavForScreen(screenId){
@@ -8916,6 +8955,318 @@ console.error("Mesaj gönderilemedi:",e);
 }
 
 
+function openChallengeDetail(challengeId,mySide,otherName,source){
+
+returnToScreen=source;
+
+hideAllScreens();
+document.getElementById("challengeDetailScreen").style.display="block";
+
+document.getElementById("challengeDetailTitle").innerHTML=otherName+" ile Düello";
+document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p>";
+
+db.collection("challenges").doc(challengeId).get().then(function(doc){
+
+if(!doc.exists){
+document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Bu meydan okuma artık mevcut değil.</p>";
+return;
+}
+
+let ch=normalizeChallenge(doc.data());
+
+renderChallengeDetailContent(ch,challengeId,mySide,otherName);
+
+}).catch(function(e){
+
+document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Yüklenemedi: "+e.message+"</p>";
+
+});
+
+openChallengeDetailChat(challengeId,mySide);
+
+}
+
+
+function renderChallengeDetailContent(ch,challengeId,mySide,otherName){
+
+let avatarEmoji=ch.type==="computer" ? "🤖" : (mySide==="from" ? (ch.toAvatarEmoji||"👤") : (ch.fromAvatarEmoji||"👤"));
+let myAvatarEmoji=currentUser.avatarEmoji||"👤";
+
+document.getElementById("challengeDetailTitle").innerHTML="<span class=\"cd-title-avatar\">"+avatarEmoji+"</span><span class=\"cd-title-text\">"+otherName+" ile Düello</span>";
+
+let topHtml="";
+
+let now=Date.now();
+let deadlineMillis=ch.acceptedAt ? (ch.acceptedAt.seconds*1000+48*3600000) : null;
+let expired=deadlineMillis!==null && now>=deadlineMillis;
+
+topHtml+="<div class=\"td-card td-timer-card\">";
+topHtml+="<span class=\"td-trophy-icon\">🏆</span>";
+topHtml+="<span class=\"td-timer-subtitle\">Düello</span>";
+
+if(!deadlineMillis || expired){
+topHtml+="<span class=\"td-timer-title\">Süre doldu</span>";
+}
+else{
+
+let remainingMs=deadlineMillis-now;
+let remainingHoursDisplay=Math.floor(remainingMs/3600000);
+let remainingMinutesDisplay=Math.floor((remainingMs%3600000)/60000);
+
+topHtml+="<span class=\"td-timer-title\">Kalan süre</span>";
+topHtml+="<div class=\"td-timer-clock\">"+remainingHoursDisplay+"<span class=\"td-timer-unit\">saat</span> "+remainingMinutesDisplay+"<span class=\"td-timer-unit\">dk</span></div>";
+
+}
+
+topHtml+="</div>";
+
+let currentGameIndex=ch.games.findIndex(function(g){ return !(g.fromPlayed && g.toPlayed); });
+
+if(currentGameIndex===-1){
+
+topHtml+="<button class=\"td-day-card played\" disabled><div class=\"td-day-icon-circle\">✓</div><div class=\"td-day-label\">Tamamlandı</div></button>";
+
+}
+else{
+
+let currentGame=ch.games[currentGameIndex];
+let mySidePlayedCurrent=mySide==="from" ? currentGame.fromPlayed : currentGame.toPlayed;
+
+if(mySidePlayedCurrent){
+topHtml+="<button class=\"td-day-card played\" disabled><div class=\"td-day-icon-circle\">✓</div><div class=\"td-day-label\">Oynadın</div></button>";
+}
+else{
+
+let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
+let alreadyStarted=!!currentGame[mySideStartedField];
+let label=alreadyStarted ? "Devam Et" : "Oyna";
+
+topHtml+="<button class=\"td-day-card playable\" onclick=\"playChallenge('"+challengeId+"','"+mySide+"')\"><div class=\"td-day-icon-circle\"><div class=\"td-day-triangle\"></div></div><div class=\"td-day-label\">"+label+"</div><div class=\"td-day-arrow\">›</div></button>";
+
+}
+
+}
+
+document.getElementById("challengeDetailContent").innerHTML=topHtml;
+
+let fromTotal=ch.games.reduce(function(s,g){return s+g.fromScore;},0);
+let toTotal=ch.games.reduce(function(s,g){return s+g.toScore;},0);
+let myTotal=mySide==="from" ? fromTotal : toTotal;
+let opponentTotal=mySide==="from" ? toTotal : fromTotal;
+
+let rows=[
+{name:currentUser.username,avatarEmoji:myAvatarEmoji,score:myTotal,mine:true},
+{name:otherName,avatarEmoji:avatarEmoji,score:opponentTotal,mine:false}
+];
+
+rows.sort(function(a,b){ return b.score-a.score; });
+
+let bottomHtml="";
+
+bottomHtml+="<div class=\"td-section-title\">SIRALAMA</div>";
+bottomHtml+="<div class=\"td-leaderboard-list\">";
+
+rows.forEach(function(r,idx){
+
+let rankClass=idx===0?"td-rank-1":"td-rank-2";
+
+bottomHtml+="<div class=\"td-leaderboard-item\">";
+bottomHtml+="<div class=\"td-user-info-group\">";
+bottomHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
+bottomHtml+="<div class=\"td-avatar\">"+r.avatarEmoji+"</div>";
+bottomHtml+="<div class=\"td-user-details\"><span class=\"td-user-name\">"+r.name+"</span></div>";
+bottomHtml+="</div>";
+bottomHtml+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+r.score+"</span></div>";
+bottomHtml+="</div>";
+
+});
+
+bottomHtml+="</div>";
+
+bottomHtml+="<div class=\"td-section-title\">OYUN BİLGİSİ</div>";
+
+ch.games.forEach(function(g,i){
+
+let myScore=mySide==="from" ? g.fromScore : g.toScore;
+let opponentScore=mySide==="from" ? g.toScore : g.fromScore;
+let opponentPlayed=mySide==="from" ? g.toPlayed : g.fromPlayed;
+let mySidePlayed=mySide==="from" ? g.fromPlayed : g.toPlayed;
+
+bottomHtml+="<div class=\"td-card\" style=\"text-align:left;\">";
+bottomHtml+="<div style=\"font-weight:800;font-size:11.5px;color:#fff;margin-bottom:3px;\">"+(i+1)+". Oyun</div>";
+
+if(!mySidePlayed){
+
+bottomHtml+="<div style=\"font-size:10.5px;color:#7b8fae;\">Henüz oynamadın.</div>";
+
+}
+else{
+
+if(ch.gameType==="word"){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Harfler: "+(g.baseLetters ? g.baseLetters.join(", ") : "-")+"</div>";
+}
+else if(ch.gameType==="hafiza"){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">"+(g.pairs||0)+" çift kart</div>";
+}
+else{
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Hedef: "+g.target+"</div>";
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Sayılar: "+g.numbers.join(", ")+"</div>";
+}
+
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin Puanın: <b style=\"color:#fff;\">"+myScore+"</b></div>";
+
+if(opponentPlayed){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakip Puanı: <b style=\"color:#fff;\">"+opponentScore+"</b></div>";
+}
+else{
+bottomHtml+="<div style=\"font-size:10.5px;color:#7b8fae;\">Rakip henüz oynamadı.</div>";
+}
+
+if(ch.gameType==="word"){
+
+let myWordsFound=mySide==="from" ? g.fromWordsFound : g.toWordsFound;
+let opponentWordsFound=mySide==="from" ? g.toWordsFound : g.fromWordsFound;
+
+if(myWordsFound && myWordsFound.length){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin Bulduğun Kelimeler: "+myWordsFound.join(", ")+"</div>";
+}
+
+if(opponentPlayed && opponentWordsFound && opponentWordsFound.length){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+opponentWordsFound.join(", ")+"</div>";
+}
+
+}
+
+}
+
+bottomHtml+="</div>";
+
+});
+
+document.getElementById("challengeDetailBottomSection").innerHTML=bottomHtml;
+
+}
+
+
+function openChallengeDetailChat(challengeId,mySide){
+
+activeChallengeDetailId=challengeId;
+activeChallengeDetailMySide=mySide;
+
+let readField=mySide==="from" ? "fromLastRead" : "toLastRead";
+let unreadField=mySide==="from" ? "fromUnreadCount" : "toUnreadCount";
+let readUpdate={};
+readUpdate[readField]=firebase.firestore.FieldValue.serverTimestamp();
+readUpdate[unreadField]=0;
+
+let chForRead=liveChallengesData ? liveChallengesData[challengeId] : null;
+let readCommitPromise=chForRead ? commitChallengeUpdateFor(chForRead,challengeId,readUpdate) : db.collection("challenges").doc(challengeId).update(readUpdate);
+
+readCommitPromise.then(function(){
+updateChallengeBadge();
+}).catch(function(e){
+console.error("Okundu bilgisi güncellenemedi:",e);
+});
+
+let html="<div class=\"td-chat-header\">SOHBET</div>";
+html+="<div id=\"challengeDetailChatMessages\" class=\"td-chat-messages\"><p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p></div>";
+html+="<div class=\"td-chat-input-container\">";
+html+="<input type=\"text\" id=\"challengeDetailChatInput\" placeholder=\"Mesajını yaz...\" class=\"td-chat-input\">";
+html+="<button class=\"td-chat-send\" onclick=\"sendChallengeDetailChatMessage()\">&#10148;</button>";
+html+="</div>";
+
+document.getElementById("challengeDetailSidePanel").innerHTML=html;
+
+if(challengeDetailChatUnsubscribe){
+challengeDetailChatUnsubscribe();
+challengeDetailChatUnsubscribe=null;
+}
+
+let chatRtdbRef=rtdb.ref("challengeChats/"+challengeId).orderByKey().limitToLast(50);
+
+let chatValueHandler=function(snap){
+
+let msgEl=document.getElementById("challengeDetailChatMessages");
+if(!msgEl)return;
+
+if(!snap.exists()){
+msgEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Henüz mesaj yok, ilk mesajı sen yaz.</p>";
+return;
+}
+
+let html="";
+
+snap.forEach(function(child){
+
+let m=child.val();
+let mine=m.senderUsername===currentUser.username;
+let timeText="";
+
+if(m.sentAt){
+let d=new Date(m.sentAt);
+let hh=String(d.getHours()).padStart(2,"0");
+let mm=String(d.getMinutes()).padStart(2,"0");
+timeText=hh+":"+mm;
+}
+
+html+="<div class=\"td-chat-msg\"><div><span class=\"td-chat-user\" style=\"color:"+(mine?"#0088ff":"#7b8fae")+";\">"+m.senderUsername+":</span><span class=\"td-chat-text\">"+m.text+"</span></div><span class=\"td-chat-time\">"+timeText+"</span></div>";
+
+});
+
+msgEl.innerHTML=html;
+msgEl.scrollTop=msgEl.scrollHeight;
+
+};
+
+chatRtdbRef.on("value",chatValueHandler,function(e){
+console.error("Düello sohbeti yüklenemedi:",e);
+});
+
+challengeDetailChatUnsubscribe=function(){
+chatRtdbRef.off("value",chatValueHandler);
+};
+
+}
+
+
+function sendChallengeDetailChatMessage(){
+
+let input=document.getElementById("challengeDetailChatInput");
+let text=input.value.trim();
+
+if(!text || !activeChallengeDetailId)return;
+
+let challengeId=activeChallengeDetailId;
+let mySide=activeChallengeDetailMySide;
+
+rtdb.ref("challengeChats/"+challengeId).push({
+senderUsername:currentUser.username,
+text:text,
+sentAt:firebase.database.ServerValue.TIMESTAMP
+}).then(function(){
+
+input.value="";
+
+let challenge=liveChallengesData ? liveChallengesData[challengeId] : null;
+let recipientField=mySide==="from" ? "toUnreadCount" : "fromUnreadCount";
+let updates={};
+updates[recipientField]=firebase.firestore.FieldValue.increment(1);
+
+let updatePromise=challenge ? commitChallengeUpdateFor(challenge,challengeId,updates) : db.collection("challenges").doc(challengeId).update(updates);
+
+updatePromise.catch(function(e){
+console.error("Okunmamış sayacı güncellenemedi:",e);
+});
+
+}).catch(function(e){
+
+console.error("Mesaj gönderilemedi:",e);
+
+});
+
+}
+
+
 function viewChallenge(id){
 
 openDetailModal("<p>Yükleniyor...</p>");
@@ -9923,9 +10274,9 @@ html+="<span class=\"oy-status\">"+resultLabel+" · "+myTotal+"-"+opponentTotal+
 html+="</div>";
 
 html+="<div class=\"oy-actions\">";
-html+="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+html+="<button class=\"oy-btn oy-btn-view\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','oyunlarim')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
 html+="<button class=\"oy-btn oy-btn-brown\" onclick=\""+meydanOkuOnclick+"\">⚔️ Meydan Oku</button>";
-html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','oyunlarim')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','oyunlarim')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 html+="</div>";
 
 html+="</div>";
@@ -10092,17 +10443,17 @@ let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
 let alreadyStarted=!!currentGame[mySideStartedField];
 
 if(alreadyStarted){
-playButtonHtml="<button class=\"oy-btn oy-btn-continue\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-continue\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
 }
 else{
-playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
 }
 
 }
 
-let viewButtonHtml="<button class=\"oy-btn oy-btn-view\" onclick=\"viewChallenge('"+c.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+let viewButtonHtml="<button class=\"oy-btn oy-btn-view\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
 
-let messageButtonHtml="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChat('"+c.id+"','"+otherName+"','"+mySide+"','ongoing')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
+let messageButtonHtml="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" id=\"msgBadge-"+c.id+"\" style=\"display:none;\">0</span></button>";
 
 html+="<div class=\"oy-actions\">"+viewButtonHtml+playButtonHtml+messageButtonHtml+"</div>";
 
