@@ -3930,6 +3930,7 @@ setTimeout(updateSystemNavBarDetection,300);
 });
 window.addEventListener("load",function(){
 setTimeout(updateSystemNavBarDetection,300);
+initLongPressHandlers();
 });
 
 function refreshOnlineDependentScreens(){
@@ -5204,7 +5205,8 @@ let el=document.getElementById(SCREEN_IDS[i]);
 
 if(el.style.display && el.style.display!=="none"){
 
-screenNavStack.push({id:SCREEN_IDS[i],display:el.style.display});
+let gameElForPush=document.querySelector(".game");
+screenNavStack.push({id:SCREEN_IDS[i],display:el.style.display,scrollTop:gameElForPush?gameElForPush.scrollTop:0});
 window.history.pushState({app:true},"","");
 
 break;
@@ -5273,8 +5275,7 @@ tournamentScreen:"home",
 tournamentCreateScreen:"tournament",
 tournamentVisibilityScreen:"tournament",
 openTournamentsScreen:"tournament",
-tournamentDetailScreen:"tournament",
-challengeDetailScreen:"home"
+tournamentDetailScreen:"tournament"
 };
 
 function syncBottomNavForScreen(screenId){
@@ -7184,7 +7185,9 @@ return;
 
 let now=Date.now();
 
-let all=liveTournamentsData ? Object.values(liveTournamentsData) : [];
+cleanupExpiredHiddenTournaments(liveTournamentsData);
+
+let all=liveTournamentsData ? Object.values(liveTournamentsData).filter(function(t){ return !isTournamentHiddenLocally(t.id); }) : [];
 
 let mine=all.filter(function(t){ return t.participantUids && t.participantUids.includes(currentUser.uid); });
 let invitedList=all.filter(function(t){ return t.invitedUsernames && t.invitedUsernames.includes(currentUser.username); });
@@ -7222,7 +7225,9 @@ let remainingHours=Math.max(0,Math.floor((t.expiresAtMillis-Date.now())/3600000)
 statusText+=" ⏳ "+remainingHours+" saat";
 }
 
-html+="<div class=\"oy-card\">";
+let tLpType=isPast ? "tournament-past" : (isInviteTab ? "tournament-invite" : "tournament-ongoing");
+
+html+="<div class=\"oy-card\" data-lp-id=\""+t.id+"\" data-lp-type=\""+tLpType+"\">";
 html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">🏆</span></div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
@@ -8107,20 +8112,381 @@ document.getElementById("challengeDoneText").innerHTML="Meydan okuma oluşturula
 }
 
 
+let delayedAcceptedChallengeIds={};
+
+
+function getLocalHiddenMap(storageKey){
+
+try{
+let raw=localStorage.getItem(storageKey);
+return raw ? JSON.parse(raw) : {};
+}catch(e){
+return {};
+}
+
+}
+
+
+function setLocalHiddenMap(storageKey,map){
+
+try{
+localStorage.setItem(storageKey,JSON.stringify(map));
+}catch(e){}
+
+}
+
+
+function isChallengeHiddenLocally(id){
+return !!getLocalHiddenMap("konfetiHiddenChallenges")[id];
+}
+
+function hideChallengeLocally(id){
+let m=getLocalHiddenMap("konfetiHiddenChallenges");
+m[id]=true;
+setLocalHiddenMap("konfetiHiddenChallenges",m);
+}
+
+function unhideChallengeLocally(id){
+let m=getLocalHiddenMap("konfetiHiddenChallenges");
+delete m[id];
+setLocalHiddenMap("konfetiHiddenChallenges",m);
+}
+
+
+function isTournamentHiddenLocally(id){
+return !!getLocalHiddenMap("konfetiHiddenTournaments")[id];
+}
+
+function hideTournamentLocally(id){
+let m=getLocalHiddenMap("konfetiHiddenTournaments");
+m[id]=true;
+setLocalHiddenMap("konfetiHiddenTournaments",m);
+}
+
+function unhideTournamentLocally(id){
+let m=getLocalHiddenMap("konfetiHiddenTournaments");
+delete m[id];
+setLocalHiddenMap("konfetiHiddenTournaments",m);
+}
+
+
+function removeChallengeIdFromUser(id){
+
+if(!currentUser)return Promise.resolve();
+
+let fieldPath=new firebase.firestore.FieldPath("ids",id);
+
+return db.collection("userChallenges").doc(currentUser.uid).update(fieldPath,firebase.firestore.FieldValue.delete()).catch(function(e){
+console.error("Meydan okuma kimliği kaldırılamadı:",id,e);
+});
+
+}
+
+
+function removeTournamentIdFromUser(id){
+
+if(!currentUser)return Promise.resolve();
+
+let fieldPath=new firebase.firestore.FieldPath("ids",id);
+
+return db.collection("userTournaments").doc(currentUser.uid).update(fieldPath,firebase.firestore.FieldValue.delete()).catch(function(e){
+console.error("Turnuva kimliği kaldırılamadı:",id,e);
+});
+
+}
+
+
+function cleanupExpiredHiddenChallenges(all){
+
+let hidden=getLocalHiddenMap("konfetiHiddenChallenges");
+let now=Math.floor(Date.now()/1000);
+
+Object.keys(hidden).forEach(function(id){
+
+let c=all ? all[id] : null;
+
+if(!c){
+unhideChallengeLocally(id);
+return;
+}
+
+let expired=false;
+
+if(c.status==="pending" && c.createdAt && (now-c.createdAt.seconds)>48*3600){
+expired=true;
+}
+else if(c.status==="accepted"){
+
+let expiryMillis=c.expiresAtMillis || (c.acceptedAt ? (c.acceptedAt.seconds+48*3600)*1000 : null);
+
+if(expiryMillis && Date.now()>expiryMillis){
+expired=true;
+}
+
+}
+else if(c.status==="expired" || c.status==="declined"){
+expired=true;
+}
+
+if(expired){
+removeChallengeIdFromUser(id);
+unhideChallengeLocally(id);
+if(liveChallengesData)delete liveChallengesData[id];
+}
+
+});
+
+}
+
+
+function cleanupExpiredHiddenTournaments(all){
+
+let hidden=getLocalHiddenMap("konfetiHiddenTournaments");
+
+Object.keys(hidden).forEach(function(id){
+
+let t=all ? all[id] : null;
+
+if(!t){
+unhideTournamentLocally(id);
+return;
+}
+
+if(t.expiresAtMillis && Date.now()>t.expiresAtMillis){
+removeTournamentIdFromUser(id);
+unhideTournamentLocally(id);
+}
+
+});
+
+}
+
+
+function deleteChallengeItem(id,isFinished){
+
+hideChallengeLocally(id);
+
+if(isFinished){
+removeChallengeIdFromUser(id);
+if(liveChallengesData)delete liveChallengesData[id];
+}
+
+}
+
+
+function deleteTournamentItem(id,isFinished){
+
+hideTournamentLocally(id);
+
+if(isFinished){
+removeTournamentIdFromUser(id);
+}
+
+}
+
+
+function animateCardRemoval(cardEl,onDone){
+
+if(!cardEl){
+if(onDone)onDone();
+return;
+}
+
+let startHeight=cardEl.offsetHeight;
+
+cardEl.style.overflow="hidden";
+cardEl.style.maxHeight=startHeight+"px";
+cardEl.style.transition="max-height 0.7s ease, opacity 0.6s ease, transform 0.6s ease, margin 0.7s ease, padding 0.7s ease";
+
+requestAnimationFrame(function(){
+
+requestAnimationFrame(function(){
+
+cardEl.style.opacity="0";
+cardEl.style.transform="translateY(-8px) scale(0.98)";
+cardEl.style.maxHeight="0px";
+cardEl.style.marginTop="0px";
+cardEl.style.marginBottom="0px";
+cardEl.style.paddingTop="0px";
+cardEl.style.paddingBottom="0px";
+
+});
+
+});
+
+setTimeout(function(){
+
+cardEl.remove();
+if(onDone)onDone();
+
+},720);
+
+}
+
+
+let longPressTimer=null;
+
+function initLongPressHandlers(){
+
+document.addEventListener("touchstart",handleLongPressStart,{passive:true});
+document.addEventListener("mousedown",handleLongPressStart);
+document.addEventListener("touchend",cancelLongPress);
+document.addEventListener("touchmove",cancelLongPress);
+document.addEventListener("mouseup",cancelLongPress);
+document.addEventListener("mouseleave",cancelLongPress);
+
+}
+
+
+function handleLongPressStart(e){
+
+let cardEl=e.target.closest(".oy-card[data-lp-id]");
+if(!cardEl)return;
+
+longPressTimer=setTimeout(function(){
+
+showCardActionOverlay(cardEl);
+longPressTimer=null;
+
+},550);
+
+}
+
+
+function cancelLongPress(){
+
+if(longPressTimer){
+clearTimeout(longPressTimer);
+longPressTimer=null;
+}
+
+}
+
+
+function showCardActionOverlay(cardEl){
+
+if(cardEl.querySelector(".oy-lp-overlay"))return;
+
+let type=cardEl.getAttribute("data-lp-type");
+let id=cardEl.getAttribute("data-lp-id");
+
+let isDirect=(type==="history" || type==="tournament-past");
+let actionLabel=isDirect ? "🗑️ Sil" : "🚫 Vazgeç";
+let actionColor=isDirect ? "#e74c3c" : "#e67e22";
+
+let overlay=document.createElement("div");
+overlay.className="oy-lp-overlay";
+overlay.style.cssText="position:absolute;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;gap:8px;z-index:5;border-radius:inherit;";
+
+let actionBtn=document.createElement("button");
+actionBtn.textContent=actionLabel;
+actionBtn.style.cssText="background:"+actionColor+";color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;";
+actionBtn.onclick=function(ev){
+ev.stopPropagation();
+handleCardAction(type,id,cardEl);
+};
+
+let cancelBtn=document.createElement("button");
+cancelBtn.textContent="İptal";
+cancelBtn.style.cssText="background:#334155;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;";
+cancelBtn.onclick=function(ev){
+ev.stopPropagation();
+overlay.remove();
+};
+
+overlay.appendChild(actionBtn);
+overlay.appendChild(cancelBtn);
+
+if(getComputedStyle(cardEl).position==="static"){
+cardEl.style.position="relative";
+}
+
+cardEl.appendChild(overlay);
+
+setTimeout(function(){
+
+function outsideHandler(ev){
+if(!overlay.contains(ev.target)){
+overlay.remove();
+document.removeEventListener("click",outsideHandler);
+document.removeEventListener("touchstart",outsideHandler);
+}
+}
+
+document.addEventListener("click",outsideHandler);
+document.addEventListener("touchstart",outsideHandler);
+
+},50);
+
+}
+
+
+function handleCardAction(type,id,cardEl){
+
+let isChallenge=(type==="history" || type==="request" || type==="ongoing");
+
+if(type==="history"){
+deleteChallengeItem(id,true);
+}
+else if(type==="request" || type==="ongoing"){
+deleteChallengeItem(id,false);
+}
+else if(type==="tournament-past"){
+deleteTournamentItem(id,true);
+}
+else if(type==="tournament-ongoing" || type==="tournament-invite"){
+deleteTournamentItem(id,false);
+}
+
+animateCardRemoval(cardEl,function(){
+
+if(isChallenge){
+updateChallengeBadge();
+}
+
+});
+
+}
+
+
 function respondChallenge(id,accept){
 
 let updateData=accept
 ? {status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()}
 : {status:"declined",declinedAt:firebase.firestore.FieldValue.serverTimestamp()};
 
+if(accept){
+
+delayedAcceptedChallengeIds[id]=true;
+
+let cardEl=document.querySelector('.oy-card[data-challenge-id="'+id+'"]');
+let contentEl=cardEl ? cardEl.querySelector(".oy-content") : null;
+
+if(contentEl){
+contentEl.innerHTML="<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">✅ İstek kabul edildi!</span></div><span class=\"oy-status\">✅ Kabul edildi</span></div><div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;color:#2ecc71;font-weight:700;\">Oyunlarım menüsünden oynayabilirsin.</div>";
+}
+
+setTimeout(function(){
+delete delayedAcceptedChallengeIds[id];
+renderChallengesList();
+},10000);
+
+}
+
 let ch=liveChallengesData ? liveChallengesData[id] : null;
 let commitPromise=ch ? commitChallengeUpdateFor(ch,id,updateData) : db.collection("challenges").doc(id).update(updateData);
 
 commitPromise.then(function(){
 
+if(accept){
+renderOngoingList();
+updateChallengeBadge();
+}
+else{
 renderChallengesList();
 renderOngoingList();
 updateChallengeBadge();
+}
 
 }).catch(function(e){
 
@@ -8701,7 +9067,7 @@ let fetches=currentUserFriends.map(function(name){
 return db.collection("users").where("username","==",name).limit(1).get().then(function(snap){
 
 if(snap.empty){
-return {name:name,successPct:0,avgScoreWord:0};
+return {name:name,successPct:0,avgScoreWord:0,avatarEmoji:"👤"};
 }
 
 let profile=snap.docs[0].data();
@@ -8713,10 +9079,10 @@ let wordScoreCount=profile.wordScoreCount||0;
 let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
 let avgScoreWord=wordScoreCount? Math.round(wordScoreSum/wordScoreCount) : 0;
 
-return {name:name,successPct:successPct,avgScoreWord:avgScoreWord};
+return {name:name,successPct:successPct,avgScoreWord:avgScoreWord,avatarEmoji:profile.avatarEmoji||"👤"};
 
 }).catch(function(e){
-return {name:name,successPct:0,avgScoreWord:0};
+return {name:name,successPct:0,avgScoreWord:0,avatarEmoji:"👤"};
 });
 
 });
@@ -8728,7 +9094,7 @@ let html="";
 results.forEach(function(r){
 
 html+="<div class=\"oy-card\" style=\"cursor:pointer;\" onclick=\"viewUserProfile('"+r.name+"','friends')\">";
-html+="<div class=\"oy-avatar\">👤</div>";
+html+="<div class=\"oy-avatar\">"+r.avatarEmoji+"</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\" style=\"margin-left:5px;margin-top:2px;\">";
@@ -9049,14 +9415,22 @@ topHtml+="<button class=\"td-day-card playable\" onclick=\"playChallenge('"+chal
 
 document.getElementById("challengeDetailContent").innerHTML=topHtml;
 
-let fromTotal=ch.games.reduce(function(s,g){return s+g.fromScore;},0);
-let toTotal=ch.games.reduce(function(s,g){return s+g.toScore;},0);
-let myTotal=mySide==="from" ? fromTotal : toTotal;
-let opponentTotal=mySide==="from" ? toTotal : fromTotal;
+let myPlayedField=mySide==="from" ? "fromPlayed" : "toPlayed";
+let myScoreField=mySide==="from" ? "fromScore" : "toScore";
+let opponentScoreField=mySide==="from" ? "toScore" : "fromScore";
+
+let totalGamesCount=ch.games.length;
+let myPlayedCount=ch.games.filter(function(g){ return g[myPlayedField]; }).length;
+
+let myTotal=ch.games.reduce(function(s,g){ return s+(g[myPlayedField] ? g[myScoreField] : 0); },0);
+let opponentTotal=ch.games.reduce(function(s,g){ return s+(g[myPlayedField] ? g[opponentScoreField] : 0); },0);
+
+let myAvg=myPlayedCount ? Math.round(myTotal/myPlayedCount) : 0;
+let opponentAvg=myPlayedCount ? Math.round(opponentTotal/myPlayedCount) : 0;
 
 let rows=[
-{name:currentUser.username,avatarEmoji:myAvatarEmoji,score:myTotal,mine:true},
-{name:otherName,avatarEmoji:avatarEmoji,score:opponentTotal,mine:false}
+{name:currentUser.username,avatarEmoji:myAvatarEmoji,score:myTotal,avg:myAvg,mine:true},
+{name:otherName,avatarEmoji:avatarEmoji,score:opponentTotal,avg:opponentAvg,mine:false}
 ];
 
 rows.sort(function(a,b){ return b.score-a.score; });
@@ -9074,7 +9448,7 @@ bottomHtml+="<div class=\"td-leaderboard-item\">";
 bottomHtml+="<div class=\"td-user-info-group\">";
 bottomHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
 bottomHtml+="<div class=\"td-avatar\">"+r.avatarEmoji+"</div>";
-bottomHtml+="<div class=\"td-user-details\"><span class=\"td-user-name\">"+r.name+"</span></div>";
+bottomHtml+="<div class=\"td-user-details\"><span class=\"td-user-name\">"+r.name+"</span><span style=\"display:block;font-size:9.5px;color:#7b8fae;font-weight:600;\">"+myPlayedCount+"/"+totalGamesCount+" ort. "+r.avg+"</span></div>";
 bottomHtml+="</div>";
 bottomHtml+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+r.score+"</span></div>";
 bottomHtml+="</div>";
@@ -9132,7 +9506,10 @@ bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin
 }
 
 if(opponentPlayed && opponentWordsFound && opponentWordsFound.length){
-bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+opponentWordsFound.join(", ")+"</div>";
+let opponentWordsToShow=opponentWordsFound.slice(0,(myWordsFound ? myWordsFound.length : 0));
+if(opponentWordsToShow.length){
+bottomHtml+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+opponentWordsToShow.join(", ")+"</div>";
+}
 }
 
 }
@@ -10262,7 +10639,7 @@ let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wo
 
 let html="";
 
-html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-card\" data-lp-id=\""+c.id+"\" data-lp-type=\"history\">";
 html+="<div class=\"oy-avatar-col\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+=wordCountHtml;
@@ -10316,7 +10693,9 @@ let friendNames=data.friendNames;
 
 let now=Math.floor(Date.now()/1000);
 
-let items=Object.values(all).filter(function(c){ return c.status==="accepted"; });
+cleanupExpiredHiddenChallenges(all);
+
+let items=Object.values(all).filter(function(c){ return c.status==="accepted" && !isChallengeHiddenLocally(c.id); });
 
 let expiryChecks=items.map(function(c){ return checkAndForfeitExpiredRound(c); });
 
@@ -10424,7 +10803,7 @@ statusText+=(c.gameType==="word" ? "<span class=\"oy-status-type\">"+(c.sadeMode
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wordCounts[otherName]||0)+"</div>";
 
-html+="<div class=\"oy-card\">";
+html+="<div class=\"oy-card\" data-lp-id=\""+c.id+"\" data-lp-type=\"ongoing\">";
 html+="<div class=\"oy-avatar-col\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+=wordCountHtml;
@@ -10501,7 +10880,9 @@ let now=Math.floor(Date.now()/1000);
 let FORTY_EIGHT_HOURS=48*60*60;
 let TWENTY_FOUR_HOURS=24*60*60;
 
-let items=Object.values(all).filter(function(c){ return c.status!=="accepted"; });
+cleanupExpiredHiddenChallenges(all);
+
+let items=Object.values(all).filter(function(c){ return (c.status!=="accepted" || delayedAcceptedChallengeIds[c.id]) && !isChallengeHiddenLocally(c.id); });
 
 items.forEach(function(c){
 
@@ -10566,13 +10947,18 @@ remainingHours=Math.max(0,48-elapsedHours);
 
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 
-html+="<div class=\"oy-card\">";
+let lpType=(c.status==="pending") ? "request" : "history";
+
+html+="<div class=\"oy-card\" data-challenge-id=\""+c.id+"\" data-lp-id=\""+c.id+"\" data-lp-type=\""+lpType+"\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','istekler')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+"</span></div>";
 
-if(c.status==="pending" && mySide==="to"){
+if(c.status==="accepted" && delayedAcceptedChallengeIds[c.id]){
+html+="<span class=\"oy-status\">✅ Kabul edildi</span>";
+}
+else if(c.status==="pending" && mySide==="to"){
 html+="<span class=\"oy-status\">📩 "+remainingHours+" saat"+(c.gameType==="word" ? "<span class=\"oy-status-type\">"+(c.sadeMode?"Klasik":"Çetrefilli")+"</span>" : "")+"</span>";
 }
 else if(c.status==="pending" && mySide==="from"){
@@ -10587,8 +10973,12 @@ html+="<span class=\"oy-status\">🚫 Reddedildi</span>";
 
 html+="</div>";
 
-if(c.status==="pending" && mySide==="to"){
+if(c.status==="accepted" && delayedAcceptedChallengeIds[c.id]){
 
+html+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;color:#2ecc71;font-weight:700;\">Oyunlarım menüsünden oynayabilirsin.</div>";
+
+}
+else if(c.status==="pending" && mySide==="to"){
 html+="<div class=\"oy-actions\">";
 html+="<button class=\"oy-btn oy-btn-accept\" onclick=\"respondChallenge('"+c.id+"',true)\">✅ Kabul Et</button>";
 html+="<button class=\"oy-btn oy-btn-decline\" onclick=\"respondChallenge('"+c.id+"',false)\">❌ Reddet</button>";
@@ -10727,7 +11117,7 @@ let friendNames=data.friendNames;
 
 let completedChallenges=Object.values(all).filter(function(c){
 
-return c.status==="accepted" && c.games.every(function(g){ return g.fromPlayed && g.toPlayed; });
+return c.status==="accepted" && c.games.every(function(g){ return g.fromPlayed && g.toPlayed; }) && !isChallengeHiddenLocally(c.id);
 
 });
 
@@ -14719,6 +15109,7 @@ break;
 
 let targetId=null;
 let targetDisplay="block";
+let targetScrollTop=0;
 
 if(currentScreenId && SCREEN_PARENT_MAP.hasOwnProperty(currentScreenId)){
 
@@ -14736,6 +15127,7 @@ return;
 let prev=screenNavStack.pop();
 targetId=prev.id;
 targetDisplay=prev.display;
+targetScrollTop=prev.scrollTop||0;
 
 }
 
@@ -14746,6 +15138,14 @@ hideAllScreens();
 suppressScreenPush=false;
 
 document.getElementById(targetId).style.display=targetDisplay;
+
+let restoreScrollTop=function(){
+let gameElForPop=document.querySelector(".game");
+if(gameElForPop)gameElForPop.scrollTop=targetScrollTop;
+};
+
+restoreScrollTop();
+requestAnimationFrame(restoreScrollTop);
 
 if(targetId==="homeScreen" || targetId==="historyScreen"){
 document.body.classList.add("home-active");
@@ -14764,10 +15164,11 @@ updateChallengeBadge();
 if(targetId==="historyScreen"){
 
 let refreshHistoryLists=function(){
-renderOngoingList();
-renderHistoryList();
-renderChallengesList();
+renderOngoingList(true);
+renderHistoryList(true);
+renderChallengesList(true);
 updateChallengeBadge();
+restoreScrollTop();
 };
 
 if(pendingChallengeWrite){
@@ -14781,6 +15182,7 @@ refreshHistoryLists();
 
 if(targetId==="tournamentScreen"){
 renderTournamentLists();
+restoreScrollTop();
 }
 
 });
