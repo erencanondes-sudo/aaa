@@ -80,10 +80,10 @@ body{
     height:100vh;
     height:100dvh;
     overflow:hidden;
-    padding-top:15px;
-    padding-right:1.5%;
+    padding-top:0;
+    padding-right:0;
     padding-bottom:0;
-    padding-left:1.5%;
+    padding-left:0;
     box-sizing:border-box;
     user-select:none;
     -webkit-user-select:none;
@@ -101,23 +101,86 @@ input,textarea{
 .game{
     max-width:520px;
     margin:auto;
-    background:#f4f6fb;
-    border-radius:20px;
+    background:linear-gradient(135deg,#285b96 0%,#235185 35%,#1e4778 65%,#183c68 100%);
+    border-radius:0;
     padding:20px;
     text-align:center;
     position:relative;
+    z-index:0;
     overflow-y:auto;
     overflow-x:hidden;
-    min-height:calc(100vh - 15px);
-    min-height:calc(100dvh - 15px);
-    max-height:calc(100vh - 15px);
-    max-height:calc(100dvh - 15px);
+    min-height:100vh;
+    min-height:100dvh;
+    max-height:100vh;
+    max-height:100dvh;
     box-sizing:border-box;
 }
 
 .game.playing{
-    background-image:none;
-    background-color:#f4f6fb;
+    background-image:linear-gradient(135deg,#285b96 0%,#235185 35%,#1e4778 65%,#183c68 100%);
+    background-color:#1e4778;
+}
+
+.game::before{
+    content:"";
+    position:absolute;
+    width:90vw;
+    height:45vh;
+    top:-25vh;
+    left:-35vw;
+    background:rgba(105,165,225,0.13);
+    border-radius:50%;
+    transform:rotate(-18deg);
+    pointer-events:none;
+    z-index:-1;
+}
+
+.game::after{
+    content:"";
+    position:absolute;
+    width:95vw;
+    height:42vh;
+    top:-25vh;
+    right:-45vw;
+    background:rgba(95,155,215,0.11);
+    border-radius:50%;
+    transform:rotate(20deg);
+    pointer-events:none;
+    z-index:-1;
+}
+
+.game-wave{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.game-wave-1{
+    width:110vw;
+    height:55vh;
+    left:-75vw;
+    top:20vh;
+    background:rgba(15,55,105,0.12);
+    transform:rotate(-15deg);
+}
+
+.game-wave-2{
+    width:120vw;
+    height:60vh;
+    right:-80vw;
+    top:50vh;
+    background:rgba(70,125,190,0.08);
+    transform:rotate(18deg);
+}
+
+.game-wave-3{
+    width:100vw;
+    height:50vh;
+    left:-50vw;
+    bottom:-25vh;
+    background:rgba(10,45,90,0.15);
+    transform:rotate(12deg);
 }
 
 @keyframes adFloatBounce{
@@ -2977,6 +3040,10 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 
 
 <div class="game">
+
+<div class="game-wave game-wave-1"></div>
+<div class="game-wave game-wave-2"></div>
+<div class="game-wave game-wave-3"></div>
 
 <div id="wordTopAdBanner" style="display:none;width:335px;height:50px;border-radius:10px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:15;">
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
