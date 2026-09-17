@@ -2337,19 +2337,20 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 
 #homeScreen .settings-info-section{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:6px;
     padding:14px 5px 4px;
     margin:8px 0 0 0;
 }
 #homeScreen .settings-card,
-#homeScreen .info-card{
+#homeScreen .info-card,
+#homeScreen .friends-card{
     min-height:60px;
     background:#fff;
-    border-radius:22px;
+    border-radius:18px;
     display:flex;
     align-items:center;
-    padding:10px;
+    padding:8px 6px;
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
@@ -2360,25 +2361,28 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 }
 #homeScreen .settings-card:active,
 #homeScreen .info-card:active,
+#homeScreen .friends-card:active,
 #homeScreen .settings-card.menu-card-pressed,
-#homeScreen .info-card.menu-card-pressed{
+#homeScreen .info-card.menu-card-pressed,
+#homeScreen .friends-card.menu-card-pressed{
     transform:translateY(5px);
     --card-fill-color-active:rgba(160,170,185,.18);
     --card-blur-color-active:rgba(30,45,70,.08);
     box-shadow:0 2px 0 var(--card-fill-color-active),0 5px 12px var(--card-blur-color-active);
 }
 #homeScreen .card-icon{
-    width:40px;min-width:40px;height:40px;
+    width:28px;min-width:28px;height:28px;
     display:flex;align-items:center;justify-content:center;
-    margin-right:7px;
+    margin-right:5px;
     background:transparent;
 }
-#homeScreen .settings-card .card-icon svg{width:32px;height:32px;fill:#2874c7;}
-#homeScreen .info-card .card-icon svg{width:32px;height:32px;color:#f39a00;}
+#homeScreen .settings-card .card-icon svg{width:22px;height:22px;fill:#2874c7;}
+#homeScreen .info-card .card-icon svg{width:22px;height:22px;color:#f39a00;}
+#homeScreen .friends-card .card-icon svg{width:22px;height:22px;color:#e8342b;}
 #homeScreen .card-content{flex:1;min-width:0;}
-#homeScreen .card-title{font-size:13px;font-weight:700;color:#293d5a;margin-bottom:2px;}
-#homeScreen .card-description{font-size:9px;line-height:1.25;color:#607087;}
-#homeScreen .card-arrow{font-size:20px;font-weight:300;color:#344b68;margin-left:5px;}
+#homeScreen .card-title{font-size:10.5px;font-weight:700;color:#293d5a;margin-bottom:1px;}
+#homeScreen .card-description{font-size:7.5px;line-height:1.2;color:#607087;}
+#homeScreen .card-arrow{font-size:15px;font-weight:300;color:#344b68;margin-left:2px;}
 
 #homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle, #challengeFriendScreen .icon-circle, #challengeFormatScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -2965,7 +2969,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 :root{
     --bn-nav-height:clamp(56px,11vw,72px);
     --bn-icon-size:clamp(28px,7.2vw,36px);
-    --bn-icon-bottom-gap:clamp(8px,2vw,12px);
+    --bn-icon-bottom-gap:clamp(12px,2.8vw,16px);
     --bn-active-color:#f4f6fb;
     --bn-inactive-color:#8a94a6;
     --bn-side-shift:clamp(6px,2vw,14px);
@@ -3029,7 +3033,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 .bn-exit>i{font-size:calc(var(--bn-icon-size) * 1.3);}
 
 @media(max-width:320px){
-:root{--bn-nav-height:50px;--bn-icon-size:24px;--bn-icon-bottom-gap:7px;--bn-side-shift:5px;}
+:root{--bn-nav-height:50px;--bn-icon-size:24px;--bn-icon-bottom-gap:11px;--bn-side-shift:5px;}
 }
 
 </style>
@@ -3175,13 +3179,23 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 
 <div class="home-divider" style="margin:12px 0 6px 0;"></div>
 
-<button class="menu-card red" onclick="animatedNav(this,showFriends)">
-<div class="icon-circle">👥</div>
-<div class="menu-copy"><b>Arkadaşlar</b><span>Arkadaşlarını gör, davet et</span></div>
-<div class="arrow">›</div>
-</button>
-
 <div class="settings-info-section">
+
+<div class="friends-card" onclick="animatedNav(this,showFriends)">
+<div class="card-icon">
+<svg viewBox="0 0 24 24" aria-label="Arkadaşlar" fill="none" stroke="currentColor" stroke-width="2">
+<circle cx="9" cy="8" r="3.2"></circle>
+<path d="M3.5 19c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2"></path>
+<circle cx="17" cy="8.5" r="2.6"></circle>
+<path d="M15.2 13.6c2.4.2 4.3 2.2 4.3 5.4"></path>
+</svg>
+</div>
+<div class="card-content">
+<div class="card-title">Arkadaşlar</div>
+<div class="card-description">Arkadaşlarını gör, davet et</div>
+</div>
+<div class="card-arrow">›</div>
+</div>
 
 <div class="settings-card" onclick="animatedNav(this,showSettings)">
 <div class="card-icon">
@@ -3230,6 +3244,13 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="card-arrow">›</div>
 </div>
 
+</div>
+
+<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;">
+<p style="font-size:12.5px;font-weight:700;color:#293d5a;margin:0 0 6px 4px;text-align:left;">📋 Meydan Okuma Listesi</p>
+<div style="overflow:hidden;border-radius:16px;">
+<div id="homeClcTrack" style="display:flex;transition:transform .5s ease;"></div>
+</div>
 </div>
 
 </div>
@@ -3461,6 +3482,15 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="menu-copy"><b>Çetrefilli</b><span>Harf can sistemi</span></div>
 <div class="arrow">›</div>
 </button>
+
+<button class="menu-card white" id="challengeListJoinBtn" style="margin-top:12px;" onclick="toggleChallengeList()">
+<div class="icon-circle">📋</div>
+<div class="menu-copy"><b id="challengeListJoinBtnLabel">Listeye Katıl</b><span>Meydan okuma listesinde görün</span></div>
+<div class="arrow">›</div>
+</button>
+
+<p class="screen-title" style="margin-top:22px;font-size:14px;">Meydan Okuma Listesi</p>
+<div id="challengeListUsersList"><p style="color:#7b8fae;font-size:0.85em;">Yükleniyor...</p></div>
 
 </div>
 
@@ -4659,6 +4689,7 @@ document.getElementById("welcomeText").innerHTML="Hoş geldin, "+firstName+" �
 document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
 
 renderHomeStats();
+renderHomeChallengeListCarousel();
 
 if(!isGuest){
 startChallengesListener();
@@ -4774,6 +4805,7 @@ let activeChatChallengeId=null;
 let activeChatMySide=null;
 let activeChallengeDetailId=null;
 let activeChallengeDetailMySide=null;
+let activeChallengeDetailOtherName=null;
 let challengeDetailChatUnsubscribe=null;
 let returnToScreen=null;
 
@@ -5550,6 +5582,7 @@ screenNavStack=[];
 
 renderHomeStats();
 updateChallengeBadge();
+renderHomeChallengeListCarousel();
 
 }
 
@@ -7670,6 +7703,206 @@ function openChallengeRandom(){
 hideAllScreens();
 document.getElementById("randomWaitScreen").style.display="block";
 
+syncChallengeListJoinButton();
+renderChallengeListUsers();
+
+}
+
+
+function syncChallengeListJoinButton(){
+
+if(!currentUser)return;
+
+db.collection("challengeListUsers").doc(currentUser.uid).get().then(function(doc){
+
+let btn=document.getElementById("challengeListJoinBtn");
+let label=document.getElementById("challengeListJoinBtnLabel");
+
+if(!btn || !label)return;
+
+if(doc.exists){
+label.innerHTML="Listeden Çık";
+btn.classList.add("red");
+btn.classList.remove("white");
+}
+else{
+label.innerHTML="Listeye Katıl";
+btn.classList.add("white");
+btn.classList.remove("red");
+}
+
+}).catch(function(e){
+console.error("Meydan okuma listesi durumu alınamadı:",e);
+});
+
+}
+
+
+function toggleChallengeList(){
+
+if(!currentUser)return;
+
+let ref=db.collection("challengeListUsers").doc(currentUser.uid);
+
+ref.get().then(function(doc){
+
+if(doc.exists){
+
+return ref.delete();
+
+}
+else{
+
+return ref.set({
+username:currentUser.username,
+avatarEmoji:currentUser.avatarEmoji||"👤",
+joinedAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+
+}
+
+}).then(function(){
+
+syncChallengeListJoinButton();
+renderChallengeListUsers();
+
+}).catch(function(e){
+console.error("Meydan okuma listesi güncellenemedi:",e);
+});
+
+}
+
+
+function renderChallengeListUsers(){
+
+let listEl=document.getElementById("challengeListUsersList");
+
+if(!listEl)return;
+
+db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
+
+let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
+
+if(users.length===0){
+listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Listede henüz kimse yok.</p>";
+return;
+}
+
+listEl.innerHTML=users.map(function(u){
+
+return "<div class=\"oy-card\">"
++"<div class=\"oy-avatar-ring\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"oy-content\">"
++"<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">"+u.username+"</span></div></div>"
++"<div class=\"oy-actions\">"
++"<button class=\"oy-btn oy-btn-view\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>"
++"<button class=\"oy-btn oy-btn-play\" onclick=\"challengeFromProfile('"+u.username+"')\"><i class=\"fa-solid fa-play\"></i> Meydan Oku</button>"
++"</div>"
++"</div>"
++"</div>";
+
+}).join("");
+
+}).catch(function(e){
+
+console.error("Meydan okuma listesi yüklenemedi:",e);
+listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Liste yüklenemedi.</p>";
+
+});
+
+}
+
+
+let homeClcInterval=null;
+let homeClcIndex=0;
+
+function renderHomeChallengeListCarousel(){
+
+let containerEl=document.getElementById("homeChallengeListCarousel");
+let trackEl=document.getElementById("homeClcTrack");
+
+if(!containerEl || !trackEl)return;
+
+if(homeClcInterval){
+clearInterval(homeClcInterval);
+homeClcInterval=null;
+}
+
+db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
+
+let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
+
+if(users.length===0){
+containerEl.style.display="none";
+trackEl.innerHTML="";
+return;
+}
+
+containerEl.style.display="block";
+
+trackEl.innerHTML=users.map(function(u){
+
+return "<div style=\"flex:none;width:100%;box-sizing:border-box;\">"
++"<div class=\"oy-card\">"
++"<div class=\"oy-avatar-ring\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"oy-content\">"
++"<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">"+u.username+"</span></div></div>"
++"<div class=\"oy-actions\">"
++"<button class=\"oy-btn oy-btn-view\" onclick=\"viewUserProfile('"+u.username+"','home')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>"
++"<button class=\"oy-btn oy-btn-play\" onclick=\"challengeFromProfile('"+u.username+"')\"><i class=\"fa-solid fa-play\"></i> Meydan Oku</button>"
++"</div>"
++"</div>"
++"</div>"
++"</div>";
+
+}).join("");
+
+homeClcIndex=0;
+trackEl.style.transition="none";
+trackEl.style.transform="translateX(0%)";
+
+if(users.length<2)return;
+
+homeClcInterval=setInterval(function(){
+
+let homeScreenEl=document.getElementById("homeScreen");
+
+if(!homeScreenEl || homeScreenEl.style.display==="none"){
+clearInterval(homeClcInterval);
+homeClcInterval=null;
+return;
+}
+
+homeClcIndex++;
+
+if(homeClcIndex>=users.length){
+
+trackEl.style.transition="transform .5s ease";
+trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
+
+setTimeout(function(){
+trackEl.style.transition="none";
+homeClcIndex=0;
+trackEl.style.transform="translateX(0%)";
+},520);
+
+}
+else{
+
+trackEl.style.transition="transform .5s ease";
+trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
+
+}
+
+},2000);
+
+}).catch(function(e){
+
+console.error("Anasayfa meydan okuma listesi yüklenemedi:",e);
+containerEl.style.display="none";
+
+});
+
 }
 
 
@@ -9390,6 +9623,7 @@ console.error("Mesaj gönderilemedi:",e);
 function openChallengeDetail(challengeId,mySide,otherName,source){
 
 returnToScreen=source;
+activeChallengeDetailOtherName=otherName;
 
 hideAllScreens();
 document.getElementById("challengeDetailScreen").style.display="block";
@@ -9415,6 +9649,31 @@ document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7
 });
 
 openChallengeDetailChat(challengeId,mySide);
+
+}
+
+
+function refreshChallengeDetailContent(){
+
+if(!activeChallengeDetailId)return;
+
+let challengeId=activeChallengeDetailId;
+let mySide=activeChallengeDetailMySide;
+let otherName=activeChallengeDetailOtherName;
+
+db.collection("challenges").doc(challengeId).get().then(function(doc){
+
+if(!doc.exists)return;
+
+let ch=normalizeChallenge(doc.data());
+
+renderChallengeDetailContent(ch,challengeId,mySide,otherName);
+
+}).catch(function(e){
+
+console.error("Meydan okuma detayı güncellenemedi:",e);
+
+});
 
 }
 
@@ -10888,10 +11147,10 @@ let mySideStartedField=mySide==="from" ? "fromStartedAt" : "toStartedAt";
 let alreadyStarted=!!currentGame[mySideStartedField];
 
 if(alreadyStarted){
-playButtonHtml="<button class=\"oy-btn oy-btn-continue\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-continue\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Devam Et</button>";
 }
 else{
-playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"openChallengeDetail('"+c.id+"','"+mySide+"','"+otherName+"','ongoing')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
+playButtonHtml="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+c.id+"','"+mySide+"')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
 }
 
 }
@@ -15155,6 +15414,13 @@ hideDetailModal();
 return;
 }
 
+let lpOverlayEl=document.querySelector(".oy-lp-overlay");
+
+if(lpOverlayEl){
+lpOverlayEl.remove();
+return;
+}
+
 revealSessionToken++;
 
 hideScoreBannerNow();
@@ -15225,6 +15491,7 @@ syncBottomNavForScreen(targetId);
 if(targetId==="homeScreen"){
 renderHomeStats();
 updateChallengeBadge();
+renderHomeChallengeListCarousel();
 }
 
 if(targetId==="historyScreen"){
@@ -15249,6 +15516,17 @@ refreshHistoryLists();
 if(targetId==="tournamentScreen"){
 renderTournamentLists();
 restoreScrollTop();
+}
+
+if(targetId==="challengeDetailScreen"){
+
+if(pendingChallengeWrite){
+pendingChallengeWrite.then(refreshChallengeDetailContent).catch(refreshChallengeDetailContent);
+}
+else{
+refreshChallengeDetailContent();
+}
+
 }
 
 });
