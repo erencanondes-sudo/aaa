@@ -5007,7 +5007,12 @@ applyLocalStatUpdate(entry);
 
 if(pending.activeChallengeId){
 
-db.collection("challenges").doc(pending.activeChallengeId).get().then(function(doc){
+let challengeRef=db.collection("challenges").doc(pending.activeChallengeId);
+let resultChallenge=null;
+
+db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef).then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
 let updatedGames=ch.games.slice();
@@ -5025,19 +5030,35 @@ game.toPlayed=true;
 
 updatedGames[idx]=game;
 
+resultChallenge=Object.assign({},ch,{games:updatedGames});
+
 let updatePayload={games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
 if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
 updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
 }
 
-commitChallengeUpdateFor(ch,pending.activeChallengeId,updatePayload).then(function(){
+transaction.update(challengeRef,updatePayload);
+
+});
+
+}).then(function(){
+
+let fromUid=resultChallenge.fromUid;
+let toUidPromise=resultChallenge.toUid ? Promise.resolve(resultChallenge.toUid) : (resultChallenge.type==="computer" ? Promise.resolve(null) : getUidForUsername(resultChallenge.toUsername));
+
+return toUidPromise.then(function(toUid){
+
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,pending.activeChallengeId);
+writeChallengeSignal(batch,toUid,pending.activeChallengeId);
+return batch.commit();
+
+});
+
+}).then(function(){
 updateChallengeBadge();
 }).catch(function(e){
 console.error("Bekleyen meydan okuma güncellenemedi:",e);
-});
-
-}).catch(function(e){
-console.error("Bekleyen meydan okuma alınamadı:",e);
 });
 
 }
@@ -5196,7 +5217,11 @@ let gameIndex=activeChallengeGameIndex;
 
 saveFoundWordsIfWord();
 
-pendingChallengeWrite=db.collection("challenges").doc(challengeId).get().then(function(doc){
+pendingChallengeWrite=db.runTransaction(function(transaction){
+
+let challengeRef=db.collection("challenges").doc(challengeId);
+
+return transaction.get(challengeRef).then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
 
@@ -5225,7 +5250,28 @@ if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
 updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
 }
 
-return commitChallengeUpdateFor(ch,challengeId,updatePayload).then(function(){
+transaction.update(challengeRef,updatePayload);
+
+return {ch:ch,updatedGames:updatedGames};
+
+});
+
+}).then(function(result){
+
+let ch=result.ch;
+let updatedGames=result.updatedGames;
+
+let fromUid=ch.fromUid;
+let toUidPromise=ch.toUid ? Promise.resolve(ch.toUid) : (ch.type==="computer" ? Promise.resolve(null) : getUidForUsername(ch.toUsername));
+
+return toUidPromise.then(function(toUid){
+
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,challengeId);
+writeChallengeSignal(batch,toUid,challengeId);
+return batch.commit();
+
+}).then(function(){
 
 updateChallengeBadge();
 
@@ -5265,13 +5311,11 @@ msgEl.innerHTML="✅ "+myPlayedCount+"/"+updatedGames.length+" oyun tamamladın.
 
 }
 
-}).catch(function(e){
-console.error("Meydan okuma güncellenemedi:",e);
 });
 
 }).catch(function(e){
 
-console.error("Rakip bilgisi alınamadı:",e);
+console.error("Meydan okuma güncellenemedi:",e);
 
 }).finally(function(){
 
@@ -8951,8 +8995,17 @@ let elapsedSeconds=(Date.now()-currentGame[startedAtField])/1000;
 
 if(elapsedSeconds>=120){
 
-let updatedGames=ch.games.slice();
+let challengeRef=db.collection("challenges").doc(id);
+
+db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef).then(function(doc){
+
+let freshCh=normalizeChallenge(doc.data());
+let updatedGames=freshCh.games.slice();
 let forfeitGame=Object.assign({},updatedGames[currentGameIndex]);
+
+if(!forfeitGame[side==="from" ? "fromPlayed" : "toPlayed"]){
 
 if(side==="from"){
 forfeitGame.fromScore=0;
@@ -8970,7 +9023,27 @@ if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
 updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
 }
 
-commitChallengeUpdateFor(ch,id,updatePayload).then(function(){
+transaction.update(challengeRef,updatePayload);
+
+}
+
+return freshCh;
+
+});
+
+}).then(function(freshCh){
+
+let fromUid=freshCh.fromUid;
+let toUidPromise=freshCh.toUid ? Promise.resolve(freshCh.toUid) : (freshCh.type==="computer" ? Promise.resolve(null) : getUidForUsername(freshCh.toUsername));
+
+return toUidPromise.then(function(toUid){
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,id);
+writeChallengeSignal(batch,toUid,id);
+return batch.commit();
+});
+
+}).then(function(){
 
 renderOngoingList();
 updateChallengeBadge();
@@ -9006,12 +9079,39 @@ let startedAtPromise=Promise.resolve();
 
 if(timeLimited && !currentGame[startedAtField]){
 
-let updatedGames=ch.games.slice();
+let challengeRef2=db.collection("challenges").doc(id);
+
+startedAtPromise=db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef2).then(function(doc){
+
+let freshCh=normalizeChallenge(doc.data());
+let updatedGames=freshCh.games.slice();
 let g=Object.assign({},updatedGames[currentGameIndex]);
+
+if(!g[startedAtField]){
 g[startedAtField]=Date.now();
 updatedGames[currentGameIndex]=g;
+transaction.update(challengeRef2,{games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
 
-startedAtPromise=commitChallengeUpdateFor(ch,id,{games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){
+return freshCh;
+
+});
+
+}).then(function(freshCh){
+
+let fromUid=freshCh.fromUid;
+let toUidPromise=freshCh.toUid ? Promise.resolve(freshCh.toUid) : (freshCh.type==="computer" ? Promise.resolve(null) : getUidForUsername(freshCh.toUsername));
+
+return toUidPromise.then(function(toUid){
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,id);
+writeChallengeSignal(batch,toUid,id);
+return batch.commit();
+});
+
+}).catch(function(e){
 console.error("Başlama zamanı kaydedilemedi:",e);
 });
 
@@ -10755,8 +10855,11 @@ function saveChallengeProgress(progressData){
 if(!activeChallengeId)return;
 
 let field=activeChallengeSide==="from" ? "fromProgress" : "toProgress";
+let challengeRef=db.collection("challenges").doc(activeChallengeId);
 
-db.collection("challenges").doc(activeChallengeId).get().then(function(doc){
+db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef).then(function(doc){
 
 let ch=normalizeChallenge(doc.data());
 let updatedGames=ch.games.slice();
@@ -10766,7 +10869,9 @@ g[field]=progressData;
 
 updatedGames[activeChallengeGameIndex]=g;
 
-return db.collection("challenges").doc(activeChallengeId).update({games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+transaction.update(challengeRef,{games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+
+});
 
 }).catch(function(e){
 console.error("İlerleme kaydedilemedi:",e);
@@ -10811,7 +10916,25 @@ let gameType=c.gameType || "math";
 
 if(gameType!=="math" && gameType!=="word")return Promise.resolve(false);
 
-let updatedGames=c.games.slice();
+let needsCheck=c.games.some(function(g){
+return (!g.fromPlayed && g.fromStartedAt && (Date.now()-g.fromStartedAt)/1000>=120) ||
+(!g.toPlayed && g.toStartedAt && (Date.now()-g.toStartedAt)/1000>=120);
+});
+
+if(!needsCheck)return Promise.resolve(false);
+
+let challengeRef=db.collection("challenges").doc(c.id);
+let resultChallenge=null;
+let didChange=false;
+
+return db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef).then(function(doc){
+
+if(!doc.exists)return;
+
+let freshC=normalizeChallenge(doc.data());
+let updatedGames=freshC.games.slice();
 let changed=false;
 
 updatedGames.forEach(function(g,idx){
@@ -10838,17 +10961,36 @@ changed=true;
 
 });
 
-if(!changed)return Promise.resolve(false);
+if(!changed)return;
 
-c.games=updatedGames;
+didChange=true;
+resultChallenge=Object.assign({},freshC,{games:updatedGames});
 
 let updatePayload={games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
 if(updatedGames.every(function(gm){ return gm.fromPlayed && gm.toPlayed; })){
 updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
 }
 
-return commitChallengeUpdateFor(c,c.id,updatePayload).then(function(){
-return true;
+transaction.update(challengeRef,updatePayload);
+
+});
+
+}).then(function(){
+
+if(!didChange)return false;
+
+let fromUid=resultChallenge.fromUid;
+let toUidPromise=resultChallenge.toUid ? Promise.resolve(resultChallenge.toUid) : (resultChallenge.type==="computer" ? Promise.resolve(null) : getUidForUsername(resultChallenge.toUsername));
+
+return toUidPromise.then(function(toUid){
+
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,c.id);
+writeChallengeSignal(batch,toUid,c.id);
+return batch.commit();
+
+}).then(function(){ return true; });
+
 }).catch(function(e){
 console.error("Süresi dolan tur güncellenemedi:",e);
 return false;
@@ -11128,7 +11270,14 @@ let isExpired=expiryMillis && Date.now()>expiryMillis;
 
 if(isExpired && !allDone){
 
-let updatedGames=c.games.map(function(g){
+let challengeRef=db.collection("challenges").doc(c.id);
+
+db.runTransaction(function(transaction){
+
+return transaction.get(challengeRef).then(function(doc){
+
+let freshC=normalizeChallenge(doc.data());
+let updatedGames=freshC.games.map(function(g){
 
 let newG=Object.assign({},g);
 
@@ -11139,9 +11288,25 @@ return newG;
 
 });
 
-c.games=updatedGames;
+transaction.update(challengeRef,{games:updatedGames,completedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
 
-commitChallengeUpdateFor(c,c.id,{games:updatedGames,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){
+return freshC;
+
+});
+
+}).then(function(freshC){
+
+let fromUid=freshC.fromUid;
+let toUidPromise=freshC.toUid ? Promise.resolve(freshC.toUid) : (freshC.type==="computer" ? Promise.resolve(null) : getUidForUsername(freshC.toUsername));
+
+return toUidPromise.then(function(toUid){
+let batch=db.batch();
+writeChallengeSignal(batch,fromUid,c.id);
+writeChallengeSignal(batch,toUid,c.id);
+return batch.commit();
+});
+
+}).catch(function(e){
 console.error("Süresi dolan meydan okuma güncellenemedi:",e);
 });
 
