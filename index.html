@@ -2471,12 +2471,12 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 
 /* ===== OYUNLARIM (historyScreen) - YENİ TASARIM ===== */
 
-#historyScreen .oy-tabs, #tournamentScreen .oy-tabs{
+#historyScreen .oy-tabs, #tournamentScreen .oy-tabs, #randomWaitScreen .oy-tabs, #homeScreen .oy-tabs{
     display:flex;
     gap:6px;
     margin-bottom:13px;
 }
-#historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn{
+#historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn, #randomWaitScreen .oy-tab-btn, #homeScreen .oy-tab-btn{
     height:44px;
     border-radius:14px;
     display:flex;align-items:center;justify-content:center;
@@ -2491,19 +2491,19 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     font-family:inherit;
     flex:1;
 }
-#historyScreen .oy-tab-btn.oy-tab-wide, #tournamentScreen .oy-tab-btn.oy-tab-wide{flex:1.45}
-#historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn{
+#historyScreen .oy-tab-btn.oy-tab-wide, #tournamentScreen .oy-tab-btn.oy-tab-wide, #randomWaitScreen .oy-tab-btn.oy-tab-wide, #homeScreen .oy-tab-btn.oy-tab-wide{flex:1.45}
+#historyScreen .oy-tab-btn, #tournamentScreen .oy-tab-btn, #randomWaitScreen .oy-tab-btn, #homeScreen .oy-tab-btn{
     background:#e1e9f7;
     color:#0b2b6b;
     --tab-shadow-color:#b7c9e8;
     box-shadow:0 4px 0 var(--tab-shadow-color);
 }
-#historyScreen .oy-tab-btn.active, #tournamentScreen .oy-tab-btn.active{
+#historyScreen .oy-tab-btn.active, #tournamentScreen .oy-tab-btn.active, #randomWaitScreen .oy-tab-btn.active, #homeScreen .oy-tab-btn.active{
     background:#0055ff;
     color:#fff;
     box-shadow:0 4px 0 #003cc7;
 }
-#historyScreen .oy-tab-btn .badge, #tournamentScreen .oy-tab-btn .badge{
+#historyScreen .oy-tab-btn .badge, #tournamentScreen .oy-tab-btn .badge, #randomWaitScreen .oy-tab-btn .badge, #homeScreen .oy-tab-btn .badge{
     position:absolute!important;
     top:-6px!important;right:-4px!important;
     background:#ff0044!important;
@@ -2530,7 +2530,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     gap:10px;
 }
 
-#historyScreen .oy-card, #tournamentScreen .oy-card, #friendsScreen .oy-card{
+#historyScreen .oy-card, #tournamentScreen .oy-card, #friendsScreen .oy-card, #randomWaitScreen .oy-card, #homeScreen .oy-card{
     background:#fff;
     border-radius:20px;
     padding:10px;
@@ -2542,7 +2542,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     gap:9px;
 }
 
-#historyScreen .oy-shield, #tournamentScreen .oy-shield{
+#historyScreen .oy-shield, #tournamentScreen .oy-shield, #randomWaitScreen .oy-shield, #homeScreen .oy-shield{
     width:39px;height:54px;
     background:linear-gradient(180deg,#3d5099 0%,#1a285c 100%);
     display:flex;align-items:center;justify-content:center;
@@ -2551,14 +2551,14 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     clip-path:polygon(0% 20%,50% 0%,100% 20%,100% 80%,50% 100%,0% 80%);
     filter:drop-shadow(0px 4px 5px rgba(0,0,0,.25));
 }
-#historyScreen .oy-shield-inner, #tournamentScreen .oy-shield-inner{
+#historyScreen .oy-shield-inner, #tournamentScreen .oy-shield-inner, #randomWaitScreen .oy-shield-inner, #homeScreen .oy-shield-inner{
     width:33px;height:46px;
     background:linear-gradient(180deg,#2b3b75 0%,#121c42 100%);
     clip-path:polygon(0% 20%,50% 0%,100% 20%,100% 80%,50% 100%,0% 80%);
     display:flex;align-items:center;justify-content:center;
     position:relative;
 }
-#historyScreen .oy-swords, #tournamentScreen .oy-swords{
+#historyScreen .oy-swords, #tournamentScreen .oy-swords, #randomWaitScreen .oy-swords, #homeScreen .oy-swords{
     font-size:22px;
     z-index:3;
     line-height:1;
@@ -2566,13 +2566,13 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     user-select:none;
 }
 
-#historyScreen .oy-content, #tournamentScreen .oy-content, #friendsScreen .oy-content{flex-grow:1;min-width:0}
-#historyScreen .oy-card-header, #tournamentScreen .oy-card-header, #friendsScreen .oy-card-header{
+#historyScreen .oy-content, #tournamentScreen .oy-content, #friendsScreen .oy-content, #randomWaitScreen .oy-content, #homeScreen .oy-content{flex-grow:1;min-width:0}
+#historyScreen .oy-card-header, #tournamentScreen .oy-card-header, #friendsScreen .oy-card-header, #randomWaitScreen .oy-card-header, #homeScreen .oy-card-header{
     display:flex;align-items:flex-start;
     gap:8px;
     margin-bottom:10px;
 }
-#historyScreen .oy-avatar, #tournamentScreen .oy-avatar, #friendsScreen .oy-avatar{
+#historyScreen .oy-avatar, #tournamentScreen .oy-avatar, #friendsScreen .oy-avatar, #randomWaitScreen .oy-avatar, #homeScreen .oy-avatar{
     width:28px;height:28px;flex-shrink:0;
     background:#3182ce;
     border-radius:50%;
@@ -2581,15 +2581,15 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     font-size:14px;
     font-variant-emoji:text;
 }
-#historyScreen .oy-user-info, #tournamentScreen .oy-user-info, #friendsScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
+#historyScreen .oy-user-info, #tournamentScreen .oy-user-info, #friendsScreen .oy-user-info, #randomWaitScreen .oy-user-info, #homeScreen .oy-user-info{flex-grow:1;padding-top:6px;min-width:0;text-align:left;}
 
 /* Oyunlarım kartlarında kalkan kaldırıldı, profil simgesi büyütüldü (historyScreen ve friendsScreen) */
-#historyScreen .oy-avatar, #friendsScreen .oy-avatar{
+#historyScreen .oy-avatar, #friendsScreen .oy-avatar, #randomWaitScreen .oy-avatar, #homeScreen .oy-avatar{
     width:54px;height:54px;
     font-size:26px;
 }
-#historyScreen .oy-avatar{background:#3182ce;}
-#historyScreen .oy-avatar-ring{
+#historyScreen .oy-avatar, #randomWaitScreen .oy-avatar, #homeScreen .oy-avatar{background:#3182ce;}
+#historyScreen .oy-avatar-ring, #randomWaitScreen .oy-avatar-ring, #homeScreen .oy-avatar-ring{
     width:58px;height:58px;
     border-radius:50%;
     padding:2.5px;
@@ -2599,34 +2599,34 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     cursor:pointer;
     display:flex;align-items:center;justify-content:center;
 }
-#historyScreen .oy-avatar-ring .oy-avatar{
+#historyScreen .oy-avatar-ring .oy-avatar, #randomWaitScreen .oy-avatar-ring .oy-avatar, #homeScreen .oy-avatar-ring .oy-avatar{
     width:100%;height:100%;
     border:2px solid #fff;
     box-sizing:border-box;
 }
-#historyScreen .oy-avatar-col{
+#historyScreen .oy-avatar-col, #randomWaitScreen .oy-avatar-col, #homeScreen .oy-avatar-col{
     display:flex;flex-direction:column;align-items:center;
     flex-shrink:0;gap:3px;
 }
-#historyScreen .oy-word-count{
+#historyScreen .oy-word-count, #randomWaitScreen .oy-word-count, #homeScreen .oy-word-count{
     font-size:10px;font-weight:700;color:#000000;
     line-height:1;white-space:nowrap;
 }
-#friendsScreen .oy-card-header{align-items:flex-end;}
-#friendsScreen .oy-avatar{width:44px;height:44px;font-size:21px;}
-#friendsScreen .oy-card{padding:8px;}
-#historyScreen .oy-username, #tournamentScreen .oy-username, #friendsScreen .oy-username{
+#friendsScreen .oy-card-header, #randomWaitScreen .oy-card-header, #homeScreen .oy-card-header{align-items:flex-end;}
+#friendsScreen .oy-avatar, #randomWaitScreen .oy-avatar, #homeScreen .oy-avatar{width:44px;height:44px;font-size:21px;}
+#friendsScreen .oy-card, #randomWaitScreen .oy-card, #homeScreen .oy-card{padding:8px;}
+#historyScreen .oy-username, #tournamentScreen .oy-username, #friendsScreen .oy-username, #randomWaitScreen .oy-username, #homeScreen .oy-username{
     font-size:15px;font-weight:700;color:#0b2b6b;line-height:1.1;
     text-decoration:none;
 }
-#friendsScreen .oy-username{font-size:16px;}
-#historyScreen .oy-username, #tournamentScreen .oy-username{margin-left:3px;}
+#friendsScreen .oy-username, #randomWaitScreen .oy-username, #homeScreen .oy-username{font-size:16px;}
+#historyScreen .oy-username, #tournamentScreen .oy-username, #randomWaitScreen .oy-username, #homeScreen .oy-username{margin-left:3px;}
 #friendsScreen .friend-stats-row{
     display:flex;align-items:center;gap:6px;
     font-size:12px;color:#53627d;margin-top:4px;
 }
 #friendsScreen .friend-stats-sep{color:#c3cbdb;}
-#historyScreen .oy-status, #tournamentScreen .oy-status{
+#historyScreen .oy-status, #tournamentScreen .oy-status, #randomWaitScreen .oy-status, #homeScreen .oy-status{
     background:transparent;
     color:#000;
     font-size:11px;font-weight:600;
@@ -2639,15 +2639,15 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     flex-shrink:0;
     padding-left:6px;
 }
-#historyScreen .oy-status-type{
+#historyScreen .oy-status-type, #randomWaitScreen .oy-status-type, #homeScreen .oy-status-type{
     display:block;
     font-size:11px;
     font-weight:800;
     color:#000;
 }
 
-#historyScreen .oy-actions, #tournamentScreen .oy-actions{display:flex;gap:6px}
-#historyScreen .oy-btn, #tournamentScreen .oy-btn{
+#historyScreen .oy-actions, #tournamentScreen .oy-actions, #randomWaitScreen .oy-actions, #homeScreen .oy-actions{display:flex;gap:6px}
+#historyScreen .oy-btn, #tournamentScreen .oy-btn, #randomWaitScreen .oy-btn, #homeScreen .oy-btn{
     flex:1;
     padding:10px 0;
     border-radius:12px;
@@ -2663,17 +2663,17 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
     user-select:none;
     font-variant-emoji:text;
 }
-#historyScreen .oy-btn, #tournamentScreen .oy-btn:active{top:2px}
-#historyScreen .oy-btn-view, #tournamentScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;--btn-view-shadow:#c2d2e9;box-shadow:0 3px 0 var(--btn-view-shadow)}
-#historyScreen .oy-btn-play, #tournamentScreen .oy-btn-play{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
-#historyScreen .oy-btn-continue{background:#e74c3c;color:#fff;box-shadow:0 3px 0 #b93a2d}
-#historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg{background:#00bfa5;color:#fff;box-shadow:0 3px 0 #00897b}
-#historyScreen .oy-btn-brown, #tournamentScreen .oy-btn-brown{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
-#historyScreen .oy-btn-accept, #tournamentScreen .oy-btn-accept{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
-#historyScreen .oy-btn-decline, #tournamentScreen .oy-btn-decline{background:#ff0044;color:#fff;box-shadow:0 3px 0 #b8003a}
+#historyScreen .oy-btn, #tournamentScreen .oy-btn:active, #randomWaitScreen .oy-btn, #homeScreen .oy-btn, #randomWaitScreen .oy-btn:active, #homeScreen .oy-btn:active{top:2px}
+#historyScreen .oy-btn-view, #tournamentScreen .oy-btn-view, #randomWaitScreen .oy-btn-view, #homeScreen .oy-btn-view{background:#eef2f9;color:#0b2b6b;--btn-view-shadow:#c2d2e9;box-shadow:0 3px 0 var(--btn-view-shadow)}
+#historyScreen .oy-btn-play, #tournamentScreen .oy-btn-play, #randomWaitScreen .oy-btn-play, #homeScreen .oy-btn-play{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-continue, #randomWaitScreen .oy-btn-continue, #homeScreen .oy-btn-continue{background:#e74c3c;color:#fff;box-shadow:0 3px 0 #b93a2d}
+#historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg, #randomWaitScreen .oy-btn-msg, #homeScreen .oy-btn-msg{background:#00bfa5;color:#fff;box-shadow:0 3px 0 #00897b}
+#historyScreen .oy-btn-brown, #tournamentScreen .oy-btn-brown, #randomWaitScreen .oy-btn-brown, #homeScreen .oy-btn-brown{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-accept, #tournamentScreen .oy-btn-accept, #randomWaitScreen .oy-btn-accept, #homeScreen .oy-btn-accept{background:#28a745;color:#fff;box-shadow:0 3px 0 #1e7e34}
+#historyScreen .oy-btn-decline, #tournamentScreen .oy-btn-decline, #randomWaitScreen .oy-btn-decline, #homeScreen .oy-btn-decline{background:#ff0044;color:#fff;box-shadow:0 3px 0 #b8003a}
 
-#historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg{position:relative}
-#historyScreen .oy-btn-msg .badge, #tournamentScreen .oy-btn-msg .badge{
+#historyScreen .oy-btn-msg, #tournamentScreen .oy-btn-msg, #randomWaitScreen .oy-btn-msg, #homeScreen .oy-btn-msg{position:relative}
+#historyScreen .oy-btn-msg .badge, #tournamentScreen .oy-btn-msg .badge, #randomWaitScreen .oy-btn-msg .badge, #homeScreen .oy-btn-msg .badge{
     position:absolute!important;
     top:-6px!important;right:-4px!important;
     background:#ff0044!important;
@@ -3247,7 +3247,6 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 
 <div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;">
-<p style="font-size:12.5px;font-weight:700;color:#293d5a;margin:0 0 6px 4px;text-align:left;">📋 Meydan Okuma Listesi</p>
 <div style="overflow:hidden;border-radius:16px;">
 <div id="homeClcTrack" style="display:flex;transition:transform .5s ease;"></div>
 </div>
@@ -3489,8 +3488,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<p class="screen-title" style="margin-top:22px;font-size:14px;">Meydan Okuma Listesi</p>
-<div id="challengeListUsersList"><p style="color:#7b8fae;font-size:0.85em;">Yükleniyor...</p></div>
+<div id="challengeListUsersList" style="margin-top:22px;"><p style="color:#7b8fae;font-size:0.85em;">Yükleniyor...</p></div>
 
 </div>
 
@@ -7756,6 +7754,7 @@ else{
 return ref.set({
 username:currentUser.username,
 avatarEmoji:currentUser.avatarEmoji||"👤",
+foundWordsCount:currentUser.foundWordsCount||0,
 joinedAt:firebase.firestore.FieldValue.serverTimestamp()
 });
 
@@ -7769,6 +7768,27 @@ renderChallengeListUsers();
 }).catch(function(e){
 console.error("Meydan okuma listesi güncellenemedi:",e);
 });
+
+}
+
+
+function buildChallengeListUserHtml(u){
+
+return "<div class=\"oy-card\">"
++"<div class=\"oy-avatar-col\">"
++"<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"oy-word-count\">"+(u.foundWordsCount||0)+"</div>"
++"</div>"
++"<div class=\"oy-content\">"
++"<div class=\"oy-card-header\">"
++"<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\">"+u.username+"</span></div>"
++"</div>"
++"<div class=\"oy-actions\">"
++"<button class=\"oy-btn oy-btn-view\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>"
++"<button class=\"oy-btn oy-btn-brown\" onclick=\"challengeFromProfile('"+u.username+"')\">⚔️ Meydan Oku</button>"
++"</div>"
++"</div>"
++"</div>";
 
 }
 
@@ -7788,20 +7808,7 @@ listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Listede henüz ki
 return;
 }
 
-listEl.innerHTML=users.map(function(u){
-
-return "<div class=\"oy-card\">"
-+"<div class=\"oy-avatar-ring\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
-+"<div class=\"oy-content\">"
-+"<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">"+u.username+"</span></div></div>"
-+"<div class=\"oy-actions\">"
-+"<button class=\"oy-btn oy-btn-view\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>"
-+"<button class=\"oy-btn oy-btn-play\" onclick=\"challengeFromProfile('"+u.username+"')\"><i class=\"fa-solid fa-play\"></i> Meydan Oku</button>"
-+"</div>"
-+"</div>"
-+"</div>";
-
-}).join("");
+listEl.innerHTML=users.map(buildChallengeListUserHtml).join("");
 
 }).catch(function(e){
 
@@ -7815,6 +7822,9 @@ listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Liste yüklenemed
 
 let homeClcInterval=null;
 let homeClcIndex=0;
+let homeClcUsers=[];
+let homeClcPausedByModal=false;
+let homeClcTouchStartX=null;
 
 function renderHomeChallengeListCarousel(){
 
@@ -7832,6 +7842,8 @@ db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().t
 
 let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
 
+homeClcUsers=users;
+
 if(users.length===0){
 containerEl.style.display="none";
 trackEl.innerHTML="";
@@ -7842,18 +7854,7 @@ containerEl.style.display="block";
 
 trackEl.innerHTML=users.map(function(u){
 
-return "<div style=\"flex:none;width:100%;box-sizing:border-box;\">"
-+"<div class=\"oy-card\">"
-+"<div class=\"oy-avatar-ring\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
-+"<div class=\"oy-content\">"
-+"<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">"+u.username+"</span></div></div>"
-+"<div class=\"oy-actions\">"
-+"<button class=\"oy-btn oy-btn-view\" onclick=\"viewUserProfile('"+u.username+"','home')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>"
-+"<button class=\"oy-btn oy-btn-play\" onclick=\"challengeFromProfile('"+u.username+"')\"><i class=\"fa-solid fa-play\"></i> Meydan Oku</button>"
-+"</div>"
-+"</div>"
-+"</div>"
-+"</div>";
+return "<div style=\"flex:none;width:100%;box-sizing:border-box;\">"+buildChallengeListUserHtml(u)+"</div>";
 
 }).join("");
 
@@ -7861,7 +7862,79 @@ homeClcIndex=0;
 trackEl.style.transition="none";
 trackEl.style.transform="translateX(0%)";
 
+trackEl.ontouchstart=function(e){
+homeClcTouchStartX=e.touches[0].clientX;
+};
+
+trackEl.ontouchend=function(e){
+
+if(homeClcTouchStartX===null)return;
+
+let deltaX=e.changedTouches[0].clientX-homeClcTouchStartX;
+homeClcTouchStartX=null;
+
+if(Math.abs(deltaX)<35)return;
+
+if(deltaX<0){
+homeClcGoTo(homeClcIndex+1);
+}
+else{
+homeClcGoTo(homeClcIndex-1);
+}
+
+};
+
 if(users.length<2)return;
+
+startHomeClcInterval();
+
+}).catch(function(e){
+
+console.error("Anasayfa meydan okuma listesi yüklenemedi:",e);
+containerEl.style.display="none";
+
+});
+
+}
+
+
+function homeClcGoTo(newIndex){
+
+let trackEl=document.getElementById("homeClcTrack");
+
+if(!trackEl || homeClcUsers.length===0)return;
+
+if(newIndex<0){
+newIndex=homeClcUsers.length-1;
+}
+else if(newIndex>=homeClcUsers.length){
+newIndex=0;
+}
+
+homeClcIndex=newIndex;
+
+trackEl.style.transition="transform .5s ease";
+trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
+
+if(!homeClcPausedByModal){
+startHomeClcInterval();
+}
+
+}
+
+
+function startHomeClcInterval(){
+
+if(homeClcInterval){
+clearInterval(homeClcInterval);
+homeClcInterval=null;
+}
+
+if(homeClcUsers.length<2)return;
+
+let trackEl=document.getElementById("homeClcTrack");
+
+if(!trackEl)return;
 
 homeClcInterval=setInterval(function(){
 
@@ -7875,7 +7948,7 @@ return;
 
 homeClcIndex++;
 
-if(homeClcIndex>=users.length){
+if(homeClcIndex>=homeClcUsers.length){
 
 trackEl.style.transition="transform .5s ease";
 trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
@@ -7894,14 +7967,30 @@ trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
 
 }
 
-},2000);
+},5000);
 
-}).catch(function(e){
+}
 
-console.error("Anasayfa meydan okuma listesi yüklenemedi:",e);
-containerEl.style.display="none";
 
-});
+function pauseHomeClcForModal(){
+
+homeClcPausedByModal=true;
+
+if(homeClcInterval){
+clearInterval(homeClcInterval);
+homeClcInterval=null;
+}
+
+}
+
+
+function resumeHomeClcAfterModal(){
+
+if(!homeClcPausedByModal)return;
+
+homeClcPausedByModal=false;
+
+startHomeClcInterval();
 
 }
 
@@ -10533,6 +10622,8 @@ return false;
 
 function openDetailModal(html){
 
+pauseHomeClcForModal();
+
 document.getElementById("detailModalContent").innerHTML=html;
 document.getElementById("detailModalOverlay").style.display="flex";
 
@@ -10545,6 +10636,8 @@ function hideDetailModal(){
 
 document.getElementById("detailModalOverlay").style.display="none";
 document.getElementById("detailModalContent").innerHTML="";
+
+resumeHomeClcAfterModal();
 
 if(chatUnsubscribe){
 chatUnsubscribe();
