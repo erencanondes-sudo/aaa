@@ -2124,7 +2124,8 @@ body.dark-mode #challengeModeChoiceScreen .menu-card.red,
 body.dark-mode #randomWaitScreen .menu-card.red,
 body.dark-mode #challengeTypeScreen .menu-card.red,
 body.dark-mode #challengeFormatScreen .menu-card.red{--menu-fill-color:#891e19;--menu-blur-color:rgba(0,0,0,.15);}
-body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--menu-blur-color:rgba(0,0,0,.15);}
+body.dark-mode #challengeTypeScreen .menu-card.blue,
+body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--menu-blur-color:rgba(0,0,0,.15);}
 
 /* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
 #globalHeader{
@@ -2257,7 +2258,8 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 #homeScreen .menu-card.new{margin-bottom:8px;}
 #homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);margin-bottom:8px;}
 #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
-#challengeFriendScreen .menu-card.white{
+#challengeFriendScreen .menu-card.white,
+#randomWaitScreen .menu-card.white{
     min-height:60px;
     background:#fff;
     color:#1a2b52;
@@ -2294,10 +2296,14 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 #profileScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #profileScreen .menu-card.new{background:linear-gradient(105deg,#35b233,#209c2b)}
 #profileScreen .menu-copy b{font-size:14px;font-weight:800;}
-#challengeFriendScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
-#challengeFriendScreen .menu-card.white .icon-circle{background:#eef2f9;font-size:20px;}
-#challengeFriendScreen .menu-card.white .menu-copy b{color:#1a2b52;}
-#challengeFriendScreen .menu-card.white .arrow{color:#c3cbdb;}
+#challengeFriendScreen .menu-card.white:active,
+#randomWaitScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
+#challengeFriendScreen .menu-card.white .icon-circle,
+#randomWaitScreen .menu-card.white .icon-circle{background:#eef2f9;font-size:20px;}
+#challengeFriendScreen .menu-card.white .menu-copy b,
+#randomWaitScreen .menu-card.white .menu-copy b{color:#1a2b52;}
+#challengeFriendScreen .menu-card.white .arrow,
+#randomWaitScreen .menu-card.white .arrow{color:#c3cbdb;}
 .challenge-continue-btn{
     width:auto!important;
     min-width:140px;
@@ -2311,6 +2317,7 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
+#randomWaitScreen .menu-card.blue{background:linear-gradient(105deg,#38bdf8,#0284c7)}
 #homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
@@ -2338,19 +2345,19 @@ body.dark-mode #challengeTypeScreen .menu-card.blue{--menu-fill-color:#013b5a;--
 #homeScreen .settings-info-section{
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
-    gap:6px;
-    padding:14px 5px 4px;
-    margin:8px 0 0 0;
+    gap:4px;
+    padding:6px 2px 4px;
+    margin:0;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card,
 #homeScreen .friends-card{
-    min-height:60px;
+    min-height:50px;
     background:#fff;
     border-radius:18px;
     display:flex;
     align-items:center;
-    padding:8px 6px;
+    padding:6px 6px;
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
@@ -3482,7 +3489,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<button class="menu-card white" id="challengeListJoinBtn" style="margin-top:12px;" onclick="toggleChallengeList()">
+<button class="menu-card blue" id="challengeListJoinBtn" style="margin-top:12px;" onclick="toggleChallengeList()">
 <div class="icon-circle">📋</div>
 <div class="menu-copy"><b id="challengeListJoinBtnLabel">Listeye Katıl</b><span>Meydan okuma listesinde görün</span></div>
 <div class="arrow">›</div>
@@ -7764,13 +7771,13 @@ if(!btn || !label)return;
 
 if(doc.exists){
 label.innerHTML="Listeden Çık";
-btn.classList.add("red");
-btn.classList.remove("white");
+btn.classList.add("white");
+btn.classList.remove("blue");
 }
 else{
 label.innerHTML="Listeye Katıl";
-btn.classList.add("white");
-btn.classList.remove("red");
+btn.classList.add("blue");
+btn.classList.remove("white");
 }
 
 }).catch(function(e){
@@ -7837,6 +7844,22 @@ return "<div class=\"oy-card\">"
 }
 
 
+function shuffleArray(arr){
+
+let a=arr.slice();
+
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+let tmp=a[i];
+a[i]=a[j];
+a[j]=tmp;
+}
+
+return a;
+
+}
+
+
 function renderChallengeListUsers(){
 
 let listEl=document.getElementById("challengeListUsersList");
@@ -7846,6 +7869,8 @@ if(!listEl)return;
 db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
 
 let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
+
+users=shuffleArray(users);
 
 if(users.length===0){
 listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Listede henüz kimse yok.</p>";
@@ -7885,6 +7910,8 @@ homeClcInterval=null;
 db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
 
 let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
+
+users=shuffleArray(users);
 
 homeClcUsers=users;
 
