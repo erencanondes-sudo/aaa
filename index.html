@@ -21,11 +21,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
-@property --wipe{
-    syntax:'<angle>';
-    inherits:false;
-    initial-value:360deg;
-}
 *{
     scrollbar-width:none;
     -ms-overflow-style:none;
@@ -2347,6 +2342,47 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #settingsScreen .theme-toggle-icon{font-size:22px;}
 #settingsScreen .theme-toggle-btn.active{border-color:#2874c7;background:#eaf3ff;color:#12366f;}
 
+.clc-grid-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    justify-items:center;
+}
+.clc-card{
+    width:72px;
+    border-radius:14px;
+    padding:7px 3px 6px;
+    box-sizing:border-box;
+    text-align:center;
+    cursor:pointer;
+    min-width:0;
+}
+.clc-avatar-ring{
+    width:42px;height:42px;
+    border-radius:50%;
+    margin:0 auto 5px;
+    display:flex;align-items:center;justify-content:center;
+    border:3px solid rgba(255,255,255,.75);
+    background:rgba(255,255,255,.4);
+}
+.clc-avatar{font-size:19px;}
+.clc-username{font-weight:800;color:#1a2b52;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.clc-level{font-size:9px;font-weight:700;color:#5c6b85;margin-bottom:2px;}
+.clc-challenge-btn{
+    width:100%;
+    background:#1fa855;
+    color:#fff;
+    border:0;
+    border-radius:10px;
+    padding:5px 1px;
+    font-weight:700;
+    font-size:8.5px;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+}
+.clc-challenge-btn:active{transform:translateY(2px);}
+
 #homeScreen .settings-info-section{
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
@@ -3258,10 +3294,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;">
-<div id="homeClcWrap" style="position:relative;">
-<div id="homeClcNextLayer"></div>
-<div id="homeClcCurrentLayer" style="position:absolute;inset:0;--wipe:360deg;-webkit-mask-image:conic-gradient(black var(--wipe),transparent var(--wipe));mask-image:conic-gradient(black var(--wipe),transparent var(--wipe));transition:--wipe 1.4s ease-in-out;"></div>
+<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;margin-left:-8px;margin-right:-8px;">
+<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:20px;padding:6px 30px 6px;box-shadow:0 4px 14px rgba(30,45,70,.10);overflow:hidden;">
+<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:0;top:0;bottom:0;width:26px;border-radius:20px 0 0 20px;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">‹</button>
+<div id="homeClcScroll" class="clc-grid-row"></div>
+<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:0;top:0;bottom:0;width:26px;border-radius:0 20px 20px 0;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">›</button>
 </div>
 </div>
 
@@ -7895,130 +7932,67 @@ listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Liste yüklenemed
 }
 
 
+let clcPalette=[
+{bg:"#e8f1ff",ring:"#3b82f6"},
+{bg:"#e8f8ec",ring:"#22c55e"},
+{bg:"#fdeaf0",ring:"#ec4899"},
+{bg:"#f3eaff",ring:"#a855f7"}
+];
+
+let homeClcPages=[];
+let homeClcPageIndex=0;
 let homeClcInterval=null;
-let homeClcIndex=0;
-let homeClcUsers=[];
-let homeClcPausedByModal=false;
-let homeClcTouchStartX=null;
-let homeClcWipeTimeout=null;
 
-function renderHomeChallengeListCarousel(){
+function buildHomeClcCardHtml(u,colors){
 
-let containerEl=document.getElementById("homeChallengeListCarousel");
-let nextEl=document.getElementById("homeClcNextLayer");
-let curEl=document.getElementById("homeClcCurrentLayer");
+return "<div class=\"clc-card\" style=\"background:"+colors.bg+";\" onclick=\"viewUserProfile('"+u.username+"','home')\">"
++"<div class=\"clc-avatar-ring\" style=\"border-color:"+colors.ring+";\"><div class=\"clc-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"clc-username\">"+u.username+"</div>"
++"<div class=\"clc-level\">"+(u.foundWordsCount||0)+"</div>"
++"<button class=\"clc-challenge-btn\" onclick=\"event.stopPropagation();challengeFromProfile('"+u.username+"')\">⚔️ Meydan Oku</button>"
++"</div>";
 
-if(!containerEl || !nextEl || !curEl)return;
+}
+
+
+function renderHomeClcPage(){
+
+let scrollEl=document.getElementById("homeClcScroll");
+
+if(!scrollEl || homeClcPages.length===0)return;
+
+let pageUsers=homeClcPages[homeClcPageIndex];
+let shuffledColors=shuffleArray(clcPalette);
+
+scrollEl.innerHTML=pageUsers.map(function(u,idx){ return buildHomeClcCardHtml(u,shuffledColors[idx%shuffledColors.length]); }).join("");
+
+}
+
+
+function homeClcPage(dir){
+
+if(homeClcPages.length<2)return;
+
+homeClcPageIndex=homeClcPageIndex+dir;
+
+if(homeClcPageIndex<0)homeClcPageIndex=homeClcPages.length-1;
+if(homeClcPageIndex>=homeClcPages.length)homeClcPageIndex=0;
+
+renderHomeClcPage();
+
+startHomeClcAutoAdvance();
+
+}
+
+
+function startHomeClcAutoAdvance(){
 
 if(homeClcInterval){
 clearInterval(homeClcInterval);
 homeClcInterval=null;
 }
 
-if(homeClcWipeTimeout){
-clearTimeout(homeClcWipeTimeout);
-homeClcWipeTimeout=null;
-}
-
-db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
-
-let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
-
-users=shuffleArray(users);
-
-homeClcUsers=users;
-
-if(users.length===0){
-containerEl.style.display="none";
-nextEl.innerHTML="";
-curEl.innerHTML="";
-return;
-}
-
-containerEl.style.display="block";
-
-homeClcIndex=0;
-
-curEl.style.transition="none";
-curEl.style.setProperty("--wipe","360deg");
-curEl.innerHTML=buildChallengeListUserHtml(users[0]);
-
-nextEl.innerHTML=buildChallengeListUserHtml(users[users.length>1 ? 1 : 0]);
-
-let wrapEl=document.getElementById("homeClcWrap");
-
-wrapEl.ontouchstart=function(e){
-homeClcTouchStartX=e.touches[0].clientX;
-};
-
-wrapEl.ontouchend=function(e){
-
-if(homeClcTouchStartX===null)return;
-
-let deltaX=e.changedTouches[0].clientX-homeClcTouchStartX;
-homeClcTouchStartX=null;
-
-if(Math.abs(deltaX)<35)return;
-
-homeClcAdvance();
-
-};
-
-if(users.length<2)return;
-
-startHomeClcInterval();
-
-}).catch(function(e){
-
-console.error("Anasayfa meydan okuma listesi yüklenemedi:",e);
-containerEl.style.display="none";
-
-});
-
-}
-
-
-function homeClcAdvance(){
-
-let curEl=document.getElementById("homeClcCurrentLayer");
-let nextEl=document.getElementById("homeClcNextLayer");
-
-if(!curEl || !nextEl || homeClcUsers.length<2)return;
-
-curEl.style.transition="--wipe 1.4s ease-in-out";
-curEl.style.setProperty("--wipe","0deg");
-
-if(homeClcWipeTimeout){
-clearTimeout(homeClcWipeTimeout);
-homeClcWipeTimeout=null;
-}
-
-homeClcWipeTimeout=setTimeout(function(){
-
-homeClcIndex=(homeClcIndex+1)%homeClcUsers.length;
-
-curEl.style.transition="none";
-curEl.innerHTML=nextEl.innerHTML;
-curEl.style.setProperty("--wipe","360deg");
-
-let nextIndex=(homeClcIndex+1)%homeClcUsers.length;
-nextEl.innerHTML=buildChallengeListUserHtml(homeClcUsers[nextIndex]);
-
-homeClcWipeTimeout=null;
-
-},1450);
-
-}
-
-
-function startHomeClcInterval(){
-
-if(homeClcInterval){
-clearInterval(homeClcInterval);
-homeClcInterval=null;
-}
-
-if(homeClcUsers.length<2)return;
+if(homeClcPages.length<2)return;
 
 homeClcInterval=setInterval(function(){
 
@@ -8030,16 +8004,61 @@ homeClcInterval=null;
 return;
 }
 
-homeClcAdvance();
+homeClcPage(1);
 
 },5000);
 
 }
 
 
-function pauseHomeClcForModal(){
+function renderHomeChallengeListCarousel(){
 
-homeClcPausedByModal=true;
+let containerEl=document.getElementById("homeChallengeListCarousel");
+let scrollEl=document.getElementById("homeClcScroll");
+
+if(!containerEl || !scrollEl)return;
+
+if(homeClcInterval){
+clearInterval(homeClcInterval);
+homeClcInterval=null;
+}
+
+db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
+
+let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
+
+users=shuffleArray(users);
+
+if(users.length===0){
+containerEl.style.display="none";
+scrollEl.innerHTML="";
+homeClcPages=[];
+return;
+}
+
+containerEl.style.display="block";
+
+homeClcPages=[];
+for(let i=0;i<users.length;i+=4){
+homeClcPages.push(users.slice(i,i+4));
+}
+
+homeClcPageIndex=0;
+
+renderHomeClcPage();
+startHomeClcAutoAdvance();
+
+}).catch(function(e){
+
+console.error("Anasayfa meydan okuma listesi yüklenemedi:",e);
+containerEl.style.display="none";
+
+});
+
+}
+
+
+function pauseHomeClcForModal(){
 
 if(homeClcInterval){
 clearInterval(homeClcInterval);
@@ -8048,16 +8067,13 @@ homeClcInterval=null;
 
 }
 
-
 function resumeHomeClcAfterModal(){
 
-if(!homeClcPausedByModal)return;
-
-homeClcPausedByModal=false;
-
-startHomeClcInterval();
+startHomeClcAutoAdvance();
 
 }
+
+
 
 
 function syncRandomWaitScreenState(){
