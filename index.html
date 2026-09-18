@@ -2156,6 +2156,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .welcome{
     min-height:80px;
     margin-bottom:17px;
+    margin-left:-8px;
+    margin-right:-8px;
     border-radius:16px;
     background:#fff;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
@@ -2390,6 +2392,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     gap:4px;
     padding:6px 2px 4px;
     margin:0;
+    margin-left:-8px;
+    margin-right:-8px;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card,
@@ -2403,9 +2407,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
-    --card-fill-color:#dce0e9;
     --card-blur-color:rgba(30,45,70,.10);
-    box-shadow:0 5px 0 var(--card-fill-color),0 10px 22px var(--card-blur-color);
+    box-shadow:0 10px 22px var(--card-blur-color);
     transition:all .2s ease;
 }
 #homeScreen .settings-card:active,
@@ -2415,9 +2418,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .info-card.menu-card-pressed,
 #homeScreen .friends-card.menu-card-pressed{
     transform:translateY(5px);
-    --card-fill-color-active:#dee2ea;
     --card-blur-color-active:rgba(30,45,70,.08);
-    box-shadow:0 2px 0 var(--card-fill-color-active),0 5px 12px var(--card-blur-color-active);
+    box-shadow:0 5px 12px var(--card-blur-color-active);
 }
 #homeScreen .card-icon{
     width:28px;min-width:28px;height:28px;
