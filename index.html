@@ -2343,19 +2343,19 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #settingsScreen .theme-toggle-btn.active{border-color:#2874c7;background:#eaf3ff;color:#12366f;}
 
 .clc-grid-row{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:8px;
-    justify-items:center;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
 }
 .clc-card{
     width:72px;
     border-radius:14px;
-    padding:7px 3px 6px;
+    padding:7px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
     min-width:0;
+    overflow:hidden;
 }
 .clc-avatar-ring{
     width:42px;height:42px;
@@ -2366,15 +2366,16 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     background:rgba(255,255,255,.4);
 }
 .clc-avatar{font-size:19px;}
-.clc-username{font-weight:800;color:#1a2b52;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.clc-level{font-size:9px;font-weight:700;color:#5c6b85;margin-bottom:2px;}
+.clc-username{font-weight:800;color:#1a2b52;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;}
+.clc-level{font-size:9px;font-weight:700;color:#5c6b85;margin-bottom:6px;}
 .clc-challenge-btn{
+    display:block;
     width:100%;
     background:#1fa855;
     color:#fff;
     border:0;
-    border-radius:10px;
-    padding:5px 1px;
+    border-radius:0 0 14px 14px;
+    padding:6px 1px;
     font-weight:700;
     font-size:8.5px;
     cursor:pointer;
@@ -3225,8 +3226,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 <div class="arrow">›</div>
 </button>
 
-<div class="home-divider" style="margin:12px 0 6px 0;"></div>
-
 <div class="settings-info-section">
 
 <div class="friends-card" onclick="animatedNav(this,showFriends)">
@@ -3294,11 +3293,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;margin-left:-8px;margin-right:-8px;">
-<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:20px;padding:6px 30px 6px;box-shadow:0 4px 14px rgba(30,45,70,.10);overflow:hidden;">
-<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:0;top:0;bottom:0;width:26px;border-radius:20px 0 0 20px;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">‹</button>
+<div id="homeChallengeListCarousel" style="display:none;margin:8px 0 4px 0;margin-left:-8px;margin-right:-8px;">
+<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:20px;padding:6px 30px 6px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:4px solid #eef1f6;">
+<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:26px;border-radius:18px 0 0 18px;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">‹</button>
 <div id="homeClcScroll" class="clc-grid-row"></div>
-<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:0;top:0;bottom:0;width:26px;border-radius:0 20px 20px 0;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">›</button>
+<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:26px;border-radius:0 18px 18px 0;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">›</button>
 </div>
 </div>
 
