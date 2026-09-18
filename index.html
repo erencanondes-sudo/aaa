@@ -2247,7 +2247,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
-    --menu-fill-color:#bcbec4;
+    --menu-fill-color:#b2b4ba;
     --menu-blur-color:rgba(25,40,60,.10);
     box-shadow:0 5px 0 var(--menu-fill-color),0 6px 12px var(--menu-blur-color);
     transition:transform .2s,filter .2s;
@@ -2346,7 +2346,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 
 .clc-grid-row{
     display:flex;
-    justify-content:space-between;
+    justify-content:space-evenly;
     align-items:flex-start;
 }
 .clc-card{
@@ -3208,7 +3208,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 </div>
 </div>
 
-<button class="menu-card new" onclick="animatedNav(this,openGameTypeChoice)">
+<button class="menu-card new" style="margin-top:-4px;" onclick="animatedNav(this,openGameTypeChoice)">
 <div class="new-play-circle"><div class="new-play-triangle"></div></div>
 <div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
 <div class="arrow">›</div>
@@ -8048,6 +8048,38 @@ homeClcPageIndex=0;
 
 renderHomeClcPage();
 startHomeClcAutoAdvance();
+
+let panelEl=document.getElementById("homeClcPanel");
+
+if(panelEl && !panelEl.dataset.swipeBound){
+
+panelEl.dataset.swipeBound="1";
+
+let touchStartX=null;
+
+panelEl.addEventListener("touchstart",function(e){
+touchStartX=e.touches[0].clientX;
+});
+
+panelEl.addEventListener("touchend",function(e){
+
+if(touchStartX===null)return;
+
+let deltaX=e.changedTouches[0].clientX-touchStartX;
+touchStartX=null;
+
+if(Math.abs(deltaX)<35)return;
+
+if(deltaX<0){
+homeClcPage(1);
+}
+else{
+homeClcPage(-1);
+}
+
+});
+
+}
 
 }).catch(function(e){
 
