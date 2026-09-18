@@ -21,6 +21,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
+@property --wipe{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:360deg;
+}
 *{
     scrollbar-width:none;
     -ms-overflow-style:none;
@@ -101,7 +106,7 @@ input,textarea{
 .game{
     max-width:520px;
     margin:auto;
-    background:#f4f6fb;
+    background:#ebeef5;
     border-radius:0;
     padding:20px;
     text-align:center;
@@ -118,7 +123,7 @@ input,textarea{
 
 .game.playing{
     background-image:none;
-    background-color:#f4f6fb;
+    background-color:#ebeef5;
 }
 
 .game::before{
@@ -2245,7 +2250,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     display:flex;align-items:center;
     padding:10px 16px;
     text-align:left;
-    --menu-fill-color:rgba(0,0,0,.20);
+    --menu-fill-color:#bcbec4;
     --menu-blur-color:rgba(25,40,60,.10);
     box-shadow:0 5px 0 var(--menu-fill-color),0 6px 12px var(--menu-blur-color);
     transition:transform .2s,filter .2s;
@@ -2361,7 +2366,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     box-sizing:border-box;
     cursor:pointer;
     border:0;font-family:inherit;text-align:left;
-    --card-fill-color:rgba(160,170,185,.20);
+    --card-fill-color:#dce0e9;
     --card-blur-color:rgba(30,45,70,.10);
     box-shadow:0 5px 0 var(--card-fill-color),0 10px 22px var(--card-blur-color);
     transition:all .2s ease;
@@ -2373,7 +2378,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .info-card.menu-card-pressed,
 #homeScreen .friends-card.menu-card-pressed{
     transform:translateY(5px);
-    --card-fill-color-active:rgba(160,170,185,.18);
+    --card-fill-color-active:#dee2ea;
     --card-blur-color-active:rgba(30,45,70,.08);
     box-shadow:0 2px 0 var(--card-fill-color-active),0 5px 12px var(--card-blur-color-active);
 }
@@ -3177,7 +3182,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 <div class="arrow">›</div>
 </button>
 
-<button class="menu-card orange" onclick="animatedNav(this,showTournaments)">
+<button class="menu-card red" onclick="animatedNav(this,showTournaments)">
 <div class="icon-circle">🏆</div>
 <div class="menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
 <span class="badge" id="tournamentBadge" style="display:none;">0</span>
@@ -3254,8 +3259,9 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 
 <div id="homeChallengeListCarousel" style="display:none;margin:16px 0 4px 0;">
-<div style="overflow:hidden;border-radius:16px;">
-<div id="homeClcTrack" style="display:flex;transition:transform .5s ease;"></div>
+<div id="homeClcWrap" style="position:relative;">
+<div id="homeClcNextLayer"></div>
+<div id="homeClcCurrentLayer" style="position:absolute;inset:0;--wipe:360deg;-webkit-mask-image:conic-gradient(black var(--wipe),transparent var(--wipe));mask-image:conic-gradient(black var(--wipe),transparent var(--wipe));transition:--wipe 1.4s ease-in-out;"></div>
 </div>
 </div>
 
@@ -7894,17 +7900,24 @@ let homeClcIndex=0;
 let homeClcUsers=[];
 let homeClcPausedByModal=false;
 let homeClcTouchStartX=null;
+let homeClcWipeTimeout=null;
 
 function renderHomeChallengeListCarousel(){
 
 let containerEl=document.getElementById("homeChallengeListCarousel");
-let trackEl=document.getElementById("homeClcTrack");
+let nextEl=document.getElementById("homeClcNextLayer");
+let curEl=document.getElementById("homeClcCurrentLayer");
 
-if(!containerEl || !trackEl)return;
+if(!containerEl || !nextEl || !curEl)return;
 
 if(homeClcInterval){
 clearInterval(homeClcInterval);
 homeClcInterval=null;
+}
+
+if(homeClcWipeTimeout){
+clearTimeout(homeClcWipeTimeout);
+homeClcWipeTimeout=null;
 }
 
 db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
@@ -7917,27 +7930,28 @@ homeClcUsers=users;
 
 if(users.length===0){
 containerEl.style.display="none";
-trackEl.innerHTML="";
+nextEl.innerHTML="";
+curEl.innerHTML="";
 return;
 }
 
 containerEl.style.display="block";
 
-trackEl.innerHTML=users.map(function(u){
-
-return "<div style=\"flex:none;width:100%;box-sizing:border-box;\">"+buildChallengeListUserHtml(u)+"</div>";
-
-}).join("");
-
 homeClcIndex=0;
-trackEl.style.transition="none";
-trackEl.style.transform="translateX(0%)";
 
-trackEl.ontouchstart=function(e){
+curEl.style.transition="none";
+curEl.style.setProperty("--wipe","360deg");
+curEl.innerHTML=buildChallengeListUserHtml(users[0]);
+
+nextEl.innerHTML=buildChallengeListUserHtml(users[users.length>1 ? 1 : 0]);
+
+let wrapEl=document.getElementById("homeClcWrap");
+
+wrapEl.ontouchstart=function(e){
 homeClcTouchStartX=e.touches[0].clientX;
 };
 
-trackEl.ontouchend=function(e){
+wrapEl.ontouchend=function(e){
 
 if(homeClcTouchStartX===null)return;
 
@@ -7946,12 +7960,7 @@ homeClcTouchStartX=null;
 
 if(Math.abs(deltaX)<35)return;
 
-if(deltaX<0){
-homeClcGoTo(homeClcIndex+1);
-}
-else{
-homeClcGoTo(homeClcIndex-1);
-}
+homeClcAdvance();
 
 };
 
@@ -7969,27 +7978,35 @@ containerEl.style.display="none";
 }
 
 
-function homeClcGoTo(newIndex){
+function homeClcAdvance(){
 
-let trackEl=document.getElementById("homeClcTrack");
+let curEl=document.getElementById("homeClcCurrentLayer");
+let nextEl=document.getElementById("homeClcNextLayer");
 
-if(!trackEl || homeClcUsers.length===0)return;
+if(!curEl || !nextEl || homeClcUsers.length<2)return;
 
-if(newIndex<0){
-newIndex=homeClcUsers.length-1;
+curEl.style.transition="--wipe 1.4s ease-in-out";
+curEl.style.setProperty("--wipe","0deg");
+
+if(homeClcWipeTimeout){
+clearTimeout(homeClcWipeTimeout);
+homeClcWipeTimeout=null;
 }
-else if(newIndex>=homeClcUsers.length){
-newIndex=0;
-}
 
-homeClcIndex=newIndex;
+homeClcWipeTimeout=setTimeout(function(){
 
-trackEl.style.transition="transform .5s ease";
-trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
+homeClcIndex=(homeClcIndex+1)%homeClcUsers.length;
 
-if(!homeClcPausedByModal){
-startHomeClcInterval();
-}
+curEl.style.transition="none";
+curEl.innerHTML=nextEl.innerHTML;
+curEl.style.setProperty("--wipe","360deg");
+
+let nextIndex=(homeClcIndex+1)%homeClcUsers.length;
+nextEl.innerHTML=buildChallengeListUserHtml(homeClcUsers[nextIndex]);
+
+homeClcWipeTimeout=null;
+
+},1450);
 
 }
 
@@ -8003,10 +8020,6 @@ homeClcInterval=null;
 
 if(homeClcUsers.length<2)return;
 
-let trackEl=document.getElementById("homeClcTrack");
-
-if(!trackEl)return;
-
 homeClcInterval=setInterval(function(){
 
 let homeScreenEl=document.getElementById("homeScreen");
@@ -8017,26 +8030,7 @@ homeClcInterval=null;
 return;
 }
 
-homeClcIndex++;
-
-if(homeClcIndex>=homeClcUsers.length){
-
-trackEl.style.transition="transform .5s ease";
-trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
-
-setTimeout(function(){
-trackEl.style.transition="none";
-homeClcIndex=0;
-trackEl.style.transform="translateX(0%)";
-},520);
-
-}
-else{
-
-trackEl.style.transition="transform .5s ease";
-trackEl.style.transform="translateX(-"+(homeClcIndex*100)+"%)";
-
-}
+homeClcAdvance();
 
 },5000);
 
