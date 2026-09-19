@@ -103,7 +103,7 @@ input,textarea{
     margin:auto;
     background:#ebeef5;
     border-radius:0;
-    padding:20px;
+    padding:15px 20px 20px;
     text-align:center;
     position:relative;
     z-index:0;
@@ -836,6 +836,78 @@ button{
     justify-content:center;
     margin:10px auto 20px auto;
 }
+
+.profile-hero{
+    position:relative;
+    padding-top:0;
+}
+.profile-hero .profile-icon{
+    width:80px;
+    height:80px;
+    font-size:40px;
+    margin:0 auto;
+    box-shadow:0 0 0 6px rgba(49,130,206,.12);
+}
+.profile-hero-confetti{
+    position:absolute;
+    inset:-4px 0 auto 0;
+    height:96px;
+    pointer-events:none;
+}
+.phc{position:absolute;border-radius:3px;}
+.phc-dot{border-radius:50%;}
+.phc1{width:6px;height:6px;left:14%;top:18%;background:#7c9cf5;}
+.phc2{width:7px;height:7px;left:32%;top:4%;background:#f0596b;border-radius:50%;}
+.phc3{width:12px;height:6px;left:20%;top:34%;background:#a78bfa;transform:rotate(-30deg);}
+.phc4{width:6px;height:6px;left:8%;top:58%;background:#2dd4a7;border-radius:50%;}
+.phc5{width:6px;height:6px;left:22%;top:74%;background:#f0596b;border-radius:50%;}
+.phc6{width:7px;height:7px;right:14%;top:14%;background:#7c9cf5;border-radius:50%;}
+.phc7{width:12px;height:6px;right:6%;top:6%;background:#facc15;transform:rotate(35deg);}
+.phc8{width:6px;height:6px;right:8%;top:44%;background:#2dd4a7;border-radius:50%;}
+.phc9{width:10px;height:6px;right:16%;top:60%;background:#a78bfa;transform:rotate(35deg);}
+
+.profile-greeting{
+    text-align:center;
+    font-size:16px;
+    font-weight:800;
+    color:#192a56;
+    margin:4px 0 2px 0;
+}
+.profile-greeting-name{color:#2874c7;}
+.profile-greeting-underline{
+    display:block;
+    width:70px;
+    height:3px;
+    border-radius:4px;
+    background:linear-gradient(90deg,#2874c7,#7c9cf5);
+    margin:2px auto 7px auto;
+}
+
+.profile-info-card{
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 4px 14px rgba(30,45,70,.10);
+    padding:0 12px;
+    margin-bottom:8px;
+    text-align:left;
+}
+.profile-info-row{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:6px 0;
+    border-bottom:1px solid #eef1f6;
+}
+.profile-info-row:last-child{border-bottom:0;}
+.profile-info-icon{
+    width:26px;height:26px;min-width:26px;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;
+    color:#fff;
+}
+.profile-info-label{flex:1;font-weight:800;color:#192a56;font-size:11px;}
+.profile-info-value{font-weight:700;color:#293d5a;font-size:11px;text-align:right;}
 
 .stats{
     background:#f1f2f6;
@@ -2238,7 +2310,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     max-height:34px;
 }
 
-#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card, #challengeTypeScreen .menu-card, #challengeFriendScreen .menu-card, #challengeFormatScreen .menu-card{
+#homeScreen .menu-card, #gameTypeScreen .menu-card, #challengeModeChoiceScreen .menu-card, #randomWaitScreen .menu-card, #challengeTypeScreen .menu-card, #challengeFriendScreen .menu-card, #challengeFormatScreen .menu-card, #profileScreen .menu-card{
     width:100%;
     min-height:68px;
     border-radius:18px;
@@ -2254,11 +2326,11 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     position:relative;overflow:hidden;
     border:0;cursor:pointer;font-family:inherit;
 }
-#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active, #challengeFriendScreen .menu-card:active, #challengeFormatScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
+#homeScreen .menu-card:active, #gameTypeScreen .menu-card:active, #challengeModeChoiceScreen .menu-card:active, #randomWaitScreen .menu-card:active, #challengeTypeScreen .menu-card:active, #challengeFriendScreen .menu-card:active, #challengeFormatScreen .menu-card:active, #profileScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
-#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
+#homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new, #profileScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
 #homeScreen .menu-card.new{margin-bottom:8px;}
-#homeScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);margin-bottom:8px;}
+#homeScreen .menu-card.purple, #profileScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);margin-bottom:8px;}
 #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #challengeFriendScreen .menu-card.white,
 #randomWaitScreen .menu-card.white{
@@ -2283,21 +2355,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #detailModalContent .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
 #detailModalContent .menu-card.new{background:linear-gradient(105deg,#35b233,#209c2b)}
 #detailModalContent .menu-copy b{font-size:15px;font-weight:800;}
-#profileScreen .menu-card{
-    width:auto;
-    min-width:96px;
-    min-height:44px;
-    border-radius:16px;
-    color:#fff;
-    display:inline-flex;align-items:center;justify-content:center;
-    padding:8px 16px;
-    box-shadow:0 5px 0 rgba(0,0,0,.20),0 6px 12px rgba(25,40,60,.10);
-    transition:transform .2s,filter .2s;
-    border:0;cursor:pointer;font-family:inherit;
-}
-#profileScreen .menu-card:active{transform:translateY(3px);filter:brightness(.96)}
-#profileScreen .menu-card.new{background:linear-gradient(105deg,#35b233,#209c2b)}
-#profileScreen .menu-copy b{font-size:14px;font-weight:800;}
 #challengeFriendScreen .menu-card.white:active,
 #randomWaitScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
 #challengeFriendScreen .menu-card.white .icon-circle,
@@ -2320,7 +2377,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
 #randomWaitScreen .menu-card.blue{background:linear-gradient(105deg,#38bdf8,#0284c7)}
-#homeScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
+#homeScreen .menu-card.red, #profileScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
 #homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
@@ -2350,9 +2407,9 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     align-items:flex-start;
 }
 .clc-card{
-    width:72px;
-    border-radius:14px;
-    padding:7px 0 0;
+    width:68px;
+    border-radius:13px;
+    padding:6px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
@@ -2360,14 +2417,23 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     overflow:hidden;
 }
 .clc-avatar-ring{
-    width:42px;height:42px;
+    width:40px;height:40px;
     border-radius:50%;
     margin:0 auto 5px;
+    padding:2px;
+    box-sizing:border-box;
+    background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
     display:flex;align-items:center;justify-content:center;
-    border:3px solid rgba(255,255,255,.75);
-    background:rgba(255,255,255,.4);
 }
-.clc-avatar{font-size:19px;}
+.clc-avatar{
+    width:100%;height:100%;
+    border-radius:50%;
+    border:2px solid #fff;
+    box-sizing:border-box;
+    background:rgba(255,255,255,.4);
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;
+}
 .clc-username{font-weight:800;color:#1a2b52;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;}
 .clc-level{font-size:9px;font-weight:700;color:#5c6b85;margin-bottom:6px;}
 .clc-challenge-btn{
@@ -2376,7 +2442,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     background:#1fa855;
     color:#fff;
     border:0;
-    border-radius:0 0 14px 14px;
+    border-radius:0 0 13px 13px;
     padding:6px 1px;
     font-weight:700;
     font-size:8.5px;
@@ -2459,8 +2525,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     transform:translateX(2px);
 }
 #homeScreen .menu-copy, #gameTypeScreen .menu-copy, #challengeModeChoiceScreen .menu-copy, #randomWaitScreen .menu-copy, #challengeTypeScreen .menu-copy, #challengeFriendScreen .menu-copy, #challengeFormatScreen .menu-copy{flex:1;min-width:0}
-#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b, #challengeTypeScreen .menu-copy b, #challengeFriendScreen .menu-copy b, #challengeFormatScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
-#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span, #challengeTypeScreen .menu-copy span, #challengeFriendScreen .menu-copy span, #challengeFormatScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
+#homeScreen .menu-copy b, #gameTypeScreen .menu-copy b, #challengeModeChoiceScreen .menu-copy b, #randomWaitScreen .menu-copy b, #challengeTypeScreen .menu-copy b, #challengeFriendScreen .menu-copy b, #challengeFormatScreen .menu-copy b, #profileScreen .menu-copy b{display:block;font-size:17px;font-weight:800}
+#homeScreen .menu-copy span, #gameTypeScreen .menu-copy span, #challengeModeChoiceScreen .menu-copy span, #randomWaitScreen .menu-copy span, #challengeTypeScreen .menu-copy span, #challengeFriendScreen .menu-copy span, #challengeFormatScreen .menu-copy span, #profileScreen .menu-copy span{display:block;font-size:11.5px;margin-top:2px;opacity:.95}
 #homeScreen .arrow, #gameTypeScreen .arrow, #challengeModeChoiceScreen .arrow, #randomWaitScreen .arrow, #challengeTypeScreen .arrow, #challengeFriendScreen .arrow, #challengeFormatScreen .arrow{font-size:25px;font-weight:300;margin-left:6px;flex:none;line-height:1;}
 
 #homeScreen .badge{
@@ -3113,7 +3179,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 <h1 id="mainTitle" class="hs-logo">Konfeti</h1>
 </div>
 
-<div id="wordTopAdBannerSpacer" style="display:none;height:30px;"></div>
+<div id="wordTopAdBannerSpacer" style="display:none;height:25px;"></div>
 
 <div id="fakeAdBanner" style="display:none;position:absolute;width:335px;height:100px;left:50%;transform:translateX(-50%);z-index:200;border-radius:14px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
 <button onclick="closeFakeAdBanner()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:14px;font-weight:bold;line-height:1;border:0;cursor:pointer;z-index:5;">✕</button>
@@ -3296,10 +3362,10 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 
 <div id="homeChallengeListCarousel" style="display:none;margin:8px 0 4px 0;margin-left:-8px;margin-right:-8px;">
-<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:20px;padding:6px 30px 6px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:4px solid #eef1f6;">
-<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:26px;border-radius:18px 0 0 18px;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">‹</button>
+<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:19px;padding:5px 22px 5px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:3px solid #eef1f6;">
+<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:24px;border-radius:17px 0 0 17px;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">‹</button>
 <div id="homeClcScroll" class="clc-grid-row"></div>
-<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:26px;border-radius:0 18px 18px 0;border:0;background:#d8dce2;color:#3a4552;font-size:16px;font-weight:800;cursor:pointer;">›</button>
+<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:24px;border-radius:0 17px 17px 0;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">›</button>
 </div>
 </div>
 
@@ -3308,29 +3374,81 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="profileScreen" style="display:none;">
 
 
-<h2 style="margin:40px 0 14px 0;">Profil</h2>
-
-<div class="profile-icon" id="profileIcon" onclick="openAvatarPicker()" style="cursor:pointer;">👤</div>
-<p style="text-align:center;font-size:0.8em;color:#636e72;margin-top:-6px;">Değiştirmek için dokun</p>
-
-<div class="stats">
-<p>Ad Soyad: <span id="profileName"></span></p>
-<p>Kullanıcı Adı: <span id="profileUsername"></span></p>
-<p>Ülke: <span id="profileCountry"></span></p>
-<p>E-posta: <span id="profileEmail"></span></p>
-<div id="profileStatsRealSection">
-<p>Başarı Yüzdesi: <span id="profileSuccessPct"></span></p>
-<p>Puan Ortalaması (Kelime): <span id="profileAvgScoreWord"></span></p>
+<div class="profile-hero">
+<div class="profile-hero-confetti">
+<span class="phc phc1"></span><span class="phc phc2"></span><span class="phc phc3"></span>
+<span class="phc phc4"></span><span class="phc phc5"></span><span class="phc phc6"></span>
+<span class="phc phc7"></span><span class="phc phc8"></span><span class="phc phc9"></span>
 </div>
-<div id="profileGuestPrompt" style="display:none;align-items:center;gap:10px;margin-top:6px;">
+<div class="profile-icon" id="profileIcon" onclick="openAvatarPicker()" style="cursor:pointer;">👤</div>
+</div>
+<p style="text-align:center;font-size:0.75em;color:#636e72;margin-top:2px;margin-bottom:0;">Değiştirmek için dokun</p>
+
+<h2 class="profile-greeting">Merhaba, <span class="profile-greeting-name" id="profileGreetName"></span>!</h2>
+<span class="profile-greeting-underline"></span>
+
+<div class="profile-info-card">
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#3b82f6;">👤</div>
+<div class="profile-info-label">Ad Soyad</div>
+<div class="profile-info-value" id="profileName"></div>
+</div>
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#8b5cf6;">👤</div>
+<div class="profile-info-label">Kullanıcı Adı</div>
+<div class="profile-info-value" id="profileUsername"></div>
+</div>
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#7c9cf5;">🌍</div>
+<div class="profile-info-label">Ülke</div>
+<div class="profile-info-value" id="profileCountry"></div>
+</div>
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#f89510;">✉️</div>
+<div class="profile-info-label">E-posta</div>
+<div class="profile-info-value" id="profileEmail"></div>
+</div>
+
+<div id="profileStatsRealSection">
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#22c55e;">📈</div>
+<div class="profile-info-label">Başarı Yüzdesi</div>
+<div class="profile-info-value" id="profileSuccessPct"></div>
+</div>
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#e8342b;">⭐</div>
+<div class="profile-info-label">Puan Ortalaması (Kelime)</div>
+<div class="profile-info-value" id="profileAvgScoreWord"></div>
+</div>
+
+<div class="profile-info-row">
+<div class="profile-info-icon" style="background:#eab308;">🔤</div>
+<div class="profile-info-label">Bulunan Benzersiz Kelime Sayısı</div>
+<div class="profile-info-value" id="profileFoundWordsCount"></div>
+</div>
+
+</div>
+
+<div id="profileGuestPrompt" style="display:none;align-items:center;gap:10px;padding:10px 0;">
 <button class="menu-card new" style="width:auto;min-width:96px;min-height:44px;margin-bottom:0;flex:none;" onclick="goToSignupFromBanner()">
 <div class="menu-copy" style="text-align:center;"><b>Üye Ol</b></div>
 </button>
 <span style="font-size:11.5px;color:#57606f;line-height:1.4;">Üye girişi yaparak düello oyunlarına ve turnuvalara katılarak diğer kişilerle oynayabilir ve sohbet edebilirsin</span>
 </div>
+
 </div>
 
-<button class="challenge-play-btn btn-compact" onclick="showChangePasswordForm()">Şifre Değiştir 🔒</button>
+<button class="menu-card new" onclick="showChangePasswordForm()">
+<div class="icon-circle">🔒</div>
+<div class="menu-copy"><b>Şifre Değiştir</b><span>Hesabını güvende tut</span></div>
+<div class="arrow">›</div>
+</button>
 
 <div id="changePasswordForm" style="display:none;">
 
@@ -3347,7 +3465,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<button class="challenge-play-btn btn-compact" style="background:#8e44ad;box-shadow:0 4px 0 #6c3483;" onclick="showChangeUsernameForm()">Kullanıcı Adı Değiştir ✏️</button>
+<button class="menu-card purple" onclick="showChangeUsernameForm()">
+<div class="icon-circle">✏️</div>
+<div class="menu-copy"><b>Kullanıcı Adı Değiştir</b><span>Kullanıcı adını güncelle</span></div>
+<div class="arrow">›</div>
+</button>
 
 <div id="changeUsernameForm" style="display:none;">
 
@@ -3364,7 +3486,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<button class="challenge-play-btn decline-btn btn-compact" onclick="logoutUser()">Çıkış Yap 🚪</button>
+<button class="menu-card red" onclick="logoutUser()">
+<div class="icon-circle">🚪</div>
+<div class="menu-copy"><b>Çıkış Yap</b><span>Hesabından çıkış yap</span></div>
+<div class="arrow">›</div>
+</button>
 
 </div>
 
@@ -7947,7 +8073,7 @@ let homeClcInterval=null;
 function buildHomeClcCardHtml(u,colors){
 
 return "<div class=\"clc-card\" style=\"background:"+colors.bg+";\" onclick=\"viewUserProfile('"+u.username+"','home')\">"
-+"<div class=\"clc-avatar-ring\" style=\"border-color:"+colors.ring+";\"><div class=\"clc-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"clc-avatar-ring\"><div class=\"clc-avatar\" style=\"background:"+colors.bg+";\">"+(u.avatarEmoji||"👤")+"</div></div>"
 +"<div class=\"clc-username\">"+u.username+"</div>"
 +"<div class=\"clc-level\">"+(u.foundWordsCount||0)+"</div>"
 +"<button class=\"clc-challenge-btn\" onclick=\"event.stopPropagation();challengeFromProfile('"+u.username+"')\">⚔️ Meydan Oku</button>"
@@ -9507,6 +9633,7 @@ document.getElementById("profileUsername").innerHTML=currentUser.username;
 document.getElementById("profileCountry").innerHTML=currentUser.country ? (countryFlagEmoji(currentUser.country)+" "+getCountryName(currentUser.country)) : "-";
 document.getElementById("profileEmail").innerHTML=currentUser.email;
 document.getElementById("profileIcon").innerHTML=currentUser.avatarEmoji||"👤";
+document.getElementById("profileGreetName").innerHTML=currentUser.username||currentUser.name;
 
 if(currentUser.isGuest){
 
@@ -9527,6 +9654,7 @@ let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.l
 
 document.getElementById("profileSuccessPct").innerHTML="%"+successPct;
 document.getElementById("profileAvgScoreWord").innerHTML=avgByLevel.word;
+document.getElementById("profileFoundWordsCount").innerHTML=currentUser.foundWordsCount||0;
 
 }
 
