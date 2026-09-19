@@ -2233,9 +2233,13 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     border-radius:16px;
     background:#fff;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
-    display:flex;align-items:center;
+    display:block;
     padding:9px 19px 9px 10px;
     position:relative;
+}
+#homeScreen .welcome-row{
+    display:flex;
+    align-items:center;
 }
 #homeScreen .found-words-count{
     position:absolute;
@@ -2458,8 +2462,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     gap:4px;
     padding:6px 2px 4px;
     margin:0;
-    margin-left:-8px;
-    margin-right:-8px;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card,
@@ -3275,8 +3277,11 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 
 <div id="homeScreen" style="display:none;">
 
+
+
 <div class="welcome" onclick="showProfile()" style="cursor:pointer;">
 <span class="found-words-count" id="homeFoundWordsCount"></span>
+<div class="welcome-row">
 <div class="avatar"><span id="homeAvatarIcon">👤</span><i class="online"></i></div>
 <div class="welcome-content">
 <p id="welcomeText" class="welcome-text"></p>
@@ -3294,35 +3299,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 </div>
 </div>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:8px 0 12px 0;margin-left:-8px;margin-right:-8px;">
-<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:19px;padding:5px 22px 5px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:3px solid #eef1f6;">
-<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:24px;border-radius:17px 0 0 17px;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">‹</button>
-<div id="homeClcScroll" class="clc-grid-row"></div>
-<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:24px;border-radius:0 17px 17px 0;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">›</button>
-</div>
-</div>
-
-<button class="menu-card new" style="margin-top:-4px;" onclick="animatedNav(this,openGameTypeChoice)">
-<div class="new-play-circle"><div class="new-play-triangle"></div></div>
-<div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
-<div class="arrow">›</div>
-</button>
-
-<button class="menu-card purple" onclick="animatedNav(this,showHistory)">
-<div class="icon-circle">🎮</div>
-<div class="menu-copy"><b>Oyunlarım</b><span>Devam eden oyunların</span></div>
-<span class="badge" id="historyBadge" style="display:none;">0</span>
-<div class="arrow">›</div>
-</button>
-
-<button class="menu-card red" onclick="animatedNav(this,showTournaments)">
-<div class="icon-circle">🏆</div>
-<div class="menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
-<span class="badge" id="tournamentBadge" style="display:none;">0</span>
-<div class="arrow">›</div>
-</button>
-
-<div class="settings-info-section">
+<div class="settings-info-section" onclick="event.stopPropagation();">
 
 <div class="friends-card" onclick="animatedNav(this,showFriends)">
 <div class="card-icon">
@@ -3387,6 +3364,35 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="card-arrow">›</div>
 </div>
 
+</div>
+</div>
+
+<button class="menu-card new" style="margin-top:-4px;" onclick="animatedNav(this,openGameTypeChoice)">
+<div class="new-play-circle"><div class="new-play-triangle"></div></div>
+<div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card purple" onclick="animatedNav(this,showHistory)">
+<div class="icon-circle">🎮</div>
+<div class="menu-copy"><b>Oyunlarım</b><span>Devam eden oyunların</span></div>
+<span class="badge" id="historyBadge" style="display:none;">0</span>
+<div class="arrow">›</div>
+</button>
+
+<button class="menu-card red" onclick="animatedNav(this,showTournaments)">
+<div class="icon-circle">🏆</div>
+<div class="menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
+<span class="badge" id="tournamentBadge" style="display:none;">0</span>
+<div class="arrow">›</div>
+</button>
+
+<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 12px 0;margin-left:-8px;margin-right:-8px;">
+<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:19px;padding:5px 22px 5px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:3px solid #eef1f6;">
+<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:24px;border-radius:17px 0 0 17px;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">‹</button>
+<div id="homeClcScroll" class="clc-grid-row"></div>
+<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:24px;border-radius:0 17px 17px 0;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">›</button>
+</div>
 </div>
 
 </div>
