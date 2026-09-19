@@ -2463,7 +2463,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 }
 #homeScreen .settings-card,
 #homeScreen .info-card,
-#homeScreen .friends-card{
+#homeScreen .friends-card,
+#profileScreen .password-card,
+#profileScreen .username-card,
+#profileScreen .logout-card{
     min-height:50px;
     background:#fff;
     border-radius:18px;
@@ -2477,29 +2480,46 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     box-shadow:0 10px 22px var(--card-blur-color);
     transition:all .2s ease;
 }
+#profileScreen .password-card,
+#profileScreen .username-card,
+#profileScreen .logout-card{
+    width:100%;
+    padding:8px 10px;
+    margin-bottom:8px;
+}
 #homeScreen .settings-card:active,
 #homeScreen .info-card:active,
 #homeScreen .friends-card:active,
 #homeScreen .settings-card.menu-card-pressed,
 #homeScreen .info-card.menu-card-pressed,
-#homeScreen .friends-card.menu-card-pressed{
+#homeScreen .friends-card.menu-card-pressed,
+#profileScreen .password-card:active,
+#profileScreen .username-card:active,
+#profileScreen .logout-card:active{
     transform:translateY(5px);
     --card-blur-color-active:rgba(30,45,70,.08);
     box-shadow:0 5px 12px var(--card-blur-color-active);
 }
-#homeScreen .card-icon{
+#homeScreen .card-icon, #profileScreen .card-icon{
     width:28px;min-width:28px;height:28px;
     display:flex;align-items:center;justify-content:center;
     margin-right:5px;
     background:transparent;
 }
+#profileScreen .card-icon{width:32px;min-width:32px;height:32px;margin-right:8px;font-size:17px;}
 #homeScreen .settings-card .card-icon svg{width:22px;height:22px;fill:#2874c7;}
 #homeScreen .info-card .card-icon svg{width:22px;height:22px;color:#f39a00;}
 #homeScreen .friends-card .card-icon svg{width:22px;height:22px;color:#e8342b;}
-#homeScreen .card-content{flex:1;min-width:0;}
-#homeScreen .card-title{font-size:10.5px;font-weight:700;color:#293d5a;margin-bottom:1px;}
-#homeScreen .card-description{font-size:7.5px;line-height:1.2;color:#607087;}
-#homeScreen .card-arrow{font-size:15px;font-weight:300;color:#344b68;margin-left:2px;}
+#homeScreen .card-content, #profileScreen .card-content{flex:1;min-width:0;}
+#homeScreen .card-title, #profileScreen .card-title{font-size:10.5px;font-weight:700;color:#293d5a;margin-bottom:1px;}
+#homeScreen .card-description, #profileScreen .card-description{font-size:7.5px;line-height:1.2;color:#607087;}
+#homeScreen .card-arrow, #profileScreen .card-arrow{font-size:15px;font-weight:300;color:#344b68;margin-left:2px;}
+#profileScreen .card-title{font-size:13px;}
+#profileScreen .card-description{font-size:9.5px;}
+#profileScreen .card-arrow{font-size:17px;}
+#profileScreen .password-card .card-icon{background:#e8f8ec;border-radius:50%;}
+#profileScreen .username-card .card-icon{background:#f0e8fc;border-radius:50%;}
+#profileScreen .logout-card .card-icon{background:#fde8e8;border-radius:50%;}
 
 #homeScreen .icon-circle, #gameTypeScreen .icon-circle, #challengeModeChoiceScreen .icon-circle, #randomWaitScreen .icon-circle, #challengeTypeScreen .icon-circle, #challengeFriendScreen .icon-circle, #challengeFormatScreen .icon-circle{
     width:42px;height:42px;border-radius:50%;
@@ -3274,6 +3294,14 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 </div>
 </div>
 
+<div id="homeChallengeListCarousel" style="display:none;margin:8px 0 12px 0;margin-left:-8px;margin-right:-8px;">
+<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:19px;padding:5px 22px 5px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:3px solid #eef1f6;">
+<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:24px;border-radius:17px 0 0 17px;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">‹</button>
+<div id="homeClcScroll" class="clc-grid-row"></div>
+<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:24px;border-radius:0 17px 17px 0;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">›</button>
+</div>
+</div>
+
 <button class="menu-card new" style="margin-top:-4px;" onclick="animatedNav(this,openGameTypeChoice)">
 <div class="new-play-circle"><div class="new-play-triangle"></div></div>
 <div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
@@ -3361,14 +3389,6 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:8px 0 4px 0;margin-left:-8px;margin-right:-8px;">
-<div id="homeClcPanel" style="position:relative;background:#fff;border-radius:19px;padding:5px 22px 5px;box-shadow:0 4px 14px rgba(30,45,70,.10);border:3px solid #eef1f6;">
-<button id="homeClcPrevBtn" onclick="homeClcPage(-1)" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-2px;top:0;bottom:0;width:24px;border-radius:17px 0 0 17px;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">‹</button>
-<div id="homeClcScroll" class="clc-grid-row"></div>
-<button id="homeClcNextBtn" onclick="homeClcPage(1)" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-2px;top:0;bottom:0;width:24px;border-radius:0 17px 17px 0;border:0;background:#d8dce2;color:#3a4552;font-size:15px;font-weight:800;cursor:pointer;">›</button>
-</div>
-</div>
-
 </div>
 
 <div id="profileScreen" style="display:none;">
@@ -3444,11 +3464,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<button class="menu-card new" onclick="showChangePasswordForm()">
-<div class="icon-circle">🔒</div>
-<div class="menu-copy"><b>Şifre Değiştir</b><span>Hesabını güvende tut</span></div>
-<div class="arrow">›</div>
-</button>
+<div class="password-card" onclick="showChangePasswordForm()">
+<div class="card-icon">🔒</div>
+<div class="card-content"><div class="card-title">Şifre Değiştir</div><div class="card-description">Hesabını güvende tut</div></div>
+<div class="card-arrow">›</div>
+</div>
 
 <div id="changePasswordForm" style="display:none;">
 
@@ -3465,11 +3485,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<button class="menu-card purple" onclick="showChangeUsernameForm()">
-<div class="icon-circle">✏️</div>
-<div class="menu-copy"><b>Kullanıcı Adı Değiştir</b><span>Kullanıcı adını güncelle</span></div>
-<div class="arrow">›</div>
-</button>
+<div class="username-card" onclick="showChangeUsernameForm()">
+<div class="card-icon">✏️</div>
+<div class="card-content"><div class="card-title">Kullanıcı Adı Değiştir</div><div class="card-description">Kullanıcı adını güncelle</div></div>
+<div class="card-arrow">›</div>
+</div>
 
 <div id="changeUsernameForm" style="display:none;">
 
@@ -3486,11 +3506,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<button class="menu-card red" onclick="logoutUser()">
-<div class="icon-circle">🚪</div>
-<div class="menu-copy"><b>Çıkış Yap</b><span>Hesabından çıkış yap</span></div>
-<div class="arrow">›</div>
-</button>
+<div class="logout-card" onclick="logoutUser()">
+<div class="card-icon">🚪</div>
+<div class="card-content"><div class="card-title">Çıkış Yap</div><div class="card-description">Hesabından çıkış yap</div></div>
+<div class="card-arrow">›</div>
+</div>
 
 </div>
 
@@ -7976,6 +7996,7 @@ return ref.set({
 username:currentUser.username,
 avatarEmoji:currentUser.avatarEmoji||"👤",
 foundWordsCount:currentUser.foundWordsCount||0,
+country:currentUser.country||null,
 joinedAt:firebase.firestore.FieldValue.serverTimestamp()
 });
 
@@ -8072,9 +8093,11 @@ let homeClcInterval=null;
 
 function buildHomeClcCardHtml(u,colors){
 
+let flag=countryFlagEmoji(u.country);
+
 return "<div class=\"clc-card\" style=\"background:"+colors.bg+";\" onclick=\"viewUserProfile('"+u.username+"','home')\">"
 +"<div class=\"clc-avatar-ring\"><div class=\"clc-avatar\" style=\"background:"+colors.bg+";\">"+(u.avatarEmoji||"👤")+"</div></div>"
-+"<div class=\"clc-username\">"+u.username+"</div>"
++"<div class=\"clc-username\">"+(flag ? flag+" " : "")+u.username+"</div>"
 +"<div class=\"clc-level\">"+(u.foundWordsCount||0)+"</div>"
 +"<button class=\"clc-challenge-btn\" onclick=\"event.stopPropagation();challengeFromProfile('"+u.username+"')\">⚔️ Meydan Oku</button>"
 +"</div>";
@@ -8231,6 +8254,7 @@ function resumeHomeClcAfterModal(){
 startHomeClcAutoAdvance();
 
 }
+
 
 
 
