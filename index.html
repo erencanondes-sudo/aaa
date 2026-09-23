@@ -9,9 +9,11 @@
 <link rel="manifest" href="manifest.json?v=2">
 <meta name="theme-color" content="#0984e3">
 <link rel="apple-touch-icon" href="icon-192.png?v=2">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Konfeti">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎉%3C/text%3E%3C/svg%3E">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -3403,6 +3405,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 </div>
 <div class="card-content">
 <div class="card-title">Arkadaşlar</div>
+<div class="card-description">Arkadaşlarını gör, davet et</div>
 </div>
 <div class="card-arrow">›</div>
 </div>
@@ -3434,6 +3437,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 <div class="card-content">
 <div class="card-title">Ayarlar</div>
+<div class="card-description">Uygulamanı<br>kişiselleştir</div>
 </div>
 <div class="card-arrow">›</div>
 </div>
@@ -3448,6 +3452,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 <div class="card-content">
 <div class="card-title">Bilgi</div>
+<div class="card-description">Yardım, kurallar<br>ve hakkında.</div>
 </div>
 <div class="card-arrow">›</div>
 </div>
@@ -3483,7 +3488,6 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 <div id="homeClcScroll" class="clc-user-list"></div>
 <div class="clc-scroll-arrow" onclick="homeClcScrollNext()">›</div>
-</div>
 </div>
 </div>
 
