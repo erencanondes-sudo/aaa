@@ -2532,7 +2532,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     grid-template-columns:1fr 1fr 1fr;
     gap:4px;
     padding:6px 2px 4px;
-    margin:0;
+    margin:0 -19px 0 -10px;
 }
 #homeScreen .settings-card,
 #homeScreen .info-card,
@@ -5623,6 +5623,10 @@ let playAreaEl=document.getElementById("playArea");
 if(playAreaEl && playAreaEl.style.display==="block" && activeChallengeId && activeChallengeIsComputer && gameActive && !resultRecorded){
 
 clearInterval(timer);
+
+try{
+localStorage.setItem("konfetiCompPause_"+activeChallengeId+"_"+activeChallengeGameIndex,String(time));
+}catch(e){}
 
 if(selectedGameType==="word"){
 saveWordProgress();
@@ -9210,7 +9214,7 @@ console.error("Meydan okuma güncellenemedi:",e);
 
 function playChallenge(id,side){
 
-if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded && challengeRoundReady){
+if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded && challengeRoundReady && !activeChallengeIsComputer){
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
@@ -9270,11 +9274,31 @@ let resumeTime=null;
 
 if(timeLimited && ch.type==="computer"){
 
+let localPauseKey="konfetiCompPause_"+id+"_"+currentGameIndex;
+let localPause=null;
+
+try{
+localPause=localStorage.getItem(localPauseKey);
+}catch(e){}
+
+if(localPause!==null){
+
+resumeTime=Math.max(1,parseInt(localPause,10));
+
+try{
+localStorage.removeItem(localPauseKey);
+}catch(e){}
+
+}
+else{
+
 let progressField=side==="from" ? "fromProgress" : "toProgress";
 let savedProgress=currentGame[progressField];
 
 if(savedProgress && savedProgress.time){
 resumeTime=savedProgress.time;
+}
+
 }
 
 }
