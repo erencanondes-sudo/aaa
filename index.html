@@ -2451,7 +2451,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 .clc-panel{
     background:#fff;
     border-radius:18px;
-    padding:5px 12px var(--bn-nav-height);
+    padding:5px 12px calc(var(--bn-nav-height) + env(safe-area-inset-bottom,0px));
     box-shadow:0 6px 16px rgba(30,45,70,.08);
     position:relative;
     box-sizing:border-box;
@@ -2480,7 +2480,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex:0 0 auto;
     width:134px;
     border-radius:14px;
-    padding:6px 0 0;
+    padding:10px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
@@ -2510,7 +2510,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     color:#fff;
     border:0;
     border-radius:0 0 14px 14px;
-    padding:6px 1px;
+    padding:8px 1px;
     font-weight:700;
     font-size:8.5px;
     cursor:pointer;
@@ -2538,7 +2538,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
     gap:4px;
-    padding:6px 2px 0;
+    padding:6px 0 0;
     margin:0 -19px 0 -10px;
 }
 #homeScreen .settings-card,
