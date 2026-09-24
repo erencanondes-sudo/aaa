@@ -2246,7 +2246,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     background:#fff;
     box-shadow:0 6px 14px rgba(26,46,75,.13);
     display:block;
-    padding:9px 19px 9px 10px;
+    padding:9px 19px 4px 10px;
     position:relative;
 }
 #homeScreen .welcome-row{
@@ -2451,9 +2451,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 .clc-panel{
     background:#fff;
     border-radius:18px;
-    padding:5px 12px 8px;
+    padding:5px 12px calc(8px + var(--bn-nav-height));
     box-shadow:0 6px 16px rgba(30,45,70,.08);
     position:relative;
+    box-sizing:border-box;
 }
 .clc-header{
     display:flex;
@@ -3469,7 +3470,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px -4px 0 -4px;padding-bottom:var(--bn-nav-height);box-sizing:border-box;">
+<div id="homeChallengeListCarousel" style="display:none;margin:16px -4px 0 -4px;">
 <div id="homeClcPanel" class="clc-panel">
 <div class="clc-header">
 <div class="clc-title-group"><h2 class="clc-title">Düelloya açık olanlar</h2></div>
