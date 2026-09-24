@@ -2418,10 +2418,15 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeFormatScreen .menu-card.orange{min-height:78px;background:linear-gradient(105deg,#f89510,#f27d06)}
 #challengeTypeScreen .menu-card.blue{min-height:78px;background:linear-gradient(105deg,#38bdf8,#0284c7)}
-#randomWaitScreen .menu-card.blue{background:linear-gradient(105deg,#38bdf8,#0284c7)}
+#randomWaitScreen .menu-card.blue{background:linear-gradient(105deg,#38bdf8,#0284c7);min-height:78px;}
+#randomWaitScreen .menu-card.pale-blue{background:linear-gradient(105deg,#cfeaf9,#bfe0f2);color:#2c5b78;min-height:78px;}
+#randomWaitScreen .menu-card.pale-blue .menu-copy b,
+#randomWaitScreen .menu-card.pale-blue .menu-copy span{color:#2c5b78;}
+#randomWaitScreen .menu-card.pale-blue .arrow{color:#5a8aa3;}
+#randomWaitScreen .menu-card.pale-blue .icon-circle{background:rgba(255,255,255,.4);}
 #homeScreen .menu-card.red, #profileScreen .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #gameTypeScreen .menu-card.red, #challengeModeChoiceScreen .menu-card.red, #randomWaitScreen .menu-card.red, #challengeTypeScreen .menu-card.red, #challengeFormatScreen .menu-card.red{min-height:78px;background:linear-gradient(105deg,#ee483d,#e8342b)}
-#homeScreen .home-divider, #gameTypeScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
+#homeScreen .home-divider, #gameTypeScreen .home-divider, #randomWaitScreen .home-divider{border-top:2px solid #e7ebf1;margin:9px 0;}
 
 #settingsScreen .settings-section{margin-top:24px;text-align:left;}
 #settingsScreen .settings-label{font-size:13px;font-weight:700;color:#53627d;margin:0 0 10px 4px;}
@@ -2474,13 +2479,14 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex:0 0 auto;
     width:122px;
     border-radius:14px;
-    padding:6px 6px;
+    padding:6px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
     display:flex;
     flex-direction:column;
     align-items:center;
+    overflow:hidden;
 }
 .clc-avatar{
     width:44px;height:44px;
@@ -2489,10 +2495,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     border:3px solid #fff;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
     display:flex;align-items:center;justify-content:center;
-    font-size:21px;
+    font-size:28px;
     margin-bottom:3px;
 }
-.clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:2px;max-width:100%;}
+.clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:2px;max-width:100%;padding:0 6px;}
 .clc-flag{font-size:10px;line-height:1;flex:none;}
 .clc-username{font-weight:800;color:#1e293b;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .clc-level{font-size:10.5px;font-weight:800;color:#334155;margin-bottom:5px;}
@@ -2502,8 +2508,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     background:#16a34a;
     color:#fff;
     border:0;
-    border-radius:8px;
-    padding:5px 1px;
+    border-radius:0 0 14px 14px;
+    padding:6px 1px;
     font-weight:700;
     font-size:8.5px;
     cursor:pointer;
@@ -2516,7 +2522,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     right:-8px;
     top:58%;
     transform:translateY(-50%);
-    width:30px;height:30px;
+    width:34px;height:34px;
     background:#fff;
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
@@ -2735,7 +2741,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentScreen #tournamentOngoingList,
 #tournamentScreen #tournamentPastList,
 #tournamentScreen #tournamentInviteList,
-#openTournamentsScreen #openTournamentsList{
+#openTournamentsScreen #openTournamentsList,
+#randomWaitScreen #challengeListUsersList{
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -3462,7 +3469,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px 0 12px 0;">
+<div id="homeChallengeListCarousel" style="display:none;margin:16px -4px 0 -4px;padding-bottom:var(--bn-nav-height);box-sizing:border-box;">
 <div id="homeClcPanel" class="clc-panel">
 <div class="clc-header">
 <div class="clc-title-group"><h2 class="clc-title">Düelloya açık olanlar</h2></div>
@@ -3763,13 +3770,19 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<button class="menu-card blue" id="challengeListJoinBtn" style="margin-top:12px;" onclick="toggleChallengeList()">
+<div class="home-divider" style="margin:16px 0;"></div>
+
+<p style="text-align:left;font-size:13px;color:#57606f;margin:12px 0 6px 4px;">Ayrıca düello listesine katılmak ister misin?</p>
+
+<button class="menu-card blue" id="challengeListJoinBtn" style="margin-top:0;" onclick="toggleChallengeList()">
 <div class="icon-circle">📋</div>
 <div class="menu-copy"><b id="challengeListJoinBtnLabel">Listeye Katıl</b><span>Meydan okuma listesinde görün</span></div>
 <div class="arrow">›</div>
 </button>
 
 <div id="challengeListUsersList" style="margin-top:22px;"><p style="color:#7b8fae;font-size:0.85em;">Yükleniyor...</p></div>
+
+<p id="challengeListLoadMore" style="display:none;text-align:center;color:#2874c7;font-weight:700;font-size:15px;margin-top:16px;cursor:pointer;" onclick="loadMoreChallengeListUsers()">Daha fazla göster</p>
 
 </div>
 
@@ -8138,13 +8151,13 @@ if(!btn || !label)return;
 
 if(doc.exists){
 label.innerHTML="Listeden Çık";
-btn.classList.add("white");
+btn.classList.add("pale-blue");
 btn.classList.remove("blue");
 }
 else{
 label.innerHTML="Listeye Katıl";
 btn.classList.add("blue");
-btn.classList.remove("white");
+btn.classList.remove("pale-blue");
 }
 
 }).catch(function(e){
@@ -8182,7 +8195,6 @@ joinedAt:firebase.firestore.FieldValue.serverTimestamp()
 }).then(function(){
 
 syncChallengeListJoinButton();
-renderChallengeListUsers();
 
 }).catch(function(e){
 console.error("Meydan okuma listesi güncellenemedi:",e);
@@ -8228,29 +8240,87 @@ return a;
 }
 
 
+let challengeListLastDoc=null;
+let challengeListNoMore=false;
+
 function renderChallengeListUsers(){
 
 let listEl=document.getElementById("challengeListUsersList");
+let loadMoreEl=document.getElementById("challengeListLoadMore");
 
 if(!listEl)return;
 
-db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(30).get().then(function(snap){
+challengeListLastDoc=null;
+challengeListNoMore=false;
+listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p>";
+if(loadMoreEl)loadMoreEl.style.display="none";
+
+fetchChallengeListBatch(true);
+
+}
+
+
+function loadMoreChallengeListUsers(){
+
+fetchChallengeListBatch(false);
+
+}
+
+
+function fetchChallengeListBatch(isFirst){
+
+let listEl=document.getElementById("challengeListUsersList");
+let loadMoreEl=document.getElementById("challengeListLoadMore");
+
+if(!listEl || challengeListNoMore)return;
+
+let query=db.collection("challengeListUsers").orderBy("joinedAt","desc").limit(5);
+
+if(challengeListLastDoc){
+query=query.startAfter(challengeListLastDoc);
+}
+
+query.get().then(function(snap){
+
+if(snap.docs.length>0){
+challengeListLastDoc=snap.docs[snap.docs.length-1];
+}
+
+if(snap.docs.length<5){
+challengeListNoMore=true;
+if(loadMoreEl)loadMoreEl.style.display="none";
+}
+else{
+if(loadMoreEl)loadMoreEl.style.display="block";
+}
 
 let users=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).filter(function(u){ return u.username!==currentUser.username; });
 
 users=shuffleArray(users);
 
-if(users.length===0){
+if(isFirst){
+
+if(snap.docs.length===0){
 listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Listede henüz kimse yok.</p>";
 return;
 }
 
 listEl.innerHTML=users.map(buildChallengeListUserHtml).join("");
 
+}
+else{
+
+listEl.insertAdjacentHTML("beforeend",users.map(buildChallengeListUserHtml).join(""));
+
+}
+
 }).catch(function(e){
 
 console.error("Meydan okuma listesi yüklenemedi:",e);
+
+if(isFirst){
 listEl.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Liste yüklenemedi.</p>";
+}
 
 });
 
