@@ -2471,6 +2471,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 }
 #homeClcPanel{
     border-radius:18px 18px 8px 8px;
+    padding-bottom:5px;
 }
 .clc-header{
     display:flex;
@@ -2483,8 +2484,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 .clc-title-group{display:flex;align-items:center;gap:6px;margin-left:6px;}
 .clc-title-icon{font-size:15px;line-height:1;}
 .clc-title{font-size:12px;font-weight:800;color:#1e293b;margin:0;line-height:1;}
-.clc-see-all{display:flex;align-items:center;gap:3px;color:#64748b;font-size:10px;font-weight:700;cursor:pointer;}
-.clc-arrow-icon{font-size:10px;font-weight:800;}
 .clc-user-list{
     display:flex;
     gap:10px;
@@ -2496,7 +2495,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex:0 0 auto;
     width:134px;
     border-radius:14px;
-    padding:15px 0 0;
+    padding:10px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
@@ -2506,14 +2505,14 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     overflow:hidden;
 }
 .clc-avatar{
-    width:50px;height:50px;
+    width:58px;height:58px;
     border-radius:50%;
     background:#fff;
     border:3px solid #fff;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
     display:flex;align-items:center;justify-content:center;
-    font-size:31px;
-    margin-bottom:5px;
+    font-size:36px;
+    margin-bottom:2px;
 }
 .clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:2px;max-width:100%;padding:0 6px;}
 .clc-flag{font-size:10px;line-height:1;flex:none;}
@@ -2526,7 +2525,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     color:#fff;
     border:0;
     border-radius:0 0 14px 14px;
-    padding:8px 1px;
+    padding:10.5px 1px;
     font-weight:700;
     font-size:max(8.5px, calc(7px / var(--k)));
     cursor:pointer;
@@ -2534,6 +2533,31 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     white-space:nowrap;
 }
 .clc-challenge-btn:active{transform:translateY(2px);}
+.clc-more-card{
+    flex:0 0 auto;
+    width:92px;
+    border-radius:14px;
+    background:#f1f5f9;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    cursor:pointer;
+    color:#475569;
+    font-size:11px;
+    font-weight:800;
+}
+.clc-more-card:active{transform:scale(.97);}
+.clc-more-arrow{
+    width:38px;height:38px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+    color:#1e293b;
+}
 .clc-scroll-arrow{
     position:absolute;
     right:-8px;
@@ -3484,11 +3508,10 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px -8px 0 -8px;">
+<div id="homeChallengeListCarousel" style="display:none;margin:16px -12px 0 -12px;">
 <div id="homeClcPanel" class="clc-panel">
 <div class="clc-header">
 <div class="clc-title-group"><h2 class="clc-title">Düelloya açık olanlar</h2></div>
-<div class="clc-see-all" onclick="openChallengeRandom()"><span>Tümünü gör</span><span class="clc-arrow-icon">›</span></div>
 </div>
 <div id="homeClcScroll" class="clc-user-list"></div>
 <div class="clc-scroll-arrow" onclick="homeClcScrollNext()">›</div>
@@ -8469,7 +8492,8 @@ return;
 
 containerEl.style.display="block";
 
-scrollEl.innerHTML=users.map(function(u,idx){ return buildHomeClcCardHtml(u,clcPalette[idx%clcPalette.length]); }).join("");
+scrollEl.innerHTML=users.map(function(u,idx){ return buildHomeClcCardHtml(u,clcPalette[idx%clcPalette.length]); }).join("")
++"<div class=\"clc-more-card\" onclick=\"openChallengeRandom()\"><div class=\"clc-more-arrow\">›</div><span>Devamını gör</span></div>";
 
 }).catch(function(e){
 
