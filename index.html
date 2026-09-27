@@ -719,7 +719,12 @@ button{
     box-sizing:border-box;
     display:flex;
     flex-direction:column;
-    justify-content:center;
+}
+
+/* İçerik kısaysa ortalanır, uzunsa üstten başlar ve kaydırılabilir (üst kısım kesilmez) */
+#detailModalContent{
+    margin-top:auto;
+    margin-bottom:auto;
 }
 
 .detail-modal-close{
