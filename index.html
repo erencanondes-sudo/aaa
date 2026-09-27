@@ -73,6 +73,9 @@ button{
 }
 :root{--k:1;}
 
+.av-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;}
+#homeAvatarIcon{display:contents;}
+
 html{
     height:100%;
     overflow:hidden;
@@ -5064,7 +5067,7 @@ setBottomNavActive("home");
 let firstName=isGuest ? "misafir" : ((profile.name||"").trim().split(/\s+/)[0]||"");
 
 document.getElementById("welcomeText").innerHTML="Hoş geldin, "+firstName+" 👋";
-document.getElementById("homeAvatarIcon").innerHTML=currentUser.avatarEmoji||"👤";
+document.getElementById("homeAvatarIcon").innerHTML=avatarHtml(currentUser.avatarEmoji);
 
 renderHomeStats();
 renderHomeChallengeListCarousel();
@@ -6334,7 +6337,7 @@ let rankClass=idx===0?"td-rank-1":(idx===1?"td-rank-2":(idx===2?"td-rank-3":""))
 boardHtml+="<div class=\"td-leaderboard-item\">";
 boardHtml+="<div class=\"td-user-info-group\">";
 boardHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
-boardHtml+="<div class=\"td-avatar\">"+(p.avatarEmoji||"👤")+"</div>";
+boardHtml+="<div class=\"td-avatar\">"+avatarHtml(p.avatarEmoji)+"</div>";
 boardHtml+="<div class=\"td-user-details\">";
 boardHtml+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+p.username+"</span>";
 boardHtml+="<span class=\"td-user-subtext\">"+playedCount+"/"+t.format+" ort.puan:"+avgScore+"</span>";
@@ -7182,7 +7185,7 @@ let rankClass=idx===0?"td-rank-1":(idx===1?"td-rank-2":(idx===2?"td-rank-3":""))
 boardHtml+="<div class=\"td-leaderboard-item\">";
 boardHtml+="<div class=\"td-user-info-group\">";
 boardHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
-boardHtml+="<div class=\"td-avatar\">"+(p.avatarEmoji||"👤")+"</div>";
+boardHtml+="<div class=\"td-avatar\">"+avatarHtml(p.avatarEmoji)+"</div>";
 boardHtml+="<div class=\"td-user-details\">";
 boardHtml+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span>";
 boardHtml+="<span class=\"td-user-subtext\">1/1 oyun</span>";
@@ -7461,7 +7464,7 @@ let rankClass=idx===0?"td-rank-1":(idx===1?"td-rank-2":(idx===2?"td-rank-3":""))
 boardHtml+="<div class=\"td-leaderboard-item\">";
 boardHtml+="<div class=\"td-user-info-group\">";
 boardHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
-boardHtml+="<div class=\"td-avatar\">"+(p.avatarEmoji||"👤")+"</div>";
+boardHtml+="<div class=\"td-avatar\">"+avatarHtml(p.avatarEmoji)+"</div>";
 boardHtml+="<div class=\"td-user-details\">";
 boardHtml+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+(p.country?countryFlagEmoji(p.country)+" ":"")+p.username+"</span>";
 boardHtml+="<span class=\"td-user-subtext\">"+playedCount+"/7 ort.puan:"+avgScore+"</span>";
@@ -8012,7 +8015,7 @@ return {username:username,avatarEmoji:"👤"};
 Promise.all(fetches).then(function(results){
 
 listEl.innerHTML=results.map(function(r){
-return "<button class=\"menu-card white\" style=\"margin-top:8px;\" onclick=\"document.getElementById('challengeUsername').value='"+r.username+"';\"><div class=\"icon-circle\">"+r.avatarEmoji+"</div><div class=\"menu-copy\"><b>"+r.username+"</b></div><div class=\"arrow\">›</div></button>";
+return "<button class=\"menu-card white\" style=\"margin-top:8px;\" onclick=\"document.getElementById('challengeUsername').value='"+r.username+"';\"><div class=\"icon-circle\">"+avatarHtml(r.avatarEmoji)+"</div><div class=\"menu-copy\"><b>"+r.username+"</b></div><div class=\"arrow\">›</div></button>";
 }).join("");
 
 });
@@ -8293,7 +8296,7 @@ function buildChallengeListUserHtml(u){
 
 return "<div class=\"oy-card\">"
 +"<div class=\"oy-avatar-col\">"
-+"<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><div class=\"oy-avatar\">"+(u.avatarEmoji||"👤")+"</div></div>"
++"<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><div class=\"oy-avatar\">"+avatarHtml(u.avatarEmoji)+"</div></div>"
 +"<div class=\"oy-word-count\">"+(u.foundWordsCount||0)+"</div>"
 +"</div>"
 +"<div class=\"oy-content\">"
@@ -8420,7 +8423,7 @@ function buildHomeClcCardHtml(u,bgColor){
 let flag=countryFlagEmoji(u.country);
 
 return "<div class=\"clc-card\" style=\"background:"+bgColor+";\" onclick=\"viewUserProfile('"+u.username+"','home')\">"
-+"<div class=\"clc-avatar\">"+(u.avatarEmoji||"👤")+"</div>"
++"<div class=\"clc-avatar\">"+avatarHtml(u.avatarEmoji)+"</div>"
 +"<div class=\"clc-username-wrap\">"+(flag ? "<span class=\"clc-flag\">"+flag+"</span>" : "")+"<span class=\"clc-username\">"+u.username+"</span></div>"
 +"<div class=\"clc-level\">"+(u.foundWordsCount||0)+"</div>"
 +"<button class=\"clc-challenge-btn\" onclick=\"event.stopPropagation();challengeFromProfile('"+u.username+"')\"><span>⚔️</span> Meydan Oku</button>"
@@ -9850,12 +9853,35 @@ console.error("Çıkış yapılamadı:",e);
 
 const AVATAR_EMOJI_CHOICES=["👤","😀","😎","🤓","🥳","😺","🐶","🦊","🐼","🐨","🦁","🐯","🐸","🐵","🦄","🐙","🦋","🌟","🔥","⚡","🎮","🎨","🎧","⚽","🏀","🎯","🚀","👑","🍀","🌈","😁","😅","🤩","🥸","🤠","🥷","🧙","🧛","🧟","👻","👽","🤖","🎃","💀","😇","🙃","🤪","😜","🐱","🐭","🐹","🐰","🦝","🐻","🐷","🐮","🐔","🐧","🐦","🦉","🦇","🐺","🦓","🦒","🐘","🦏","🦛","🐴","🐝","🦖","🐬","🐳","🐊","🐢","🦂","🕷️","🦀","🐠","🦈","🍉","🍕","🍔","🌮","🍩","🍿","🎲","🃏","🏆","🥇","🛸","🛹","🎸","🥁","🎬"];
 
+/* Resimli profil simgeleri: dosyalar avatars/ klasöründe (ad.webp).
+   Firebase'de avatarEmoji alanına "img:ad" olarak kaydedilir. */
+const AVATAR_IMAGE_CHOICES=["avatar-1","avatar-2","avatar-3"];
+
+function avatarHtml(v){
+
+v=v||"👤";
+
+if(typeof v==="string" && v.indexOf("img:")===0){
+let name=v.slice(4).replace(/[^a-zA-Z0-9_-]/g,"");
+return "<img class=\"av-img\" src=\"avatars/"+name+".webp\" alt=\"\" loading=\"lazy\">";
+}
+
+return v;
+
+}
+
 function openAvatarPicker(){
 
 let html="";
 
 html+="<p class=\"screen-title\" style=\"margin-top:0;\">Profil Simgesi Seç</p>";
 html+="<div style=\"display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px;\">";
+
+AVATAR_IMAGE_CHOICES.forEach(function(name){
+
+html+="<button onclick=\"selectAvatarEmoji('img:"+name+"')\" style=\"background:#f1f2f6;border:0;border-radius:12px;padding:6px;cursor:pointer;aspect-ratio:1;\">"+avatarHtml("img:"+name)+"</button>";
+
+});
 
 AVATAR_EMOJI_CHOICES.forEach(function(emoji){
 
@@ -9879,10 +9905,10 @@ avatarEmoji:emoji
 currentUser.avatarEmoji=emoji;
 
 let profileIconEl=document.getElementById("profileIcon");
-if(profileIconEl)profileIconEl.innerHTML=emoji;
+if(profileIconEl)profileIconEl.innerHTML=avatarHtml(emoji);
 
 let homeAvatarEl=document.getElementById("homeAvatarIcon");
-if(homeAvatarEl)homeAvatarEl.innerHTML=emoji;
+if(homeAvatarEl)homeAvatarEl.innerHTML=avatarHtml(emoji);
 
 hideDetailModal();
 
@@ -9905,7 +9931,7 @@ document.getElementById("profileName").innerHTML=currentUser.name;
 document.getElementById("profileUsername").innerHTML=currentUser.username;
 document.getElementById("profileCountry").innerHTML=currentUser.country ? (countryFlagEmoji(currentUser.country)+" "+getCountryName(currentUser.country)) : "-";
 document.getElementById("profileEmail").innerHTML=currentUser.email;
-document.getElementById("profileIcon").innerHTML=currentUser.avatarEmoji||"👤";
+document.getElementById("profileIcon").innerHTML=avatarHtml(currentUser.avatarEmoji);
 document.getElementById("profileGreetName").innerHTML=currentUser.username||currentUser.name;
 
 if(currentUser.isGuest){
@@ -9971,7 +9997,7 @@ let countryHtml=profile.country ? ("<div class=\"profile-info-row\"><div class=\
 
 document.getElementById("detailModalContent").innerHTML=
 "<div style=\"text-align:center;\">"+
-"<div class=\"profile-icon\" style=\"margin:10px auto 8px;width:70px;height:70px;font-size:36px;\">"+(profile.avatarEmoji||"👤")+"</div>"+
+"<div class=\"profile-icon\" style=\"margin:10px auto 8px;width:70px;height:70px;font-size:36px;\">"+avatarHtml(profile.avatarEmoji)+"</div>"+
 "</div>"+
 "<div class=\"profile-info-card\" style=\"margin-top:8px;\">"+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#8b5cf6;\">👤</div><div class=\"profile-info-label\">Kullanıcı Adı</div><div class=\"profile-info-value\">"+profile.username+"</div></div>"+
@@ -10068,7 +10094,7 @@ let html="";
 results.forEach(function(r){
 
 html+="<div class=\"oy-card\" style=\"cursor:pointer;\" onclick=\"viewUserProfile('"+r.name+"','friends')\">";
-html+="<div class=\"oy-avatar\">"+r.avatarEmoji+"</div>";
+html+="<div class=\"oy-avatar\">"+avatarHtml(r.avatarEmoji)+"</div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\" style=\"margin-left:5px;margin-top:2px;\">";
@@ -10358,7 +10384,7 @@ function renderChallengeDetailContent(ch,challengeId,mySide,otherName){
 let avatarEmoji=ch.type==="computer" ? "🤖" : (mySide==="from" ? (ch.toAvatarEmoji||"👤") : (ch.fromAvatarEmoji||"👤"));
 let myAvatarEmoji=currentUser.avatarEmoji||"👤";
 
-document.getElementById("challengeDetailTitle").innerHTML="<span class=\"cd-title-avatar\">"+avatarEmoji+"</span><span class=\"cd-title-text\">"+otherName+" ile Düello</span>";
+document.getElementById("challengeDetailTitle").innerHTML="<span class=\"cd-title-avatar\">"+avatarHtml(avatarEmoji)+"</span><span class=\"cd-title-text\">"+otherName+" ile Düello</span>";
 
 let topHtml="";
 
@@ -10447,7 +10473,7 @@ let rankClass=idx===0?"td-rank-1":"td-rank-2";
 bottomHtml+="<div class=\"td-leaderboard-item\">";
 bottomHtml+="<div class=\"td-user-info-group\">";
 bottomHtml+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
-bottomHtml+="<div class=\"td-avatar\">"+r.avatarEmoji+"</div>";
+bottomHtml+="<div class=\"td-avatar\">"+avatarHtml(r.avatarEmoji)+"</div>";
 bottomHtml+="<div class=\"td-user-details\"><span class=\"td-user-name\">"+r.name+"</span><span style=\"display:block;font-size:max(9.5px, calc(7px / var(--k)));color:#7b8fae;font-weight:600;\">"+myPlayedCount+"/"+totalGamesCount+" ort. "+r.avg+"</span></div>";
 bottomHtml+="</div>";
 bottomHtml+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+r.score+"</span></div>";
@@ -11690,7 +11716,7 @@ let html="";
 
 html+="<div class=\"oy-card\" data-lp-id=\""+c.id+"\" data-lp-type=\"history\">";
 html+="<div class=\"oy-avatar-col\">";
-html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','oyunlarim')\"><div class=\"oy-avatar\">"+avatarHtml(avatarEmoji)+"</div></div>";
 html+=wordCountHtml;
 html+="</div>";
 html+="<div class=\"oy-content\">";
@@ -11877,7 +11903,7 @@ let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wo
 
 html+="<div class=\"oy-card\" data-lp-id=\""+c.id+"\" data-lp-type=\"ongoing\">";
 html+="<div class=\"oy-avatar-col\">";
-html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarHtml(avatarEmoji)+"</div></div>";
 html+=wordCountHtml;
 html+="</div>";
 html+="<div class=\"oy-content\">";
@@ -12022,7 +12048,7 @@ let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmo
 let lpType=(c.status==="pending") ? "request" : "history";
 
 html+="<div class=\"oy-card\" data-challenge-id=\""+c.id+"\" data-lp-id=\""+c.id+"\" data-lp-type=\""+lpType+"\">";
-html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','istekler')\"><div class=\"oy-avatar\">"+avatarEmoji+"</div></div>";
+html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','istekler')\"><div class=\"oy-avatar\">"+avatarHtml(avatarEmoji)+"</div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+otherName+"','istekler')\">"+otherName+"</span></div>";
