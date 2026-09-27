@@ -9895,7 +9895,8 @@ const AVATAR_EMOJI_CHOICES=["👤","😀","😎","🤓","🥳","😺","🐶","�
 
 /* Resimli profil simgeleri: dosyalar avatars/ klasöründe (ad.webp).
    Firebase'de avatarEmoji alanına "img:ad" olarak kaydedilir. */
-const AVATAR_IMAGE_CHOICES=["avatar-1","avatar-2","avatar-3"];
+const AVATAR_IMAGE_COUNT=35;
+const AVATAR_IMAGE_CHOICES=Array.from({length:AVATAR_IMAGE_COUNT},function(_,i){ return "avatar-"+(i+1); });
 
 function avatarHtml(v){
 
