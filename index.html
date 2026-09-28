@@ -722,7 +722,7 @@ button{
 }
 
 /* Kullanıcı profil penceresi: biraz daha kısa ve ekranda biraz aşağıda */
-.detail-modal-box:has(.profile-info-row){
+.detail-modal-box.profile-modal{
     height:400px;
     top:30px;
 }
@@ -735,6 +735,7 @@ button{
 
 .detail-modal-close{
     position:absolute;
+    z-index:5;
     top:10px;
     right:10px;
     background:#f1f2f6;
@@ -2416,6 +2417,25 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #detailModalContent .menu-card.red{background:linear-gradient(105deg,#ee483d,#e8342b)}
 #detailModalContent .menu-card.orange{background:linear-gradient(105deg,#f89510,#f27d06)}
 #detailModalContent .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
+/* Geri butonu her adımda aynı yerde: pencerenin altında sabit */
+#detailModalContent:has(.modal-back-btn){padding-bottom:61px;}
+#detailModalContent .modal-back-btn{
+    position:absolute;
+    left:50%;
+    bottom:20px;
+    transform:translateX(-50%);
+    margin:0;
+    width:auto;
+    background:#fff;
+    color:#192a56;
+    border:1.5px solid #dfe3ea;
+    border-radius:12px;
+    padding:8px 28px;
+    font-size:14px;
+    font-weight:800;
+    box-shadow:0 3px 0 #dfe3ea;
+}
+#detailModalContent .modal-back-btn:active{transform:translate(-50%,2px);box-shadow:0 1px 0 #dfe3ea;}
 #challengeFriendScreen .menu-card.white:active,
 #randomWaitScreen .menu-card.white:active{transform:translateY(3px);filter:brightness(.97);}
 #challengeFriendScreen .menu-card.white .icon-circle,
@@ -2502,7 +2522,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex:0 0 auto;
     width:134px;
     border-radius:14px;
-    padding:3px 0 0;
+    padding:6px 0 0;
     box-sizing:border-box;
     text-align:center;
     cursor:pointer;
@@ -2534,7 +2554,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     color:#fff;
     border:0;
     border-radius:0 0 14px 14px;
-    padding:8.5px 1px 10.5px;
+    padding:5.5px 1px 10.5px;
     font-weight:700;
     font-size:max(8.5px, calc(7px / var(--k)));
     cursor:pointer;
@@ -8123,14 +8143,14 @@ showModalGameTypePicker();
 }
 
 
-function challengeFromProfile(username){
+function challengeFromProfile(username,profileFrom){
 
 if(username===currentUser.username){
 alert("Kendine meydan okuyamazsın.");
 return;
 }
 
-pendingOpponentChoice={type:"friend",opponent:username};
+pendingOpponentChoice={type:"friend",opponent:username,profileFrom:profileFrom||null};
 
 showModalGameTypePicker();
 
@@ -8165,6 +8185,37 @@ showModalLevelPicker();
 }
 
 
+function modalBackCardHtml(onclickJs){
+
+return "<button class=\"modal-back-btn\" onclick=\""+onclickJs+"\">‹ Geri</button>";
+
+}
+
+
+function modalFirstStepBack(){
+
+if(pendingOpponentChoice && pendingOpponentChoice.profileFrom){
+viewUserProfile(pendingOpponentChoice.opponent,pendingOpponentChoice.profileFrom);
+}
+else{
+closeDetailModal();
+}
+
+}
+
+
+function modalFormatPickerBack(){
+
+if(pendingChallenge && pendingChallenge.level){
+showModalLevelPicker();
+}
+else{
+openChallengeModalModeChoice();
+}
+
+}
+
+
 function showModalLevelPicker(){
 
 let html="";
@@ -8173,6 +8224,7 @@ html+="<p class=\"screen-title\" style=\"margin-top:0;\">Hangi seviyede meydan o
 html+="<button class=\"level-btn level-easy\" onclick=\"selectChallengeLevelInModal('easy')\">Kolay</button>";
 html+="<button class=\"level-btn level-medium\" onclick=\"selectChallengeLevelInModal('medium')\">Orta</button>";
 html+="<button class=\"level-btn level-hard\" onclick=\"selectChallengeLevelInModal('hard')\">Zor</button>";
+html+=modalBackCardHtml("modalFirstStepBack()");
 
 document.getElementById("detailModalContent").innerHTML=html;
 
@@ -8192,6 +8244,7 @@ function openChallengeModalModeChoice(){
 let html="<p class=\"screen-title\" style=\"margin-top:0;\">Hangi oyunu oynamak istersin?</p>";
 html+="<button class=\"menu-card full-card new\" style=\"margin-top:16px;\" onclick=\"selectChallengeModalMode(true)\"><div class=\"icon-circle\">🔤</div><div class=\"menu-copy\"><b>Klasik</b><span>Sabit harfler</span></div><div class=\"arrow\">›</div></button>";
 html+="<button class=\"menu-card full-card red\" style=\"margin-top:12px;\" onclick=\"selectChallengeModalMode(false)\"><div class=\"icon-circle\">💥</div><div class=\"menu-copy\"><b>Çetrefilli</b><span>Harf can sistemi</span></div><div class=\"arrow\">›</div></button>";
+html+=modalBackCardHtml("modalFirstStepBack()");
 
 document.getElementById("detailModalContent").innerHTML=html;
 
@@ -8215,6 +8268,7 @@ html+="<p class=\"screen-title\" style=\"margin-top:0;\">Kaç oyunluk meydan oku
 html+="<button class=\"menu-card full-card new\" style=\"margin-top:16px;\" onclick=\"createChallenge(1,true)\"><div class=\"icon-circle\">1️⃣</div><div class=\"menu-copy\"><b>Tek Oyun</b><span>1 round'luk meydan okuma</span></div><div class=\"arrow\">›</div></button>";
 html+="<button class=\"menu-card full-card orange\" style=\"margin-top:14px;\" onclick=\"createChallenge(3,true)\"><div class=\"icon-circle\">3️⃣</div><div class=\"menu-copy\"><b>3 Oyun</b><span>3 round'luk meydan okuma</span></div><div class=\"arrow\">›</div></button>";
 html+="<button class=\"menu-card full-card red\" style=\"margin-top:14px;\" onclick=\"createChallenge(10,true)\"><div class=\"icon-circle\">🔟</div><div class=\"menu-copy\"><b>10 Oyun</b><span>10 round'luk meydan okuma</span></div><div class=\"arrow\">›</div></button>";
+html+=modalBackCardHtml("modalFormatPickerBack()");
 
 document.getElementById("detailModalContent").innerHTML=html;
 
@@ -10016,7 +10070,7 @@ document.getElementById("profileFoundWordsCount").innerHTML=currentUser.foundWor
 
 function viewUserProfile(username,from){
 
-openDetailModal("<p>Yükleniyor...</p>");
+openDetailModal("<p>Yükleniyor...</p>","profile-modal");
 
 db.collection("users").where("username","==",username).limit(1).get().then(function(snap){
 
@@ -10061,7 +10115,7 @@ countryHtml+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#eab308;\">🔤</div><div class=\"profile-info-label\">Bulunan Benzersiz Kelime Sayısı</div><div class=\"profile-info-value\">"+foundWordsCount+"</div></div>"+
 "</div>"+
 "<div class=\"settings-info-section\" style=\"grid-template-columns:"+(hasSecondCard ? "1fr 1fr" : "1fr")+";margin-top:10px;\" onclick=\"event.stopPropagation();\">"+
-"<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:12px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>"+
+"<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:12px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"','"+(from||"profile")+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>"+
 friendCardHtml+
 "</div>";
 
@@ -11286,14 +11340,26 @@ return false;
 }
 
 
-function openDetailModal(html){
+function openDetailModal(html,boxClass){
 
 pauseHomeClcForModal();
 
-document.getElementById("detailModalContent").innerHTML=html;
-document.getElementById("detailModalOverlay").style.display="flex";
+let boxEl=document.querySelector("#detailModalOverlay .detail-modal-box");
+if(boxEl){
+boxEl.classList.remove("profile-modal");
+if(boxClass)boxEl.classList.add(boxClass);
+}
 
+let overlayEl=document.getElementById("detailModalOverlay");
+let alreadyOpen=overlayEl.style.display==="flex";
+
+document.getElementById("detailModalContent").innerHTML=html;
+overlayEl.style.display="flex";
+
+// Pencere zaten açıksa (içerik değişiyorsa) yeni geçmiş kaydı ekleme; aksi halde geri tuşu fazladan kayıtlar yüzünden ekran değiştirebiliyor
+if(!alreadyOpen){
 window.history.pushState({modal:true},"","");
+}
 
 }
 
@@ -11318,13 +11384,18 @@ tournamentChatUnsubscribe=null;
 }
 
 
+let ignoreNextModalPopstate=false;
+
 function closeDetailModal(){
 
-if(window.history.state && window.history.state.modal){
-window.history.back();
-}
-else{
+let hasModalHistory=!!(window.history.state && window.history.state.modal);
+
+// Pencereyi hemen kapat; geçmişteki pencere kaydını da geri al (o geri alma ekran değiştirmesin)
 hideDetailModal();
+
+if(hasModalHistory){
+ignoreNextModalPopstate=true;
+window.history.back();
 }
 
 }
@@ -16232,6 +16303,11 @@ playClickSoundBack();
 
 
 window.addEventListener("popstate",function(e){
+
+if(ignoreNextModalPopstate){
+ignoreNextModalPopstate=false;
+return;
+}
 
 let modalEl=document.getElementById("detailModalOverlay");
 
