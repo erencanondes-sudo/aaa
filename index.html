@@ -929,8 +929,8 @@ button{
 .profile-info-label{flex:1;font-weight:800;color:#192a56;font-size:11px;}
 .profile-info-value{font-weight:700;color:#293d5a;font-size:11px;text-align:right;}
 
-#detailModalContent .profile-info-row{padding:11px 0;gap:12px;}
-#detailModalContent .profile-info-icon{width:32px;height:32px;min-width:32px;font-size:15px;border-radius:10px;}
+#detailModalContent .profile-info-row{padding:7px 0;gap:12px;}
+#detailModalContent .profile-info-icon{width:28px;height:28px;min-width:28px;font-size:13px;border-radius:9px;}
 #detailModalContent .profile-info-label{font-size:13.5px;}
 #detailModalContent .profile-info-value{font-size:13.5px;}
 
@@ -2520,7 +2520,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 .clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:0;max-width:100%;padding:0 6px;}
 .clc-flag{font-size:11px;line-height:1;flex:none;}
 .clc-username{font-weight:800;color:#1e293b;font-size:11.5px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.clc-level{font-size:11.5px;line-height:1.1;font-weight:800;color:#334155;margin-bottom:3px;}
+.clc-level{font-size:10.5px;line-height:1.1;font-weight:800;color:#334155;margin-bottom:3px;}
 .clc-challenge-btn{
     display:flex;align-items:center;justify-content:center;gap:3px;
     width:100%;
@@ -2790,6 +2790,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex-direction:column;
     gap:10px;
 }
+#randomWaitScreen #challengeListUsersList .oy-word-count{font-size:max(9px, calc(7px / var(--k)));}
 
 #historyScreen .oy-card, #tournamentScreen .oy-card, #friendsScreen .oy-card, #randomWaitScreen .oy-card, #homeScreen .oy-card, #openTournamentsScreen .oy-card{
     background:#fff;
@@ -3507,7 +3508,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:16px -12px 0 -12px;">
+<div id="homeChallengeListCarousel" style="display:none;margin:17px -12px 0 -12px;">
 <div id="homeClcPanel" class="clc-panel">
 <div class="clc-header">
 <div class="clc-title-group"><h2 class="clc-title">Düelloya açık olanlar</h2></div>
@@ -8325,7 +8326,7 @@ function buildChallengeListUserHtml(u){
 return "<div class=\"oy-card\">"
 +"<div class=\"oy-avatar-col\">"
 +"<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+u.username+"','challengeList')\"><div class=\"oy-avatar\">"+avatarHtml(u.avatarEmoji)+"</div></div>"
-+"<div class=\"oy-word-count\">"+(u.foundWordsCount||0)+"</div>"
++"<div class=\"oy-word-count\">"+(typeof u.successPct==="number" ? "%"+u.successPct : "–")+"</div>"
 +"</div>"
 +"<div class=\"oy-content\">"
 +"<div class=\"oy-card-header\">"
@@ -9901,7 +9902,7 @@ const AVATAR_EMOJI_CHOICES=["👤","😀","😎","🤓","🥳","😺","🐶","�
 
 /* Resimli profil simgeleri: dosyalar avatars/ klasöründe (ad.webp).
    Firebase'de avatarEmoji alanına "img:ad" olarak kaydedilir. */
-const AVATAR_IMAGE_COUNT=35;
+const AVATAR_IMAGE_COUNT=70;
 const AVATAR_IMAGE_CHOICES=Array.from({length:AVATAR_IMAGE_COUNT},function(_,i){ return "avatar-"+(i+1); });
 
 function avatarHtml(v){
