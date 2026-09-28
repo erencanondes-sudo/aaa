@@ -2471,7 +2471,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 }
 #homeClcPanel{
     border-radius:18px 18px 8px 8px;
-    padding-bottom:4px;
+    padding-bottom:3px;
 }
 .clc-header{
     display:flex;
@@ -2488,7 +2488,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     display:flex;
     gap:10px;
     overflow-x:auto;
-    margin-top:1px;
+    margin-top:2px;
     padding-bottom:2px;
     scroll-behavior:smooth;
 }
@@ -2506,19 +2506,21 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     overflow:hidden;
 }
 .clc-avatar{
-    width:70px;height:70px;
+    width:76px;height:76px;
+    box-sizing:border-box;
     border-radius:50%;
-    background:#fff;
-    border:3px solid #fff;
+    border:2.5px solid transparent;
+    padding:2px;
+    background:linear-gradient(#fff,#fff) padding-box,linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888) border-box;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
     display:flex;align-items:center;justify-content:center;
     font-size:43px;
-    margin-bottom:0;
+    margin-bottom:3px;
 }
 .clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:0;max-width:100%;padding:0 6px;}
-.clc-flag{font-size:10px;line-height:1;flex:none;}
-.clc-username{font-weight:800;color:#1e293b;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.clc-level{font-size:10.5px;font-weight:800;color:#334155;margin-bottom:6px;}
+.clc-flag{font-size:11px;line-height:1;flex:none;}
+.clc-username{font-weight:800;color:#1e293b;font-size:11.5px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.clc-level{font-size:11.5px;line-height:1.1;font-weight:800;color:#334155;margin-bottom:3px;}
 .clc-challenge-btn{
     display:flex;align-items:center;justify-content:center;gap:3px;
     width:100%;
@@ -8300,6 +8302,7 @@ return ref.set({
 username:currentUser.username,
 avatarEmoji:currentUser.avatarEmoji||"👤",
 foundWordsCount:currentUser.foundWordsCount||0,
+successPct:currentUser.challengeCount ? Math.round((currentUser.challengeWins/currentUser.challengeCount)*100) : 0,
 country:currentUser.country||null,
 joinedAt:firebase.firestore.FieldValue.serverTimestamp()
 });
@@ -8450,7 +8453,7 @@ let flag=countryFlagEmoji(u.country);
 return "<div class=\"clc-card\" style=\"background:"+bgColor+";\" onclick=\"viewUserProfile('"+u.username+"','home')\">"
 +"<div class=\"clc-avatar\">"+avatarHtml(u.avatarEmoji)+"</div>"
 +"<div class=\"clc-username-wrap\">"+(flag ? "<span class=\"clc-flag\">"+flag+"</span>" : "")+"<span class=\"clc-username\">"+u.username+"</span></div>"
-+"<div class=\"clc-level\">"+(u.foundWordsCount||0)+"</div>"
++"<div class=\"clc-level\">"+(typeof u.successPct==="number" ? "%"+u.successPct : "–")+"</div>"
 +"<button class=\"clc-challenge-btn\" onclick=\"event.stopPropagation();challengeFromProfile('"+u.username+"')\"><span>⚔️</span> Meydan Oku</button>"
 +"</div>";
 
