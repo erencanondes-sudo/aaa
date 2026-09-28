@@ -721,6 +721,12 @@ button{
     flex-direction:column;
 }
 
+/* Kullanıcı profil penceresi: biraz daha kısa ve ekranda biraz aşağıda */
+.detail-modal-box:has(.profile-info-row){
+    height:400px;
+    top:30px;
+}
+
 /* İçerik kısaysa ortalanır, uzunsa üstten başlar ve kaydırılabilir (üst kısım kesilmez) */
 #detailModalContent{
     margin-top:auto;
@@ -2517,10 +2523,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     font-size:43px;
     margin-bottom:3px;
 }
-.clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:0;max-width:100%;padding:0 6px;}
+.clc-username-wrap{display:flex;align-items:center;gap:3px;margin-bottom:0;position:relative;left:-1px;max-width:100%;padding:0 6px;}
 .clc-flag{font-size:11px;line-height:1;flex:none;}
 .clc-username{font-weight:800;color:#1e293b;font-size:11.5px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.clc-level{font-size:10.5px;line-height:1.1;font-weight:800;color:#334155;margin-bottom:3px;}
+.clc-level{font-size:10.5px;line-height:1.1;position:relative;left:-1px;font-weight:800;color:#334155;margin-bottom:3px;}
 .clc-challenge-btn{
     display:flex;align-items:center;justify-content:center;gap:3px;
     width:100%;
@@ -2790,7 +2796,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     flex-direction:column;
     gap:10px;
 }
-#randomWaitScreen #challengeListUsersList .oy-word-count{font-size:max(9px, calc(7px / var(--k)));}
+#randomWaitScreen #challengeListUsersList .oy-word-count{font-size:max(9px, calc(7px / var(--k)));position:relative;left:-1px;}
 
 #historyScreen .oy-card, #tournamentScreen .oy-card, #friendsScreen .oy-card, #randomWaitScreen .oy-card, #homeScreen .oy-card, #openTournamentsScreen .oy-card{
     background:#fff;
@@ -3508,7 +3514,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="arrow">›</div>
 </button>
 
-<div id="homeChallengeListCarousel" style="display:none;margin:17px -12px 0 -12px;">
+<div id="homeChallengeListCarousel" style="display:none;margin:18px -12px 0 -12px;">
 <div id="homeClcPanel" class="clc-panel">
 <div class="clc-header">
 <div class="clc-title-group"><h2 class="clc-title">Düelloya açık olanlar</h2></div>
