@@ -723,9 +723,18 @@ button{
 
 /* Kullanıcı profil penceresi: biraz daha kısa ve ekranda biraz aşağıda */
 .detail-modal-box.profile-modal{
-    height:400px;
-    top:30px;
+    height:395px;
+    top:27.5px;
 }
+
+/* Meydan oku penceresi: daha kısa, aralıklar sıkılaştırıldı */
+.detail-modal-box.challenge-modal{
+    height:400px;
+    top:25px;
+}
+.detail-modal-box.challenge-modal #detailModalContent .screen-title{margin-bottom:10px;}
+.detail-modal-box.challenge-modal #detailModalContent .menu-card.full-card{margin-top:10px !important;}
+.detail-modal-box.challenge-modal #detailModalContent:has(.modal-back-btn){padding-bottom:52px;}
 
 /* İçerik kısaysa ortalanır, uzunsa üstten başlar ve kaydırılabilir (üst kısım kesilmez) */
 #detailModalContent{
@@ -2509,7 +2518,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 }
 .clc-title-group{display:flex;align-items:center;gap:6px;margin-left:6px;}
 .clc-title-icon{font-size:15px;line-height:1;}
-.clc-title{font-size:12px;font-weight:800;color:#1e293b;margin:0;line-height:1;}
+.clc-title{font-size:12px;font-weight:800;color:#1e293b;margin:0;line-height:1;position:relative;top:1px;}
 .clc-user-list{
     display:flex;
     gap:10px;
@@ -8159,7 +8168,7 @@ showModalGameTypePicker();
 
 function showModalGameTypePicker(){
 
-openDetailModal("<p>Yükleniyor...</p>");
+openDetailModal("<p>Yükleniyor...</p>","challenge-modal");
 selectChallengeGameTypeInModal("word");
 
 }
@@ -10098,8 +10107,8 @@ let isFriend=currentUserFriends.includes(username);
 let hasSecondCard=!isFromChallengeList && (isFriend || from!=="istekler");
 
 let friendCardHtml=isFromChallengeList ? "" : (isFriend
-? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#ee483d,#e8342b);margin-bottom:12px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"removeFriend('"+profile.username+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">💔</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaşlıktan Çıkar</div></div></div>"
-: (hasSecondCard ? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#35b233,#209c2b);margin-bottom:12px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"addFriend('"+profile.username+"',this)\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">➕</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaş Ekle</div></div></div>" : ""));
+? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#ee483d,#e8342b);margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"removeFriend('"+profile.username+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">💔</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaşlıktan Çıkar</div></div></div>"
+: (hasSecondCard ? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#35b233,#209c2b);margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"addFriend('"+profile.username+"',this)\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">➕</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaş Ekle</div></div></div>" : ""));
 
 let countryHtml=profile.country ? ("<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#7c9cf5;\">🌍</div><div class=\"profile-info-label\">Ülke</div><div class=\"profile-info-value\">"+countryFlagEmoji(profile.country)+" "+getCountryName(profile.country)+"</div></div>") : "";
 
@@ -10114,8 +10123,8 @@ countryHtml+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#e8342b;\">⭐</div><div class=\"profile-info-label\">Puan Ortalaması</div><div class=\"profile-info-value\">"+avgScoreWord+"</div></div>"+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#eab308;\">🔤</div><div class=\"profile-info-label\">Bulunan Benzersiz Kelime Sayısı</div><div class=\"profile-info-value\">"+foundWordsCount+"</div></div>"+
 "</div>"+
-"<div class=\"settings-info-section\" style=\"grid-template-columns:"+(hasSecondCard ? "1fr 1fr" : "1fr")+";margin-top:10px;\" onclick=\"event.stopPropagation();\">"+
-"<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:12px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"','"+(from||"profile")+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>"+
+"<div class=\"settings-info-section\" style=\"grid-template-columns:"+(hasSecondCard ? "1fr 1fr" : "1fr")+";margin-top:0;\" onclick=\"event.stopPropagation();\">"+
+"<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"','"+(from||"profile")+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>"+
 friendCardHtml+
 "</div>";
 
@@ -11346,7 +11355,7 @@ pauseHomeClcForModal();
 
 let boxEl=document.querySelector("#detailModalOverlay .detail-modal-box");
 if(boxEl){
-boxEl.classList.remove("profile-modal");
+boxEl.classList.remove("profile-modal","challenge-modal");
 if(boxClass)boxEl.classList.add(boxClass);
 }
 
