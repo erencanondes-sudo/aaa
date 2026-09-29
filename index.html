@@ -2375,6 +2375,80 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new, #profileScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
 #homeScreen .menu-card.new{margin-bottom:8px;}
+
+/* ===== Ana ekran kare kartları (Oyunlarım / Haftalık / Günlük) ===== */
+#homeScreen .home-tiles{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:5px;
+    margin-bottom:8px;
+}
+#homeScreen .home-tile{
+    position:relative;
+    height:144px;
+    border:0;
+    border-radius:18px;
+    padding:10px 6px 10px;
+    color:#fff;
+    font-family:inherit;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    box-shadow:0 6px 12px rgba(25,40,60,.15),inset 0 0 0 1px rgba(255,255,255,.18);
+    transition:transform .2s,filter .2s;
+    overflow:hidden;
+}
+#homeScreen .home-tile:active,
+#homeScreen .home-tile.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
+#homeScreen .home-tile.tile-purple{background:linear-gradient(160deg,#9163d8,#6a3fc0);}
+#homeScreen .home-tile.tile-orange{background:linear-gradient(160deg,#f5ab3f,#e47a1f);}
+#homeScreen .home-tile.tile-green{background:linear-gradient(160deg,#62c2a8,#3a9a83);}
+#homeScreen .home-tile-icon{
+    font-size:36px;
+    line-height:1;
+    margin-top:2px;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));
+}
+#homeScreen .home-tile-title{
+    margin-top:6px;
+    font-size:13px;
+    font-weight:800;
+    line-height:1.2;
+    text-align:center;
+    text-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+#homeScreen .home-tile-desc{
+    margin-top:3px;
+    padding:0 4px;
+    font-size:max(9.5px, calc(7px / var(--k)));
+    font-weight:600;
+    line-height:1.2;
+    text-align:center;
+    opacity:.9;
+}
+#homeScreen .home-tile-arrow{
+    position:absolute;
+    right:6px;
+    bottom:6px;
+    width:24px;height:24px;
+    border-radius:50%;
+    background:rgba(255,255,255,.72);
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;font-weight:900;line-height:1;
+    padding-bottom:2px;
+    box-sizing:border-box;
+}
+#homeScreen .tile-purple .home-tile-arrow{color:#5b33a8;}
+#homeScreen .tile-orange .home-tile-arrow{color:#c2610f;}
+#homeScreen .tile-green .home-tile-arrow{color:#2b7a67;}
+#homeScreen .home-tile .badge{
+    position:absolute!important;
+    top:8px;right:8px;
+    margin:0;
+    min-width:22px;height:22px;line-height:22px;
+    font-size:11.5px;
+}
 #homeScreen .menu-card.purple, #profileScreen .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1);margin-bottom:8px;}
 #gameTypeScreen .menu-card.purple, #challengeTypeScreen .menu-card.purple{min-height:78px;background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 #challengeFriendScreen .menu-card.white,
@@ -3523,25 +3597,39 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 </div>
 
-<button class="menu-card new" style="margin-top:-4px;" onclick="animatedNav(this,openGameTypeChoice)">
+<div class="home-tiles" style="margin-top:-4px;">
+
+<button class="home-tile tile-purple" onclick="animatedNav(this,showHistory)">
+<span class="badge" id="historyBadge" style="display:none;">0</span>
+<div class="home-tile-icon">🎮</div>
+<div class="home-tile-title">Oyunlarım</div>
+<div class="home-tile-desc">Devam eden oyunların</div>
+<div class="home-tile-arrow">›</div>
+</button>
+
+<button class="home-tile tile-orange" onclick="animatedNav(this,showTournaments)">
+<span class="badge" id="tournamentBadge" style="display:none;">0</span>
+<div class="home-tile-icon">📅</div>
+<div class="home-tile-title">Haftalık<br>Turnuva</div>
+<div class="home-tile-desc">Haftanın şampiyonu ol</div>
+<div class="home-tile-arrow">›</div>
+</button>
+
+<button class="home-tile tile-green" onclick="animatedNav(this,showTournaments)">
+<div class="home-tile-icon">☀️</div>
+<div class="home-tile-title">Günlük<br>Turnuva</div>
+<div class="home-tile-desc">Her gün yeni rakipler</div>
+<div class="home-tile-arrow">›</div>
+</button>
+
+</div>
+
+<button class="menu-card new" onclick="animatedNav(this,openGameTypeChoice)">
 <div class="new-play-circle"><div class="new-play-triangle"></div></div>
 <div class="menu-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></div>
 <div class="arrow">›</div>
 </button>
 
-<button class="menu-card purple" onclick="animatedNav(this,showHistory)">
-<div class="icon-circle">🎮</div>
-<div class="menu-copy"><b>Oyunlarım</b><span>Devam eden oyunların</span></div>
-<span class="badge" id="historyBadge" style="display:none;">0</span>
-<div class="arrow">›</div>
-</button>
-
-<button class="menu-card red" onclick="animatedNav(this,showTournaments)">
-<div class="icon-circle">🏆</div>
-<div class="menu-copy"><b>Turnuva</b><span>Turnuvalara katıl, ödüller kazan!</span></div>
-<span class="badge" id="tournamentBadge" style="display:none;">0</span>
-<div class="arrow">›</div>
-</button>
 
 <div id="homeChallengeListCarousel" style="display:none;margin:18px -12px 0 -12px;">
 <div id="homeClcPanel" class="clc-panel">
