@@ -20,7 +20,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
 <style>
 *{
@@ -2375,183 +2375,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #challengeModeChoiceScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new, #profileScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
 #homeScreen .menu-card.new{margin-bottom:8px;}
-/* ===== Ana ekran kartları (kodla çizilen, Nunito) ===== */
-#homeScreen .home-tile2{
-    position:relative;
-    aspect-ratio:383/424;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:8px 5px 6px;
-    border:0;
-    border-radius:18px;
-    color:#fff;
-    cursor:pointer;
-    overflow:hidden;
-    box-sizing:border-box;
-    box-shadow:0 6px 12px rgba(25,40,60,.16),inset 0 0 0 1px rgba(255,255,255,.22);
-    transition:transform .2s,filter .2s;
-}
-#homeScreen .home-tile2::before{
-    content:"";
-    position:absolute;
-    width:120%;height:70%;
-    left:-10%;top:-20%;
-    background:radial-gradient(ellipse at center,rgba(255,255,255,.18),rgba(255,255,255,0) 70%);
-    pointer-events:none;
-}
-#homeScreen .home-tile2:active,
-#homeScreen .home-tile2.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
-#homeScreen .home-tile2.t2-purple{background:linear-gradient(160deg,#8e54e6,#6630c7);}
-#homeScreen .home-tile2.t2-orange{background:linear-gradient(160deg,#f8a83c,#ea6c1c);}
-#homeScreen .home-tile2.t2-teal{background:linear-gradient(160deg,#45c3bb,#27999a);}
-#homeScreen .t2-icon{
-    position:relative;
-    font-size:42px;
-    line-height:1;
-    margin-top:2px;
-    filter:drop-shadow(0 4px 4px rgba(0,0,0,.22));
-}
-#homeScreen .t2-title{
-    position:relative;
-    margin-top:6px;
-    font-family:'Nunito',Arial,sans-serif;
-    font-weight:900;
-    font-size:13px;
-    line-height:1.1;
-    white-space:nowrap;
-    text-shadow:0 2px 3px rgba(0,0,0,.14);
-}
-#homeScreen .t2-desc{
-    position:relative;
-    margin-top:2px;
-    font-family:'Nunito',Arial,sans-serif;
-    font-weight:700;
-    font-size:10.5px;
-    line-height:1.2;
-    white-space:nowrap;
-    opacity:.92;
-}
-#homeScreen .t2-pill{
-    position:relative;
-    margin-top:auto;
-    width:100%;
-    height:26px;
-    display:flex;
-    align-items:center;
-    gap:5px;
-    padding:0 2px 0 8px;
-    border-radius:13px;
-    background:rgba(0,0,0,.16);
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
-    box-sizing:border-box;
-    font-family:'Nunito',Arial,sans-serif;
-    font-weight:800;
-    font-size:11px;
-    white-space:nowrap;
-}
-#homeScreen .t2-pill i{font-size:11px;}
-#homeScreen .t2-arrow{
-    margin-left:auto;
-    flex:none;
-    width:22px;height:22px;
-    border-radius:50%;
-    background:rgba(255,255,255,.82);
-    display:flex;align-items:center;justify-content:center;
-    font-size:16px;font-weight:900;line-height:1;
-    padding-bottom:2px;
-    box-sizing:border-box;
-}
-#homeScreen .t2-purple .t2-arrow{color:#5a2bb0;}
-#homeScreen .t2-orange .t2-arrow{color:#c55a10;}
-#homeScreen .t2-teal .t2-arrow{color:#1f7f80;}
-#homeScreen .home-tile2 .badge{
-    position:absolute!important;
-    top:6px;right:6px;
-    margin:0;
-    min-width:22px;height:22px;line-height:22px;
-    font-size:11.5px;
-    z-index:2;
-}
-
-/* ===== Yeni Oyun (kodla çizilen, Nunito) ===== */
-#homeScreen .home-new-btn2{
-    position:relative;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    height:90px;
-    margin-bottom:5px;
-    padding:0 14px;
-    border:0;
-    border-radius:18px;
-    background:linear-gradient(100deg,#4fca4b 0%,#35b447 55%,#23a35a 100%);
-    box-shadow:0 6px 12px rgba(20,90,40,.18),inset 0 0 0 1px rgba(255,255,255,.25);
-    color:#fff;
-    text-align:left;
-    cursor:pointer;
-    overflow:hidden;
-    box-sizing:border-box;
-    transition:transform .2s,filter .2s;
-}
-#homeScreen .home-new-btn2:active,
-#homeScreen .home-new-btn2.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
-#homeScreen .hn2-decor{
-    position:absolute;
-    right:44px;
-    bottom:-14px;
-    font-size:74px;
-    line-height:1;
-    opacity:.14;
-    filter:grayscale(1) brightness(3);
-    transform:rotate(-12deg);
-    pointer-events:none;
-}
-#homeScreen .hn2-play{
-    position:relative;
-    flex:none;
-    width:58px;height:58px;
-    border-radius:50%;
-    background:#fff;
-    box-shadow:0 0 0 6px rgba(0,80,20,.14),0 3px 6px rgba(0,0,0,.12);
-    display:flex;align-items:center;justify-content:center;
-}
-#homeScreen .hn2-tri{
-    width:0;height:0;
-    margin-left:5px;
-    border-top:13px solid transparent;
-    border-bottom:13px solid transparent;
-    border-left:21px solid #2ea843;
-    border-radius:3px;
-}
-#homeScreen .hn2-copy{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;}
-#homeScreen .hn2-copy b{
-    font-family:'Nunito',Arial,sans-serif;
-    font-weight:900;
-    font-size:26px;
-    line-height:1.05;
-    text-shadow:0 2px 3px rgba(0,0,0,.14);
-}
-#homeScreen .hn2-copy span{
-    margin-top:3px;
-    font-family:'Nunito',Arial,sans-serif;
-    font-weight:700;
-    font-size:14px;
-    line-height:1.2;
-    opacity:.95;
-}
-#homeScreen .hn2-arrow{
-    position:relative;
-    flex:none;
-    width:30px;height:30px;
-    border-radius:50%;
-    background:rgba(0,60,25,.32);
-    display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:900;line-height:1;
-    padding-bottom:3px;
-    box-sizing:border-box;
-}
-
 #homeScreen .home-new-img-btn{
     display:block;
     width:100%;
@@ -3794,36 +3617,24 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 </div>
 
-<button class="home-new-btn2" style="margin-top:-4px;margin-left:-6px;margin-right:-6px;width:calc(100% + 12px);" onclick="animatedNav(this,openGameTypeChoice)">
-<span class="hn2-decor">🎮</span>
-<span class="hn2-play"><span class="hn2-tri"></span></span>
-<span class="hn2-copy"><b>Yeni Oyun</b><span>Hemen oynamaya başla!</span></span>
-<span class="hn2-arrow">›</span>
+<button class="home-new-img-btn" style="margin-top:-4px;margin-left:-6px;margin-right:-6px;width:calc(100% + 12px);" onclick="animatedNav(this,openGameTypeChoice)">
+<img src="images/yeni-oyun.webp" alt="Yeni Oyun">
 </button>
 
 <div class="home-tiles">
 
-<button class="home-tile2 t2-purple" onclick="animatedNav(this,showHistory)">
+<button class="home-tile tile-image" onclick="animatedNav(this,showHistory)">
 <span class="badge" id="historyBadge" style="display:none;">0</span>
-<span class="t2-icon">🎮</span>
-<b class="t2-title">Oyunlarım</b>
-<span class="t2-desc">Devam eden oyunların</span>
-<span class="t2-pill"><i class="fa-solid fa-layer-group"></i><span id="homeOyunCount">Oyun yok</span><span class="t2-arrow">›</span></span>
+<img class="home-tile-img" src="images/oyunlarim.webp" alt="Oyunlarım">
 </button>
 
-<button class="home-tile2 t2-orange" onclick="animatedNav(this,showTournaments)">
+<button class="home-tile tile-image" onclick="animatedNav(this,showTournaments)">
 <span class="badge" id="tournamentBadge" style="display:none;">0</span>
-<span class="t2-icon">🏆</span>
-<b class="t2-title">Haftalık Turnuva</b>
-<span class="t2-desc">Haftanın şampiyonu</span>
-<span class="t2-pill"><i class="fa-solid fa-crown"></i><span id="homeWeeklyLeft">7 gün kaldı</span><span class="t2-arrow">›</span></span>
+<img class="home-tile-img" src="images/haftalik-turnuva.webp" alt="Haftalık Turnuva">
 </button>
 
-<button class="home-tile2 t2-teal" onclick="animatedNav(this,showTournaments)">
-<span class="t2-icon">☀️</span>
-<b class="t2-title">Günlük Turnuva</b>
-<span class="t2-desc">Her gün yeni rakipler</span>
-<span class="t2-pill"><i class="fa-solid fa-users"></i><span>Bugün</span><span class="t2-arrow">›</span></span>
+<button class="home-tile tile-image" onclick="animatedNav(this,showTournaments)">
+<img class="home-tile-img" src="images/gunluk-turnuva.webp" alt="Günlük Turnuva">
 </button>
 
 </div>
@@ -4778,26 +4589,6 @@ adBannerEl.style.height="100px";
 adBannerEl.style.width="320px";
 
 }
-
-
-/* Haftalık turnuva kartı: haftanın bitimine (Pazar gece yarısı) kalan gün */
-function updateHomeWeeklyLeft(){
-
-let el=document.getElementById("homeWeeklyLeft");
-if(!el)return;
-
-let now=new Date();
-let day=now.getDay();
-let daysToMonday=day===0 ? 1 : 8-day;
-let end=new Date(now.getFullYear(),now.getMonth(),now.getDate()+daysToMonday);
-let left=Math.ceil((end-now)/86400000);
-
-el.textContent=left<=1 ? "Son gün" : left+" gün kaldı";
-
-}
-
-updateHomeWeeklyLeft();
-setInterval(updateHomeWeeklyLeft,60*60*1000);
 
 
 /* ===== EKRAN ÖLÇEĞİ (zoom) =====
@@ -12075,11 +11866,6 @@ let homeTotal=ongoingTotal+istekTotal+oyunlarimTotal;
 
 let homeBadge=document.getElementById("historyBadge");
 let ongoingBadge=document.getElementById("ongoingBadge");
-
-let homeOyunCountEl=document.getElementById("homeOyunCount");
-if(homeOyunCountEl){
-homeOyunCountEl.textContent=ongoingListe.length>0 ? ongoingListe.length+" oyun" : "Oyun yok";
-}
 let tabBadge=document.getElementById("tabBadge");
 let gamesBadge=document.getElementById("gamesBadge");
 
