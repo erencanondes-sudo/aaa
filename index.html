@@ -2378,7 +2378,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .home-new-img-btn{
     display:block;
     width:100%;
-    height:102px;
+    height:auto;
     margin-bottom:5px;
     padding:0;
     border:0;
@@ -2386,7 +2386,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     cursor:pointer;
     transition:transform .2s,filter .2s;
 }
-#homeScreen .home-new-img-btn img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
+#homeScreen .home-new-img-btn img{width:100%;height:auto;display:block;pointer-events:none;}
 #homeScreen .home-new-img-btn:active,
 #homeScreen .home-new-img-btn.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
 
@@ -2418,9 +2418,9 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .home-tile.tile-purple{background:linear-gradient(160deg,#9163d8,#6a3fc0);}
 #homeScreen .home-tile.tile-orange{background:linear-gradient(160deg,#f5ab3f,#e47a1f);}
 #homeScreen .home-tile.tile-green{background:linear-gradient(160deg,#62c2a8,#3a9a83);}
-#homeScreen .home-tile.tile-image{background:none;box-shadow:none;padding:0;overflow:visible;}
+#homeScreen .home-tile.tile-image{background:none;box-shadow:none;padding:0;overflow:visible;height:auto;aspect-ratio:383/424;}
 #homeScreen .home-tile.tile-image.menu-card-pressed,#homeScreen .home-tile.tile-image:active{transform:translateY(3px);filter:brightness(.96);}
-#homeScreen .home-tile-img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
+#homeScreen .home-tile-img{width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;}
 #homeScreen .home-tile-icon{
     font-size:32px;
     line-height:1;
