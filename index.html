@@ -2405,6 +2405,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .home-tile.tile-purple{background:linear-gradient(160deg,#9163d8,#6a3fc0);}
 #homeScreen .home-tile.tile-orange{background:linear-gradient(160deg,#f5ab3f,#e47a1f);}
 #homeScreen .home-tile.tile-green{background:linear-gradient(160deg,#62c2a8,#3a9a83);}
+#homeScreen .home-tile.tile-image{background:none;box-shadow:none;padding:0;overflow:visible;}
+#homeScreen .home-tile-img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
 #homeScreen .home-tile-icon{
     font-size:32px;
     line-height:1;
@@ -3617,12 +3619,9 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="home-tile-arrow">›</div>
 </button>
 
-<button class="home-tile tile-orange" onclick="animatedNav(this,showTournaments)">
+<button class="home-tile tile-image" onclick="animatedNav(this,showTournaments)">
 <span class="badge" id="tournamentBadge" style="display:none;">0</span>
-<div class="home-tile-icon">📅</div>
-<div class="home-tile-title">Haftalık Turnuva</div>
-<div class="home-tile-desc">Haftanın şampiyonu</div>
-<div class="home-tile-arrow">›</div>
+<img class="home-tile-img" src="images/haftalik-turnuva.webp" alt="Haftalık Turnuva">
 </button>
 
 <button class="home-tile tile-green" onclick="animatedNav(this,showTournaments)">
