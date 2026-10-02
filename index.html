@@ -4225,6 +4225,9 @@ Sayı seçiniz
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
+<!-- TEST: harf kaydı (geçici) -->
+<button id="harfLogBtn" onclick="openHarfLog()" style="position:absolute;top:-30px;left:0;z-index:20;width:auto;padding:4px 8px;border:0;border-radius:8px;background:#1e293b;color:#fff;font-size:11px;font-weight:800;opacity:.85;">🧪 Harf kaydı</button>
+
 <div class="btn-row word-mode-toggle" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:55%;">
 <button class="word-mode-btn active" onclick="startFreshWordGame(wordSadeMode)">
 <div class="word-mode-icon"><div class="new-play-circle"><div class="new-play-triangle"></div></div></div>
@@ -4338,6 +4341,19 @@ Harf seçiniz
 <div id="wordScoreBannerTitle" style="font-size:20px;letter-spacing:1px;">PUAN</div>
 <div id="wordScoreBannerValue" style="font-size:68px;line-height:1.1;">0</div>
 <div id="wordScoreBannerRating" style="font-size:22px;font-weight:bold;min-height:28px;margin-top:6px;"></div>
+</div>
+
+<!-- TEST: harf kaydı paneli (geçici) -->
+<div id="harfLogPanel" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 12px);box-sizing:border-box;">
+<div style="background:#0f172a;color:#e2e8f0;border-radius:14px;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+<div style="display:flex;gap:6px;padding:8px;border-bottom:1px solid #334155;">
+<b style="flex:1;align-self:center;font-size:13px;">🧪 Harf kaydı</b>
+<button onclick="copyHarfLog()" style="width:auto;padding:5px 9px;border:0;border-radius:7px;background:#334155;color:#fff;font-size:11px;">Kopyala</button>
+<button onclick="clearHarfLog()" style="width:auto;padding:5px 9px;border:0;border-radius:7px;background:#7f1d1d;color:#fff;font-size:11px;">Temizle</button>
+<button onclick="closeHarfLog()" style="width:auto;padding:5px 9px;border:0;border-radius:7px;background:#16a34a;color:#fff;font-size:11px;">Kapat</button>
+</div>
+<pre id="harfLogText" style="flex:1;margin:0;padding:8px;overflow:auto;font-size:10.5px;line-height:1.45;white-space:pre-wrap;font-family:monospace;"></pre>
+</div>
 </div>
 
 <nav class="bn-nav" id="bottomNav">
@@ -12535,11 +12551,53 @@ if(!entry)return Math.floor(Math.random()*5)+1;
 return Math.floor(Math.random()*(entry.max-entry.min+1))+entry.min;
 }
 
+/* ===== TEST: harf kaydı (geçici) ===== */
+let harfLastPick=null;
+let harfLog=[];
+try{ harfLog=JSON.parse(localStorage.getItem("konfetiHarfLog")||"[]"); }catch(e){ harfLog=[]; }
+
+function harfBoardText(){
+return wordTiles.map(function(t){ return t.letter+(t.life===Infinity||t.life==null ? "" : t.life); }).join(" ");
+}
+
+function harfDupText(){
+let c={};
+wordTiles.forEach(function(t){ if(t.letter!=='★')c[t.letter]=(c[t.letter]||0)+1; });
+let d=Object.keys(c).filter(function(k){ return c[k]>=2; }).map(function(k){ return k+"×"+c[k]; });
+return d.length ? "  ⚠️ TEKRAR: "+d.join(", ") : "";
+}
+
+function harfLogAdd(text){
+let now=new Date();
+let ts=("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2)+":"+("0"+now.getSeconds()).slice(-2);
+harfLog.push(ts+"  "+text);
+if(harfLog.length>500)harfLog=harfLog.slice(-500);
+try{ localStorage.setItem("konfetiHarfLog",JSON.stringify(harfLog)); }catch(e){}
+if(document.getElementById("harfLogPanel").style.display!=="none")renderHarfLog();
+}
+
+function renderHarfLog(){
+let el=document.getElementById("harfLogText");
+el.textContent=harfLog.length ? harfLog.join("\n") : "Henüz kayıt yok. Çetrefilli modda bir oyun oyna.";
+el.scrollTop=el.scrollHeight;
+}
+
+function openHarfLog(){ document.getElementById("harfLogPanel").style.display="block"; renderHarfLog(); }
+function closeHarfLog(){ document.getElementById("harfLogPanel").style.display="none"; }
+function clearHarfLog(){ harfLog=[]; try{ localStorage.removeItem("konfetiHarfLog"); }catch(e){} renderHarfLog(); }
+function copyHarfLog(){
+let txt=harfLog.join("\n");
+if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ alert("Kayıt kopyalandı."); },function(){ alert("Kopyalanamadı."); }); }
+}
+
+
 function pickWeightedLetter(allowedLetters){
 let pool=allowedLetters || Object.keys(LETTER_TABLE);
 let totalWeight=0;
 pool.forEach(function(l){ totalWeight+=(LETTER_TABLE[l] ? LETTER_TABLE[l].freq : 1); });
-let r=Math.random()*totalWeight;
+let rawRandom=Math.random();
+let r=rawRandom*totalWeight;
+harfLastPick={raw:rawRandom,r:r,total:totalWeight,poolSize:pool.length};
 for(let i=0;i<pool.length;i++){
 let w=(LETTER_TABLE[pool[i]] ? LETTER_TABLE[pool[i]].freq : 1);
 if(r<w)return pool[i];
@@ -12970,6 +13028,17 @@ return {letter:letter,used:false,id:i,life:life};
 });
 score=restoredProgress.score || 0;
 
+harfLogAdd("──── KAYITTAN DEVAM ("+(wordSadeMode ? "Klasik" : "Çetrefilli")+") ────");
+harfLogAdd("Yüklenen tahta: "+harfBoardText()+harfDupText());
+
+// Çetrefilli'de tahta oyun içinde değiştiği için kelime listesi başlangıç harflerine değil, güncel tahtaya göre hesaplanır
+if(!wordSadeMode){
+wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
+let restoredJokerCount=wordTiles.filter(function(t){ return t.letter==='★'; }).length;
+let restoredAchievable=computeAchievableWords(wordBaseLetters,restoredJokerCount);
+wordAchievable=Array.from(new Set([...restoredAchievable,...wordFound]));
+}
+
 renderWordCards();
 updateWordTarget();
 
@@ -12986,6 +13055,9 @@ wordFound=new Set();
 let order=shuffleArray([...wordBaseLetters,'★']);
 wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:wordSadeMode ? Infinity : (l==='★' ? 9 : randomLifeForLetter(l))}));
 ensureJokerAtBottomRight();
+
+harfLogAdd("════ YENİ TUR ("+(wordSadeMode ? "Klasik" : "Çetrefilli")+(activeChallengeId ? ", düello" : "")+") ════");
+harfLogAdd("Başlangıç tahtası: "+harfBoardText()+harfDupText());
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
 
@@ -13747,14 +13819,6 @@ updateWordTarget();
 flashWordLengthLine(guess.length);
 triggerWordScoreEmojiBurst(guess.length);
 
-if(activeChallengeId){
-saveWordProgress();
-}
-
-if(activeTournamentId){
-saveTournamentProgress();
-}
-
 if(guess.length>=6){
 spawnWordConfetti(10);
 }
@@ -13777,6 +13841,8 @@ recordGameEnd("win",finalScore);
 
 }
 
+harfLogAdd("Kelime: "+guess);
+
 let replacedIndices=[];
 let decreasedIds=[];
 
@@ -13797,22 +13863,31 @@ let consonantsAfterRemoval=otherLetters.filter(function(l){ return !VOWELS.inclu
 let jokerAlreadyExists=wordTiles.some(function(t,tIdx){ return t.letter==='★' && tIdx!==idx; });
 
 let newLetter;
+let harfReason;
+let oldLetterForLog=tile.letter;
+harfLastPick=null;
 
 if(vowelsAfterRemoval<2){
 newLetter=pickWeightedLetter(VOWELS);
+harfReason="sesli zorunlu";
 }
 else if(consonantsAfterRemoval<3){
 newLetter=pickWeightedLetter(Object.keys(LETTER_TABLE).filter(function(l){ return !VOWELS.includes(l); }));
+harfReason="sessiz zorunlu";
 }
 else if(!jokerAlreadyExists && Math.random()<0.15){
 newLetter='★';
+harfReason="joker";
 }
 else{
 newLetter=pickWeightedLetter(Object.keys(LETTER_TABLE));
+harfReason="serbest";
 }
 
 tile.letter=newLetter;
 tile.life=(newLetter==='★') ? 9 : randomLifeForLetter(newLetter);
+
+harfLogAdd("   "+oldLetterForLog+" bitti → "+newLetter+tile.life+"  ["+harfReason+(harfLastPick ? ", sayı "+harfLastPick.raw.toFixed(4)+", r "+harfLastPick.r.toFixed(2)+"/"+harfLastPick.total : "")+"]");
 
 replacedIndices.push(tile.id);
 
@@ -13833,6 +13908,17 @@ let recomputed=computeAchievableWords(wordBaseLetters,currentJokerCount);
 wordAchievable=Array.from(new Set([...recomputed,...wordFound]));
 updateWordTarget();
 
+}
+
+harfLogAdd("   Tahta: "+harfBoardText()+harfDupText());
+
+// Kayıt, ömürler düşürülüp harfler değiştirildikten SONRA yapılır (güncel tahta kaydedilsin)
+if(activeChallengeId){
+saveWordProgress();
+}
+
+if(activeTournamentId){
+saveTournamentProgress();
 }
 
 wordSequence=[];
