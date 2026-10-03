@@ -2527,6 +2527,20 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #detailModalContent .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 /* Geri butonu her adımda aynı yerde: pencerenin altında sabit */
 #detailModalContent:has(.modal-back-btn){padding-bottom:61px;}
+#detailModalContent .duel-tour-format{
+    flex:1;
+    width:auto;
+    padding:10px 6px;
+    border:2px solid #dfe3ea;
+    border-radius:12px;
+    background:#fff;
+    color:#475569;
+    font-size:13px;
+    line-height:1.35;
+    cursor:pointer;
+}
+#detailModalContent .duel-tour-format b{font-size:15px;color:#192a56;}
+#detailModalContent .duel-tour-format.active{border-color:#6c3fd1;background:#f3eefe;color:#6c3fd1;}
 #detailModalContent .modal-back-btn{
     position:absolute;
     left:50%;
@@ -8011,30 +8025,15 @@ function buildOyTournamentCard(t,isPast,isInviteTab){
 
 let me=currentUser.uid;
 let participants=t.participants || [];
-let duelLike=!!t.fromChallengeId && participants.length<=2 && !isInviteTab;
 
 let html="";
 let lpType=isPast ? "tournament-past" : (isInviteTab ? "tournament-invite" : "tournament-ongoing");
 let remainingHours=Math.max(0,Math.floor((t.expiresAtMillis-Date.now())/3600000));
 
 html+="<div class=\"oy-card\" data-lp-id=\""+t.id+"\" data-lp-type=\""+lpType+"\">";
-html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">"+(duelLike ? "⚔️" : "🏆")+"</span></div></div>";
+html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">🏆</span></div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
-
-if(duelLike){
-
-// 2 oyuncu varken düello gibi göster: rakibin adı ve avatarı
-let opp=participants.find(function(p){ return p.uid!==me; });
-let oppName=opp ? opp.username : ((t.invitedUsernames||[]).find(function(u){ return u!==currentUser.username; }) || "Rakip");
-let oppAvatar=opp ? opp.avatarEmoji : "👤";
-
-html+="<div class=\"oy-avatar\">"+avatarHtml(oppAvatar)+"</div>";
-html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+oppName+"','oyunlarim')\">"+oppName+"</span></div>";
-html+="<span class=\"oy-status\">"+t.format+" oyun"+(isPast ? "" : " ⏳ "+remainingHours+" saat")+"</span>";
-
-}
-else{
 
 let title=t.name || (t.creatorUsername+"'in Turnuvası");
 
@@ -8042,7 +8041,6 @@ html+="<div class=\"oy-avatar\">🏆</div>";
 html+="<div class=\"oy-user-info\"><span class=\"oy-username\">"+title+"</span></div>";
 html+="<span class=\"oy-status\">"+participants.length+" oyuncu · "+t.format+" oyun"+(isPast||isInviteTab ? "" : " ⏳ "+remainingHours+" saat")+"</span>";
 
-}
 
 html+="</div>";
 
@@ -10737,13 +10735,6 @@ document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7
 return;
 }
 
-if(doc.data().convertedToTournamentId){
-hideAllScreens();
-document.getElementById("tournamentDetailScreen").style.display="block";
-viewTournament(doc.data().convertedToTournamentId);
-return;
-}
-
 let ch=normalizeChallenge(doc.data());
 
 renderChallengeDetailContent(ch,challengeId,mySide,otherName);
@@ -10770,13 +10761,6 @@ let otherName=activeChallengeDetailOtherName;
 db.collection("challenges").doc(challengeId).get().then(function(doc){
 
 if(!doc.exists)return;
-
-if(doc.data().convertedToTournamentId){
-hideAllScreens();
-document.getElementById("tournamentDetailScreen").style.display="block";
-viewTournament(doc.data().convertedToTournamentId);
-return;
-}
 
 let ch=normalizeChallenge(doc.data());
 
@@ -10968,20 +10952,29 @@ document.getElementById("challengeDetailBottomSection").innerHTML=bottomHtml;
 }
 
 
-/* ===== DÜELLO → TURNUVA DÖNÜŞÜMÜ ===== */
-let pendingChallengeConversionId=null;
+/* ===== DÜELLODAN YENİ TURNUVA OLUŞTURMA ===== */
+// Düello olduğu gibi devam eder; ayrıca yeni bir turnuva oluşur.
+// Turnuvada başta sadece oluşturan vardır; seçilen arkadaşa ve düellodaki rakibe davet gider.
+let pendingDuelTournament={challengeId:null,format:2};
 
 function openChallengeAddFriend(challengeId){
 
-pendingChallengeConversionId=challengeId;
+pendingDuelTournament={challengeId:challengeId,format:2};
 
 let ch=liveChallengesData ? liveChallengesData[challengeId] : null;
 let players=ch ? [ch.fromUsername,ch.toUsername] : [currentUser.username];
 
 let html="<p class=\"screen-title\" style=\"margin-top:0;\">Arkadaş Ekle</p>";
-html+="<div style=\"background:#fff7e6;border:1px solid #ffd58a;color:#8a5a00;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin-bottom:12px;\">⚠️ Arkadaş eklediğinde bu düello <b>turnuva moduna</b> çevrilecek. Bunun için bir turnuva ismi girmen gerekiyor. Oyun sayısı ve süre aynı kalır, puanlar korunur.</div>";
+html+="<div style=\"background:#fff7e6;border:1px solid #ffd58a;color:#8a5a00;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin-bottom:12px;\">⚠️ Arkadaş eklemek için yeni bir <b>turnuva</b> oluşturulacak. Düellon olduğu gibi devam eder. Turnuvaya bir isim ver; seçtiğin arkadaşına ve düellodaki rakibine davet gidecek.</div>";
 html+="<input type=\"text\" id=\"convertTournamentName\" class=\"auth-input\" placeholder=\"Turnuva ismi\" maxlength=\"30\">";
-html+="<input type=\"text\" id=\"convertInviteUsername\" class=\"auth-input\" placeholder=\"Arkadaşının kullanıcı adı\">";
+
+html+="<p style=\"margin:10px 0 6px;font-weight:bold;\">Turnuva süresi</p>";
+html+="<div style=\"display:flex;gap:8px;\">";
+html+="<button class=\"duel-tour-format active\" id=\"duelTourFormat2\" onclick=\"selectDuelTournamentFormat(2)\">1 gün<br><b>2 oyun</b></button>";
+html+="<button class=\"duel-tour-format\" id=\"duelTourFormat14\" onclick=\"selectDuelTournamentFormat(14)\">7 gün<br><b>14 oyun</b></button>";
+html+="</div>";
+
+html+="<input type=\"text\" id=\"convertInviteUsername\" class=\"auth-input\" style=\"margin-top:10px;\" placeholder=\"Arkadaşının kullanıcı adı\">";
 
 let friends=currentUserFriends.filter(function(u){ return players.indexOf(u)===-1; });
 
@@ -10993,16 +10986,27 @@ return "<button class=\"challenge-play-btn\" style=\"margin-top:6px;\" onclick=\
 html+="</div>";
 }
 
-html+="<button class=\"newgame\" id=\"convertTournamentBtn\" style=\"margin-top:14px;\" onclick=\"convertChallengeToTournament()\">Turnuvaya Çevir ve Davet Et</button>";
+html+="<button class=\"newgame\" id=\"convertTournamentBtn\" style=\"margin-top:14px;\" onclick=\"createTournamentFromDuel()\">Turnuva Oluştur ve Davet Et</button>";
 
 openDetailModal(html);
 
 }
 
 
-function convertChallengeToTournament(){
+function selectDuelTournamentFormat(format){
 
-let challengeId=pendingChallengeConversionId;
+pendingDuelTournament.format=format;
+
+document.getElementById("duelTourFormat2").classList.toggle("active",format===2);
+document.getElementById("duelTourFormat14").classList.toggle("active",format===14);
+
+}
+
+
+function createTournamentFromDuel(){
+
+let challengeId=pendingDuelTournament.challengeId;
+let format=pendingDuelTournament.format===14 ? 14 : 2;
 let name=document.getElementById("convertTournamentName").value.trim();
 let inviteUsername=document.getElementById("convertInviteUsername").value.trim();
 
@@ -11018,16 +11022,23 @@ alert("Lütfen davet edeceğin arkadaşının kullanıcı adını gir.");
 return;
 }
 
-let btn=document.getElementById("convertTournamentBtn");
-if(btn){ btn.disabled=true; btn.style.opacity="0.6"; }
-
-function enableBtn(){
-if(btn){ btn.disabled=false; btn.style.opacity="1"; }
+if(inviteUsername===currentUser.username){
+alert("Kendini davet edemezsin.");
+return;
 }
 
-let challengeRef=db.collection("challenges").doc(challengeId);
+let btn=document.getElementById("convertTournamentBtn");
+let btnText=btn ? btn.innerHTML : "";
+if(btn){ btn.disabled=true; btn.style.opacity="0.6"; btn.innerHTML="Oluşturuluyor..."; }
 
-Promise.all([challengeRef.get(),getUidForUsername(inviteUsername)]).then(function(results){
+function enableBtn(){
+if(btn){ btn.disabled=false; btn.style.opacity="1"; btn.innerHTML=btnText; }
+}
+
+Promise.all([
+db.collection("challenges").doc(challengeId).get(),
+getUidForUsername(inviteUsername)
+]).then(function(results){
 
 let doc=results[0];
 let inviteUid=results[1];
@@ -11038,91 +11049,61 @@ enableBtn();
 return;
 }
 
-let ch=doc.data();
-
-if(ch.convertedToTournamentId){
-hideDetailModal();
-hideAllScreens();
-document.getElementById("tournamentDetailScreen").style.display="block";
-viewTournament(ch.convertedToTournamentId);
-return;
-}
-
 if(!inviteUid){
 alert("Bu kullanıcı adıyla bir kullanıcı bulunamadı.");
 enableBtn();
 return;
 }
 
-if(inviteUsername===ch.fromUsername || inviteUsername===ch.toUsername){
-alert("Bu kullanıcı zaten düelloda.");
-enableBtn();
-return;
+let ch=doc.data();
+let opponentUsername=ch.fromUsername===currentUser.username ? ch.toUsername : ch.fromUsername;
+let opponentUidPromise=ch.fromUsername===currentUser.username
+? (ch.toUid ? Promise.resolve(ch.toUid) : getUidForUsername(ch.toUsername))
+: Promise.resolve(ch.fromUid);
+
+return opponentUidPromise.then(function(opponentUid){
+
+// Harf setleri (tur başına bir kez üretilir)
+let rounds=[];
+for(let i=0;i<format;i++){
+let wordData=generateWordGameData(100);
+rounds.push({baseLetters:wordData.baseLetters,achievable:wordData.achievable});
 }
-
-let toUidPromise=ch.toUid ? Promise.resolve(ch.toUid) : getUidForUsername(ch.toUsername);
-
-return toUidPromise.then(function(toUid){
 
 let now=Date.now();
-let gamesCount=ch.games.length;
-let accepted=ch.status==="accepted";
+let durationMillis=format===14 ? 7*86400000 : 86400000;
 
-function participantFor(uid,username,avatarEmoji,side){
-
-let scores=ch.games.map(function(g){ return g[side+"Played"] ? (g[side+"Score"]||0) : null; });
-let total=scores.reduce(function(sum,sc){ return sum+(sc||0); },0);
-
-return {
-uid:uid,
-username:username,
-avatarEmoji:avatarEmoji||"👤",
-scores:scores,
-startedAts:new Array(gamesCount).fill(null),
-progresses:new Array(gamesCount).fill(null),
-totalScore:total,
-joinedAt:now
-};
-
-}
-
-let participants=[participantFor(ch.fromUid,ch.fromUsername,ch.fromAvatarEmoji,"from")];
-let participantUids=[ch.fromUid];
 let invitedUsernames=[inviteUsername];
 let inviteSources={};
 inviteSources[inviteUsername]=currentUser.username;
 
-if(accepted && toUid){
-participants.push(participantFor(toUid,ch.toUsername,ch.toAvatarEmoji,"to"));
-participantUids.push(toUid);
+if(opponentUsername && opponentUsername!==inviteUsername){
+invitedUsernames.push(opponentUsername);
+inviteSources[opponentUsername]=currentUser.username;
 }
-else{
-// Rakip düelloyu henüz kabul etmediyse turnuvaya davetli olarak geçer
-invitedUsernames.push(ch.toUsername);
-inviteSources[ch.toUsername]=ch.fromUsername;
-}
-
-let rounds=ch.games.map(function(g){
-let r={baseLetters:g.baseLetters};
-if(g.achievable)r.achievable=g.achievable;
-return r;
-});
-
-let expiresAtMillis=ch.acceptedAt ? (ch.acceptedAt.seconds*1000+48*3600000) : (ch.expiresAtMillis || now+86400000);
 
 let tournamentData={
 name:name,
 creatorUid:currentUser.uid,
 creatorUsername:currentUser.username,
 visibility:"private",
-format:gamesCount,
+format:format,
 gameType:"word",
 sadeMode:!!ch.sadeMode,
 rounds:rounds,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-expiresAtMillis:expiresAtMillis,
-participantUids:participantUids,
-participants:participants,
+expiresAtMillis:now+durationMillis,
+participantUids:[currentUser.uid],
+participants:[{
+uid:currentUser.uid,
+username:currentUser.username,
+avatarEmoji:currentUser.avatarEmoji||"👤",
+scores:new Array(format).fill(null),
+startedAts:new Array(format).fill(null),
+progresses:new Array(format).fill(null),
+totalScore:0,
+joinedAt:now
+}],
 invitedUsernames:invitedUsernames,
 inviteSources:inviteSources,
 fromChallengeId:challengeId
@@ -11132,21 +11113,13 @@ let tournamentRef=db.collection("tournaments").doc();
 let batch=db.batch();
 
 batch.set(tournamentRef,tournamentData);
-batch.update(challengeRef,{convertedToTournamentId:tournamentRef.id});
-
-writeChallengeSignal(batch,ch.fromUid,challengeId);
-writeChallengeSignal(batch,toUid,challengeId);
-
-writeTournamentSignal(batch,ch.fromUid,tournamentRef.id);
-writeTournamentSignal(batch,toUid,tournamentRef.id);
+writeTournamentSignal(batch,currentUser.uid,tournamentRef.id);
 writeTournamentSignal(batch,inviteUid,tournamentRef.id);
+if(opponentUid && opponentUid!==inviteUid)writeTournamentSignal(batch,opponentUid,tournamentRef.id);
 
 return batch.commit().then(function(){
 
-if(liveChallengesData)delete liveChallengesData[challengeId];
-try{ handleLiveUpdate(); }catch(e){}
-
-pendingChallengeConversionId=null;
+pendingDuelTournament={challengeId:null,format:2};
 
 hideDetailModal();
 hideAllScreens();
@@ -11158,7 +11131,7 @@ viewTournament(tournamentRef.id);
 });
 
 }).catch(function(e){
-console.error("Düello turnuvaya çevrilemedi:",e);
+console.error("Turnuva oluşturulamadı:",e);
 alert("Bir hata oluştu, tekrar dene.");
 enableBtn();
 });
@@ -15328,12 +15301,6 @@ challengeSignalVersions[challengeId]=version;
 fetchPromises.push(
 
 db.collection("challenges").doc(challengeId).get().then(function(cDoc){
-
-if(cDoc.exists && cDoc.data().convertedToTournamentId){
-// Turnuvaya çevrilmiş düello artık düello listesinde gösterilmez
-delete liveChallengesData[challengeId];
-return;
-}
 
 if(cDoc.exists){
 
