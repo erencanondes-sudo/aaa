@@ -3300,10 +3300,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     border-radius:16px;
     padding:10px;
     display:flex;flex-direction:column;
-    height:430px;
+    height:300px;
     box-sizing:border-box;
 }
-#challengeDetailScreen .td-chat-card{height:340px;}
+#challengeDetailScreen .td-chat-card{height:260px;}
 #challengeDetailScreen .cd-title-avatar{
     display:inline-flex;align-items:center;justify-content:center;
     width:22px;height:22px;border-radius:50%;
@@ -6501,15 +6501,56 @@ console.error("Turnuva yüklenemedi:",e);
 }
 
 
-function renderTournamentDetail(t){
+/* 14 oyunluk turnuvalar: 7 gün, her gün 2 oyun; gün N, başlangıçtan N-1 gün sonra açılır */
+function tournamentDayInfo(t){
 
-document.getElementById("tournamentDetailTitle").innerHTML=t.name ? ("🏆 "+t.name) : ((t.visibility==="public"?"🌍 ":"🔒 ")+t.creatorUsername+"'in Turnuvası");
+if(!t || t.format!==14)return null;
+
+let days=7;
+let perDay=2;
+let start=t.expiresAtMillis-days*86400000;
+let currentDay=Math.floor((Date.now()-start)/86400000);
+
+return {days:days,perDay:perDay,start:start,currentDay:currentDay};
+
+}
+
+function isTournamentRoundUnlocked(t,roundIndex){
+
+let info=tournamentDayInfo(t);
+if(!info)return true;
+
+return Math.floor(roundIndex/info.perDay)<=info.currentDay;
+
+}
+
+let expandedTournamentDay={};
+let lastRenderedTournament=null;
+
+function toggleTournamentDay(tournamentId,dayIndex){
+
+expandedTournamentDay[tournamentId]=(expandedTournamentDay[tournamentId]===dayIndex) ? -1 : dayIndex;
+
+if(lastRenderedTournament && lastRenderedTournament.id===tournamentId){
+document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(lastRenderedTournament);
+}
+
+}
+
+function tournamentRoundButtonHtml(t,myEntry,i,label){
+
+let played=myEntry.scores[i]!==null;
+let roundLabel=label+(played?" ✓":"");
+
+return "<button class=\"td-btn-green\" "+(played?"disabled":"")+" onclick=\"playTournamentRound('"+t.id+"',"+i+")\"><span>"+roundLabel+"</span>"+(played?"":"<span class=\"td-play-icon\">▶</span>")+"</button>";
+
+}
+
+function buildTournamentLeftHtml(t){
 
 let expired=Date.now()>t.expiresAtMillis;
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 let iJoined=!!myEntry;
-
-let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.totalScore; });
 
 let remainingMs=t.expiresAtMillis-Date.now();
 let remainingDays=0,remainingHours=0,remainingMinutes=0;
@@ -6544,18 +6585,67 @@ if(iJoined && !expired){
 
 leftHtml+="<button class=\"td-btn-purple\" onclick=\"openTournamentInvite('"+t.id+"')\"><span>Arkadaş<br>Davet Et</span><span class=\"td-play-icon\">👤+</span></button>";
 
+let dayInfo=tournamentDayInfo(t);
+
+if(!dayInfo){
+
 for(let i=0;i<t.format;i++){
+let label=t.format===1 ? "Oyna" : (i+1)+". Oyun";
+leftHtml+=tournamentRoundButtonHtml(t,myEntry,i,label);
+}
 
-let played=myEntry.scores[i]!==null;
-let roundLabel=t.format===1 ? (played?"Oynadın":"Oyna") : (i+1)+". Oyun"+(played?" ✓":"");
+}
+else{
 
-leftHtml+="<button class=\"td-btn-green\" "+(played?"disabled":"")+" onclick=\"playTournamentRound('"+t.id+"',"+i+")\"><span>"+roundLabel+"</span>"+(played?"":"<span class=\"td-play-icon\">▶</span>")+"</button>";
+if(expandedTournamentDay[t.id]===undefined){
+expandedTournamentDay[t.id]=Math.min(Math.max(dayInfo.currentDay,0),dayInfo.days-1);
+}
+
+for(let d=0;d<dayInfo.days;d++){
+
+let first=d*dayInfo.perDay;
+let unlocked=d<=dayInfo.currentDay;
+let allPlayed=true;
+
+for(let j=0;j<dayInfo.perDay;j++){
+if(myEntry.scores[first+j]===null)allPlayed=false;
+}
+
+let cls=!unlocked ? "locked" : (allPlayed ? "played" : "playable");
+let icon=!unlocked ? "🔒" : (allPlayed ? "✓" : String(d+1));
+
+leftHtml+="<button class=\"td-day-card "+cls+"\" "+(unlocked ? "onclick=\"toggleTournamentDay('"+t.id+"',"+d+")\"" : "disabled")+"><div class=\"td-day-icon-circle\">"+icon+"</div><div class=\"td-day-label\">"+(d+1)+". Gün</div></button>";
+
+if(unlocked && expandedTournamentDay[t.id]===d){
+for(let j=0;j<dayInfo.perDay;j++){
+leftHtml+=tournamentRoundButtonHtml(t,myEntry,first+j,(j+1)+". Oyun");
+}
+}
+
+}
 
 }
 
 }
 
-document.getElementById("tournamentDetailContent").innerHTML=leftHtml;
+return leftHtml;
+
+}
+
+
+function renderTournamentDetail(t){
+
+document.getElementById("tournamentDetailTitle").innerHTML=t.name ? ("🏆 "+t.name) : ((t.visibility==="public"?"🌍 ":"🔒 ")+t.creatorUsername+"'in Turnuvası");
+
+let expired=Date.now()>t.expiresAtMillis;
+let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
+let iJoined=!!myEntry;
+
+let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.totalScore; });
+
+lastRenderedTournament=t;
+
+document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(t);
 
 let boardHtml="";
 
@@ -6652,6 +6742,11 @@ let round=t.rounds[roundIndex];
 
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 if(!myEntry)return;
+
+if(!isTournamentRoundUnlocked(t,roundIndex)){
+alert("Bu günün oyunları henüz açılmadı.");
+return;
+}
 
 let startedAts=myEntry.startedAts || new Array(t.format).fill(null);
 let progresses=myEntry.progresses || new Array(t.format).fill(null);
@@ -8061,7 +8156,8 @@ html+="</div>";
 else{
 
 let myEntry=participants.find(function(p){ return p.uid===me; });
-let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s){ return s===null; }) : -1;
+let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s,i){ return s===null && isTournamentRoundUnlocked(t,i); }) : -1;
+let hasLockedLeft=myEntry ? myEntry.scores.some(function(s,i){ return s===null && !isTournamentRoundUnlocked(t,i); }) : false;
 let myUnreadCount=(t.unreadCounts && t.unreadCounts[me]) || 0;
 
 html+="<div class=\"oy-actions\">";
@@ -8072,7 +8168,7 @@ if(nextRoundIndex!==-1){
 html+="<button class=\"oy-btn oy-btn-play\" onclick=\"playTournamentRound('"+t.id+"',"+nextRoundIndex+")\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
 }
 else{
-html+="<button class=\"oy-btn oy-btn-play\" disabled><i class=\"fa-solid fa-check\"></i> Oynadın</button>";
+html+="<button class=\"oy-btn oy-btn-play\" disabled><i class=\"fa-solid fa-check\"></i> "+(hasLockedLeft ? "Bugün tamam" : "Oynadın")+"</button>";
 }
 }
 
@@ -12176,6 +12272,8 @@ badge.style.display="none";
 }
 
 
+let oyTournamentCounts={ongoing:0,past:0,invite:0};
+
 function updateChallengeBadge(){
 
 if(!currentUser)return;
@@ -12234,9 +12332,9 @@ let count=item.mySide==="from" ? (c.fromUnreadCount||0) : (c.toUnreadCount||0);
 return sum+(count>0 ? 1 : 0);
 },0);
 
-let ongoingTotal=ongoingActionCount+ongoingUnread;
-let istekTotal=pendingCount;
-let oyunlarimTotal=oyunlarimUnread;
+let ongoingTotal=ongoingActionCount+ongoingUnread+(oyTournamentCounts.ongoing||0);
+let istekTotal=pendingCount+(oyTournamentCounts.invite||0);
+let oyunlarimTotal=oyunlarimUnread+(oyTournamentCounts.past||0);
 let homeTotal=ongoingTotal+istekTotal+oyunlarimTotal;
 
 let homeBadge=document.getElementById("historyBadge");
@@ -15498,7 +15596,20 @@ fetchPromises.push(
 db.collection("tournaments").doc(tournamentId).get().then(function(tDoc){
 
 if(tDoc.exists){
-liveTournamentsData[tournamentId]=Object.assign({id:tDoc.id},tDoc.data());
+
+let oldT=liveTournamentsData[tournamentId];
+let newT=Object.assign({id:tDoc.id},tDoc.data());
+
+let wasInvited=!!(oldT && oldT.invitedUsernames && oldT.invitedUsernames.includes(currentUser.username));
+let isInvitedNow=!!(newT.invitedUsernames && newT.invitedUsernames.includes(currentUser.username)) && !(newT.participantUids && newT.participantUids.includes(currentUser.uid));
+
+if(isInvitedNow && !wasInvited && Date.now()<=newT.expiresAtMillis){
+let inviter=(newT.inviteSources && newT.inviteSources[currentUser.username]) || newT.creatorUsername || "Bir arkadaşın";
+showTopNotification("🏆 "+inviter+" seni "+(newT.name ? "\""+newT.name+"\" turnuvasına" : "bir turnuvaya")+" davet etti!");
+}
+
+liveTournamentsData[tournamentId]=newT;
+
 }
 else{
 delete liveTournamentsData[tournamentId];
@@ -15588,17 +15699,21 @@ if(unreadForMe>0)ongoingCount+=1;
 let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
 if(!myEntry)return;
 
-let hasUnplayed=myEntry.scores.some(function(s){ return s===null; });
+let hasUnplayed=myEntry.scores.some(function(s,i){ return s===null && isTournamentRoundUnlocked(t,i); });
 if(hasUnplayed)ongoingCount++;
 
 });
 
 }
 
+// Özel turnuvalar artık Oyunlarım'da sayılır
+oyTournamentCounts={ongoing:ongoingCount,past:pastUnreadCount,invite:inviteCount};
+updateChallengeBadge();
+
 ongoingCount+=tournamentExtraOngoingCount||0;
 let pastCount=(tournamentExtraPastCount||0)+pastUnreadCount;
 
-let homeTotal=ongoingCount+pastCount+inviteCount;
+let homeTotal=(tournamentExtraOngoingCount||0)+(tournamentExtraPastCount||0);
 
 setBadgeVisibility("tournamentBadge",homeTotal);
 setBadgeVisibility("tournamentOngoingBadge",ongoingCount);
