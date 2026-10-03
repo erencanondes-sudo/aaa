@@ -1263,6 +1263,10 @@ button{
     transition:transform 0.28s cubic-bezier(0.22,0.61,0.36,1);
 }
 
+.oy-tour-list:empty{display:none;}
+/* Turnuva varsa düello listesinin "oyun yok" yazısını gizle */
+.oy-tour-list:not(:empty) + div > p:only-child{display:none;}
+
 .history-tab-panel{
     width:33.3333%;
     flex-shrink:0;
@@ -2907,6 +2911,8 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     z-index:10;
 }
 
+#historyScreen .oy-panel-wrap,
+#historyScreen .oy-tour-list,
 #historyScreen #ongoingList,
 #historyScreen #historyList,
 #historyScreen #challengesList,
@@ -4083,9 +4089,9 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div class="history-tabs-viewport" id="historyTabsViewport">
 <div class="history-tabs-track animated" id="historyTabsTrack">
-<div class="history-tab-panel" id="ongoingList"></div>
-<div class="history-tab-panel" id="historyList"></div>
-<div class="history-tab-panel" id="challengesList"></div>
+<div class="history-tab-panel oy-panel-wrap"><div class="oy-tour-list" id="oyTourOngoing"></div><div id="ongoingList"></div></div>
+<div class="history-tab-panel oy-panel-wrap"><div class="oy-tour-list" id="oyTourPast"></div><div id="historyList"></div></div>
+<div class="history-tab-panel oy-panel-wrap"><div class="oy-tour-list" id="oyTourInvites"></div><div id="challengesList"></div></div>
 </div>
 </div>
 
@@ -4543,6 +4549,7 @@ if(historyScreenEl && historyScreenEl.style.display!=="none"){
 renderOngoingList();
 renderHistoryList();
 renderChallengesList();
+renderOyunlarimTournaments();
 }
 
 let tournamentScreenEl=document.getElementById("tournamentScreen");
@@ -7999,6 +8006,127 @@ console.error("Davet gönderilemedi:",e);
 }
 
 
+/* ===== OYUNLARIM: TURNUVALAR (düellodan çevrilenler dahil) ===== */
+function buildOyTournamentCard(t,isPast,isInviteTab){
+
+let me=currentUser.uid;
+let participants=t.participants || [];
+let duelLike=!!t.fromChallengeId && participants.length<=2 && !isInviteTab;
+
+let html="";
+let lpType=isPast ? "tournament-past" : (isInviteTab ? "tournament-invite" : "tournament-ongoing");
+let remainingHours=Math.max(0,Math.floor((t.expiresAtMillis-Date.now())/3600000));
+
+html+="<div class=\"oy-card\" data-lp-id=\""+t.id+"\" data-lp-type=\""+lpType+"\">";
+html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">"+(duelLike ? "⚔️" : "🏆")+"</span></div></div>";
+html+="<div class=\"oy-content\">";
+html+="<div class=\"oy-card-header\">";
+
+if(duelLike){
+
+// 2 oyuncu varken düello gibi göster: rakibin adı ve avatarı
+let opp=participants.find(function(p){ return p.uid!==me; });
+let oppName=opp ? opp.username : ((t.invitedUsernames||[]).find(function(u){ return u!==currentUser.username; }) || "Rakip");
+let oppAvatar=opp ? opp.avatarEmoji : "👤";
+
+html+="<div class=\"oy-avatar\">"+avatarHtml(oppAvatar)+"</div>";
+html+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+oppName+"','oyunlarim')\">"+oppName+"</span></div>";
+html+="<span class=\"oy-status\">"+t.format+" oyun"+(isPast ? "" : " ⏳ "+remainingHours+" saat")+"</span>";
+
+}
+else{
+
+let title=t.name || (t.creatorUsername+"'in Turnuvası");
+
+html+="<div class=\"oy-avatar\">🏆</div>";
+html+="<div class=\"oy-user-info\"><span class=\"oy-username\">"+title+"</span></div>";
+html+="<span class=\"oy-status\">"+participants.length+" oyuncu · "+t.format+" oyun"+(isPast||isInviteTab ? "" : " ⏳ "+remainingHours+" saat")+"</span>";
+
+}
+
+html+="</div>";
+
+if(isInviteTab){
+
+let invitedBy=(t.inviteSources && t.inviteSources[currentUser.username]) ? t.inviteSources[currentUser.username] : null;
+
+if(invitedBy){
+html+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;margin-bottom:8px;\">"+invitedBy+" seni turnuvaya davet etti.</div>";
+}
+
+html+="<div class=\"oy-actions\">";
+html+="<button class=\"oy-btn oy-btn-accept\" onclick=\"joinTournament('"+t.id+"')\"><i class=\"fa-solid fa-trophy\"></i> Katıl</button>";
+html+="<button class=\"oy-btn oy-btn-decline\" onclick=\"declineTournamentInvite('"+t.id+"',this)\"><i class=\"fa-solid fa-xmark\"></i> Reddet</button>";
+html+="</div>";
+
+}
+else{
+
+let myEntry=participants.find(function(p){ return p.uid===me; });
+let nextRoundIndex=myEntry ? myEntry.scores.findIndex(function(s){ return s===null; }) : -1;
+let myUnreadCount=(t.unreadCounts && t.unreadCounts[me]) || 0;
+
+html+="<div class=\"oy-actions\">";
+html+="<button class=\"oy-btn oy-btn-view\" onclick=\"hideAllScreens();document.getElementById('tournamentDetailScreen').style.display='block';viewTournament('"+t.id+"');\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+
+if(!isPast){
+if(nextRoundIndex!==-1){
+html+="<button class=\"oy-btn oy-btn-play\" onclick=\"playTournamentRound('"+t.id+"',"+nextRoundIndex+")\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
+}
+else{
+html+="<button class=\"oy-btn oy-btn-play\" disabled><i class=\"fa-solid fa-check\"></i> Oynadın</button>";
+}
+}
+
+html+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openTournamentChat('"+t.id+"')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" style=\""+(myUnreadCount>0 ? "" : "display:none;")+"\">"+myUnreadCount+"</span></button>";
+html+="</div>";
+
+}
+
+html+="</div>";
+html+="</div>";
+
+return html;
+
+}
+
+
+function renderOyunlarimTournaments(){
+
+let ongoingEl=document.getElementById("oyTourOngoing");
+let pastEl=document.getElementById("oyTourPast");
+let inviteEl=document.getElementById("oyTourInvites");
+
+if(!ongoingEl || !currentUser || !currentUser.uid)return;
+
+if(!navigator.onLine || !liveTournamentsData){
+ongoingEl.innerHTML="";
+pastEl.innerHTML="";
+inviteEl.innerHTML="";
+return;
+}
+
+let now=Date.now();
+
+let all=Object.values(liveTournamentsData).filter(function(t){ return t && !isTournamentHiddenLocally(t.id); });
+
+let mine=all.filter(function(t){ return t.participantUids && t.participantUids.includes(currentUser.uid); });
+let myIds=new Set(mine.map(function(t){ return t.id; }));
+
+let ongoing=mine.filter(function(t){ return now<=t.expiresAtMillis; });
+let past=mine.filter(function(t){ return now>t.expiresAtMillis; });
+let invites=all.filter(function(t){ return t.invitedUsernames && t.invitedUsernames.includes(currentUser.username) && !myIds.has(t.id) && now<=t.expiresAtMillis; });
+
+ongoing.sort(function(a,b){ return a.expiresAtMillis-b.expiresAtMillis; });
+past.sort(function(a,b){ return b.expiresAtMillis-a.expiresAtMillis; });
+
+ongoingEl.innerHTML=ongoing.map(function(t){ return buildOyTournamentCard(t,false,false); }).join("");
+pastEl.innerHTML=past.slice(0,20).map(function(t){ return buildOyTournamentCard(t,true,false); }).join("");
+inviteEl.innerHTML=invites.map(function(t){ return buildOyTournamentCard(t,false,true); }).join("");
+
+}
+
+
 function renderTournamentLists(){
 
 let ongoingEl=document.getElementById("tournamentOngoingList");
@@ -9171,6 +9299,7 @@ if(historyScreenEl && historyScreenEl.style.display!=="none"){
 renderOngoingList(true);
 renderHistoryList(true);
 renderChallengesList(true);
+renderOyunlarimTournaments();
 }
 
 }
@@ -9609,6 +9738,7 @@ contentEl.innerHTML="<div class=\"oy-card-header\"><div class=\"oy-user-info\"><
 setTimeout(function(){
 delete delayedAcceptedChallengeIds[id];
 renderChallengesList();
+renderOyunlarimTournaments();
 },10000);
 
 }
@@ -9624,6 +9754,7 @@ updateChallengeBadge();
 }
 else{
 renderChallengesList();
+renderOyunlarimTournaments();
 renderOngoingList();
 updateChallengeBadge();
 }
@@ -11299,6 +11430,7 @@ document.getElementById("tabChallengesBtn").classList.remove("active");
 renderOngoingList();
 renderHistoryList();
 renderChallengesList();
+renderOyunlarimTournaments();
 
 }
 
@@ -15155,6 +15287,7 @@ if(historyScreenEl && historyScreenEl.style.display!=="none"){
 renderOngoingList(true);
 renderHistoryList(true);
 renderChallengesList(true);
+renderOyunlarimTournaments();
 }
 
 },300);
@@ -15415,6 +15548,7 @@ console.error("Turnuva okunamadı:",tournamentId,e);
 function afterFetch(){
 
 updateTournamentBadge();
+renderOyunlarimTournaments();
 
 let tournamentScreenEl=document.getElementById("tournamentScreen");
 if(tournamentScreenEl && tournamentScreenEl.style.display!=="none"){
@@ -16854,6 +16988,7 @@ let refreshHistoryLists=function(){
 renderOngoingList(true);
 renderHistoryList(true);
 renderChallengesList(true);
+renderOyunlarimTournaments();
 updateChallengeBadge();
 restoreScrollTop();
 };
