@@ -3256,6 +3256,26 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 /* Gün kartları: gölgesiz; seçili gün mor dış çizgiyle */
 #tournamentDetailScreen .td-day-card.td-day-plain{box-shadow:none !important;}
 #tournamentDetailScreen .td-days-tight{gap:4px;}
+/* Özel turnuva üst satırı: süre kartı | Arkadaş Ekle | turuncu kart (sütunlar alttaki satırla hizalı) */
+#tournamentDetailScreen .td-top-row:empty{display:none;}
+#tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.7fr 2.3fr;gap:10px;align-items:stretch;margin-bottom:10px;}
+#tournamentDetailScreen .td-top-right{display:flex;gap:10px;}
+#tournamentDetailScreen .td-top-card{
+    flex:1;
+    min-width:0;
+    border:0;
+    border-radius:16px;
+    color:#fff;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:800;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    box-sizing:border-box;
+}
+#tournamentDetailScreen .td-top-card-icon{font-size:20px;}
+#tournamentDetailScreen .td-top-invite{background:linear-gradient(135deg,#8a2be2,#4b0082);cursor:pointer;}
+#tournamentDetailScreen .td-top-invite:active{transform:translateY(2px);}
+#tournamentDetailScreen .td-top-orange{background:linear-gradient(135deg,#f8a83c,#ea6c1c);}
 #tournamentDetailScreen .td-day-card.td-day-game{width:84%;}
 
 #tournamentDetailScreen .td-days-list, #challengeDetailScreen .td-days-list{display:flex;flex-direction:column;gap:8px;}
@@ -4194,6 +4214,8 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div id="tournamentDetailScreen" style="display:none;">
 
 <div class="td-header-title" id="tournamentDetailTitle" style="display:none;">Turnuva</div>
+
+<div class="td-top-row" id="tournamentTopRow"></div>
 
 <div class="td-grid-row">
 <div class="td-left-column" id="tournamentDetailContent"></div>
@@ -6485,6 +6507,7 @@ console.error("Turnuva oluşturulamadı:",e);
 function viewTournament(tournamentId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
 
 if(tournamentChatUnsubscribe){
 tournamentChatUnsubscribe();
@@ -6553,11 +6576,10 @@ return "<button class=\"td-btn-green\" "+(played?"disabled":"")+" onclick=\"play
 
 }
 
-function buildTournamentLeftHtml(t){
+function buildTournamentTopRowHtml(t){
 
 let expired=Date.now()>t.expiresAtMillis;
-let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
-let iJoined=!!myEntry;
+let iJoined=t.participants.some(function(p){ return p.uid===currentUser.uid; });
 
 let remainingMs=t.expiresAtMillis-Date.now();
 let remainingDays=0,remainingHours=0,remainingMinutes=0;
@@ -6568,21 +6590,41 @@ remainingHours=Math.floor((remainingMs%86400000)/3600000);
 remainingMinutes=Math.floor((remainingMs%3600000)/60000);
 }
 
-let leftHtml="";
-
-leftHtml+="<div class=\"td-card td-timer-card\">";
-leftHtml+="<span class=\"td-trophy-icon\">🏆</span>";
-leftHtml+="<span class=\"td-timer-subtitle\">"+t.format+" oyunluk</span>";
+let html="<div class=\"td-card td-timer-card\">";
+html+="<span class=\"td-trophy-icon\">🏆</span>";
+html+="<span class=\"td-timer-subtitle\">"+t.format+" oyunluk</span>";
 
 if(expired){
-leftHtml+="<span class=\"td-timer-title\">Sona erdi</span>";
+html+="<span class=\"td-timer-title\">Sona erdi</span>";
 }
 else{
-leftHtml+="<span class=\"td-timer-title\">Kalan süre</span>";
-leftHtml+="<div class=\"td-timer-clock\">"+remainingDays+"<span class=\"td-timer-unit\">gün</span> "+remainingHours+"<span class=\"td-timer-unit\">saat</span> "+remainingMinutes+"<span class=\"td-timer-unit\">dk</span></div>";
+html+="<span class=\"td-timer-title\">Kalan süre</span>";
+html+="<div class=\"td-timer-clock\">"+remainingDays+"<span class=\"td-timer-unit\">gün</span> "+remainingHours+"<span class=\"td-timer-unit\">saat</span> "+remainingMinutes+"<span class=\"td-timer-unit\">dk</span></div>";
 }
 
-leftHtml+="</div>";
+html+="</div>";
+
+html+="<div class=\"td-top-right\">";
+
+if(iJoined && !expired){
+html+="<button class=\"td-top-card td-top-invite\" onclick=\"openTournamentInvite('"+t.id+"')\"><span class=\"td-top-card-icon\">👤+</span><span>Arkadaş Ekle</span></button>";
+}
+
+// Turuncu kart: şimdilik boş, içi sonra doldurulacak
+html+="<div class=\"td-top-card td-top-orange\"></div>";
+html+="</div>";
+
+return html;
+
+}
+
+function buildTournamentLeftHtml(t){
+
+let expired=Date.now()>t.expiresAtMillis;
+let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
+let iJoined=!!myEntry;
+
+let leftHtml="";
 
 if(!iJoined && !expired){
 leftHtml+="<button class=\"td-btn-green\" onclick=\"joinTournament('"+t.id+"')\"><span>Katıl</span><span class=\"td-play-icon\">🏆</span></button>";
@@ -6648,8 +6690,6 @@ leftHtml+="</div>";
 
 }
 
-
-leftHtml+="<button class=\"td-btn-purple td-btn-row\" onclick=\"openTournamentInvite('"+t.id+"')\"><span>Arkadaş<br>Davet Et</span><span class=\"td-play-icon\">👤+</span></button>";
 }
 
 return leftHtml;
@@ -6669,6 +6709,7 @@ let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.tota
 
 lastRenderedTournament=t;
 
+document.getElementById("tournamentTopRow").innerHTML=buildTournamentTopRowHtml(t);
 document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(t);
 
 let boardHtml="";
@@ -6994,6 +7035,7 @@ return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
 function viewPastWeeklyTournament(weekId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
 
 updateWeeklySeenStatus(weekId);
 
@@ -7206,6 +7248,7 @@ applyTournamentStatusBadges();
 function viewPastDailyTournament(dayId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
 
 updateDailySeenStatus(dayId);
 
@@ -7448,6 +7491,7 @@ showDetail(updatedT);
 function viewDailyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
 
 let dayId=getCurrentDayId();
 
@@ -7715,6 +7759,7 @@ showDetail(updatedT);
 function viewWeeklyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
 
 let weekId=getCurrentWeekId();
 
