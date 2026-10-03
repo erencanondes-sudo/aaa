@@ -3255,12 +3255,9 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-btn-row, #challengeDetailScreen .td-btn-row{flex-direction:row;gap:8px;min-height:44px;padding:7px 8px;}
 /* Gün kartları: gölgesiz; seçili gün mor dış çizgiyle */
 #tournamentDetailScreen .td-day-card.td-day-plain{box-shadow:none !important;}
-#tournamentDetailScreen .td-right-column{min-width:0;}
-/* Seçili günün oyunları (sohbetin altında) */
-#tournamentDetailScreen .td-day-games:empty{display:none;}
-#tournamentDetailScreen .td-day-games{margin-top:10px;}
-#tournamentDetailScreen .td-day-games .td-section-title{margin-bottom:8px;padding-left:6px;}
-#tournamentDetailScreen .td-day-games-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#tournamentDetailScreen .td-days-tight{gap:4px;}
+#tournamentDetailScreen .td-day-card.td-day-game{width:84%;}
+
 #tournamentDetailScreen .td-days-list, #challengeDetailScreen .td-days-list{display:flex;flex-direction:column;gap:8px;}
 #tournamentDetailScreen .td-day-card, #challengeDetailScreen .td-day-card{
     width:92%;
@@ -4200,10 +4197,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div class="td-grid-row">
 <div class="td-left-column" id="tournamentDetailContent"></div>
-<div class="td-right-column">
 <div class="td-chat-card" id="tournamentSidePanel"></div>
-<div class="td-day-games" id="tournamentDayGames"></div>
-</div>
 </div>
 
 <div class="td-leaderboard-section" id="tournamentLeaderboardSection"></div>
@@ -6491,7 +6485,6 @@ console.error("Turnuva oluşturulamadı:",e);
 function viewTournament(tournamentId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
-document.getElementById("tournamentDayGames").innerHTML="";
 
 if(tournamentChatUnsubscribe){
 tournamentChatUnsubscribe();
@@ -6547,7 +6540,6 @@ expandedTournamentDay[tournamentId]=(expandedTournamentDay[tournamentId]===dayIn
 
 if(lastRenderedTournament && lastRenderedTournament.id===tournamentId){
 document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(lastRenderedTournament);
-document.getElementById("tournamentDayGames").innerHTML=buildTournamentDayGamesHtml(lastRenderedTournament);
 }
 
 }
@@ -6558,28 +6550,6 @@ let played=myEntry.scores[i]!==null;
 let roundLabel=label+(played?" ✓":"");
 
 return "<button class=\"td-btn-green\" "+(played?"disabled":"")+" onclick=\"playTournamentRound('"+t.id+"',"+i+")\"><span>"+roundLabel+"</span>"+(played?"":"<span class=\"td-play-icon\">▶</span>")+"</button>";
-
-}
-
-function buildTournamentDayGamesHtml(t){
-
-let dayInfo=tournamentDayInfo(t);
-let myEntry=t.participants.find(function(p){ return p.uid===currentUser.uid; });
-
-if(!dayInfo || !myEntry || Date.now()>t.expiresAtMillis)return "";
-
-let d=expandedTournamentDay[t.id];
-if(d===undefined || d<0 || d>dayInfo.currentDay)return "";
-
-let html="<div class=\"td-section-title\">"+(d+1)+". GÜN OYUNLARI</div><div class=\"td-day-games-grid\">";
-
-for(let j=0;j<dayInfo.perDay;j++){
-html+=tournamentRoundButtonHtml(t,myEntry,d*dayInfo.perDay+j,(j+1)+". Oyun");
-}
-
-html+="</div>";
-
-return html;
 
 }
 
@@ -6638,6 +6608,8 @@ if(expandedTournamentDay[t.id]===undefined){
 expandedTournamentDay[t.id]=Math.min(Math.max(dayInfo.currentDay,0),dayInfo.days-1);
 }
 
+leftHtml+="<div class=\"td-days-list td-days-tight\">";
+
 for(let d=0;d<dayInfo.days;d++){
 
 let first=d*dayInfo.perDay;
@@ -6653,9 +6625,27 @@ let icon=!unlocked ? "🔒" : (allPlayed ? "✓" : String(d+1));
 
 let selected=unlocked && expandedTournamentDay[t.id]===d;
 
-leftHtml+="<button class=\"td-day-card td-day-plain "+cls+(selected ? " selected" : "")+"\" "+(unlocked ? "onclick=\"toggleTournamentDay('"+t.id+"',"+d+")\"" : "disabled")+"><div class=\"td-day-icon-circle\">"+icon+"</div><div class=\"td-day-label\">"+(d+1)+". Gün</div></button>";
+leftHtml+="<button class=\"td-day-card td-day-plain "+cls+"\" "+(unlocked ? "onclick=\"toggleTournamentDay('"+t.id+"',"+d+")\"" : "disabled")+"><div class=\"td-day-icon-circle\">"+icon+"</div><div class=\"td-day-label\">"+(d+1)+". Gün</div></button>";
+
+if(selected){
+for(let j=0;j<dayInfo.perDay;j++){
+
+let idx=first+j;
+let played=myEntry.scores[idx]!==null;
+
+if(played){
+leftHtml+="<button class=\"td-day-card td-day-plain played td-day-game\" disabled><div class=\"td-day-icon-circle\">✓</div><div class=\"td-day-label\">"+(j+1)+". Oyun</div></button>";
+}
+else{
+leftHtml+="<button class=\"td-day-card td-day-plain playable td-day-game\" onclick=\"playTournamentRound('"+t.id+"',"+idx+")\"><div class=\"td-day-icon-circle\"><div class=\"td-day-triangle\"></div></div><div class=\"td-day-label\">"+(j+1)+". Oyun</div></button>";
+}
 
 }
+}
+
+}
+
+leftHtml+="</div>";
 
 }
 
@@ -6679,7 +6669,6 @@ let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.tota
 lastRenderedTournament=t;
 
 document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(t);
-document.getElementById("tournamentDayGames").innerHTML=buildTournamentDayGamesHtml(t);
 
 let boardHtml="";
 
@@ -7004,7 +6993,6 @@ return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
 function viewPastWeeklyTournament(weekId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
-document.getElementById("tournamentDayGames").innerHTML="";
 
 updateWeeklySeenStatus(weekId);
 
@@ -7217,7 +7205,6 @@ applyTournamentStatusBadges();
 function viewPastDailyTournament(dayId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
-document.getElementById("tournamentDayGames").innerHTML="";
 
 updateDailySeenStatus(dayId);
 
@@ -7460,7 +7447,6 @@ showDetail(updatedT);
 function viewDailyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
-document.getElementById("tournamentDayGames").innerHTML="";
 
 let dayId=getCurrentDayId();
 
@@ -7728,7 +7714,6 @@ showDetail(updatedT);
 function viewWeeklyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
-document.getElementById("tournamentDayGames").innerHTML="";
 
 let weekId=getCurrentWeekId();
 
