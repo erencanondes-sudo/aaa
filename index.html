@@ -3253,17 +3253,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-play-icon, #challengeDetailScreen .td-play-icon{font-size:16px;}
 /* Davet butonu: ikon yazının sağında, daha kısa */
 #tournamentDetailScreen .td-btn-row, #challengeDetailScreen .td-btn-row{flex-direction:row;gap:8px;min-height:44px;padding:7px 8px;}
-/* Gün kartları: dolgusuz, çerçeveli */
-#tournamentDetailScreen .td-day-card.td-day-plain{background:transparent;box-shadow:none;border:1.5px solid rgba(255,255,255,.25);opacity:1;}
-#tournamentDetailScreen .td-day-card.td-day-plain.playable{border-color:#35b233;}
-#tournamentDetailScreen .td-day-card.td-day-plain.played{border-color:rgba(53,178,51,.45);}
-#tournamentDetailScreen .td-day-card.td-day-plain.selected{border-width:2.5px;border-color:#6c3fd1;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain{color:#192a56;border-color:#d5dce8;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain.playable{border-color:#35b233;color:#1f8f3a;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain.played{border-color:#b9e3bd;color:#64748b;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain.locked{background:transparent;color:#94a3b8;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain.selected{border-color:#6c3fd1;color:#6c3fd1;}
-body:not(.dark-mode) #tournamentDetailScreen .td-day-card.td-day-plain .td-day-icon-circle{background:#eef2f7;}
+/* Gün kartları: gölgesiz; seçili gün mor dış çizgiyle */
+#tournamentDetailScreen .td-day-card.td-day-plain{box-shadow:none;}
+#tournamentDetailScreen .td-day-card.td-day-plain.selected{outline:2.5px solid #6c3fd1;outline-offset:2px;}
+#tournamentDetailScreen .td-right-column{min-width:0;}
 /* Seçili günün oyunları (sohbetin altında) */
 #tournamentDetailScreen .td-day-games:empty{display:none;}
 #tournamentDetailScreen .td-day-games{margin-top:10px;}
@@ -4207,10 +4200,11 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div class="td-grid-row">
 <div class="td-left-column" id="tournamentDetailContent"></div>
+<div class="td-right-column">
 <div class="td-chat-card" id="tournamentSidePanel"></div>
-</div>
-
 <div class="td-day-games" id="tournamentDayGames"></div>
+</div>
+</div>
 
 <div class="td-leaderboard-section" id="tournamentLeaderboardSection"></div>
 
