@@ -6590,7 +6590,6 @@ leftHtml+="<button class=\"td-btn-green\" onclick=\"joinTournament('"+t.id+"')\"
 
 if(iJoined && !expired){
 
-leftHtml+="<button class=\"td-btn-purple td-btn-row\" onclick=\"openTournamentInvite('"+t.id+"')\"><span>Arkadaş<br>Davet Et</span><span class=\"td-play-icon\">👤+</span></button>";
 
 let dayInfo=tournamentDayInfo(t);
 
@@ -6649,6 +6648,8 @@ leftHtml+="</div>";
 
 }
 
+
+leftHtml+="<button class=\"td-btn-purple td-btn-row\" onclick=\"openTournamentInvite('"+t.id+"')\"><span>Arkadaş<br>Davet Et</span><span class=\"td-play-icon\">👤+</span></button>";
 }
 
 return leftHtml;
