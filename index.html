@@ -3258,9 +3258,11 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-days-tight{gap:4px;}
 /* Özel turnuva üst satırı: süre kartı | Arkadaş Ekle | turuncu kart (sütunlar alttaki satırla hizalı) */
 #tournamentDetailScreen .td-top-row:empty{display:none;}
-#tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.95fr 2.05fr;gap:10px;align-items:stretch;margin-bottom:10px;}
+#tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.82fr 2.18fr;gap:10px;align-items:stretch;margin-bottom:10px;}
 /* Özel turnuvada sol sütun (günler) daha geniş, sohbet biraz daha dar */
-#tournamentDetailScreen.td-custom .td-grid-row{grid-template-columns:0.95fr 2.05fr;}
+#tournamentDetailScreen.td-custom .td-grid-row{grid-template-columns:0.82fr 2.18fr;}
+/* Gün ve oyun yazıları butonun ortasında (soldaki ikon kadar sağdan pay bırakılır) */
+#tournamentDetailScreen .td-day-card.td-day-plain .td-day-label{text-align:center;margin-right:23px;}
 #tournamentDetailScreen .td-top-right{display:flex;gap:10px;}
 #tournamentDetailScreen .td-top-card{
     flex:1;
