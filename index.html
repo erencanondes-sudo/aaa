@@ -3258,7 +3258,9 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-days-tight{gap:4px;}
 /* Özel turnuva üst satırı: süre kartı | Arkadaş Ekle | turuncu kart (sütunlar alttaki satırla hizalı) */
 #tournamentDetailScreen .td-top-row:empty{display:none;}
-#tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.7fr 2.3fr;gap:10px;align-items:stretch;margin-bottom:10px;}
+#tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.95fr 2.05fr;gap:10px;align-items:stretch;margin-bottom:10px;}
+/* Özel turnuvada sol sütun (günler) daha geniş, sohbet biraz daha dar */
+#tournamentDetailScreen.td-custom .td-grid-row{grid-template-columns:0.95fr 2.05fr;}
 #tournamentDetailScreen .td-top-right{display:flex;gap:10px;}
 #tournamentDetailScreen .td-top-card{
     flex:1;
@@ -6508,6 +6510,7 @@ function viewTournament(tournamentId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
 document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
 
 if(tournamentChatUnsubscribe){
 tournamentChatUnsubscribe();
@@ -6709,6 +6712,7 @@ let sorted=t.participants.slice().sort(function(a,b){ return b.totalScore-a.tota
 
 lastRenderedTournament=t;
 
+document.getElementById("tournamentDetailScreen").classList.add("td-custom");
 document.getElementById("tournamentTopRow").innerHTML=buildTournamentTopRowHtml(t);
 document.getElementById("tournamentDetailContent").innerHTML=buildTournamentLeftHtml(t);
 
@@ -7036,6 +7040,7 @@ function viewPastWeeklyTournament(weekId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
 document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
 
 updateWeeklySeenStatus(weekId);
 
@@ -7249,6 +7254,7 @@ function viewPastDailyTournament(dayId){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
 document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
 
 updateDailySeenStatus(dayId);
 
@@ -7492,6 +7498,7 @@ function viewDailyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
 document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
 
 let dayId=getCurrentDayId();
 
@@ -7760,6 +7767,7 @@ function viewWeeklyTournament(){
 
 document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
 document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
 
 let weekId=getCurrentWeekId();
 
