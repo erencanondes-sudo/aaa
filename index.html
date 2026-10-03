@@ -3358,6 +3358,33 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-score-info, #challengeDetailScreen .td-score-info{text-align:right;font-size:max(9.5px, calc(7px / var(--k)));color:#7b8fae;flex:none;padding-left:6px;}
 #tournamentDetailScreen .td-score-number, #challengeDetailScreen .td-score-number{font-size:15px;font-weight:800;color:#fff;}
 
+
+/* ===== TURNUVA DETAY - AÇIK TEMA (koyu mod kapalıyken koyu temanın üzerine yazar) ===== */
+body:not(.dark-mode) .game:has(#tournamentDetailScreen[style*="display: block"]){background:#ebeef5;}
+body:not(.dark-mode) #tournamentDetailScreen{color:#192a56;}
+body:not(.dark-mode) #tournamentDetailScreen .td-header-icon{background:#fff;color:#5b3bd6;box-shadow:0 2px 6px rgba(25,40,80,.08);border:1px solid #e6eaf2;}
+body:not(.dark-mode) #tournamentDetailScreen .td-card,
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-card,
+body:not(.dark-mode) #tournamentDetailScreen .td-leaderboard-item{background:#fff;border:1px solid #e6eaf2;box-shadow:0 4px 12px rgba(25,40,80,.06);}
+body:not(.dark-mode) #tournamentDetailScreen .td-timer-clock{color:#5b3bd6;}
+body:not(.dark-mode) #tournamentDetailScreen .td-btn-locked,
+body:not(.dark-mode) #tournamentDetailScreen .td-day-card.locked{background:#e4e8f0;color:#94a3b8;}
+body:not(.dark-mode) #tournamentDetailScreen .td-day-card.locked .td-day-icon-circle{background:#fff;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-header{color:#5b3bd6;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-user{color:#5b3bd6;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-text{color:#334155;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-time{color:#94a3b8;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-input{background:#f8fafc;border:1px solid #e2e8f0;color:#192a56;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-input::placeholder{color:#94a3b8;}
+body:not(.dark-mode) #tournamentDetailScreen .td-chat-send{background:#5b3bd6;}
+body:not(.dark-mode) #tournamentDetailScreen .td-section-title{color:#64748b;}
+body:not(.dark-mode) #tournamentDetailScreen .td-rank-badge{background:#e2e8f0;color:#64748b;}
+body:not(.dark-mode) #tournamentDetailScreen .td-rank-1{background:#ffb800;color:#000;}
+body:not(.dark-mode) #tournamentDetailScreen .td-rank-2{background:#a0aec0;color:#000;}
+body:not(.dark-mode) #tournamentDetailScreen .td-rank-3{background:#dd6b20;color:#000;}
+body:not(.dark-mode) #tournamentDetailScreen .td-user-name,
+body:not(.dark-mode) #tournamentDetailScreen .td-score-number{color:#192a56;}
+
 /* ===== ALT MENÜ (tüm menü ekranlarında sabit) ===== */
 
 :root{
