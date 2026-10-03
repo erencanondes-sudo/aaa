@@ -19,6 +19,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 
@@ -4837,6 +4838,15 @@ auth=firebase.auth();
 db=firebase.firestore();
 rtdb=firebase.database();
 firebaseReady=true;
+
+// Analytics (aktif kullanıcı, ülke, cihaz vb. otomatik toplanır). Reklam engelleyici kütüphaneyi engellerse uygulama etkilenmez.
+try{
+if(firebase.analytics){
+firebase.analytics();
+}
+}catch(e){
+console.warn("Analytics başlatılamadı:",e);
+}
 
 db.enablePersistence().catch(function(err){
 
