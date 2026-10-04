@@ -1264,6 +1264,27 @@ button{
 }
 
 .oy-tour-list:empty{display:none;}
+
+/* Panel2 (Düelloya açık olanlar): ekranda görünen kartların profil resimleri sırayla "canlanır".
+   Her kart tek bir 5 sn'lik döngü oynar (4,3 sn bekler, 0,7 sn canlanır), sonra sıra sonraki karta geçer. */
+#homeClcScroll .clc-avatar.clc-revive{animation:oyRevive 5s ease-in-out 1;}
+/* Avatarlar baştan kendi katmanında dursun: animasyon başlarken/biterken katman değişiminden doğan küçük kaymayı önler */
+#homeClcScroll .clc-avatar{will-change:transform,filter;transform:translateZ(0);backface-visibility:hidden;}
+@keyframes oyRevive{
+    /* 5 sn döngü: 4,3 sn bekler, son 0,7 sn canlanır */
+    0%, 86%, 100%{transform:scale(1) rotate(0deg);filter:brightness(1);}
+    88.8%{transform:scale(1.10) rotate(-2deg);filter:brightness(1.15);}
+    91.6%{transform:scale(1.17) rotate(2deg);filter:brightness(1.45);}
+    94.4%{transform:scale(1.13) rotate(-1deg);filter:brightness(1.20);}
+    97.2%{transform:scale(1.06) rotate(0.5deg);filter:brightness(1.05);}
+}
+@media (prefers-reduced-motion: reduce){
+    #homeClcScroll .clc-avatar.clc-revive{animation:none;}
+}
+#historyScreen .oy-panel-wrap > .oy-tour-list,
+#historyScreen .oy-panel-wrap > #ongoingList,
+#historyScreen .oy-panel-wrap > #historyList,
+#historyScreen .oy-panel-wrap > #challengesList{display:contents;}
 /* Turnuva varsa düello listesinin "oyun yok" yazısını gizle */
 .oy-tour-list:not(:empty) + div > p:only-child{display:none;}
 
@@ -8194,7 +8215,14 @@ console.error("Davet gönderilemedi:",e);
 }
 
 
-/* ===== OYUNLARIM: TURNUVALAR (düellodan çevrilenler dahil) ===== */
+/* Oyunlarım'da düello ve turnuva kartlarını tek listede sıralamak için CSS "order" değeri.
+   Sıra bende olanlar önce, sonra en yeni hareket üstte. */
+function oyOrder(waiting,tsSeconds){
+let minutes=Math.floor(Math.max(0,(tsSeconds||0)-1577836800)/60);
+return (waiting ? 20000000 : 0)+Math.max(0,10000000-minutes);
+}
+
+/* ===== OYUNLARIM: TURNUVALAR ===== */
 function buildOyTournamentCard(t,isPast,isInviteTab){
 
 let me=currentUser.uid;
@@ -8204,14 +8232,18 @@ let html="";
 let lpType=isPast ? "tournament-past" : (isInviteTab ? "tournament-invite" : "tournament-ongoing");
 let remainingHours=Math.max(0,Math.floor((t.expiresAtMillis-Date.now())/3600000));
 
-html+="<div class=\"oy-card\" data-lp-id=\""+t.id+"\" data-lp-type=\""+lpType+"\">";
+let myEntryForOrder=participants.find(function(p){ return p.uid===me; });
+let waitingForOrder=!myEntryForOrder || !myEntryForOrder.scores.some(function(s,i){ return s===null && isTournamentRoundUnlocked(t,i); });
+let tsForOrder=isPast ? Math.floor(t.expiresAtMillis/1000) : (t.updatedAt ? t.updatedAt.seconds : (t.createdAt ? t.createdAt.seconds : 0));
+let orderStyle=isInviteTab ? "" : " style=\"order:"+oyOrder(isPast ? false : waitingForOrder,tsForOrder)+"\"";
+
+html+="<div class=\"oy-card\""+orderStyle+" data-lp-id=\""+t.id+"\" data-lp-type=\""+lpType+"\">";
 html+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">🏆</span></div></div>";
 html+="<div class=\"oy-content\">";
 html+="<div class=\"oy-card-header\">";
 
 let title=t.name || (t.creatorUsername+"'in Turnuvası");
 
-html+="<div class=\"oy-avatar\">🏆</div>";
 html+="<div class=\"oy-user-info\"><span class=\"oy-username\">"+title+"</span></div>";
 html+="<span class=\"oy-status\">"+participants.length+" oyuncu · "+t.format+" oyun"+(isPast||isInviteTab ? "" : " ⏳ "+remainingHours+" saat")+"</span>";
 
@@ -8993,6 +9025,61 @@ let atEnd=scrollEl.scrollLeft+scrollEl.clientWidth>=scrollEl.scrollWidth-4;
 arrowEl.classList.toggle("clc-arrow-hidden",atEnd);
 
 }
+
+
+/* Panel2 profil resmi animasyon sırası */
+let clcReviveLastIndex=-1;
+let clcReviveWaiting=false;
+
+function clcReviveNext(){
+
+let homeEl=document.getElementById("homeScreen");
+let scrollEl=document.getElementById("homeClcScroll");
+
+if(!homeEl || homeEl.style.display==="none" || document.hidden || !scrollEl)return;
+
+let box=scrollEl.getBoundingClientRect();
+let cards=Array.prototype.slice.call(scrollEl.querySelectorAll(".clc-card"));
+
+// Sadece ekranda tam görünen kartlar
+let visible=[];
+cards.forEach(function(card,idx){
+let r=card.getBoundingClientRect();
+if(r.width>0 && r.left>=box.left-2 && r.right<=box.right+2)visible.push(idx);
+});
+
+if(!visible.length)return;
+
+let nextIdx=visible.find(function(idx){ return idx>clcReviveLastIndex; });
+if(nextIdx===undefined)nextIdx=visible[0];
+
+let avatar=cards[nextIdx].querySelector(".clc-avatar");
+if(!avatar)return;
+
+clcReviveLastIndex=nextIdx;
+avatar.classList.remove("clc-revive");
+void avatar.offsetWidth;
+avatar.classList.add("clc-revive");
+
+}
+
+// Bir kartın döngüsü bitince 0,5 sn bekleyip sıradaki karta geç
+document.addEventListener("animationend",function(e){
+if(e.animationName==="oyRevive" && e.target.classList.contains("clc-revive")){
+e.target.classList.remove("clc-revive");
+clcReviveWaiting=true;
+setTimeout(function(){
+clcReviveWaiting=false;
+clcReviveNext();
+},500);
+}
+});
+
+// Liste yenilendiğinde ya da ana sayfaya dönüldüğünde sıra kaldığı yerden yeniden başlar
+setInterval(function(){
+let scrollEl=document.getElementById("homeClcScroll");
+if(scrollEl && !clcReviveWaiting && !scrollEl.querySelector(".clc-revive"))clcReviveNext();
+},1000);
 
 
 function homeClcScrollNext(){
@@ -12684,7 +12771,8 @@ statusText+=(c.gameType==="word" ? "<span class=\"oy-status-type\">"+(c.sadeMode
 let avatarEmoji=c.type==="computer" ? "🤖" : (mySide==="from" ? (c.toAvatarEmoji||"👤") : (c.fromAvatarEmoji||"👤"));
 let wordCountHtml=c.type==="computer" ? "" : "<div class=\"oy-word-count\">"+(wordCounts[otherName]||0)+"</div>";
 
-html+="<div class=\"oy-card\" data-lp-id=\""+c.id+"\" data-lp-type=\"ongoing\">";
+let cardTs=c.updatedAt ? c.updatedAt.seconds : (c.createdAt ? c.createdAt.seconds : 0);
+html+="<div class=\"oy-card\" style=\"order:"+oyOrder(mySidePlayedCurrent,cardTs)+"\" data-lp-id=\""+c.id+"\" data-lp-type=\"ongoing\">";
 html+="<div class=\"oy-avatar-col\">";
 html+="<div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+otherName+"','ongoing')\"><div class=\"oy-avatar\">"+avatarHtml(avatarEmoji)+"</div></div>";
 html+=wordCountHtml;
@@ -13027,6 +13115,7 @@ let time=c.completedAt? c.completedAt.seconds : (c.createdAt? c.createdAt.second
 
 let html=buildCompletedChallengeHtml(c,otherName,mySide,friendNames,wordCounts[otherName]||0);
 
+html=html.replace("<div class=\"oy-card\"","<div class=\"oy-card\" style=\"order:"+oyOrder(false,time)+"\"");
 combined.push({time:time,html:html,c:c});
 
 });
