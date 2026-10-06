@@ -1267,20 +1267,8 @@ button{
 
 /* Panel2 (Düelloya açık olanlar): ekranda görünen kartların profil resimleri sırayla "canlanır".
    Her kart tek bir 5 sn'lik döngü oynar (4,3 sn bekler, 0,7 sn canlanır), sonra sıra sonraki karta geçer. */
-#homeClcScroll .clc-avatar.clc-revive{animation:oyRevive 5s ease-in-out 1;}
 /* Avatarlar baştan kendi katmanında dursun: animasyon başlarken/biterken katman değişiminden doğan küçük kaymayı önler */
 #homeClcScroll .clc-avatar{will-change:transform,filter;transform:translateZ(0);backface-visibility:hidden;}
-@keyframes oyRevive{
-    /* 5 sn döngü: 4,3 sn bekler, son 0,7 sn canlanır */
-    0%, 86%, 100%{transform:scale(1) rotate(0deg);filter:brightness(1);}
-    88.8%{transform:scale(1.10) rotate(-2deg);filter:brightness(1.15);}
-    91.6%{transform:scale(1.17) rotate(2deg);filter:brightness(1.45);}
-    94.4%{transform:scale(1.13) rotate(-1deg);filter:brightness(1.20);}
-    97.2%{transform:scale(1.06) rotate(0.5deg);filter:brightness(1.05);}
-}
-@media (prefers-reduced-motion: reduce){
-    #homeClcScroll .clc-avatar.clc-revive{animation:none;}
-}
 #historyScreen .oy-panel-wrap > .oy-tour-list,
 #historyScreen .oy-panel-wrap > #ongoingList,
 #historyScreen .oy-panel-wrap > #historyList,
@@ -5427,6 +5415,7 @@ requireOnlineNav(el,callback);
 function burstHomeConfetti(){
 
 launchMemConfetti("extra",false);
+scheduleClcIntro();
 
 }
 
@@ -9027,16 +9016,97 @@ arrowEl.classList.toggle("clc-arrow-hidden",atEnd);
 }
 
 
-/* Panel2 profil resmi animasyon sırası */
+/* Panel2 profil resmi animasyonları: ekranda görünen kartlar sırayla, her seferinde rastgele bir animasyon (bir öncekiyle aynı olmaz) */
+const CLC_AVATAR_ANIMATIONS=[
+// 1 - 360 derece dön
+[{transform:"rotate(0deg) scale(1)"},{transform:"rotate(360deg) scale(1.05)"},{transform:"rotate(360deg) scale(1)"}],
+// 2 - Küçülüp büyü
+[{transform:"scale(1)"},{transform:"scale(.70)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],
+// 3 - Kararıp aydınlan
+[{transform:"scale(1)",filter:"brightness(1)"},{transform:"scale(.95)",filter:"brightness(.12)"},{transform:"scale(1.05)",filter:"brightness(1.7)"},{transform:"scale(1)",filter:"brightness(1)"}],
+// 4 - Sallan
+[{transform:"rotate(0deg)"},{transform:"rotate(-12deg)"},{transform:"rotate(12deg)"},{transform:"rotate(-8deg)"},{transform:"rotate(8deg)"},{transform:"rotate(0deg)"}],
+// 5 - Nabız
+[{transform:"scale(1)"},{transform:"scale(1.13)"},{transform:"scale(1)"},{transform:"scale(1.10)"},{transform:"scale(1)"}],
+// 6 - Yukarı çıkıp yerine otur
+[{transform:"translateY(0) scale(1)"},{transform:"translateY(-18px) scale(1.05)"},{transform:"translateY(4px) scale(.98)"},{transform:"translateY(0) scale(1)"}],
+// 7 - Sağa sola hareket
+[{transform:"translateX(0)"},{transform:"translateX(-14px)"},{transform:"translateX(14px)"},{transform:"translateX(-8px)"},{transform:"translateX(0)"}],
+// 8 - Parlama
+[{transform:"scale(1)",filter:"brightness(1)"},{transform:"scale(1.06)",filter:"brightness(2)"},{transform:"scale(1.02)",filter:"brightness(1.3)"},{transform:"scale(1)",filter:"brightness(1)"}],
+// 9 - Dönerek büyü
+[{transform:"rotate(0deg) scale(1)"},{transform:"rotate(160deg) scale(.78)"},{transform:"rotate(320deg) scale(1.14)"},{transform:"rotate(360deg) scale(1)"}],
+// 10 - Titreşim + büyüme
+[{transform:"translate(0,0) scale(1)"},{transform:"translate(-5px,2px) scale(1.05)"},{transform:"translate(5px,-2px) scale(1.08)"},{transform:"translate(-4px,1px) scale(1.04)"},{transform:"translate(0,0) scale(1)"}]
+];
+
 let clcReviveLastIndex=-1;
-let clcReviveWaiting=false;
+let clcLastAnimation=-1;
+let clcReviveTimer=null;
+let clcIntroScheduled=false;
+let clcIntroDone=false;
+
+function clcScheduleNext(ms){
+clearTimeout(clcReviveTimer);
+clcReviveTimer=setTimeout(clcReviveNext,ms);
+}
+
+// Açılışta (konfeti yağmuru bitmek üzereyken) ilk 3 kartın profil resmi birlikte döner; sadece bir kez
+function clcIntroSpin(attempt){
+
+if(clcIntroDone)return;
+
+let scrollEl=document.getElementById("homeClcScroll");
+let cards=scrollEl ? Array.prototype.slice.call(scrollEl.querySelectorAll(".clc-card")).slice(0,3) : [];
+
+// Kartlar henüz yüklenmediyse kısa aralıklarla birkaç kez daha dene
+if(!cards.length){
+if(attempt<6){
+setTimeout(function(){ clcIntroSpin(attempt+1); },500);
+}
+else{
+clcIntroDone=true;
+clcScheduleNext(10000);
+}
+return;
+}
+
+clcIntroDone=true;
+
+let reduceMotion=window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if(!reduceMotion){
+cards.forEach(function(card){
+let avatar=card.querySelector(".clc-avatar");
+if(avatar && avatar.animate)avatar.animate(CLC_AVATAR_ANIMATIONS[0],{duration:800,easing:"ease-in-out"});
+});
+}
+
+clcLastAnimation=0;
+clcReviveLastIndex=cards.length-1;
+
+// Sonrasında 10 sn'de bir rastgele animasyon
+clcScheduleNext(10000);
+
+}
+
+function scheduleClcIntro(){
+if(clcIntroScheduled)return;
+clcIntroScheduled=true;
+// Konfeti parçaları 1,8 - 3,2 sn arası düşüyor; 2,6 sn civarı yağmur bitmek üzere
+setTimeout(function(){ clcIntroSpin(0); },2600);
+}
 
 function clcReviveNext(){
 
+// Varsayılan: 1 sn sonra tekrar dene (ana sayfa kapalıysa, uygulama arka plandaysa vb.)
+let nextDelay=1000;
+
 let homeEl=document.getElementById("homeScreen");
 let scrollEl=document.getElementById("homeClcScroll");
+let reduceMotion=window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-if(!homeEl || homeEl.style.display==="none" || document.hidden || !scrollEl)return;
+if(homeEl && homeEl.style.display!=="none" && !document.hidden && scrollEl && !reduceMotion){
 
 let box=scrollEl.getBoundingClientRect();
 let cards=Array.prototype.slice.call(scrollEl.querySelectorAll(".clc-card"));
@@ -9048,38 +9118,42 @@ let r=card.getBoundingClientRect();
 if(r.width>0 && r.left>=box.left-2 && r.right<=box.right+2)visible.push(idx);
 });
 
-if(!visible.length)return;
+if(visible.length){
 
 let nextIdx=visible.find(function(idx){ return idx>clcReviveLastIndex; });
 if(nextIdx===undefined)nextIdx=visible[0];
 
 let avatar=cards[nextIdx].querySelector(".clc-avatar");
-if(!avatar)return;
 
+if(avatar && avatar.animate){
+
+let animIndex;
+do{
+animIndex=Math.floor(Math.random()*CLC_AVATAR_ANIMATIONS.length);
+}while(animIndex===clcLastAnimation && CLC_AVATAR_ANIMATIONS.length>1);
+
+clcLastAnimation=animIndex;
 clcReviveLastIndex=nextIdx;
-avatar.classList.remove("clc-revive");
-void avatar.offsetWidth;
-avatar.classList.add("clc-revive");
+
+avatar.animate(CLC_AVATAR_ANIMATIONS[animIndex],{duration:800,easing:"ease-in-out"});
+
+// Sıradaki kart 10 sn sonra
+nextDelay=10000;
 
 }
 
-// Bir kartın döngüsü bitince 0,5 sn bekleyip sıradaki karta geç
-document.addEventListener("animationend",function(e){
-if(e.animationName==="oyRevive" && e.target.classList.contains("clc-revive")){
-e.target.classList.remove("clc-revive");
-clcReviveWaiting=true;
+}
+
+}
+
+clcScheduleNext(nextDelay);
+
+}
+
+// Açılış animasyonu hiç tetiklenmezse (ör. konfeti gösterilmediyse) döngü yine de başlasın
 setTimeout(function(){
-clcReviveWaiting=false;
-clcReviveNext();
-},500);
-}
-});
-
-// Liste yenilendiğinde ya da ana sayfaya dönüldüğünde sıra kaldığı yerden yeniden başlar
-setInterval(function(){
-let scrollEl=document.getElementById("homeClcScroll");
-if(scrollEl && !clcReviveWaiting && !scrollEl.querySelector(".clc-revive"))clcReviveNext();
-},1000);
+if(!clcIntroScheduled)clcScheduleNext(0);
+},8000);
 
 
 function homeClcScrollNext(){
