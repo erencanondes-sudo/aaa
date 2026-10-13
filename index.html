@@ -4710,7 +4710,7 @@ const UI_K_MAX=1.35;
 const UI_ZOOM_IDS=["winBanner","detailModalOverlay","wordScoreBanner","bottomNav"];
 const UI_FIXED_AD_IDS=["fakeAdBanner","wordTopAdBanner"];
 
-let uiK=1;
+window.uiK=1; // global: oyun içi kodlar da kullanıyor
 let uiScaleWidth=0;
 
 function measureUsableHeight(){
@@ -13285,8 +13285,14 @@ function openHarfLog(){ document.getElementById("harfLogPanel").style.display="b
 function closeHarfLog(){ document.getElementById("harfLogPanel").style.display="none"; }
 function clearHarfLog(){ harfLog=[]; try{ localStorage.removeItem("konfetiHarfLog"); }catch(e){} renderHarfLog(); }
 function copyHarfLog(){
-let txt=harfLog.join("\n");
-if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ alert("Kayıt kopyalandı."); },function(){ alert("Kopyalanamadı."); }); }
+// sondan başlayarak en yeni satırlar; yapıştırma sınırına takılmasın diye en fazla ~18.000 karakter
+let lines=[],len=0;
+for(let i=harfLog.length-1;i>=0;i--){
+if(len+harfLog[i].length+1>18000)break;
+lines.unshift(harfLog[i]); len+=harfLog[i].length+1;
+}
+let txt=lines.join("\n");
+if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ alert("Son "+lines.length+" satır kopyalandı (toplam "+harfLog.length+")."); },function(){ alert("Kopyalanamadı."); }); }
 }
 
 
@@ -13296,7 +13302,8 @@ let totalWeight=0;
 pool.forEach(function(l){ totalWeight+=(LETTER_TABLE[l] ? LETTER_TABLE[l].freq : 1); });
 let rawRandom=Math.random();
 let r=rawRandom*totalWeight;
-harfLastPick={raw:rawRandom,r:r,total:totalWeight,poolSize:pool.length};
+let cryptoArr=new Uint32Array(1); crypto.getRandomValues(cryptoArr);
+harfLastPick={raw:rawRandom,r:r,total:totalWeight,poolSize:pool.length,crypto:cryptoArr[0]/4294967296};
 for(let i=0;i<pool.length;i++){
 let w=(LETTER_TABLE[pool[i]] ? LETTER_TABLE[pool[i]].freq : 1);
 if(r<w)return pool[i];
@@ -13756,6 +13763,7 @@ wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:wordSadeMode ? Infini
 ensureJokerAtBottomRight();
 
 harfLogAdd("════ YENİ TUR ("+(wordSadeMode ? "Klasik" : "Çetrefilli")+(activeChallengeId ? ", düello" : "")+") ════");
+harfLogAdd("Math.random orijinal mi: "+(/\[native code\]/.test(Function.prototype.toString.call(Math.random)) ? "EVET" : "HAYIR (değiştirilmiş!)"));
 harfLogAdd("Başlangıç tahtası: "+harfBoardText()+harfDupText());
 
 animateWordInitialDeal(wordTiles,wordAchievable.length,function(){
@@ -14586,7 +14594,7 @@ harfReason="serbest";
 tile.letter=newLetter;
 tile.life=(newLetter==='★') ? 9 : randomLifeForLetter(newLetter);
 
-harfLogAdd("   "+oldLetterForLog+" bitti → "+newLetter+tile.life+"  ["+harfReason+(harfLastPick ? ", sayı "+harfLastPick.raw.toFixed(4)+", r "+harfLastPick.r.toFixed(2)+"/"+harfLastPick.total : "")+"]");
+harfLogAdd("   "+oldLetterForLog+" bitti → "+newLetter+tile.life+"  ["+harfReason+(harfLastPick ? ", sayı "+harfLastPick.raw.toFixed(4)+", r "+harfLastPick.r.toFixed(2)+"/"+harfLastPick.total+", crypto "+harfLastPick.crypto.toFixed(4) : "")+"]");
 
 replacedIndices.push(tile.id);
 
