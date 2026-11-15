@@ -54,7 +54,7 @@ async function telefonaHazirla(env, detaylar, uid) {
 /* Telefon elindeki oyunların sürüm numaralarını gönderir (bilinen: {oyunId: surum});
    yalnızca numarası değişen oyunların ayrıntısı gelir. Bilinen boşsa hepsi gelir. */
 export async function acilis({ env, uid, govde, simdi }) {
-  const [p, liste] = await Promise.all([profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi)]);
+  const [p, { liste, giden }] = await Promise.all([profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi)]);
   const bilinen = govde.bilinen || {};
 
   const istenecek = Object.entries(liste)
@@ -77,8 +77,14 @@ export async function acilis({ env, uid, govde, simdi }) {
   // Oyun odası artık yoksa oyun listeden çıkar
   for (const id of silinen) await kullaniciOdasi(env, uid).cikar(id);
 
+  // İstekler sekmesi: gönderdiğim düello ve turnuva davetleri
+  const harita = await adlar(env, giden.map((d) => d.hedef));
   return {
     profil: p.profil,
+    giden: giden.map((d) => Object.assign(kisi(harita, d.hedef, uid), {
+      oyunId: d.oyunId, kind: d.kind, zaman: d.zaman,
+      durum: d.durum === "bekliyor" && d.bitis < simdi ? "dustu" : d.durum,
+    })),
     liste: Object.entries(liste).filter(([id]) => !silinen.includes(id)).map(([id, k]) => ({
       id, kind: k.kind, durum: k.durum, surum: k.surum, bitis: k.bitis, bitti: !!k.bitti || (k.bitis && k.bitis < simdi),
     })),
@@ -125,14 +131,16 @@ export async function duelloOlustur({ env, uid, govde, simdi, arka }) {
   const sessiz = await engelliMi(env, hedef.uid, uid);
 
   const bitis = simdi + DAVET_SURESI;
-  sonuc(await benim.ekle(id, { kind: "duello", durum: "bekliyor", surum: 1, bitis }, { devam: true, giden: true }, simdi));
+  sonuc(await benim.kontrol({}, { devam: true }, simdi));
+  sonuc(await benim.gidenEkle({ oyunId: id, kind: "duello", hedef: hedef.uid, bitis }, simdi));
   if (!sessiz) {
     const r = await kullaniciOdasi(env, hedef.uid).ekle(id, { kind: "duello", durum: "davetli", davetEden: uid, surum: 1, bitis }, { gelen: true, ayniKisi: true }, simdi);
     if (r.hata) {
-      await benim.cikar(id);
+      await benim.gidenSil(id, hedef.uid);
       throw new Hata(r.hata);
     }
   }
+  await benim.ekle(id, { kind: "duello", durum: "bekliyor", surum: 1, bitis }, null, simdi);
   await oyunOdasi(env, id).kur({
     id, kind: "duello", opponent: "arkadas", creator: uid, format, status: "bekliyor", createdAt: simdi, endsAt: bitis,
     oyuncular: [{ uid, status: "katildi" }, { uid: hedef.uid, status: "davetli", davetEden: uid }],
@@ -230,8 +238,10 @@ export async function kisiselAc({ env, uid, govde, simdi }) {
   const oyuncular = [{ uid, status: "katildi" }];
   for (const d of kaynak.katilanlar) {
     if (d === uid) continue;
+    if ((await kullaniciOdasi(env, uid).gidenEkle({ oyunId: id, kind: "turnuva", hedef: d, bitis }, simdi)).hata) continue;
     const r = await kullaniciOdasi(env, d).ekle(id, { kind: "turnuva", durum: "davetli", davetEden: uid, surum: 1, bitis }, { gelen: true, ayniKisi: true }, simdi);
     if (!r.hata) oyuncular.push({ uid: d, status: "davetli", davetEden: uid });
+    else await kullaniciOdasi(env, uid).gidenSil(id, d);
   }
   await oyunOdasi(env, id).kur({
     id, kind: "turnuva", creator: uid, name: String(govde.ad || "").trim().slice(0, 30) || null, format, status: "suruyor",
@@ -251,10 +261,13 @@ export async function davetEt({ env, uid, govde, simdi }) {
   if (await engelliMi(env, uid, hedef.uid) || await engelliMi(env, hedef.uid, uid)) throw new Hata("engelli");
 
   const oda = oyunOdasi(env, id);
+  const benim = kullaniciOdasi(env, uid);
   const r = sonuc(await oda.davetEkle({ uid: hedef.uid, davetEden: uid, simdi }));
-  const l = await kullaniciOdasi(env, hedef.uid).ekle(id, { kind: "turnuva", durum: "davetli", davetEden: uid, surum: 1, bitis: r.endsAt }, { gelen: true, ayniKisi: true }, simdi);
+  const g = await benim.gidenEkle({ oyunId: id, kind: "turnuva", hedef: hedef.uid, bitis: r.endsAt }, simdi);
+  const l = g.hata ? g : await kullaniciOdasi(env, hedef.uid).ekle(id, { kind: "turnuva", durum: "davetli", davetEden: uid, surum: 1, bitis: r.endsAt }, { gelen: true, ayniKisi: true }, simdi);
   if (l.hata) {
     await oda.davetGeriAl({ uid: hedef.uid });
+    if (!g.hata) await benim.gidenSil(id, hedef.uid);
     throw new Hata(l.hata);
   }
 }
@@ -285,7 +298,7 @@ export async function katil({ env, uid, govde, simdi }) {
 /* Geçmiş günlük (7 gün) ve haftalık (4 hafta) turnuvalarım */
 export async function gecmis({ env, uid, govde, simdi }) {
   if (govde.tur !== "gunluk" && govde.tur !== "haftalik") throw new Hata("tur-gecersiz");
-  const liste = await kullaniciOdasi(env, uid).getir(simdi);
+  const { liste } = await kullaniciOdasi(env, uid).getir(simdi);
   const idler = Object.entries(liste).filter(([, k]) => k.kind === govde.tur).sort((x, y) => y[1].bitis - x[1].bitis).map(([id]) => id);
   const turnuvalar = [];
   for (const id of idler) {

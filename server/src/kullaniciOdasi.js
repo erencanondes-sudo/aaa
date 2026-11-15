@@ -10,7 +10,9 @@ const EN_FAZLA_GELEN_DAVET = 100;
 const PARCA = 8000; // bir kayıtta en fazla kaç kelime
 
 /* Liste kaydı: { kind, durum, surum, bitis, bitti, bittiZaman, davetEden }
-   durum: 'katildi' | 'davetli' | 'bekliyor' (düello daveti gönderdim, cevap bekliyorum) */
+   durum: 'katildi' | 'davetli' | 'bekliyor' (düello daveti gönderdim, cevap bekliyorum)
+   Giden davet kaydı (İstekler sekmesi): { oyunId, kind, hedef, durum: 'bekliyor'|'kabul'|'red', zaman, bitis }
+   Cevaplanan ya da süresi dolan davetler bitişten 7 gün sonra silinir. */
 
 function bittiMi(k, simdi) {
   return k.bitti || (k.bitis && k.bitis < simdi);
@@ -19,12 +21,48 @@ function bittiMi(k, simdi) {
 export class KullaniciOdasi extends DurableObject {
 
   async yukle() {
-    if (!this.liste) this.liste = (await this.ctx.storage.get("liste")) || {};
+    if (!this.liste) {
+      this.liste = (await this.ctx.storage.get("liste")) || {};
+      this.giden = (await this.ctx.storage.get("giden")) || {};
+    }
     return this.liste;
   }
 
   async kaydet() {
     await this.ctx.storage.put("liste", this.liste);
+  }
+
+  async gidenKaydet() {
+    await this.ctx.storage.put("giden", this.giden);
+  }
+
+  gidenBekleyen(simdi) {
+    return Object.values(this.giden).filter((d) => d.durum === "bekliyor" && d.bitis > simdi).length;
+  }
+
+  /* Giden davet (düello ya da turnuva): en fazla 50 cevapsız */
+  async gidenEkle(kayit, simdi) {
+    await this.ayikla(simdi);
+    if (this.gidenBekleyen(simdi) >= EN_FAZLA_GIDEN_DAVET) return { hata: "giden-davet-siniri" };
+    this.giden[kayit.oyunId + ":" + kayit.hedef] = Object.assign({ durum: "bekliyor", zaman: simdi }, kayit);
+    await this.gidenKaydet();
+    return { tamam: true };
+  }
+
+  async gidenSil(oyunId, hedef) {
+    await this.yukle();
+    if (!this.giden[oyunId + ":" + hedef]) return;
+    delete this.giden[oyunId + ":" + hedef];
+    await this.gidenKaydet();
+  }
+
+  /* Oyun odası davetin cevabını bildirir */
+  async gidenSonuc(oyunId, hedef, durum) {
+    await this.yukle();
+    const d = this.giden[oyunId + ":" + hedef];
+    if (!d || d.durum !== "bekliyor") return;
+    d.durum = durum;
+    await this.gidenKaydet();
   }
 
   /* Biten oyunlardan yalnızca son 20'si kalır; cevaplanmadan süresi dolan davetler düşer */
@@ -45,20 +83,24 @@ export class KullaniciOdasi extends DurableObject {
       if (sure && k.bitis + sure * 86400000 < simdi) { delete l[id]; degisti = true; }
     }
     if (degisti) await this.kaydet();
+    let gidenDegisti = false;
+    for (const [k, d] of Object.entries(this.giden)) {
+      if (d.bitis + 7 * 86400000 < simdi) { delete this.giden[k]; gidenDegisti = true; }
+    }
+    if (gidenDegisti) await this.gidenKaydet();
     return l;
   }
 
   async getir(simdi) {
-    return await this.ayikla(simdi);
+    return { liste: await this.ayikla(simdi), giden: Object.values(this.giden) };
   }
 
-  /* sinirlar: { devam, giden, gelen, ayniKisi } — hangileri kontrol edilecek */
+  /* sinirlar: { devam, gelen, ayniKisi } — hangileri kontrol edilecek */
   async kontrol(kayit, sinirlar, simdi) {
     const l = await this.ayikla(simdi);
     const aktif = Object.values(l).filter((k) => !bittiMi(k, simdi) && (k.kind === "duello" || k.kind === "turnuva"));
     if (sinirlar) {
       if (sinirlar.devam && aktif.filter((k) => k.durum === "katildi" || k.durum === "bekliyor").length >= EN_FAZLA_DEVAM_EDEN) return { hata: "devam-eden-siniri" };
-      if (sinirlar.giden && aktif.filter((k) => k.durum === "bekliyor").length >= EN_FAZLA_GIDEN_DAVET) return { hata: "giden-davet-siniri" };
       if (sinirlar.gelen && aktif.filter((k) => k.durum === "davetli").length >= EN_FAZLA_GELEN_DAVET) return { hata: "karsi-davet-siniri" };
       if (sinirlar.ayniKisi && aktif.some((k) => k.durum === "davetli" && k.kind === kayit.kind && k.davetEden === kayit.davetEden)) return { hata: "zaten-davet-var" };
     }
@@ -127,6 +169,7 @@ export class KullaniciOdasi extends DurableObject {
     const idler = Object.keys(l);
     await this.ctx.storage.deleteAll();
     this.liste = {};
+    this.giden = {};
     this.kelimeler = null;
     return idler;
   }

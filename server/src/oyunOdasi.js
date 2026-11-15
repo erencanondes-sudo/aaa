@@ -225,6 +225,9 @@ export class OyunOdasi extends DurableObject {
     const g = this.oyun;
     if (g.kind === "duello" ? g.status !== "bekliyor" || simdi > g.endsAt : !this.acik(simdi)) return { hata: "davet-yok", durum: 404 };
 
+    // Davet edenin İstekler sekmesi
+    if (o.davetEden) await this.odaHaber(o.davetEden, "gidenSonuc", [g.id, uid, kabul ? "kabul" : "red"]);
+
     if (!kabul) {
       o.status = "reddetti";
       await this.oyuncuKaydet(o);
@@ -569,23 +572,26 @@ export class OyunOdasi extends DurableObject {
     if (g.kind !== "duello") return;
     for (const o of this.oyuncular.values()) {
       if (o.uid === BILGISAYAR || o.status === "reddetti") continue;
-      const haber = Object.assign({ surum: g.surum }, bilgi);
-      try {
-        await this.env.KULLANICI_ODASI.get(this.env.KULLANICI_ODASI.idFromName(o.uid)).guncelle(g.id, haber);
-      } catch (e) {
-        g.bekleyenHaber.push({ uid: o.uid, haber, deneme: 0 });
-      }
+      await this.odaHaber(o.uid, "guncelle", [g.id, Object.assign({ surum: g.surum }, bilgi)]);
     }
-    if (g.bekleyenHaber.length) await this.oyunKaydet();
   }
 
-  /* Ulaşmayan haberler dakikada bir, en fazla 10 kez tekrar denenir */
+  /* Kullanıcı odasına haber; ulaşmazsa dakikada bir, en fazla 10 kez tekrar denenir */
+  async odaHaber(uid, metod, argumanlar) {
+    try {
+      await this.env.KULLANICI_ODASI.get(this.env.KULLANICI_ODASI.idFromName(uid))[metod](...argumanlar);
+    } catch (e) {
+      this.oyun.bekleyenHaber.push({ uid, metod, argumanlar, deneme: 0 });
+      await this.oyunKaydet();
+    }
+  }
+
   async haberleriTekrarla() {
     const g = this.oyun;
     const kalan = [];
     for (const b of g.bekleyenHaber) {
       try {
-        await this.env.KULLANICI_ODASI.get(this.env.KULLANICI_ODASI.idFromName(b.uid)).guncelle(g.id, b.haber);
+        await this.env.KULLANICI_ODASI.get(this.env.KULLANICI_ODASI.idFromName(b.uid))[b.metod](...b.argumanlar);
       } catch (e) {
         if (++b.deneme < 10) kalan.push(b);
       }
@@ -613,6 +619,7 @@ export class OyunOdasi extends DurableObject {
     const o = g && this.oyuncular.get(uid);
     if (!o) return;
     if (o.status === "davetli") {
+      if (o.davetEden) await this.odaHaber(o.davetEden, "gidenSonuc", [g.id, uid, "red"]);
       if (g.kind === "duello") {
         o.status = "reddetti";
         await this.oyuncuKaydet(o);
