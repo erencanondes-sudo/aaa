@@ -76,7 +76,7 @@ export class KullaniciOdasi extends DurableObject {
     const bitenler = Object.entries(l)
       .filter(([, k]) => k.kind !== "gunluk" && k.kind !== "haftalik" && bittiMi(k, simdi))
       .sort((x, y) => (y[1].bittiZaman || y[1].bitis) - (x[1].bittiZaman || x[1].bitis));
-    for (const [id] of bitenler.slice(EN_FAZLA_BITEN)) { delete l[id]; degisti = true; }
+    for (const [id] of bitenler.slice(EN_FAZLA_BITEN)) { delete l[id]; degisti = true; this.dustu(id); }
     // Günlük turnuva 7 gün, haftalık 4 hafta listede kalır
     for (const [id, k] of Object.entries(l)) {
       const sure = k.kind === "gunluk" ? 7 : k.kind === "haftalik" ? 28 : 0;
@@ -91,7 +91,20 @@ export class KullaniciOdasi extends DurableObject {
     return l;
   }
 
-  async getir(simdi) {
+  /* Biten oyun listemden düştü: oyun odasına haber (iki oyuncunun da listesinden düşen oyun silinir).
+     Haber ulaşmazsa oyun odası 1 yıl dolunca kendini yine siler. */
+  dustu(id) {
+    const uid = this.ctx.id.name || this.sahip;
+    if (!uid) return;
+    this.ctx.waitUntil(this.env.OYUN_ODASI.get(this.env.OYUN_ODASI.idFromName(id)).listedenDustu({ uid }).catch(() => {}));
+  }
+
+  async getir(simdi, uid) {
+    // Oda kimin olduğunu bilsin (oyun odasına haber verirken gerekir)
+    if (uid && !this.sahip) {
+      this.sahip = (await this.ctx.storage.get("sahip")) || uid;
+      await this.ctx.storage.put("sahip", uid);
+    }
     return { liste: await this.ayikla(simdi), giden: Object.values(this.giden) };
   }
 
@@ -140,6 +153,7 @@ export class KullaniciOdasi extends DurableObject {
     if (!l[id] || !bittiMi(l[id], simdi)) return { hata: "oyun-bitmedi" };
     delete l[id];
     await this.kaydet();
+    this.dustu(id);
     return { tamam: true };
   }
 

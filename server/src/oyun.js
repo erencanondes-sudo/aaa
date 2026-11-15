@@ -54,7 +54,7 @@ async function telefonaHazirla(env, detaylar, uid) {
 /* Telefon elindeki oyunların sürüm numaralarını gönderir (bilinen: {oyunId: surum});
    yalnızca numarası değişen oyunların ayrıntısı gelir. Bilinen boşsa hepsi gelir. */
 export async function acilis({ env, uid, govde, simdi }) {
-  const [p, { liste, giden }] = await Promise.all([profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi)]);
+  const [p, { liste, giden }] = await Promise.all([profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi, uid)]);
   const bilinen = govde.bilinen || {};
 
   const istenecek = Object.entries(liste)

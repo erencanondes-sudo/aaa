@@ -611,6 +611,24 @@ export class OyunOdasi extends DurableObject {
     }
   }
 
+  /* ---------- Silinme ----------
+     Biten düello ve kişisel turnuva, katılan herkesin son 20 oyun listesinden düşünce silinir (en geç 1 yıl). */
+
+  async listedenDustu({ uid }) {
+    await this.yukle();
+    const g = this.oyun;
+    if (!g || g.status === "bekliyor" || g.status === "suruyor" || !(g.kind === "duello" || g.kind === "turnuva")) return;
+    g.dusenler = [...new Set([...(g.dusenler || []), uid])];
+    if (this.insanlar().every((o) => g.dusenler.includes(o.uid))) {
+      await this.ctx.storage.deleteAll();
+      this.oyun = null;
+      this.oyuncular = new Map();
+      this.mesajlar = [];
+      return;
+    }
+    await this.oyunKaydet();
+  }
+
   /* ---------- Hesap silme ---------- */
 
   async kullaniciSilindi({ uid, simdi }) {
@@ -618,6 +636,7 @@ export class OyunOdasi extends DurableObject {
     const g = this.oyun;
     const o = g && this.oyuncular.get(uid);
     if (!o) return;
+    if (o.status === "katildi" && g.status !== "bekliyor" && g.status !== "suruyor") return this.listedenDustu({ uid });
     if (o.status === "davetli") {
       if (o.davetEden) await this.odaHaber(o.davetEden, "gidenSonuc", [g.id, uid, "red"]);
       if (g.kind === "duello") {
