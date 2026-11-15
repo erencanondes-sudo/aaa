@@ -1,7 +1,6 @@
-/* Sunucuyla konuşma: istekler, açılış ve telefonda tutulan oyunlar, anlık bağlantı.
-   Sunucunun adresi Cloudflare'e ilk kez yüklendiğinde yazılacak. */
+/* Sunucuyla konuşma: istekler, açılış ve telefonda tutulan oyunlar, anlık bağlantı. */
 
-const SUNUCU_ADRESI="https://konfeti.ADRES.workers.dev";
+const SUNUCU_ADRESI="https://konfeti.eren-can-ondes.workers.dev";
 
 class SunucuHatasi extends Error{
 constructor(kod,durum){
