@@ -46,7 +46,7 @@ export async function gonder({ env, uid, govde, simdi, arka }) {
     env.DB.prepare("UPDATE games SET last_msg_at = ? WHERE id = ?").bind(simdi, g.id),
     env.DB.prepare("UPDATE players SET last_read_at = ? WHERE game_id = ? AND uid = ?").bind(simdi, g.id, uid),
   ]);
-  // Günlük ve haftalık turnuvada çok kişi olduğu için bildirim gitmez, yalnızca okunmamış işareti görünür
+  // Günlük ve haftalık turnuvada bildirim ve okunmamış işareti yok
   if (arka && (g.kind === "duello" || g.kind === "turnuva")) arka(haberVer(env, g, uid));
 }
 
