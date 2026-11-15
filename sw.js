@@ -1,4 +1,4 @@
-const CACHE_NAME = "konfeti-v9";
+const CACHE_NAME = "konfeti-v10";
 
 const APP_SHELL = [
   "./index.html",
@@ -36,13 +36,8 @@ self.addEventListener("activate", function (event) {
 self.addEventListener("fetch", function (event) {
   const url = new URL(event.request.url);
 
-  // Never cache Firebase/Firestore/Auth network calls - always go to network for those.
-  if (
-    url.hostname.includes("googleapis.com") ||
-    url.hostname.includes("firebaseio.com") ||
-    url.hostname.includes("firebaseapp.com") ||
-    url.hostname.includes("gstatic.com")
-  ) {
+  // Sunucu, Firebase ve başka sitelere giden istekler ile GET olmayan istekler hiç karışmadan ağa gider.
+  if (event.request.method !== "GET" || url.origin !== self.location.origin) {
     return;
   }
 
@@ -61,7 +56,8 @@ self.addEventListener("fetch", function (event) {
           return networkResponse;
         })
         .catch(function () {
-          return event.request.mode === "navigate" ? caches.match("./index.html") : caches.match(event.request);
+          return (event.request.mode === "navigate" ? caches.match("./index.html") : caches.match(event.request))
+            .then(function (r) { return r || Response.error(); });
         })
     );
     return;
@@ -75,7 +71,7 @@ self.addEventListener("fetch", function (event) {
       }
       return fetch(event.request)
         .then(function (networkResponse) {
-          if (event.request.method === "GET" && networkResponse.ok) {
+          if (networkResponse.ok) {
             const clone = networkResponse.clone();
             caches.open(CACHE_NAME).then(function (cache) {
               cache.put(event.request, clone);
@@ -84,7 +80,7 @@ self.addEventListener("fetch", function (event) {
           return networkResponse;
         })
         .catch(function () {
-          return undefined;
+          return Response.error();
         });
     })
   );
