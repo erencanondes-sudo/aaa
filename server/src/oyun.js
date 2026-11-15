@@ -324,6 +324,10 @@ export async function gecmis({ env, uid, govde, simdi }) {
 /* ---------- Anlık bağlantı (sohbet ve turnuvada kelimeler) ---------- */
 
 export async function baglan(istek, env, uid) {
+  // Kendi oyun listemin canlı bağlantısı
+  if (new URL(istek.url).searchParams.get("liste")) {
+    return kullaniciOdasi(env, uid).fetch(new Request(istek.url, { headers: { upgrade: "websocket" } }));
+  }
   const id = new URL(istek.url).searchParams.get("oyun") || "";
   const u = await env.DB.prepare("SELECT username FROM users WHERE uid = ?").bind(uid).first();
   if (!u) return new Response("profil-yok", { status: 404 });

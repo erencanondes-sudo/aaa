@@ -1,20 +1,18 @@
 /* Düellolar: Oyunlarım listeleri, İstekler, düello açma ve cevap, rastgele rakip, düello oyuncu listesi,
    düello ayrıntısı ve anlık sohbet. Bilgiler açılışta sunucudan gelir (sunucuDurumu). */
 
-let sonYenileme=0;
 let duelloSohbeti=null;   // açık sohbet bağlantısı
 
-/* Açılış bilgisini yeniler (en fazla 10 saniyede bir) ve görünen listeleri çizer */
+/* Açılış bilgisini yeniler ve görünen listeleri çizer. Liste canlı bağlantıyla güncel tutulduğu için
+   yalnızca sunucu bir değişiklik bildirince ya da bir işlemden sonra (zorla) sunucuya sorulur. */
 function oyunlariYenile(zorla){
 
 if(!currentUser || currentUser.isGuest)return Promise.resolve();
 
-if(!zorla && Date.now()-sonYenileme<10000){
+if(!zorla){
 oyunListeleriniCiz();
 return Promise.resolve();
 }
-
-sonYenileme=Date.now();
 
 return acilis().then(function(v){
 sunucuDurumu=v;
@@ -26,9 +24,10 @@ console.error("Oyunlar yenilenemedi:",e);
 
 }
 
-document.addEventListener("visibilitychange",function(){
-if(document.visibilityState==="visible")oyunlariYenile();
-});
+/* Girişten sonra canlı bağlantı açılır; sunucu "değişti" deyince yalnızca değişen oyunlar istenir */
+function canliListeyiBaslat(){
+listeyeBaglan(function(){ oyunlariYenile(true); });
+}
 
 /* Eski adlarla çağrılan yerler için */
 function renderOngoingList(){ oyunlariYenile(); }

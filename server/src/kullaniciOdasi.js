@@ -32,6 +32,23 @@ export class KullaniciOdasi extends DurableObject {
     await this.ctx.storage.put("liste", this.liste);
   }
 
+  /* Telefonun canlı bağlantısı: listemde bir şey değişince telefona haber gider (gönderim ücretsiz,
+     bekleyen bağlantı uyuduğu için süre ücreti de yok) */
+  async fetch() {
+    const [telefon, oda] = Object.values(new WebSocketPair());
+    this.ctx.acceptWebSocket(oda);
+    return new Response(null, { status: 101, webSocket: telefon });
+  }
+
+  haberYay(veri) {
+    const metin = JSON.stringify(veri);
+    for (const ws of this.ctx.getWebSockets()) {
+      try { ws.send(metin); } catch (e) {}
+    }
+  }
+
+  async webSocketMessage() {}
+
   async gidenKaydet() {
     await this.ctx.storage.put("giden", this.giden);
   }
@@ -63,6 +80,7 @@ export class KullaniciOdasi extends DurableObject {
     if (!d || d.durum !== "bekliyor") return;
     d.durum = durum;
     await this.gidenKaydet();
+    this.haberYay({ t: "degisti", id: oyunId });
   }
 
   /* Biten oyunlardan yalnızca son 20'si kalır; cevaplanmadan süresi dolan davetler düşer */
@@ -127,6 +145,7 @@ export class KullaniciOdasi extends DurableObject {
     if (l[id]) return { hata: "zaten-var" };
     l[id] = kayit;
     await this.kaydet();
+    this.haberYay({ t: "degisti", id });
     return { tamam: true };
   }
 
@@ -138,6 +157,7 @@ export class KullaniciOdasi extends DurableObject {
     if (bilgi.surum !== undefined && bilgi.surum < (k.surum || 0)) return;
     Object.assign(k, bilgi);
     await this.kaydet();
+    this.haberYay({ t: "degisti", id });
   }
 
   async cikar(id) {

@@ -756,6 +756,7 @@ renderHomeChallengeListCarousel();
 
 if(!isGuest){
 oyunListeleriniCiz();
+canliListeyiBaslat();
 startTournamentsListener();
 loadTournamentStatusBadges();
 }
@@ -3878,6 +3879,7 @@ function logoutUser(){
 auth.signOut().then(function(){
 
 sohbetKapat();
+listedenKop();
 stopTournamentsListener();
 
 if(badgeRefreshInterval){

@@ -139,6 +139,37 @@ if(typeof sunucuDurumu!=="undefined" && sunucuDurumu)sunucuDurumu.oyunlar[id]=v.
 return v.oyun;
 }
 
+/* ---------- Oyun listemin canlı bağlantısı ----------
+   Rakip oynayınca, davet gelince ya da cevaplanınca sunucu haber verir; telefon yalnızca değişeni ister.
+   Bağlantı koparsa birkaç saniye sonra yeniden kurulur. */
+let listeBaglantisi=null;
+let listeYenidenDene=null;
+
+async function listeyeBaglan(degisti){
+listedenKop();
+let adres=SUNUCU_ADRESI.replace(/^http/,"ws")+"/api/baglan?liste=1&belge="+encodeURIComponent(await girisBelgesi());
+let ws=new WebSocket(adres);
+listeBaglantisi=ws;
+ws.onmessage=function(e){
+try{ if(JSON.parse(e.data).t==="degisti")degisti(); }catch(err){}
+};
+ws.onclose=function(){
+if(listeBaglantisi!==ws)return;
+listeBaglantisi=null;
+// Açılmadan koparsa da kendiliğinden yeniden kurulur
+listeYenidenDene=setTimeout(function(){ if(firebase.auth().currentUser)listeyeBaglan(degisti).then(degisti); },5000);
+};
+}
+
+function listedenKop(){
+clearTimeout(listeYenidenDene);
+if(listeBaglantisi){
+let ws=listeBaglantisi;
+listeBaglantisi=null;
+try{ ws.close(); }catch(e){}
+}
+}
+
 /* ---------- Anlık bağlantı (sohbet ve turnuvada kelimeler) ----------
    gelen: sunucudan her mesajda çağrılır ({t:"gecmis"|"mesaj"|"kelime"|"degisti"|"hata", ...}) */
 async function oyunaBaglan(oyunId,gelen){
