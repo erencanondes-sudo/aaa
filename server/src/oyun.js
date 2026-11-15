@@ -85,11 +85,13 @@ export async function acilis({ env, uid, govde, simdi }) {
   // Düelloya açık oyuncular: gece hazırlanan 1000 satırdan rastgele biri (tek satır okunur).
   // Telefon önce 15'ini, "devamını gör" deyince 50'sini gösterir.
   const satir = await env.DB.prepare("SELECT data FROM duel_pool WHERE id = ?").bind(Math.floor(Math.random() * 1000)).first();
+  const kuyruk = await env.DB.prepare("SELECT 1 FROM queue WHERE uid = ? AND created_at > ?").bind(uid, simdi - KUYRUK_SURESI).first();
   const benimAdim = p.profil ? p.profil.username : null;
 
   return {
     profil: p.profil,
     arkadaslik,
+    rastgeleBekliyor: !!kuyruk,
     acikOyuncular: satir ? JSON.parse(satir.data).filter((o) => o.username !== benimAdim) : [],
     giden: giden.map((d) => Object.assign(kisi(harita, d.hedef, uid), {
       oyunId: d.oyunId, kind: d.kind, zaman: d.zaman,

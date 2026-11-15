@@ -10,10 +10,11 @@ const SATIRDA = 50;
    Oyuncu sayısı 50 000'den azsa her satır, oyuncular arasından rastgele 50 kişidir. */
 async function havuzHazirla(env, simdi) {
   const { results } = await env.DB.prepare(
-    "SELECT username, avatar, word_score_sum, word_score_count FROM users WHERE duel_open = 1 AND last_seen > ?"
+    "SELECT username, avatar, country, challenge_count, challenge_wins, word_score_sum, word_score_count FROM users WHERE duel_open = 1 AND last_seen > ?"
   ).bind(simdi - 7 * GUN).all();
   const oyuncular = results.map((u) => ({
-    username: u.username, avatar: u.avatar,
+    username: u.username, avatar: u.avatar, country: u.country,
+    basari: u.challenge_count ? Math.round((u.challenge_wins / u.challenge_count) * 100) : 0,
     ortalama: u.word_score_count ? Math.round(u.word_score_sum / u.word_score_count) : 0,
   }));
   karistir(oyuncular);

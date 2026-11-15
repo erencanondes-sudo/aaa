@@ -418,29 +418,6 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 
-<div id="viewChallengeScreen" style="display:none;">
-
-<button class="back-btn" onclick="goBackFromDetail()">Geri</button>
-
-<h2>Meydan Okuma Detayı</h2>
-
-<div class="stats" id="viewChallengeContent"></div>
-
-</div>
-
-<div id="chatScreen" style="display:none;">
-
-<button class="back-btn" onclick="goBackFromDetail()">Geri</button>
-
-<h2 id="chatWithText">Mesajlar</h2>
-
-<div class="chat-messages" id="chatMessages"></div>
-
-<div class="chat-input-row">
-<input type="text" id="chatInput" class="auth-input" placeholder="Mesaj yaz...">
-<button class="challenge-play-btn" onclick="sendChatMessage()">Gönder</button>
-</div>
-
 </div>
 
 <div id="gameTypeScreen" style="display:none;">
@@ -512,7 +489,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div id="challengeListUsersList" style="margin-top:22px;"><p style="color:#7b8fae;font-size:0.85em;">Yükleniyor...</p></div>
 
-<p id="challengeListLoadMore" style="display:none;text-align:center;color:#2874c7;font-weight:700;font-size:15px;margin-top:16px;cursor:pointer;" onclick="loadMoreChallengeListUsers()">Daha fazla göster</p>
+
 
 </div>
 
@@ -541,19 +518,19 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <button class="menu-card new" style="margin-top:16px;" onclick="animatedNav(this,function(){createChallenge(1)})">
 <div class="icon-circle">1️⃣</div>
-<div class="menu-copy"><b>Tek Oyun</b><span>1 round'luk meydan okuma</span></div>
+<div class="menu-copy"><b>Tek Oyun</b><span>24 saat içinde oynanır</span></div>
 <div class="arrow">›</div>
 </button>
 
 <button class="menu-card orange" style="margin-top:6px;" onclick="animatedNav(this,function(){createChallenge(3)})">
 <div class="icon-circle">3️⃣</div>
-<div class="menu-copy"><b>3 Oyun</b><span>3 round'luk meydan okuma</span></div>
+<div class="menu-copy"><b>3 Oyun</b><span>48 saat içinde oynanır</span></div>
 <div class="arrow">›</div>
 </button>
 
-<button class="menu-card red" style="margin-top:6px;" onclick="animatedNav(this,function(){createChallenge(10)})">
-<div class="icon-circle">🔟</div>
-<div class="menu-copy"><b>10 Oyun</b><span>10 round'luk meydan okuma</span></div>
+<button class="menu-card red" style="margin-top:6px;" onclick="animatedNav(this,function(){createChallenge(7)})">
+<div class="icon-circle">7️⃣</div>
+<div class="menu-copy"><b>7 Oyun</b><span>1 hafta, her gece bir oyun açılır</span></div>
 <div class="arrow">›</div>
 </button>
 
@@ -782,6 +759,7 @@ Harf seçiniz
 <script src="js/tur.js"></script>
 <script type="module">import * as KonfetiOyun from "./shared/oyun.js"; window.KonfetiOyun=KonfetiOyun;</script>
 <script src="js/app.js"></script>
+<script src="js/duello.js"></script>
 
 </body>
 </html>

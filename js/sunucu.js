@@ -125,7 +125,8 @@ let eksik=v.liste.some(function(k){ return k.kind==="duello" && !h.oyunlar[k.id]
 if(eksik && !hepsi)return acilis(true);
 
 hafizaYaz(h);
-return {profil:v.profil,liste:v.liste,oyunlar:h.oyunlar,giden:v.giden,acikOyuncular:v.acikOyuncular};
+v.oyunlar=h.oyunlar;
+return v;
 }
 
 /* Tek oyunun güncel ayrıntısı (oyuna girildiğinde) */
