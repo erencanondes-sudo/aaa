@@ -1,0 +1,17 @@
+name = "konfeti"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+FIREBASE_PROJE_ID = "eren-63abb"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "konfeti"
+database_id = "BURAYA-D1-KIMLIGI"
+
+# Kelime listesi (../words.js) metin olarak okunur
+[[rules]]
+type = "Text"
+globs = ["**/words.js"]
+fallthrough = false

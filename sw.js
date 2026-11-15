@@ -1,4 +1,4 @@
-const CACHE_NAME = "konfeti-v6";
+const CACHE_NAME = "konfeti-v7";
 
 const APP_SHELL = [
   "./index.html",
@@ -46,9 +46,11 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // Page navigations: always try the network first so updates (like this one)
-  // show up immediately. Fall back to cache only when offline.
-  if (event.request.mode === "navigate") {
+  // Sayfa açılışları ve kod/tasarım dosyaları: önce ağdan alınır ki güncellemeler hemen gelsin.
+  // İnternet yoksa önbellekteki sürüm kullanılır. Kelime listesi nadiren değiştiği için önbellekten gelir.
+  const isCodeFile = (url.pathname.endsWith(".js") || url.pathname.endsWith(".css")) && !url.pathname.endsWith("/words.js");
+
+  if (event.request.mode === "navigate" || isCodeFile) {
     event.respondWith(
       fetch(event.request)
         .then(function (networkResponse) {
@@ -59,7 +61,7 @@ self.addEventListener("fetch", function (event) {
           return networkResponse;
         })
         .catch(function () {
-          return caches.match("./index.html");
+          return event.request.mode === "navigate" ? caches.match("./index.html") : caches.match(event.request);
         })
     );
     return;
