@@ -8,7 +8,7 @@ import { sozluk } from "./sozluk.js";
 import { bildirimGonder } from "./bildirim.js";
 import {
   yeniTohum, acilisTahtasi, oyuncuTohumu, HarfSirasi, Tahta, ondenVeri,
-  kelimePuani, SESLILER, JOKER, TUR_SURESI, KALAN_SANIYE_PUANI,
+  TUR_SURESI, KALAN_SANIYE_PUANI,
 } from "../../shared/oyun.js";
 
 export const BILGISAYAR = "bilgisayar";
@@ -64,46 +64,6 @@ function gecen(t, simdi) {
 
 function kalanSaniye(t, simdi) {
   return Math.max(0, TUR_SURESI - Math.floor(gecen(t, simdi) / 1000));
-}
-
-/* ---------- Bilgisayar rakip ---------- */
-
-function kurulabilir(kelime, harfler, joker) {
-  const sayac = {};
-  for (const h of harfler) sayac[h] = (sayac[h] || 0) + 1;
-  let kalanJoker = joker, jokerKullanildi = false;
-  for (const ch of kelime) {
-    if (sayac[ch] > 0) sayac[ch]--;
-    else if (kalanJoker > 0) { kalanJoker--; jokerKullanildi = true; }
-    else return false;
-  }
-  return !(jokerKullanildi && kelime.length < 5);
-}
-
-function harfBonusu(harfler) {
-  const sayac = {};
-  harfler.forEach((h) => (sayac[h] = (sayac[h] || 0) + 1));
-  let bonus = 0;
-  Object.keys(sayac).forEach((h) => {
-    if (!SESLILER.includes(h) && sayac[h] > 1) bonus += 100 * (sayac[h] - 1);
-  });
-  if (harfler.includes("J")) bonus += 120;
-  ["Ö", "G", "P", "Ğ"].forEach((h) => { if (harfler.includes(h)) bonus += 70; });
-  const m = harfler.includes("M"), a = harfler.includes("A"), e = harfler.includes("E"), k = harfler.includes("K");
-  if (m && a && e && k) bonus -= 200;
-  else if ((m && a && k) || (m && e && k)) bonus -= 150;
-  return bonus;
-}
-
-async function bilgisayarOyna(tohum, zorluk) {
-  const tahta = await acilisTahtasi(tohum, zorluk, false);
-  const harfler = tahta.filter((t) => t.harf !== JOKER).map((t) => t.harf);
-  const kurulabilenler = [];
-  for (const k of sozluk()) if (kurulabilir(k, harfler, 1)) kurulabilenler.push(k);
-  const sayilar = kurulabilenler.length < 150 ? [8, 17] : kurulabilenler.length < 200 ? [12, 20] : [14, 21];
-  const adet = Math.min(kurulabilenler.length, sayilar[0] + Math.floor(Math.random() * (sayilar[1] - sayilar[0] + 1)));
-  const secilen = kurulabilenler.sort(() => Math.random() - 0.5).slice(0, adet);
-  return { puan: secilen.reduce((t, k) => t + kelimePuani(k), 0) + harfBonusu(harfler), kelimeler: secilen };
 }
 
 function disMesaj(m, bakan) {
@@ -167,16 +127,8 @@ export class OyunOdasi extends DurableObject {
     };
     for (const p of v.oyuncular) this.oyuncular.set(p.uid, this.yeniOyuncu(p.uid, p.status, p.davetEden, simdi));
 
-    // Bilgisayarın turları baştan oynanır
-    if (v.opponent === "bilgisayar") {
-      const b = this.yeniOyuncu(BILGISAYAR, "katildi", null, simdi);
-      for (let i = 0; i < v.format; i++) {
-        const s = await bilgisayarOyna(await turTohumu(this.oyun.seed, i), this.oyun.difficulty);
-        b.turlar[i] = { bitti: true, puan: s.puan, kelimeler: s.kelimeler, bittiZaman: simdi };
-        b.total += s.puan;
-      }
-      this.oyuncular.set(BILGISAYAR, b);
-    }
+    // Bilgisayarın turlarını telefon hesaplar; oyuncu turunu bırakınca ya da bitirince gönderir
+    if (v.opponent === "bilgisayar") this.oyuncular.set(BILGISAYAR, this.yeniOyuncu(BILGISAYAR, "katildi", null, simdi));
 
     await this.oyunKaydet();
     for (const o of this.oyuncular.values()) await this.oyuncuKaydet(o);
@@ -376,13 +328,15 @@ export class OyunOdasi extends DurableObject {
       turnuva: kisisel,
       zorluk: this.oyun.difficulty,
       hamleler: t.hamleler || [],
+      bilgisayar: this.bilgisayarBekliyor(idx),
     });
   }
 
   /* Turda bir kez çıkış hakkı: süre durur, o ana kadarki puan saklanır */
-  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler }) {
+  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler, bilgisayar }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
+    await this.bilgisayarTuru(idx, bilgisayar, simdi);
     const t = r.o.turlar[idx];
     if (!t || t.bitti || t.durdu || t.cikis) return { duraklatildi: false };
     if (!turnuvaMi(this.oyun.kind)) {
@@ -413,7 +367,7 @@ export class OyunOdasi extends DurableObject {
     const tahta = new Tahta(t.taslar, s);
     tahta.bulunanlar = new Set(t.kelimeler);
     tahta.puan = t.puan;
-    const sonuc = tahta.kelimeYaz(Array.isArray(yerler) ? yerler.slice(0, 8) : [], joker || null, sozluk());
+    const sonuc = tahta.kelimeYaz(Array.isArray(yerler) ? yerler.slice(0, 8) : [], joker || null, sozluk);
     if (!sonuc.tamam) return { tamam: false, sebep: sonuc.sebep, taslar: t.taslar };
 
     t.taslar = tahta.taslar;
@@ -425,9 +379,10 @@ export class OyunOdasi extends DurableObject {
     return { tamam: true, kelime: sonuc.kelime, puan: sonuc.puan, toplam: t.puan, taslar: t.taslar, onden: ondenVeri(s, ONDEN) };
   }
 
-  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri }) {
+  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri, bilgisayar }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
+    await this.bilgisayarTuru(idx, bilgisayar, simdi);
     const o = r.o;
     const t = o.turlar[idx];
     if (!t) return { hata: "tur-yok", durum: 404 };
@@ -446,6 +401,21 @@ export class OyunOdasi extends DurableObject {
     }
     await this.turKapat(o, idx, puan, kelimeler, simdi);
     return { puan, kelimeler };
+  }
+
+  /* Bilgisayar rakibin bu turu henüz yazılmadıysa telefon hesaplayıp gönderir */
+  bilgisayarBekliyor(idx) {
+    const b = this.oyuncular.get(BILGISAYAR);
+    return !!b && !(b.turlar[idx] && b.turlar[idx].bitti);
+  }
+
+  async bilgisayarTuru(idx, s, simdi) {
+    if (!s || !this.bilgisayarBekliyor(idx)) return;
+    const b = this.oyuncular.get(BILGISAYAR);
+    const puan = puanDuzelt(s.puan);
+    b.turlar[idx] = { bitti: true, puan, kelimeler: kelimeleriDuzelt(s.kelimeler), bittiZaman: simdi };
+    b.total += puan;
+    await this.oyuncuKaydet(b);
   }
 
   async turKapat(o, idx, puan, kelimeler, simdi) {

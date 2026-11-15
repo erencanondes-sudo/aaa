@@ -21,6 +21,9 @@ tahta.kelimeYaz(h.yerler,h.joker,DICTIONARY);
 await sira.hazirla(8);
 
 aktifMotor={oyunId:oyunId,idx:idx,tahta:tahta,sira:sira,hamleler:v.hamleler.slice(),duraklatildi:false,cikisHakki:v.cikisHakki};
+
+// Bilgisayara karşı düello: bilgisayarın bu turu telefonda hesaplanır, turdan çıkınca ya da bitince gönderilir
+if(v.bilgisayar)aktifMotor.bilgisayar=await O.bilgisayarOyna(v.acilisTohumu,v.zorluk,DICTIONARY);
 return v.kalanSaniye;
 
 }
@@ -87,7 +90,7 @@ aktifMotor=null;
 if(m.baglanti)m.baglanti.kapat();
 
 // Günlük ve haftalık turnuvada puanı sunucu hesaplar (bulunan kelimeler + kalan saniye)
-let govde=m.sunucuda ? {id:m.oyunId,idx:m.idx,kalanSaniye:time} : {id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time};
+let govde=m.sunucuda ? {id:m.oyunId,idx:m.idx,kalanSaniye:time} : {id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time,bilgisayar:m.bilgisayar||null};
 
 return sunucu("tur/bitir",govde).then(function(v){
 
@@ -113,7 +116,7 @@ function duelloTuruCik(){
 if(!aktifMotor || aktifMotor.duraklatildi || !aktifMotor.cikisHakki)return Promise.resolve(false);
 
 let m=aktifMotor;
-return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:score,kelimeler:Array.from(m.tahta.bulunanlar)}).then(function(v){
+return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:score,kelimeler:Array.from(m.tahta.bulunanlar),bilgisayar:m.bilgisayar||null}).then(function(v){
 if(v.duraklatildi){
 m.duraklatildi=true;
 m.cikisHakki=false;

@@ -225,11 +225,11 @@ export async function turBasla({ env, uid, govde, simdi }) {
 
 export async function turDuraklat({ env, uid, govde, simdi }) {
   const hamleler = Array.isArray(govde.hamleler) ? govde.hamleler.slice(0, 300) : [];
-  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar }));
 }
 
 export async function turBitir({ env, uid, govde, simdi }) {
-  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar }));
 }
 
 /* ---------- Turnuvalar ---------- */

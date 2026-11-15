@@ -293,3 +293,44 @@ return {tamam:true,kelime:kelime,puan:puan,degisen:degisen};
 }
 
 }
+
+/* ---------- Bilgisayar rakip ----------
+   Telefonda hesaplanır (sunucuda 33 bin kelimeyi taramak ücretsiz planın işlemci sınırını aşıyor). */
+
+function kurulabilir(kelime, harfler, joker) {
+  const sayac = {};
+  for (const h of harfler) sayac[h] = (sayac[h] || 0) + 1;
+  let kalanJoker = joker, jokerKullanildi = false;
+  for (const ch of kelime) {
+    if (sayac[ch] > 0) sayac[ch]--;
+    else if (kalanJoker > 0) { kalanJoker--; jokerKullanildi = true; }
+    else return false;
+  }
+  return !(jokerKullanildi && kelime.length < 5);
+}
+
+function harfBonusu(harfler) {
+  const sayac = {};
+  harfler.forEach((h) => (sayac[h] = (sayac[h] || 0) + 1));
+  let bonus = 0;
+  Object.keys(sayac).forEach((h) => {
+    if (!SESLILER.includes(h) && sayac[h] > 1) bonus += 100 * (sayac[h] - 1);
+  });
+  if (harfler.includes("J")) bonus += 120;
+  ["Ö", "G", "P", "Ğ"].forEach((h) => { if (harfler.includes(h)) bonus += 70; });
+  const m = harfler.includes("M"), a = harfler.includes("A"), e = harfler.includes("E"), k = harfler.includes("K");
+  if (m && a && e && k) bonus -= 200;
+  else if ((m && a && k) || (m && e && k)) bonus -= 150;
+  return bonus;
+}
+
+export async function bilgisayarOyna(tohum, zorluk, sozluk) {
+  const tahta = await acilisTahtasi(tohum, zorluk, false);
+  const harfler = tahta.filter((t) => t.harf !== JOKER).map((t) => t.harf);
+  const kurulabilenler = [];
+  for (const k of sozluk) if (kurulabilir(k, harfler, 1)) kurulabilenler.push(k);
+  const sayilar = kurulabilenler.length < 150 ? [8, 17] : kurulabilenler.length < 200 ? [12, 20] : [14, 21];
+  const adet = Math.min(kurulabilenler.length, sayilar[0] + Math.floor(Math.random() * (sayilar[1] - sayilar[0] + 1)));
+  const secilen = kurulabilenler.sort(() => Math.random() - 0.5).slice(0, adet);
+  return { puan: secilen.reduce((t, k) => t + kelimePuani(k), 0) + harfBonusu(harfler), kelimeler: secilen };
+}

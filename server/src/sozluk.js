@@ -1,11 +1,11 @@
 /* Kelime listesi: uygulamadaki words.js dosyasının kendisi okunur, ayrı bir kopya tutulmaz.
-   Liste yalnızca gerektiğinde (tur kontrolünde) belleğe alınır; diğer istekler bu yükü taşımaz. */
+   Liste belleğe ayrıca hazırlanmaz (ücretsiz planın işlemci sınırını aşıyordu);
+   kelime doğrudan metnin içinde aranır. */
 
 import metin from "../../words.js";
 
-let kume = null;
+const liste = metin.slice(metin.indexOf("`") + 1, metin.lastIndexOf("`"));
 
-export function sozluk() {
-  if (!kume) kume = new Set(metin.slice(metin.indexOf("`") + 1, metin.lastIndexOf("`")).trim().split("\n"));
-  return kume;
-}
+export const sozluk = {
+  has: (kelime) => typeof kelime === "string" && kelime.length > 0 && !kelime.includes("\n") && liste.includes("\n" + kelime + "\n"),
+};
