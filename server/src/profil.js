@@ -92,23 +92,6 @@ export async function kullaniciGetir({ env, uid, govde }) {
   return { kullanici: Object.assign(disProfil(u), { arkadaslik }) };
 }
 
-/* Düelloya açık oyunculardan rastgele 20 kişi (son 7 günde oyun oynamış olanlar) */
-export async function acikOyuncular({ env, uid, simdi }) {
-  const { results } = await env.DB.prepare(
-    `SELECT username, avatar, word_score_sum, word_score_count FROM users
-     WHERE duel_open = 1 AND uid != ?1 AND last_seen > ?2
-       AND uid NOT IN (SELECT blocked_uid FROM blocks WHERE uid = ?1)
-       AND uid NOT IN (SELECT uid FROM blocks WHERE blocked_uid = ?1)
-     ORDER BY RANDOM() LIMIT 20`
-  ).bind(uid, simdi - 7 * GUN).all();
-  return {
-    oyuncular: results.map((u) => ({
-      username: u.username, avatar: u.avatar,
-      ortalama: u.word_score_count ? Math.round(u.word_score_sum / u.word_score_count) : 0,
-    })),
-  };
-}
-
 /* Şikâyet: günde en fazla 20 */
 export async function sikayet({ env, uid, govde, simdi }) {
   const hedef = await kullaniciBul(env, govde.username);

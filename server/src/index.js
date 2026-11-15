@@ -19,7 +19,6 @@ const ISLEMLER = {
   "profil/bildirim": profil.bildirimAyari,
   "profil/sil": profil.sil,
   "profil/sikayet": profil.sikayet,
-  "kullanici/acik": profil.acikOyuncular,
   "kullanici/getir": profil.kullaniciGetir,
   "arkadas/liste": arkadas.liste,
   "arkadas/istek": arkadas.istekGonder,

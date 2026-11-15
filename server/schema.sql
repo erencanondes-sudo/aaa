@@ -56,3 +56,9 @@ CREATE TABLE IF NOT EXISTS queue (
   uid TEXT PRIMARY KEY,
   created_at INTEGER NOT NULL
 );
+
+-- Düelloya açık oyuncular: her gece hazırlanan 1000 satır, her satırda rastgele 50 oyuncu
+CREATE TABLE IF NOT EXISTS duel_pool (
+  id INTEGER PRIMARY KEY,
+  data TEXT NOT NULL
+);
