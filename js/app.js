@@ -1156,7 +1156,7 @@ activeChallengeId=null;
 activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
-duelloTuruBitir();
+duelloTuruBitir(finalScore);
 return;
 }
 
@@ -8764,7 +8764,7 @@ if(guess.length>=6){
 spawnWordConfetti(10);
 }
 
-if(!aktifMotor && wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
+if(wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
 
 clearInterval(timer);
 

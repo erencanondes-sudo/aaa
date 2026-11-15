@@ -1,5 +1,6 @@
-/* Düello turu: harfler sunucunun verdiği tohumdan, oyunun ortak kurallarıyla (shared/oyun.js) üretilir.
-   Telefon her kelimeyi kaydeder; tur sonunda kayıt sunucuya gider, sunucu aynı tohumla baştan oynatıp puanı onaylar. */
+/* Düello ve kişisel turnuva turu: harfler sunucunun verdiği tohumdan, oyunun ortak kurallarıyla (shared/oyun.js)
+   telefonda üretilir. Puanı telefon hesaplar; tur sonunda puan ve kelimeler sunucuya gider.
+   Kelime kaydı yalnızca çıkış hakkından dönüşte tahtayı yeniden kurmak için tutulur. */
 
 let aktifMotor=null;   // {oyunId, idx, tahta, sira, hamleler, duraklatildi}
 
@@ -10,7 +11,7 @@ let v=await sunucu("tur/basla",{id:oyunId,idx:idx});
 let O=window.KonfetiOyun;
 
 let sira=new O.HarfSirasi(v.tohum,v.zorluk);
-let tahta=new O.Tahta(await O.acilisTahtasi(v.tohum,v.zorluk,false),sira);
+let tahta=new O.Tahta(await O.acilisTahtasi(v.acilisTohumu,v.zorluk,v.turnuva),sira);
 
 // Çıkıştan dönüşte o ana kadarki kelimeler aynı sırayla yeniden oynanır
 for(let h of v.hamleler){
@@ -70,13 +71,13 @@ return sonuc.degisen;
 
 }
 
-/* Tur bitti: kelime kaydı sunucuya gider, puanı sunucu onaylar */
-function duelloTuruBitir(){
+/* Tur bitti: puan ve bulunan kelimeler sunucuya gider */
+function duelloTuruBitir(puan){
 
 let m=aktifMotor;
 aktifMotor=null;
 
-return sunucu("tur/bitir",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,kalanSaniye:time}).then(function(v){
+return sunucu("tur/bitir",{id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time}).then(function(v){
 
 if(currentUser){
 currentUser.wordScoreSum=(currentUser.wordScoreSum||0)+v.puan;
@@ -99,7 +100,7 @@ function duelloTuruCik(){
 if(!aktifMotor || aktifMotor.duraklatildi || !aktifMotor.cikisHakki)return Promise.resolve(false);
 
 let m=aktifMotor;
-return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler}).then(function(v){
+return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:score,kelimeler:Array.from(m.tahta.bulunanlar)}).then(function(v){
 if(v.duraklatildi){
 m.duraklatildi=true;
 m.cikisHakki=false;

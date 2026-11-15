@@ -7,7 +7,7 @@ import { GUN } from "./ortak.js";
 import { sozluk } from "./sozluk.js";
 import { bildirimGonder } from "./bildirim.js";
 import {
-  yeniTohum, acilisTahtasi, oyuncuTohumu, HarfSirasi, Tahta, ondenVeri, oyunuKontrolEt,
+  yeniTohum, acilisTahtasi, oyuncuTohumu, HarfSirasi, Tahta, ondenVeri,
   kelimePuani, SESLILER, JOKER, TUR_SURESI, KALAN_SANIYE_PUANI,
 } from "../../shared/oyun.js";
 
@@ -42,7 +42,19 @@ export function acikOyunSayisi(o, simdi) {
   return gun >= 6 ? 7 : Math.max(1, gun);
 }
 
-const turnuvaMi = (kind) => kind !== "duello";
+// Harfleri sunucunun ürettiği ve her kelimeyi kontrol ettiği oyunlar: yalnızca günlük ve haftalık turnuva.
+// Düelloda ve kişisel turnuvada telefona yalnızca tohum gider; puanı telefon hesaplar.
+const turnuvaMi = (kind) => kind === "gunluk" || kind === "haftalik";
+const EN_YUKSEK_PUAN = 10000;
+
+/* Telefonun gönderdiği kelimeler: en fazla 300, her biri 2–8 harf */
+function kelimeleriDuzelt(liste) {
+  return (Array.isArray(liste) ? liste : []).slice(0, 300).map((k) => String(k).slice(0, 8)).filter((k) => k.length >= 2);
+}
+
+function puanDuzelt(p) {
+  return Math.max(0, Math.min(EN_YUKSEK_PUAN, Math.round(Number(p) || 0)));
+}
 
 function gecen(t, simdi) {
   return (t.durdu || simdi) - t.basladi - t.durmaMs;
@@ -354,20 +366,28 @@ export class OyunOdasi extends DurableObject {
       const s = await this.sira(uid, idx, t);
       return Object.assign(ortak, { taslar: t.taslar, onden: ondenVeri(s, ONDEN), kelimeler: t.kelimeler, puan: t.puan });
     }
-    return Object.assign(ortak, { tohum, zorluk: this.oyun.difficulty, hamleler: t.hamleler || [] });
+    // Kişisel turnuvada açılış herkes için aynı, devamı oyuncuya özel
+    const kisisel = this.oyun.kind === "turnuva";
+    return Object.assign(ortak, {
+      acilisTohumu: tohum,
+      tohum: kisisel ? await oyuncuTohumu(tohum, uid) : tohum,
+      turnuva: kisisel,
+      zorluk: this.oyun.difficulty,
+      hamleler: t.hamleler || [],
+    });
   }
 
   /* Turda bir kez çıkış hakkı: süre durur, o ana kadarki puan saklanır */
-  async turDuraklat({ uid, idx, simdi, hamleler }) {
+  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
     const t = r.o.turlar[idx];
     if (!t || t.bitti || t.durdu || t.cikis) return { duraklatildi: false };
     if (!turnuvaMi(this.oyun.kind)) {
-      const k = await oyunuKontrolEt({ tohum: await turTohumu(this.oyun.seed, idx), zorluk: this.oyun.difficulty, hamleler, kalanSaniye: 0, sozluk: sozluk() });
-      t.puan = k.gecerli ? k.puan : 0;
-      t.kelimeler = k.kelimeler;
-      t.hamleler = k.gecerli ? hamleler : [];
+      // Telefon o ana kadarki puanı ve kelimeleri bildirir; hamleler dönüşte tahtayı kurmak için saklanır
+      t.puan = puanDuzelt(puan);
+      t.kelimeler = kelimeleriDuzelt(kelimeler);
+      t.hamleler = Array.isArray(hamleler) ? hamleler.slice(0, 300) : [];
     }
     t.durdu = simdi;
     t.cikis = true;
@@ -403,7 +423,7 @@ export class OyunOdasi extends DurableObject {
     return { tamam: true, kelime: sonuc.kelime, puan: sonuc.puan, toplam: t.puan, taslar: t.taslar, onden: ondenVeri(s, ONDEN) };
   }
 
-  async turBitir({ uid, idx, simdi, hamleler, kalanSaniye: istenen }) {
+  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
     const o = r.o;
@@ -414,18 +434,16 @@ export class OyunOdasi extends DurableObject {
 
     // Telefonun söylediği kalan süre, sunucunun hesapladığından fazla olamaz
     const kalan = Math.max(0, Math.min(kalanSaniye(t, simdi), istenen | 0));
-    let puan, kelimeler, gecerli = true;
+    let puan, kelimeler;
     if (turnuvaMi(this.oyun.kind)) {
       puan = t.puan + KALAN_SANIYE_PUANI * kalan;
       kelimeler = t.kelimeler;
     } else {
-      const k = await oyunuKontrolEt({ tohum: await turTohumu(this.oyun.seed, idx), zorluk: this.oyun.difficulty, hamleler, kalanSaniye: kalan, sozluk: sozluk() });
-      gecerli = k.gecerli;
-      puan = k.gecerli ? k.puan : 0;
-      kelimeler = k.kelimeler;
+      puan = puanDuzelt(telefonPuani);
+      kelimeler = kelimeleriDuzelt(telefonKelimeleri);
     }
     await this.turKapat(o, idx, puan, kelimeler, simdi);
-    return { puan, kelimeler, gecerli };
+    return { puan, kelimeler };
   }
 
   async turKapat(o, idx, puan, kelimeler, simdi) {

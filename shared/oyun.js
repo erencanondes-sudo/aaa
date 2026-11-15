@@ -1,4 +1,5 @@
-/* Konfeti oyun kuralları: telefon ve sunucu bu dosyayı birlikte kullanır.
+/* Konfeti oyun kuralları: telefon ve sunucu bu dosyayı birlikte kullanır
+   (düelloda ve kişisel turnuvada harfleri telefon, günlük ve haftalık turnuvada sunucu üretir).
    Harfler gizli bir tohumdan hesaplanır; aynı tohum ve aynı zorluk her zaman aynı harfleri verir. */
 
 export const TUR_SURESI = 120;
@@ -291,24 +292,4 @@ return {tamam:true,kelime:kelime,puan:puan,degisen:degisen};
 
 }
 
-}
-
-/* ---------- Sunucu kontrolü ----------
-   Telefonun gönderdiği kelime kaydını aynı tohumla baştan oynatır, puanı yeniden hesaplar. */
-export async function oyunuKontrolEt(o){
-// o: {tohum, zorluk, turnuva, acilisTohumu, hamleler:[{yerler,joker}], kalanSaniye, sozluk}
-let acilis=await acilisTahtasi(o.acilisTohumu || o.tohum,o.zorluk,!!o.turnuva);
-let sira=new HarfSirasi(o.tohum,o.zorluk);
-let tahta=new Tahta(acilis,sira);
-let kelimeler=[];
-
-for(let h of o.hamleler){
-await sira.hazirla(8);
-let sonuc=tahta.kelimeYaz(h.yerler,h.joker,o.sozluk);
-if(!sonuc.tamam)return {gecerli:false,sebep:sonuc.sebep,kelimeler:kelimeler};
-kelimeler.push(sonuc.kelime);
-}
-
-let kalan=Math.max(0,Math.min(TUR_SURESI,Math.floor(o.kalanSaniye||0)));
-return {gecerli:true,kelimeler:kelimeler,puan:tahta.puan+KALAN_SANIYE_PUANI*kalan};
 }
