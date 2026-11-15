@@ -15,9 +15,11 @@ export const BILGISAYAR = "bilgisayar";
 export const SURELER = { 1: GUN, 3: 2 * GUN, 7: 7 * GUN };
 export const DAVET_SURESI = 7 * GUN;
 export const TURKIYE = 3 * 3600000;
-const SAKLAMA = { duello: 90 * GUN, turnuva: 90 * GUN, gunluk: 7 * GUN, haftalik: 28 * GUN };
+// Biten oyunun odası ne kadar kalır: düello 3 ay, kişisel turnuva 1 ay (ikisinde de son 20 kuralı ayrıca işler),
+// günlük turnuva 1 gün (dünün turnuvası), haftalık turnuva 1 hafta (geçen haftanın turnuvası)
+const SAKLAMA = { duello: 90 * GUN, turnuva: 30 * GUN, gunluk: 1 * GUN, haftalik: 7 * GUN };
 const EN_FAZLA_OYUNCU = 100;
-const EN_FAZLA_MESAJ = 100;
+const GORUNEN_MESAJ = 100;   // oyuncu son 100 mesajı görür; bütün mesajlar şikâyetler için oda silinene kadar saklanır
 const EN_UZUN_MESAJ = 100;
 const SIRALAMA_ADEDI = 100;
 const ONDEN = 3;          // turnuvada telefona önceden gönderilen taş sayısı (her sıradan)
@@ -125,7 +127,7 @@ export class OyunOdasi extends DurableObject {
     this.mesajlar = [];
     if (this.oyun) {
       for (const o of (await this.ctx.storage.list({ prefix: "o:" })).values()) this.oyuncular.set(o.uid, o);
-      this.mesajlar = (await this.ctx.storage.get("mesajlar")) || [];
+      this.mesajlar = [...(await this.ctx.storage.list({ prefix: "m:", reverse: true, limit: GORUNEN_MESAJ })).values()].reverse();
     }
     return this.oyun;
   }
@@ -715,11 +717,12 @@ export class OyunOdasi extends DurableObject {
       if (simdi - (this.sonMesaj[kim.uid] || 0) < 1000) return ws.send(JSON.stringify({ t: "hata", hata: "cok-hizli" }));
       this.sonMesaj[kim.uid] = simdi;
 
+      // Her mesaj ayrı kayıt; anahtar zamana göre sıralanır
       const son = this.mesajlar[this.mesajlar.length - 1];
-      const m = { id: son ? son.id + 1 : 1, uid: kim.uid, ad: kim.ad, metin, zaman: simdi };
+      const m = { id: son && son.id >= simdi ? son.id + 1 : simdi, uid: kim.uid, ad: kim.ad, metin, zaman: simdi };
       this.mesajlar.push(m);
-      if (this.mesajlar.length > EN_FAZLA_MESAJ) this.mesajlar.splice(0, this.mesajlar.length - EN_FAZLA_MESAJ);
-      await this.ctx.storage.put("mesajlar", this.mesajlar);
+      if (this.mesajlar.length > GORUNEN_MESAJ) this.mesajlar.splice(0, this.mesajlar.length - GORUNEN_MESAJ);
+      await this.ctx.storage.put("m:" + String(m.id).padStart(15, "0"), m);
 
       const baglilar = new Set();
       for (const d of this.ctx.getWebSockets()) {

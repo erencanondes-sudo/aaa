@@ -306,11 +306,12 @@ export async function katil({ env, uid, govde, simdi }) {
   return detay({ env, uid, govde: { id }, simdi });
 }
 
-/* Geçmiş günlük (7 gün) ve haftalık (4 hafta) turnuvalarım */
+/* Dünün günlük ve geçen haftanın haftalık turnuvası */
 export async function gecmis({ env, uid, govde, simdi }) {
   if (govde.tur !== "gunluk" && govde.tur !== "haftalik") throw new Hata("tur-gecersiz");
   const { liste } = await kullaniciOdasi(env, uid).getir(simdi);
-  const idler = Object.entries(liste).filter(([, k]) => k.kind === govde.tur).sort((x, y) => y[1].bitis - x[1].bitis).map(([id]) => id);
+  // Yalnızca biten turnuvalar (dünün ve geçen haftanın turnuvası); daha eskileri silinir
+  const idler = Object.entries(liste).filter(([, k]) => k.kind === govde.tur && k.bitis < simdi).sort((x, y) => y[1].bitis - x[1].bitis).map(([id]) => id);
   const turnuvalar = [];
   for (const id of idler) {
     const d = await oyunOdasi(env, id).detay({ uid, simdi });

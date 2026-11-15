@@ -1,4 +1,4 @@
-/* Turnuvalar: günlük ve haftalık turnuva sayfası (oyunlar, ilk 100, sohbet, geçmiş),
+/* Turnuvalar: günlük ve haftalık turnuva sayfası (oyunlar, ilk 100, sohbet, dünün ve geçen haftanın turnuvası),
    kişisel turnuvaya arkadaş daveti. Kişisel turnuvanın kendisi düello gibi Oyunlarım'da görünür. */
 
 let acikTurnuva=null;   // sayfası açık olan günlük ya da haftalık turnuva
@@ -68,7 +68,7 @@ h+="<div class=\"td-timer-clock\">"+(haftalik ? Math.floor(ms/86400000)+"<span c
 h+="</div>";
 
 h+="<div class=\"td-days-list\">";
-h+="<button class=\"td-lastweek-btn\" onclick=\"gecmisTurnuvalar('"+g.kind+"')\">"+(haftalik ? "Geçmiş Haftalar" : "Geçmiş Günler")+"</button>";
+h+="<button class=\"td-lastweek-btn\" onclick=\"gecmisTurnuva('"+g.kind+"')\">"+(haftalik ? "Geçen Haftanın Turnuvası" : "Dünün Turnuvası")+"</button>";
 
 let benimTurlar=d.ben ? d.ben.turlar : [];
 for(let i=0;i<g.format;i++){
@@ -135,23 +135,17 @@ goHome();
 
 }
 
-/* Geçmiş günlük (7 gün) ve haftalık (4 hafta) turnuvalarım */
-function gecmisTurnuvalar(tur){
-
-openDetailModal("<p>Yükleniyor...</p>");
+/* Dünün günlük ya da geçen haftanın haftalık turnuvası (daha eskileri silinir) */
+function gecmisTurnuva(tur){
 
 sunucu("turnuva/gecmis",{tur:tur}).then(function(v){
-
-let h="<p class=\"screen-title\" style=\"margin-top:0;\">"+(tur==="haftalik" ? "Geçmiş Haftalar" : "Geçmiş Günler")+"</p>";
-if(!v.turnuvalar.length)h+="<p>Henüz katıldığın bir turnuva yok.</p>";
-v.turnuvalar.forEach(function(t){
-let tarih=new Date(t.period+"T00:00:00").toLocaleDateString("tr-TR",{day:"numeric",month:"long"});
-h+="<div class=\"oy-card\" onclick=\"hideDetailModal();gecmisTurnuvaAc('"+t.id+"')\" style=\"cursor:pointer;\"><div class=\"oy-content\"><div class=\"oy-card-header\"><span class=\"oy-username\">"+(tur==="haftalik" ? tarih+" haftası" : tarih)+"</span><span class=\"oy-status\">"+(t.yer ? t.yer+". sıra" : "İlk 100 dışında")+" · "+t.total+" puan</span></div><div class=\"oy-score-line\">"+t.oyuncuSayisi+" oyuncu</div></div></div>";
-});
-document.getElementById("detailModalContent").innerHTML=h;
-
+if(!v.turnuvalar.length){
+showTopNotification(tur==="haftalik" ? "Geçen hafta turnuvaya katılmadın." : "Dün turnuvaya katılmadın.");
+return;
+}
+gecmisTurnuvaAc(v.turnuvalar[0].id);
 }).catch(function(e){
-document.getElementById("detailModalContent").innerHTML="<p>"+hataMetni(e)+"</p>";
+showTopNotification(hataMetni(e));
 });
 
 }
@@ -165,6 +159,8 @@ acikTurnuva=id;
 
 sunucu("oyun/detay",{id:id}).then(function(v){
 turnuvaSayfasiniCiz(v.oyun);
+// Silinmeyen turnuvalarda sohbet açık
+sohbetAc(id,"tournamentSidePanel");
 }).catch(function(e){
 document.getElementById("tournamentDetailContent").innerHTML="<p>"+hataMetni(e)+"</p>";
 });

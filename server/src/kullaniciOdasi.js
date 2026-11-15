@@ -95,9 +95,9 @@ export class KullaniciOdasi extends DurableObject {
       .filter(([, k]) => k.kind !== "gunluk" && k.kind !== "haftalik" && bittiMi(k, simdi))
       .sort((x, y) => (y[1].bittiZaman || y[1].bitis) - (x[1].bittiZaman || x[1].bitis));
     for (const [id] of bitenler.slice(EN_FAZLA_BITEN)) { delete l[id]; degisti = true; this.dustu(id); }
-    // Günlük turnuva 7 gün, haftalık 4 hafta listede kalır
+    // Biten günlük turnuva 1 gün (dünün turnuvası), haftalık 1 hafta (geçen haftanın turnuvası) listede kalır
     for (const [id, k] of Object.entries(l)) {
-      const sure = k.kind === "gunluk" ? 7 : k.kind === "haftalik" ? 28 : 0;
+      const sure = k.kind === "gunluk" ? 1 : k.kind === "haftalik" ? 7 : 0;
       if (sure && k.bitis + sure * 86400000 < simdi) { delete l[id]; degisti = true; }
     }
     if (degisti) await this.kaydet();
