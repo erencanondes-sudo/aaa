@@ -1,0 +1,28 @@
+# Sunucu (server/, shared/ ya da words.js) değişip GitHub'a gönderilince Cloudflare'e kendiliğinden yüklenir.
+# Önce veritabanı tabloları kurulur (var olan tablolara dokunulmaz), sonra sunucu yayına alınır.
+name: Sunucuyu yükle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+      - "shared/**"
+      - "words.js"
+      - ".github/workflows/sunucu.yml"
+  workflow_dispatch:
+
+jobs:
+  yukle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server
+          wranglerVersion: "4"
+          command: |
+            d1 execute konfeti --remote --file=schema.sql
+            deploy

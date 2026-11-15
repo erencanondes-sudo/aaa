@@ -9,7 +9,7 @@ EN_DUSUK_SURUM = "1"
 [[d1_databases]]
 binding = "DB"
 database_name = "konfeti"
-database_id = "BURAYA-D1-KIMLIGI"
+database_id = "77084993-7ddf-4f3a-867f-844aa2ddac57"
 
 # Kelime listesi (../words.js) metin olarak okunur
 [[rules]]
