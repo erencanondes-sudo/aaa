@@ -5,11 +5,10 @@ import { Hata } from "./ortak.js";
 import * as profil from "./profil.js";
 import * as arkadas from "./arkadas.js";
 import * as oyun from "./oyun.js";
-import * as turnuva from "./turnuva.js";
-import * as sohbet from "./sohbet.js";
 import { temizle } from "./temizlik.js";
 
-export { TurOdasi } from "./turOdasi.js";
+export { OyunOdasi } from "./oyunOdasi.js";
+export { KullaniciOdasi } from "./kullaniciOdasi.js";
 
 const ISLEMLER = {
   "profil/getir": profil.getir,
@@ -27,24 +26,20 @@ const ISLEMLER = {
   "arkadas/cevap": arkadas.cevapla,
   "arkadas/sil": arkadas.sil,
   "arkadas/engelle": arkadas.engelle,
-  "oyun/liste": oyun.oyunListesi,
-  "oyun/detay": oyun.oyunDetay,
-  "oyun/gizle": oyun.oyunGizle,
+  "acilis": oyun.acilis,
+  "oyun/detay": oyun.detay,
+  "oyun/gizle": oyun.gizle,
   "oyun/duello": oyun.duelloOlustur,
   "oyun/cevap": oyun.daveteCevap,
   "oyun/rastgele": oyun.rastgeleKatil,
   "oyun/rastgele-iptal": oyun.rastgeleIptal,
   "tur/basla": oyun.turBasla,
-  "tur/kelime": oyun.turKelime,
   "tur/duraklat": oyun.turDuraklat,
   "tur/bitir": oyun.turBitir,
-  "turnuva/ac": turnuva.kisiselAc,
-  "turnuva/davet": turnuva.davetEt,
-  "turnuva/katil": turnuva.katil,
-  "turnuva/durum": turnuva.durum,
-  "turnuva/gecmis": turnuva.gecmis,
-  "sohbet/getir": sohbet.getir,
-  "sohbet/gonder": sohbet.gonder,
+  "turnuva/ac": oyun.kisiselAc,
+  "turnuva/davet": oyun.davetEt,
+  "turnuva/katil": oyun.katil,
+  "turnuva/gecmis": oyun.gecmis,
 };
 
 function cors(env) {
@@ -70,6 +65,14 @@ export default {
 
     // Sürüm kontrolü: girişsiz; telefon bundan eski sürümse güncelleme ister
     if (yol === "surum") return yanit(env, { enDusuk: Number(env.EN_DUSUK_SURUM || 1) });
+
+    // Anlık bağlantı: tarayıcı bu bağlantıda başlık gönderemediği için giriş belgesi adreste gelir
+    if (yol === "baglan" && istek.headers.get("upgrade") === "websocket") {
+      const belge = new URL(istek.url).searchParams.get("belge") || "";
+      const uid = await kimlikDogrula(new Request(istek.url, { headers: { authorization: "Bearer " + belge } }), env.FIREBASE_PROJE_ID);
+      if (!uid) return new Response("giris-gerekli", { status: 401 });
+      return oyun.baglan(istek, env, uid);
+    }
 
     const islem = ISLEMLER[yol];
     if (!islem || istek.method !== "POST") return yanit(env, { hata: "bulunamadi" }, 404);

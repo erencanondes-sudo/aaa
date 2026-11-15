@@ -22,10 +22,9 @@ function disProfil(u) {
   };
 }
 
-export async function getir({ env, uid, simdi }) {
+export async function getir({ env, uid }) {
   const u = await env.DB.prepare("SELECT * FROM users WHERE uid = ?").bind(uid).first();
   if (!u) return { profil: null };
-  await env.DB.prepare("UPDATE users SET last_seen = ? WHERE uid = ?").bind(simdi, uid).run();
   return {
     profil: Object.assign(disProfil(u), {
       name: u.name,
@@ -93,7 +92,7 @@ export async function kullaniciGetir({ env, uid, govde }) {
   return { kullanici: Object.assign(disProfil(u), { arkadaslik }) };
 }
 
-/* Düelloya açık oyunculardan rastgele 20 kişi (son 7 günde girmiş olanlar) */
+/* Düelloya açık oyunculardan rastgele 20 kişi (son 7 günde oyun oynamış olanlar) */
 export async function acikOyuncular({ env, uid, simdi }) {
   const { results } = await env.DB.prepare(
     `SELECT username, avatar, word_score_sum, word_score_count FROM users
@@ -120,17 +119,18 @@ export async function sikayet({ env, uid, govde, simdi }) {
     .bind(uid, hedef.uid, govde.oyunId || null, String(govde.sebep || "").slice(0, 200), simdi).run();
 }
 
-/* Hesap silme: profil, arkadaşlar, engeller ve bulunan kelimeler silinir.
-   Biten oyunlarda rakiplerin geçmişi bozulmasın diye oyun satırları kalır ("Silinmiş kullanıcı" görünür).
+/* Hesap silme: oyuncunun oyunlarına haber verilir (bekleyen davetler düşer), sonra profil, arkadaşlar,
+   engeller ve kullanıcı odası silinir. Biten oyunlarda oyuncu "Silinmiş kullanıcı" görünür.
    Firebase hesabını telefon siler. */
 export async function sil({ env, uid, simdi }) {
+  const oda = env.KULLANICI_ODASI.get(env.KULLANICI_ODASI.idFromName(uid));
+  const oyunlar = await oda.sil();
+  for (const id of oyunlar) {
+    try {
+      await env.OYUN_ODASI.get(env.OYUN_ODASI.idFromName(id)).kullaniciSilindi({ uid, simdi });
+    } catch (e) {}
+  }
   await env.DB.batch([
-    env.DB.prepare("UPDATE games SET status = 'dustu', updated_at = ? WHERE creator = ? AND status = 'bekliyor'").bind(simdi, uid),
-    env.DB.prepare(
-      "UPDATE games SET status = 'reddedildi', updated_at = ?1 WHERE kind = 'duello' AND status = 'bekliyor' AND id IN (SELECT game_id FROM players WHERE uid = ?2 AND status = 'davetli')"
-    ).bind(simdi, uid),
-    env.DB.prepare("UPDATE players SET status = 'reddetti', updated_at = ? WHERE uid = ? AND status = 'davetli'").bind(simdi, uid),
-    env.DB.prepare("DELETE FROM found_words WHERE uid = ?").bind(uid),
     env.DB.prepare("DELETE FROM friends WHERE a = ?1 OR b = ?1").bind(uid),
     env.DB.prepare("DELETE FROM blocks WHERE uid = ?1 OR blocked_uid = ?1").bind(uid),
     env.DB.prepare("DELETE FROM queue WHERE uid = ?").bind(uid),

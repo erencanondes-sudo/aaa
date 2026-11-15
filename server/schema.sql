@@ -1,4 +1,5 @@
 -- Konfeti veritabanı (Cloudflare D1)
+-- Oyunlar burada değil: her oyunun kendi odası, her kullanıcının kendi oyun listesi odası var.
 
 CREATE TABLE IF NOT EXISTS users (
   uid TEXT PRIMARY KEY,
@@ -21,13 +22,6 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX IF NOT EXISTS users_duel_open ON users(duel_open, last_seen);
-
--- Bulunan benzersiz kelimeler (profildeki sayı için)
-CREATE TABLE IF NOT EXISTS found_words (
-  uid TEXT NOT NULL,
-  word TEXT NOT NULL,
-  PRIMARY KEY (uid, word)
-);
 
 -- Arkadaşlık: a < b olacak şekilde tek satır
 CREATE TABLE IF NOT EXISTS friends (
@@ -56,73 +50,6 @@ CREATE TABLE IF NOT EXISTS reports (
   reason TEXT,
   created_at INTEGER NOT NULL
 );
-
--- Bütün oyun türleri tek tabloda
-CREATE TABLE IF NOT EXISTS games (
-  id TEXT PRIMARY KEY,
-  kind TEXT NOT NULL,            -- 'duello' | 'turnuva' | 'gunluk' | 'haftalik'
-  opponent TEXT,                 -- düello için: 'arkadas' | 'rastgele' | 'bilgisayar'
-  creator TEXT,
-  name TEXT,
-  format INTEGER NOT NULL,       -- oyun sayısı: 1, 3 veya 7
-  seed TEXT NOT NULL,            -- gizli tohum
-  difficulty INTEGER NOT NULL,   -- 0..100
-  status TEXT NOT NULL,          -- 'bekliyor' | 'suruyor' | 'bitti' | 'reddedildi' | 'dustu'
-  period TEXT,                   -- günlük/haftalık turnuvanın gün/hafta kimliği
-  source_game TEXT,              -- düellodan açılan turnuvada kaynak düello
-  created_at INTEGER NOT NULL,
-  starts_at INTEGER,
-  ends_at INTEGER,
-  last_msg_at INTEGER,
-  updated_at INTEGER NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS games_period ON games(kind, period);
-CREATE INDEX IF NOT EXISTS games_ends ON games(status, ends_at);
-
-CREATE TABLE IF NOT EXISTS players (
-  game_id TEXT NOT NULL,
-  uid TEXT NOT NULL,
-  status TEXT NOT NULL,          -- 'davetli' | 'katildi' | 'reddetti'
-  invited_by TEXT,
-  total INTEGER NOT NULL DEFAULT 0,
-  joined_at INTEGER,
-  hidden INTEGER NOT NULL DEFAULT 0,
-  last_read_at INTEGER,
-  notified_game INTEGER NOT NULL DEFAULT 0,
-  notified_msg INTEGER NOT NULL DEFAULT 0,
-  updated_at INTEGER NOT NULL,
-  PRIMARY KEY (game_id, uid)
-);
-
-CREATE INDEX IF NOT EXISTS players_uid ON players(uid, updated_at);
-
-CREATE TABLE IF NOT EXISTS rounds (
-  game_id TEXT NOT NULL,
-  uid TEXT NOT NULL,
-  idx INTEGER NOT NULL,
-  started_at INTEGER,
-  paused_at INTEGER,
-  pause_used INTEGER NOT NULL DEFAULT 0,
-  paused_ms INTEGER NOT NULL DEFAULT 0,
-  finished_at INTEGER,
-  score INTEGER,
-  words TEXT,
-  PRIMARY KEY (game_id, uid, idx)
-);
-
-CREATE INDEX IF NOT EXISTS players_total ON players(game_id, total);
-
--- Oyun içi sohbet: her oyunda son 100 mesaj tutulur
-CREATE TABLE IF NOT EXISTS messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  game_id TEXT NOT NULL,
-  uid TEXT NOT NULL,
-  text TEXT NOT NULL,
-  created_at INTEGER NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS messages_game ON messages(game_id, id);
 
 -- Rastgele rakip bekleyenler (48 saat)
 CREATE TABLE IF NOT EXISTS queue (

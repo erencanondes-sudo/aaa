@@ -17,14 +17,18 @@ type = "Text"
 globs = ["**/words.js"]
 fallthrough = false
 
-# Turnuva turu odaları
+# Odalar: her oyun için bir oyun odası, her oyuncu için bir kullanıcı odası
 [[durable_objects.bindings]]
-name = "TUR_ODASI"
-class_name = "TurOdasi"
+name = "OYUN_ODASI"
+class_name = "OyunOdasi"
+
+[[durable_objects.bindings]]
+name = "KULLANICI_ODASI"
+class_name = "KullaniciOdasi"
 
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["TurOdasi"]
+new_sqlite_classes = ["OyunOdasi", "KullaniciOdasi"]
 
 # Günlük temizlik: her gece 03:07 (Türkiye saati; cron UTC ile yazılır)
 [triggers]
