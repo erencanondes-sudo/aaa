@@ -511,6 +511,7 @@ let sira=siradakiTurum(d);
 h+="<div class=\"oy-actions\" style=\"margin-top:12px;\">";
 if(sira)h+="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+d.oyun.id+"')\"><i class=\"fa-solid fa-play\"></i> "+(sira.basladi ? "Devam Et" : (sira.idx+1)+". Oyunu Oyna")+"</button>";
 if(d.oyun.kind==="duello" && d.oyun.opponent!=="bilgisayar")h+="<button class=\"oy-btn oy-btn-brown\" onclick=\"openChallengeAddFriend('"+d.oyun.id+"')\">➕ Arkadaş Ekle</button>";
+if(d.oyun.kind==="turnuva" && d.oyun.status==="suruyor")h+="<button class=\"oy-btn oy-btn-brown\" onclick=\"openTournamentInvite('"+d.oyun.id+"')\">➕ Arkadaş Davet Et</button>";
 h+="</div>";
 
 if(d.oyun.status==="suruyor")h+="<p class=\"td-remaining\">⏳ "+kalanSureMetni(d.oyun.endsAt)+" kaldı</p>";
@@ -557,11 +558,11 @@ document.getElementById("detailModalContent").innerHTML="<p>"+hataMetni(e)+"</p>
 
 /* ---------- Anlık sohbet ---------- */
 
-function sohbetAc(id){
+function sohbetAc(id,panelId){
 
 sohbetKapat();
 
-let panel=document.getElementById("challengeDetailSidePanel");
+let panel=document.getElementById(panelId||"challengeDetailSidePanel");
 panel.innerHTML="<div class=\"sohbet-mesajlar\" id=\"sohbetMesajlar\"><p style=\"color:#7b8fae;font-size:0.85em;\">Bağlanıyor...</p></div>"
 +"<div class=\"sohbet-yaz\"><input id=\"sohbetYazi\" maxlength=\"100\" placeholder=\"Mesaj yaz...\" onkeydown=\"if(event.key==='Enter')sohbetGonder()\"><button onclick=\"sohbetGonder()\"><i class=\"fa-solid fa-paper-plane\"></i></button></div>";
 
@@ -580,7 +581,7 @@ if(bos)bos.remove();
 kutu.insertAdjacentHTML("beforeend",mesajHtml(v.mesaj));
 kutu.scrollTop=kutu.scrollHeight;
 }
-else if(v.t==="degisti"){
+else if(v.t==="degisti" && acikAyrinti===id){
 // Rakip oynadı: ayrıntı yenilenir
 oyunAyrintisi(id).then(function(d){ if(acikAyrinti===id)ayrintiCiz(d); });
 }

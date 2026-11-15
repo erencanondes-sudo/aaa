@@ -100,10 +100,6 @@ function hafizaYaz(h){
 try{ localStorage.setItem(hafizaAnahtari(),JSON.stringify(h)); }catch(e){}
 }
 
-function hafizaSil(){
-try{ localStorage.removeItem(hafizaAnahtari()); }catch(e){}
-}
-
 /* Açılış: profil, oyun listesi (değişen oyunların ayrıntısıyla), giden davetler, düello oyuncu listesi.
    Bir oyun açılamazsa ya da liste hafızayla uyuşmazsa bütün oyunlar baştan istenir. */
 async function acilis(hepsi){
@@ -175,11 +171,17 @@ try{ ws.close(); }catch(e){}
 async function oyunaBaglan(oyunId,gelen){
 let adres=SUNUCU_ADRESI.replace(/^http/,"ws")+"/api/baglan?oyun="+encodeURIComponent(oyunId)+"&belge="+encodeURIComponent(await girisBelgesi());
 let ws=new WebSocket(adres);
+let bekleyen=[];
+ws.onopen=function(){
+bekleyen.forEach(function(m){ ws.send(m); });
+bekleyen=[];
+};
 ws.onmessage=function(e){
 try{ gelen(JSON.parse(e.data)); }catch(err){ console.error(err); }
 };
 return {
-gonder:function(veri){ if(ws.readyState===1)ws.send(JSON.stringify(veri)); },
+// Bağlantı henüz açılmadıysa mesaj açılınca gönderilir
+gonder:function(veri){ if(ws.readyState===1)ws.send(JSON.stringify(veri)); else if(ws.readyState===0)bekleyen.push(JSON.stringify(veri)); },
 kapat:function(){ try{ ws.close(); }catch(e){} },
 baglanti:ws
 };

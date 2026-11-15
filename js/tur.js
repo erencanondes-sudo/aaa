@@ -61,8 +61,16 @@ let joker=jokerAdim ? jokerAdim.value : null;
 let sonuc=aktifMotor.tahta.kelimeYaz(yerler,joker,DICTIONARY);
 if(!sonuc.tamam)return null;
 
-aktifMotor.hamleler.push({yerler:yerler,joker:joker});
 motorTahtayiUygula();
+
+if(aktifMotor.sunucuda){
+// Günlük ve haftalık turnuva: kelime sunucuya gider
+aktifMotor.yolda++;
+aktifMotor.baglanti.gonder({t:"kelime",idx:aktifMotor.idx,yerler:yerler,joker:joker});
+return sonuc.degisen;
+}
+
+aktifMotor.hamleler.push({yerler:yerler,joker:joker});
 
 // Sıradaki kelime için taşlar önceden hazırlanır
 aktifMotor.sira.hazirla(8);
@@ -76,13 +84,18 @@ function duelloTuruBitir(puan){
 
 let m=aktifMotor;
 aktifMotor=null;
+if(m.baglanti)m.baglanti.kapat();
 
-return sunucu("tur/bitir",{id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time}).then(function(v){
+// Günlük ve haftalık turnuvada puanı sunucu hesaplar (bulunan kelimeler + kalan saniye)
+let govde=m.sunucuda ? {id:m.oyunId,idx:m.idx,kalanSaniye:time} : {id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time};
+
+return sunucu("tur/bitir",govde).then(function(v){
 
 if(currentUser){
 currentUser.wordScoreSum=(currentUser.wordScoreSum||0)+v.puan;
 currentUser.wordScoreCount=(currentUser.wordScoreCount||0)+1;
 }
+if(m.sunucuda)return turnuvaSayfasiniYenile(m.oyunId);
 return oyunAyrintisi(m.oyunId);
 
 }).catch(function(e){
@@ -104,6 +117,7 @@ return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:sco
 if(v.duraklatildi){
 m.duraklatildi=true;
 m.cikisHakki=false;
+if(m.baglanti)m.baglanti.kapat();
 }
 return v.duraklatildi;
 }).catch(function(){ return false; });
@@ -139,5 +153,51 @@ updateWordTarget();
 document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
 startWordTimerTick();
 }
+
+}
+
+/* ---------- Günlük ve haftalık turnuva turu ----------
+   Harfleri sunucu üretir. Telefonun elinde her sıradan sıradaki 3 taş vardır; kelime yazılınca tahta hemen
+   güncellenir, kelime anlık bağlantıyla sunucuya gider, sunucu doğrulayıp yeni taşları gönderir. */
+
+async function sunucuTuruHazirla(oyunId,idx){
+
+let v=await sunucu("tur/basla",{id:oyunId,idx:idx});
+let O=window.KonfetiOyun;
+
+let onden=new O.OndenSira();
+onden.yenile(v.onden);
+let tahta=new O.Tahta(v.taslar,onden);
+tahta.bulunanlar=new Set(v.kelimeler);
+tahta.puan=v.puan;
+
+let m={oyunId:oyunId,idx:idx,tahta:tahta,onden:onden,sunucuda:true,hamleler:[],yolda:0,duraklatildi:false,cikisHakki:v.cikisHakki,
+sira:{yeterli:function(){ return true; },hazirla:function(){ return Promise.resolve(); }}};
+
+m.baglanti=await oyunaBaglan(oyunId,function(c){
+if(c.t==="kelime" && aktifMotor===m)sunucuCevabi(m,c);
+});
+
+aktifMotor=m;
+return {kalan:v.kalanSaniye,yeni:v.kelimeler.length===0 && v.kalanSaniye>=120};
+
+}
+
+/* Sunucunun cevabı: yolda başka kelime yoksa tahta sunucununkiyle eşitlenir */
+function sunucuCevabi(m,c){
+
+m.yolda=Math.max(0,m.yolda-1);
+
+if(c.hata==="sure-doldu"){
+time=0;
+return;
+}
+
+if(m.yolda>0 || !c.taslar)return;
+
+m.tahta.taslar=c.taslar.map(function(t){ return {harf:t.harf,can:t.can}; });
+if(c.onden)m.onden.yenile(c.onden);
+motorTahtayiUygula();
+renderWordCards();
 
 }
