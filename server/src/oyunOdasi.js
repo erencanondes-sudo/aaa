@@ -1,6 +1,6 @@
 /* Oyun odası: her düello, kişisel, günlük ve haftalık turnuva için bir oda.
    Oyunun bütün bilgisi (oyuncular, davetler, turlar, puanlar, sohbet) yalnızca burada durur.
-   Süresi dolunca kendini kapatır, saklama süresi bitince kendini siler. */
+   Süresi dolunca kendini kapatır; biten oyun herkesin son 20 listesinden düşünce ya da en geç 3 ay sonra silinir. */
 
 import { DurableObject } from "cloudflare:workers";
 import { GUN } from "./ortak.js";
@@ -15,7 +15,7 @@ export const BILGISAYAR = "bilgisayar";
 export const SURELER = { 1: GUN, 3: 2 * GUN, 7: 7 * GUN };
 export const DAVET_SURESI = 7 * GUN;
 export const TURKIYE = 3 * 3600000;
-const SAKLAMA = { duello: 365 * GUN, turnuva: 365 * GUN, gunluk: 7 * GUN, haftalik: 28 * GUN };
+const SAKLAMA = { duello: 90 * GUN, turnuva: 90 * GUN, gunluk: 7 * GUN, haftalik: 28 * GUN };
 const EN_FAZLA_OYUNCU = 100;
 const EN_FAZLA_MESAJ = 100;
 const EN_UZUN_MESAJ = 100;
@@ -612,7 +612,7 @@ export class OyunOdasi extends DurableObject {
   }
 
   /* ---------- Silinme ----------
-     Biten düello ve kişisel turnuva, katılan herkesin son 20 oyun listesinden düşünce silinir (en geç 1 yıl). */
+     Biten düello ve kişisel turnuva, katılan herkesin son 20 oyun listesinden düşünce silinir (en geç 3 ay). */
 
   async listedenDustu({ uid }) {
     await this.yukle();

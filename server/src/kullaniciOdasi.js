@@ -92,7 +92,7 @@ export class KullaniciOdasi extends DurableObject {
   }
 
   /* Biten oyun listemden düştü: oyun odasına haber (iki oyuncunun da listesinden düşen oyun silinir).
-     Haber ulaşmazsa oyun odası 1 yıl dolunca kendini yine siler. */
+     Haber ulaşmazsa oyun odası 3 ay dolunca kendini yine siler. */
   dustu(id) {
     const uid = this.ctx.id.name || this.sahip;
     if (!uid) return;
