@@ -134,6 +134,7 @@ let v=await sunucu("oyun/detay",{id:id});
 let h=hafizaOku();
 h.oyunlar[id]=v.oyun;
 hafizaYaz(h);
+if(typeof sunucuDurumu!=="undefined" && sunucuDurumu)sunucuDurumu.oyunlar[id]=v.oyun;
 return v.oyun;
 }
 

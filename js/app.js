@@ -1149,6 +1149,17 @@ gameActive=false;
 
 stopWordTargetConfettiRain();
 
+// Düello turu: kelime kaydı sunucuya gider, puanı sunucu onaylar
+if(aktifMotor){
+resultRecorded=true;
+activeChallengeId=null;
+activeChallengeIsComputer=false;
+activeChallengeSide=null;
+activeChallengeGameIndex=null;
+duelloTuruBitir();
+return;
+}
+
 
 
 if(activeTournamentId){
@@ -1584,6 +1595,20 @@ activeChallengeId=null;
 activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
+}
+
+// Düello turundan çıkış: turda bir kez süre durur; ikinci çıkışta süre işlemeye devam eder
+if(aktifMotor && gameActive && !resultRecorded){
+let m=aktifMotor;
+duelloTuruCik().then(function(durdu){
+if(durdu && aktifMotor===m){
+clearInterval(timer);
+gameActive=false;
+aktifMotor=null;
+activeChallengeId=null;
+activeChallengeGameIndex=null;
+}
+});
 }
 
 hideAllScreens();
@@ -4756,230 +4781,59 @@ console.error("Meydan okuma güncellenemedi:",e);
 }
 
 
-function playChallenge(id,side){
+/* Düellonun sıradaki turunu oynatır (açık olan ve henüz oynamadığım ilk tur) */
+function playChallenge(id){
 if(waitForDictionary(playChallenge,this,arguments))return;
 
-if(activeChallengeId===id && activeChallengeSide===side && gameActive && !resultRecorded && challengeRoundReady && !activeChallengeIsComputer){
+if(aktifMotor && aktifMotor.oyunId===id && gameActive && !resultRecorded && challengeRoundReady){
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
-
 document.getElementById("wordGameContent").style.display="block";
 document.getElementById("wordNewGameBtn").style.display="none";
-
 return;
 
 }
 
 hideAllScreens();
 document.getElementById("playArea").style.display="block";
-
 document.getElementById("wordGameContent").style.display="none";
 document.getElementById("loading").style.display="flex";
 
-let proceed=function(){
+let kayitli=sunucuDurumu && sunucuDurumu.oyunlar[id];
 
-let docPromise=(liveChallengesData && liveChallengesData[id])
-? Promise.resolve({data:function(){ return liveChallengesData[id]; }})
-: db.collection("challenges").doc(id).get();
+(kayitli ? Promise.resolve(kayitli) : oyunAyrintisi(id)).then(function(d){
 
-docPromise.then(function(doc){
+let ben=d.oyuncular.find(function(o){ return o.ben; });
+let idx=-1;
+for(let i=0;i<d.oyun.acikOyun;i++){
+let t=ben.turlar.find(function(x){ return x.idx===i; });
+if(!t || !t.bitti){ idx=i; break; }
+}
 
-let ch=(doc.data());
-
-let currentGameIndex=ch.games.findIndex(function(g){
-let myPlayed=side==="from" ? g.fromPlayed : g.toPlayed;
-return !myPlayed;
-});
-
-if(currentGameIndex===-1){
-
-renderOngoingList();
+if(idx===-1){
+goHome();
 return;
-
 }
 
-let currentGame=ch.games[currentGameIndex];
-
-let startedAtField=side==="from" ? "fromStartedAt" : "toStartedAt";
-let resumeTime=null;
-
-if(ch.type==="computer"){
-
-let localPauseKey="konfetiCompPause_"+id+"_"+currentGameIndex;
-let localPause=null;
-
-try{
-localPause=localStorage.getItem(localPauseKey);
-}catch(e){}
-
-if(localPause!==null){
-
-resumeTime=Math.max(1,parseInt(localPause,10));
-
-try{
-localStorage.removeItem(localPauseKey);
-}catch(e){}
-
-}
-else{
-
-let progressField=side==="from" ? "fromProgress" : "toProgress";
-let savedProgress=currentGame[progressField];
-
-if(savedProgress && savedProgress.time){
-resumeTime=savedProgress.time;
-}
-
-}
-
-}
-else if(currentGame[startedAtField]){
-
-let elapsedSeconds=(Date.now()-currentGame[startedAtField])/1000;
-
-if(elapsedSeconds>=120){
-
-let challengeRef=db.collection("challenges").doc(id);
-
-db.runTransaction(function(transaction){
-
-return transaction.get(challengeRef).then(function(doc){
-
-let freshCh=(doc.data());
-let updatedGames=freshCh.games.slice();
-let forfeitGame=Object.assign({},updatedGames[currentGameIndex]);
-
-if(!forfeitGame[side==="from" ? "fromPlayed" : "toPlayed"]){
-
-if(side==="from"){
-forfeitGame.fromScore=0;
-forfeitGame.fromPlayed=true;
-}
-else{
-forfeitGame.toScore=0;
-forfeitGame.toPlayed=true;
-}
-
-updatedGames[currentGameIndex]=forfeitGame;
-
-let updatePayload={games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-if(updatedGames.every(function(g){ return g.fromPlayed && g.toPlayed; })){
-updatePayload.completedAt=firebase.firestore.FieldValue.serverTimestamp();
-}
-
-transaction.update(challengeRef,updatePayload);
-
-}
-
-return freshCh;
-
-});
-
-}).then(function(freshCh){
-
-let fromUid=freshCh.fromUid;
-let toUidPromise=freshCh.toUid ? Promise.resolve(freshCh.toUid) : (freshCh.type==="computer" ? Promise.resolve(null) : getUidForUsername(freshCh.toUsername));
-
-return toUidPromise.then(function(toUid){
-let batch=db.batch();
-writeChallengeSignal(batch,fromUid,id);
-writeChallengeSignal(batch,toUid,id);
-return batch.commit();
-});
-
-}).then(function(){
-
-renderOngoingList();
-updateChallengeBadge();
-
-}).catch(function(e){
-console.error("Süre dolan oyun güncellenemedi:",e);
-renderOngoingList();
-});
-
-return;
-
-}
-else{
-
-resumeTime=Math.max(1,Math.round(120-elapsedSeconds));
-
-}
-
-}
+return duelloTuruHazirla(id,idx).then(function(kalan){
 
 activeChallengeId=id;
 activeTournamentId=null;
-activeChallengeSide=side;
-activeChallengeGameIndex=currentGameIndex;
-activeChallengeIsComputer=(ch.type==="computer");
+activeChallengeSide=null;
+activeChallengeGameIndex=idx;
+activeChallengeIsComputer=(d.oyun.opponent==="bilgisayar");
 
-let game=ch.games[currentGameIndex];
+newGame({motor:true,yeniTur:(kalan>=120 && aktifMotor.hamleler.length===0),resumeTime:kalan});
 
-
-let startedAtPromise=Promise.resolve();
-
-if(!currentGame[startedAtField]){
-
-let challengeRef2=db.collection("challenges").doc(id);
-
-startedAtPromise=db.runTransaction(function(transaction){
-
-return transaction.get(challengeRef2).then(function(doc){
-
-let freshCh=(doc.data());
-let updatedGames=freshCh.games.slice();
-let g=Object.assign({},updatedGames[currentGameIndex]);
-
-if(!g[startedAtField]){
-g[startedAtField]=Date.now();
-updatedGames[currentGameIndex]=g;
-transaction.update(challengeRef2,{games:updatedGames,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-}
-
-return freshCh;
-
-});
-
-}).then(function(freshCh){
-
-let fromUid=freshCh.fromUid;
-let toUidPromise=freshCh.toUid ? Promise.resolve(freshCh.toUid) : (freshCh.type==="computer" ? Promise.resolve(null) : getUidForUsername(freshCh.toUsername));
-
-return toUidPromise.then(function(toUid){
-let batch=db.batch();
-writeChallengeSignal(batch,fromUid,id);
-writeChallengeSignal(batch,toUid,id);
-return batch.commit();
 });
 
 }).catch(function(e){
-console.error("Başlama zamanı kaydedilemedi:",e);
-});
 
-}
-
-startedAtPromise.then(function(){
-
-let progressField=side==="from" ? "fromProgress" : "toProgress";
-let progress=game[progressField] || null;
-
-let achievableWords=game.achievable || computeAchievableWords(game.baseLetters);
-newGame({baseLetters:game.baseLetters,achievable:achievableWords,resumeTime:resumeTime,progress:progress});
+showTopNotification(hataMetni(e));
+goHome();
 
 });
-
-});
-
-};
-
-if(pendingChallengeWrite){
-pendingChallengeWrite.then(proceed).catch(proceed);
-}
-else{
-proceed();
-}
 
 }
 
@@ -8099,6 +7953,12 @@ document.getElementById("wordScoreBanner").classList.remove("score-visible");
 document.getElementById("wordLengthBreakdown").style.visibility="hidden";
 document.getElementById("wordMessage").style.visibility="hidden";
 
+// Düello turu: tahta ortak kurallardan gelir
+if(presetData && presetData.motor){
+motorTuruGoster(presetData.yeniTur);
+return;
+}
+
 let data=presetData ? presetData : generateWordGameData();
 
 wordBaseLetters=data.baseLetters;
@@ -8847,6 +8707,12 @@ function checkWord(){
 
 if(resultRecorded)return;
 
+// Sıradaki taşlar henüz hesaplanmadıysa bir an beklenir
+if(aktifMotor && !aktifMotor.sira.yeterli()){
+aktifMotor.sira.hazirla(8).then(checkWord);
+return;
+}
+
 if(wordSequence.length===0){
 playWarningSound();
 return;
@@ -8898,7 +8764,7 @@ if(guess.length>=6){
 spawnWordConfetti(10);
 }
 
-if(wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
+if(!aktifMotor && wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
 
 clearInterval(timer);
 
@@ -8921,7 +8787,18 @@ harfLogAdd("Kelime: "+guess);
 let replacedIndices=[];
 let decreasedIds=[];
 
-usedIndices.forEach(function(idx){
+if(aktifMotor){
+
+decreasedIds=usedIndices.map(function(idx){ return wordTiles[idx].id; });
+replacedIndices=motorKelimeYaz()||[];
+
+wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
+let motorJoker=wordTiles.filter(function(t){ return t.letter==='★'; }).length;
+wordAchievable=Array.from(new Set([...computeAchievableWords(wordBaseLetters,motorJoker),...wordFound]));
+updateWordTarget();
+
+}
+else usedIndices.forEach(function(idx){
 
 let tile=wordTiles[idx];
 
@@ -8988,7 +8865,7 @@ updateWordTarget();
 harfLogAdd("   Tahta: "+harfBoardText()+harfDupText());
 
 // Kayıt, ömürler düşürülüp harfler değiştirildikten SONRA yapılır (güncel tahta kaydedilsin)
-if(activeChallengeId){
+if(activeChallengeId && !aktifMotor){
 saveWordProgress();
 }
 

@@ -94,8 +94,14 @@ this.zar=[];
 this.konum={serbest:0,sesli:0,sessiz:0};
 }
 
-/* Her sıradan en az "adet" kadar taş hazır olsun (önceden hesaplanır, oyun sırasında bekleme olmaz) */
-async hazirla(adet){
+/* Her sıradan en az "adet" kadar taş hazır olsun (önceden hesaplanır, oyun sırasında bekleme olmaz).
+   Aynı anda iki kez çağrılırsa ikincisi birincinin bitmesini bekler (yoksa taşların sırası karışır). */
+hazirla(adet){
+this.hazirlik=(this.hazirlik||Promise.resolve()).then(()=>this.hesapla(adet));
+return this.hazirlik;
+}
+
+async hesapla(adet){
 for(let ad of ["serbest","sesli","sessiz"]){
 let l=this.liste[ad];
 while(l.length<this.konum[ad]+adet){
