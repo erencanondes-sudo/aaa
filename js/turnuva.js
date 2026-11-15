@@ -123,7 +123,6 @@ sunucuTuruHazirla(id,idx).then(function(r){
 activeChallengeId=id;
 activeChallengeSide=null;
 activeChallengeGameIndex=idx;
-activeChallengeIsComputer=false;
 newGame({motor:true,yeniTur:r.yeni,resumeTime:r.kalan});
 
 }).catch(function(e){

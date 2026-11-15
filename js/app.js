@@ -802,7 +802,6 @@ scheduleClcIntro();
 
 let pendingChallenge={opponent:null,type:null};
 let activeChallengeId=null;
-let activeChallengeIsComputer=false;
 let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let returnToScreen=null;
@@ -812,7 +811,6 @@ const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScre
 let screenNavStack=[];
 let suppressScreenPush=false;
 
-const RANDOM_OPPONENTS=["Rakip_Ece","Rakip_Kaan","Rakip_Zeynep","Rakip_Mert","Rakip_Elif","Rakip_Deniz"];
 
 const COUNTRY_LIST=[
 {code:"TR",name:"Türkiye"},
@@ -935,7 +933,6 @@ stopWordTargetConfettiRain();
 if(aktifMotor){
 resultRecorded=true;
 activeChallengeId=null;
-activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 duelloTuruBitir(finalScore);
@@ -1209,7 +1206,6 @@ clearInterval(timer);
 
 if(!activeChallengeId){
 activeChallengeId=null;
-activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 }
@@ -1723,7 +1719,6 @@ return duelloTuruHazirla(id,idx).then(function(kalan){
 activeChallengeId=id;
 activeChallengeSide=null;
 activeChallengeGameIndex=idx;
-activeChallengeIsComputer=(d.oyun.opponent==="bilgisayar");
 
 newGame({motor:true,yeniTur:(kalan>=120 && aktifMotor.hamleler.length===0),resumeTime:kalan});
 
@@ -1742,7 +1737,6 @@ goHome();
 function startNewGameFlow(){
 
 activeChallengeId=null;
-activeChallengeIsComputer=false;
 activeChallengeSide=null;
 activeChallengeGameIndex=null;
 
@@ -3000,24 +2994,11 @@ return {idA:wordTiles[7].id,idB:wordTiles[jokerIdx].id};
 }
 
 
-function canFormWord(word,baseLetters,jokerCount){
-let counts={};
-for(let ch of baseLetters){ counts[ch]=(counts[ch]||0)+1; }
-let jokersLeft=(jokerCount===undefined) ? 1 : jokerCount;
-let usedJoker=false;
-for(let ch of word){
-if(counts[ch]>0){ counts[ch]--; }
-else if(jokersLeft>0){ jokersLeft--; usedJoker=true; }
-else return {ok:false};
-}
-if(usedJoker && word.length<5)return {ok:false};
-return {ok:true,usedJoker:usedJoker};
-}
-
 function computeAchievableWords(baseLetters,jokerCount){
+let joker=(jokerCount===undefined) ? 1 : jokerCount;
 let result=[];
 DICTIONARY.forEach(w=>{
-if(canFormWord(w,baseLetters,jokerCount).ok)result.push(w);
+if(window.KonfetiOyun.kurulabilir(w,baseLetters,joker))result.push(w);
 });
 return result;
 }

@@ -297,7 +297,7 @@ return {tamam:true,kelime:kelime,puan:puan,degisen:degisen};
 /* ---------- Bilgisayar rakip ----------
    Telefonda hesaplanır (sunucuda 33 bin kelimeyi taramak ücretsiz planın işlemci sınırını aşıyor). */
 
-function kurulabilir(kelime, harfler, joker) {
+export function kurulabilir(kelime, harfler, joker) {
   const sayac = {};
   for (const h of harfler) sayac[h] = (sayac[h] || 0) + 1;
   let kalanJoker = joker, jokerKullanildi = false;
