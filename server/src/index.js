@@ -5,6 +5,11 @@ import { Hata } from "./ortak.js";
 import * as profil from "./profil.js";
 import * as arkadas from "./arkadas.js";
 import * as oyun from "./oyun.js";
+import * as turnuva from "./turnuva.js";
+import * as sohbet from "./sohbet.js";
+import { temizle } from "./temizlik.js";
+
+export { TurOdasi } from "./turOdasi.js";
 
 const ISLEMLER = {
   "profil/getir": profil.getir,
@@ -13,6 +18,9 @@ const ISLEMLER = {
   "profil/ad": profil.adDegistir,
   "profil/duello-acik": profil.duelloAcikDegistir,
   "profil/bildirim": profil.bildirimAyari,
+  "profil/sil": profil.sil,
+  "profil/sikayet": profil.sikayet,
+  "kullanici/acik": profil.acikOyuncular,
   "kullanici/getir": profil.kullaniciGetir,
   "arkadas/liste": arkadas.liste,
   "arkadas/istek": arkadas.istekGonder,
@@ -24,9 +32,19 @@ const ISLEMLER = {
   "oyun/gizle": oyun.oyunGizle,
   "oyun/duello": oyun.duelloOlustur,
   "oyun/cevap": oyun.daveteCevap,
+  "oyun/rastgele": oyun.rastgeleKatil,
+  "oyun/rastgele-iptal": oyun.rastgeleIptal,
   "tur/basla": oyun.turBasla,
+  "tur/kelime": oyun.turKelime,
   "tur/duraklat": oyun.turDuraklat,
   "tur/bitir": oyun.turBitir,
+  "turnuva/ac": turnuva.kisiselAc,
+  "turnuva/davet": turnuva.davetEt,
+  "turnuva/katil": turnuva.katil,
+  "turnuva/durum": turnuva.durum,
+  "turnuva/gecmis": turnuva.gecmis,
+  "sohbet/getir": sohbet.getir,
+  "sohbet/gonder": sohbet.gonder,
 };
 
 function cors(env) {
@@ -45,10 +63,14 @@ function yanit(env, veri, durum) {
 }
 
 export default {
-  async fetch(istek, env) {
+  async fetch(istek, env, ctx) {
     if (istek.method === "OPTIONS") return new Response(null, { headers: cors(env) });
 
     const yol = new URL(istek.url).pathname.replace(/^\/api\//, "");
+
+    // Sürüm kontrolü: girişsiz; telefon bundan eski sürümse güncelleme ister
+    if (yol === "surum") return yanit(env, { enDusuk: Number(env.EN_DUSUK_SURUM || 1) });
+
     const islem = ISLEMLER[yol];
     if (!islem || istek.method !== "POST") return yanit(env, { hata: "bulunamadi" }, 404);
 
@@ -61,12 +83,16 @@ export default {
     } catch (e) {}
 
     try {
-      const sonuc = await islem({ env, uid, govde, simdi: Date.now() });
+      const sonuc = await islem({ env, uid, govde, simdi: Date.now(), arka: (is) => ctx.waitUntil(is) });
       return yanit(env, Object.assign({ tamam: true }, sonuc || {}));
     } catch (e) {
       if (e instanceof Hata) return yanit(env, { hata: e.message }, e.durum);
       console.error(yol, e);
       return yanit(env, { hata: "sunucu-hatasi" }, 500);
     }
+  },
+
+  async scheduled(olay, env, ctx) {
+    ctx.waitUntil(temizle(env));
   },
 };

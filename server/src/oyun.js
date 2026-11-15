@@ -1,7 +1,8 @@
 /* Düello, tur başlatma / duraklatma / bitirme */
 
-import { Hata, GUN, kimlikUret, kullaniciBul } from "./ortak.js";
+import { Hata, GUN, kimlikUret, kullaniciBul, engelliMi } from "./ortak.js";
 import { SOZLUK } from "./sozluk.js";
+import { bildirimGonder } from "./bildirim.js";
 import { yeniTohum, acilisTahtasi, oyunuKontrolEt, kelimePuani, SESLILER, TUR_SURESI, JOKER } from "../../shared/oyun.js";
 
 const SURELER = { 1: GUN, 3: 2 * GUN, 7: 7 * GUN };
@@ -9,7 +10,7 @@ const DAVET_SURESI = 7 * GUN;
 const EN_FAZLA_DEVAM_EDEN = 20;
 const EN_FAZLA_GIDEN_DAVET = 50;
 const EN_FAZLA_GELEN_DAVET = 100;
-const TURKIYE = 3 * 3600000;
+export const TURKIYE = 3 * 3600000;
 export const BILGISAYAR = "bilgisayar";
 
 /* Zorluk: şimdilik kolay ve orta daha sık (oyunların %80'i 0–60, %20'si 60–100) */
@@ -31,10 +32,10 @@ export function acikOyunSayisi(oyun, simdi) {
   return gun >= 6 ? 7 : Math.max(1, gun);
 }
 
-async function devamEdenSayisi(env, uid) {
+export async function devamEdenSayisi(env, uid) {
   const s = await env.DB.prepare(
     `SELECT COUNT(*) AS n FROM players p JOIN games g ON g.id = p.game_id
-     WHERE p.uid = ? AND p.status = 'katildi' AND g.status IN ('bekliyor','suruyor')`
+     WHERE p.uid = ? AND p.status = 'katildi' AND g.kind IN ('duello','turnuva') AND g.status IN ('bekliyor','suruyor')`
   ).bind(uid).first();
   return s.n;
 }
@@ -82,7 +83,7 @@ async function bilgisayarOyna(tohum, zorluk) {
 
 /* ---------- Düello oluşturma ---------- */
 
-export async function duelloOlustur({ env, uid, govde, simdi }) {
+export async function duelloOlustur({ env, uid, govde, simdi, arka }) {
   const format = [1, 3, 7].includes(govde.format) ? govde.format : null;
   if (!format) throw new Hata("format-gecersiz");
   if ((await devamEdenSayisi(env, uid)) >= EN_FAZLA_DEVAM_EDEN) throw new Hata("devam-eden-siniri");
@@ -119,6 +120,9 @@ export async function duelloOlustur({ env, uid, govde, simdi }) {
   const hedef = await kullaniciBul(env, govde.username);
   if (!hedef) throw new Hata("kullanici-yok", 404);
   if (hedef.uid === uid) throw new Hata("kendin");
+  if (await engelliMi(env, uid, hedef.uid)) throw new Hata("engelli");
+  // Karşı taraf engellediyse davet sessizce düşer (gönderene belli edilmez)
+  const sessiz = await engelliMi(env, hedef.uid, uid);
 
   const s = await env.DB.prepare(
     `SELECT
@@ -140,6 +144,10 @@ export async function duelloOlustur({ env, uid, govde, simdi }) {
     env.DB.prepare("INSERT INTO players (game_id, uid, status, total, joined_at, updated_at) VALUES (?, ?, 'katildi', 0, ?, ?)").bind(id, uid, simdi, simdi),
     env.DB.prepare("INSERT INTO players (game_id, uid, status, invited_by, total, updated_at) VALUES (?, ?, 'davetli', ?, 0, ?)").bind(id, hedef.uid, uid, simdi),
   ]);
+  if (arka && !sessiz) {
+    const ben = await env.DB.prepare("SELECT username FROM users WHERE uid = ?").bind(uid).first();
+    arka(bildirimGonder(env, hedef.uid, "oyun", "Düello daveti", ben.username + " seni düelloya davet etti.", { oyun: id }));
+  }
   return { id };
 }
 
@@ -154,6 +162,38 @@ export async function rastgeleDuelloAc(env, uidA, uidB, simdi) {
     env.DB.prepare("INSERT INTO players (game_id, uid, status, total, joined_at, updated_at) VALUES (?, ?, 'katildi', 0, ?, ?)").bind(id, uidB, simdi, simdi),
   ]);
   return id;
+}
+
+/* Rastgele rakip: bekleyen biri varsa hemen eşleşir, yoksa 48 saat kuyrukta kalır */
+const KUYRUK_SURESI = 2 * GUN;
+
+export async function rastgeleKatil({ env, uid, simdi, arka }) {
+  if ((await devamEdenSayisi(env, uid)) >= EN_FAZLA_DEVAM_EDEN) throw new Hata("devam-eden-siniri");
+  const benim = await env.DB.prepare("SELECT created_at FROM queue WHERE uid = ? AND created_at > ?").bind(uid, simdi - KUYRUK_SURESI).first();
+  if (benim) return { bekliyor: true };
+
+  const { results } = await env.DB.prepare(
+    `SELECT uid FROM queue WHERE uid != ?1 AND created_at > ?2
+       AND uid NOT IN (SELECT blocked_uid FROM blocks WHERE uid = ?1)
+       AND uid NOT IN (SELECT uid FROM blocks WHERE blocked_uid = ?1)
+     ORDER BY created_at LIMIT 5`
+  ).bind(uid, simdi - KUYRUK_SURESI).all();
+
+  for (const r of results) {
+    // Aynı kişiyi iki istek birden almasın
+    const alindi = await env.DB.prepare("DELETE FROM queue WHERE uid = ?").bind(r.uid).run();
+    if (alindi.meta.changes !== 1) continue;
+    const id = await rastgeleDuelloAc(env, r.uid, uid, simdi);
+    if (arka) arka(bildirimGonder(env, r.uid, "oyun", "Rakip bulundu", "Rastgele düellon başladı.", { oyun: id }));
+    return { id };
+  }
+
+  await env.DB.prepare("INSERT OR REPLACE INTO queue (uid, created_at) VALUES (?, ?)").bind(uid, simdi).run();
+  return { bekliyor: true };
+}
+
+export async function rastgeleIptal({ env, uid }) {
+  await env.DB.prepare("DELETE FROM queue WHERE uid = ?").bind(uid).run();
 }
 
 export async function daveteCevap({ env, uid, govde, simdi }) {
@@ -196,7 +236,17 @@ export async function turBasla({ env, uid, govde, simdi }) {
   const idx = govde.idx | 0;
   if (g.status !== "suruyor" || simdi > g.ends_at) throw new Hata("oyun-bitti");
   if (idx < 0 || idx >= acikOyunSayisi(g, simdi)) throw new Hata("tur-kapali");
-  if (g.kind !== "duello") throw new Hata("tur-odada-oynanir");
+  await env.DB.prepare("UPDATE players SET notified_game = 0 WHERE game_id = ? AND uid = ?").bind(g.id, uid).run();
+
+  // Turnuvada harfler sunucudaki odada üretilir
+  if (g.kind !== "duello") {
+    return odaSonucu(await oda(env, g.id, uid).basla({
+      oyunId: g.id, uid, idx, simdi,
+      tohum: await turTohumu(g.seed, idx),
+      zorluk: g.difficulty,
+      bitis: g.ends_at,
+    }));
+  }
 
   let t = await env.DB.prepare("SELECT * FROM rounds WHERE game_id = ? AND uid = ? AND idx = ?").bind(g.id, uid, idx).first();
   if (t && t.finished_at) throw new Hata("tur-bitti");
@@ -223,16 +273,26 @@ export async function turBasla({ env, uid, govde, simdi }) {
 
 /* Turda bir kez çıkış hakkı: süre durur */
 export async function turDuraklat({ env, uid, govde, simdi }) {
-  await oyunVeKatilim(env, uid, govde.id);
+  const g = await oyunVeKatilim(env, uid, govde.id);
+  if (g.kind !== "duello") return odaSonucu(await oda(env, g.id, uid).duraklat({ idx: govde.idx | 0, simdi }));
   const r = await env.DB.prepare(
     "UPDATE rounds SET paused_at = ?, pause_used = 1 WHERE game_id = ? AND uid = ? AND idx = ? AND finished_at IS NULL AND paused_at IS NULL AND pause_used = 0"
   ).bind(simdi, govde.id, uid, govde.idx | 0).run();
   return { duraklatildi: r.meta.changes === 1 };
 }
 
-export async function turBitir({ env, uid, govde, simdi }) {
+/* Turnuvada her kelime odaya gönderilir; oda yeni taşları ve sıradaki birkaç taşı döner */
+export async function turKelime({ env, uid, govde, simdi }) {
+  const g = await oyunVeKatilim(env, uid, govde.id);
+  if (g.kind === "duello") throw new Hata("tur-yok", 404);
+  const yerler = Array.isArray(govde.yerler) ? govde.yerler.slice(0, 8).map((y) => y | 0) : [];
+  return odaSonucu(await oda(env, g.id, uid).kelime({ idx: govde.idx | 0, yerler, joker: govde.joker || null, simdi }));
+}
+
+export async function turBitir({ env, uid, govde, simdi, arka }) {
   const g = await oyunVeKatilim(env, uid, govde.id);
   const idx = govde.idx | 0;
+  if (g.kind !== "duello") return odaSonucu(await oda(env, g.id, uid).bitir({ idx, kalanSaniye: govde.kalanSaniye | 0, simdi }));
   const t = await env.DB.prepare("SELECT * FROM rounds WHERE game_id = ? AND uid = ? AND idx = ?").bind(g.id, uid, idx).first();
   if (!t || t.finished_at) throw new Hata("tur-yok", 404);
 
@@ -246,11 +306,20 @@ export async function turBitir({ env, uid, govde, simdi }) {
   const kontrol = await oyunuKontrolEt({ tohum, zorluk: g.difficulty, hamleler, kalanSaniye: istenenKalan, sozluk: SOZLUK });
   const puan = kontrol.gecerli ? kontrol.puan : 0;
 
-  await turKaydet(env, g, uid, idx, puan, kontrol.kelimeler, simdi);
+  await turKaydet(env, g, uid, idx, puan, kontrol.kelimeler, simdi, arka);
   return { puan, gecerli: kontrol.gecerli, kelimeler: kontrol.kelimeler };
 }
 
-async function turKaydet(env, g, uid, idx, puan, kelimeler, simdi) {
+function oda(env, oyunId, uid) {
+  return env.TUR_ODASI.get(env.TUR_ODASI.idFromName(oyunId + ":" + uid));
+}
+
+function odaSonucu(r) {
+  if (r && r.hata) throw new Hata(r.hata, r.durum);
+  return r;
+}
+
+export async function turKaydet(env, g, uid, idx, puan, kelimeler, simdi, arka) {
   const komutlar = [
     env.DB.prepare("UPDATE rounds SET finished_at = ?, paused_at = NULL, score = ?, words = ? WHERE game_id = ? AND uid = ? AND idx = ?")
       .bind(simdi, puan, JSON.stringify(kelimeler), g.id, uid, idx),
@@ -261,7 +330,21 @@ async function turKaydet(env, g, uid, idx, puan, kelimeler, simdi) {
   for (const k of kelimeler) komutlar.push(env.DB.prepare("INSERT OR IGNORE INTO found_words (uid, word) VALUES (?, ?)").bind(uid, k));
   komutlar.push(env.DB.prepare("UPDATE users SET found_words_count = (SELECT COUNT(*) FROM found_words WHERE uid = ?1) WHERE uid = ?1").bind(uid));
   await env.DB.batch(komutlar);
+  if (g.kind === "duello" && arka) arka(rakibeHaber(env, g, uid));
   await bittiyseKapat(env, g.id, simdi);
+}
+
+/* "Rakibin oynadı" bildirimi: rakip oyuna dönene kadar tekrar gönderilmez */
+async function rakibeHaber(env, g, uid) {
+  const { results } = await env.DB.prepare(
+    "UPDATE players SET notified_game = 1 WHERE game_id = ? AND uid != ? AND status = 'katildi' AND notified_game = 0 RETURNING uid"
+  ).bind(g.id, uid).all();
+  if (!results.length) return;
+  const ben = await env.DB.prepare("SELECT username FROM users WHERE uid = ?").bind(uid).first();
+  for (const r of results) {
+    if (r.uid === BILGISAYAR) continue;
+    await bildirimGonder(env, r.uid, "oyun", "Rakibin oynadı", (ben ? ben.username : "Rakibin") + " sırasını oynadı.", { oyun: g.id });
+  }
 }
 
 /* Bütün oyuncular bütün turları bitirdiyse düello kapanır, istatistikler yazılır */
@@ -287,7 +370,7 @@ export async function bittiyseKapat(env, id, simdi, zorla) {
   if (komutlar.length) await env.DB.batch(komutlar);
 }
 
-export { DAVET_SURESI, SURELER };
+export { DAVET_SURESI, SURELER, EN_FAZLA_DEVAM_EDEN, EN_FAZLA_GIDEN_DAVET, EN_FAZLA_GELEN_DAVET };
 
 /* ---------- Oyunlarım ---------- */
 
@@ -318,6 +401,7 @@ async function oyunlariDoldur(env, oyunlar, uid, simdi, kelimelerle) {
       startsAt: g.starts_at,
       endsAt: g.ends_at,
       acikOyun: acikOyunSayisi(g, simdi),
+      okunmamis: !!(g.last_msg_at && (!g.okuma || g.last_msg_at > g.okuma)),
       oyuncular: oyuncular
         .filter((o) => o.game_id === g.id)
         .map((o) => ({
@@ -341,7 +425,7 @@ async function oyunlariDoldur(env, oyunlar, uid, simdi, kelimelerle) {
 
 export async function oyunListesi({ env, uid, simdi }) {
   const { results } = await env.DB.prepare(
-    `SELECT g.*, p.status AS benim FROM players p JOIN games g ON g.id = p.game_id
+    `SELECT g.*, p.status AS benim, p.last_read_at AS okuma FROM players p JOIN games g ON g.id = p.game_id
      WHERE p.uid = ?1 AND p.hidden = 0 AND p.status IN ('katildi','davetli')
        AND g.kind IN ('duello','turnuva')
        AND NOT (p.status = 'davetli' AND (g.ends_at < ?2 OR g.creator IN (SELECT blocked_uid FROM blocks WHERE uid = ?1)))
@@ -355,9 +439,10 @@ export async function oyunListesi({ env, uid, simdi }) {
 
 export async function oyunDetay({ env, uid, govde, simdi }) {
   const g = await env.DB.prepare(
-    "SELECT g.* FROM games g JOIN players p ON p.game_id = g.id WHERE g.id = ? AND p.uid = ? AND p.status IN ('katildi','davetli')"
+    "SELECT g.*, p.last_read_at AS okuma FROM games g JOIN players p ON p.game_id = g.id WHERE g.id = ? AND p.uid = ? AND p.status IN ('katildi','davetli')"
   ).bind(govde.id, uid).first();
   if (!g) throw new Hata("oyun-yok", 404);
+  await env.DB.prepare("UPDATE players SET notified_game = 0 WHERE game_id = ? AND uid = ?").bind(g.id, uid).run();
   const [oyun] = await oyunlariDoldur(env, [g], uid, simdi, true);
   return { oyun };
 }

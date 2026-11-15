@@ -4,6 +4,7 @@ compatibility_date = "2026-11-01"
 
 [vars]
 FIREBASE_PROJE_ID = "eren-63abb"
+EN_DUSUK_SURUM = "1"
 
 [[d1_databases]]
 binding = "DB"
@@ -15,3 +16,16 @@ database_id = "BURAYA-D1-KIMLIGI"
 type = "Text"
 globs = ["**/words.js"]
 fallthrough = false
+
+# Turnuva turu odaları
+[[durable_objects.bindings]]
+name = "TUR_ODASI"
+class_name = "TurOdasi"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["TurOdasi"]
+
+# Saatlik temizlik
+[triggers]
+crons = ["7 * * * *"]

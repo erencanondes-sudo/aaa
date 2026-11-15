@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS games (
   created_at INTEGER NOT NULL,
   starts_at INTEGER,
   ends_at INTEGER,
+  last_msg_at INTEGER,
   updated_at INTEGER NOT NULL
 );
 
@@ -87,7 +88,9 @@ CREATE TABLE IF NOT EXISTS players (
   total INTEGER NOT NULL DEFAULT 0,
   joined_at INTEGER,
   hidden INTEGER NOT NULL DEFAULT 0,
-  notified INTEGER NOT NULL DEFAULT 0,
+  last_read_at INTEGER,
+  notified_game INTEGER NOT NULL DEFAULT 0,
+  notified_msg INTEGER NOT NULL DEFAULT 0,
   updated_at INTEGER NOT NULL,
   PRIMARY KEY (game_id, uid)
 );
@@ -106,4 +109,23 @@ CREATE TABLE IF NOT EXISTS rounds (
   score INTEGER,
   words TEXT,
   PRIMARY KEY (game_id, uid, idx)
+);
+
+CREATE INDEX IF NOT EXISTS players_total ON players(game_id, total);
+
+-- Oyun içi sohbet: her oyunda son 100 mesaj tutulur
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id TEXT NOT NULL,
+  uid TEXT NOT NULL,
+  text TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS messages_game ON messages(game_id, id);
+
+-- Rastgele rakip bekleyenler (48 saat)
+CREATE TABLE IF NOT EXISTS queue (
+  uid TEXT PRIMARY KEY,
+  created_at INTEGER NOT NULL
 );

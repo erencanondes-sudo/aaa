@@ -1,6 +1,6 @@
 /* Profil işlemleri */
 
-import { Hata, GUN, kullaniciAdiDuzelt, cift } from "./ortak.js";
+import { Hata, GUN, kullaniciAdiDuzelt, cift, kullaniciBul } from "./ortak.js";
 
 const AVATAR_SAYISI = 97;
 
@@ -91,4 +91,49 @@ export async function kullaniciGetir({ env, uid, govde }) {
   let arkadaslik = "yok";
   if (f) arkadaslik = f.status === "arkadas" ? "arkadas" : f.requested_by === uid ? "istek-gonderildi" : "istek-geldi";
   return { kullanici: Object.assign(disProfil(u), { arkadaslik }) };
+}
+
+/* Düelloya açık oyunculardan rastgele 20 kişi (son 7 günde girmiş olanlar) */
+export async function acikOyuncular({ env, uid, simdi }) {
+  const { results } = await env.DB.prepare(
+    `SELECT username, avatar, word_score_sum, word_score_count FROM users
+     WHERE duel_open = 1 AND uid != ?1 AND last_seen > ?2
+       AND uid NOT IN (SELECT blocked_uid FROM blocks WHERE uid = ?1)
+       AND uid NOT IN (SELECT uid FROM blocks WHERE blocked_uid = ?1)
+     ORDER BY RANDOM() LIMIT 20`
+  ).bind(uid, simdi - 7 * GUN).all();
+  return {
+    oyuncular: results.map((u) => ({
+      username: u.username, avatar: u.avatar,
+      ortalama: u.word_score_count ? Math.round(u.word_score_sum / u.word_score_count) : 0,
+    })),
+  };
+}
+
+/* Şikâyet: günde en fazla 20 */
+export async function sikayet({ env, uid, govde, simdi }) {
+  const hedef = await kullaniciBul(env, govde.username);
+  if (!hedef || hedef.uid === uid) throw new Hata("kullanici-yok", 404);
+  const s = await env.DB.prepare("SELECT COUNT(*) AS n FROM reports WHERE reporter = ? AND created_at > ?").bind(uid, simdi - GUN).first();
+  if (s.n >= 20) throw new Hata("sikayet-siniri", 429);
+  await env.DB.prepare("INSERT INTO reports (reporter, target, game_id, reason, created_at) VALUES (?, ?, ?, ?, ?)")
+    .bind(uid, hedef.uid, govde.oyunId || null, String(govde.sebep || "").slice(0, 200), simdi).run();
+}
+
+/* Hesap silme: profil, arkadaşlar, engeller ve bulunan kelimeler silinir.
+   Biten oyunlarda rakiplerin geçmişi bozulmasın diye oyun satırları kalır ("Silinmiş kullanıcı" görünür).
+   Firebase hesabını telefon siler. */
+export async function sil({ env, uid, simdi }) {
+  await env.DB.batch([
+    env.DB.prepare("UPDATE games SET status = 'dustu', updated_at = ? WHERE creator = ? AND status = 'bekliyor'").bind(simdi, uid),
+    env.DB.prepare(
+      "UPDATE games SET status = 'reddedildi', updated_at = ?1 WHERE kind = 'duello' AND status = 'bekliyor' AND id IN (SELECT game_id FROM players WHERE uid = ?2 AND status = 'davetli')"
+    ).bind(simdi, uid),
+    env.DB.prepare("UPDATE players SET status = 'reddetti', updated_at = ? WHERE uid = ? AND status = 'davetli'").bind(simdi, uid),
+    env.DB.prepare("DELETE FROM found_words WHERE uid = ?").bind(uid),
+    env.DB.prepare("DELETE FROM friends WHERE a = ?1 OR b = ?1").bind(uid),
+    env.DB.prepare("DELETE FROM blocks WHERE uid = ?1 OR blocked_uid = ?1").bind(uid),
+    env.DB.prepare("DELETE FROM queue WHERE uid = ?").bind(uid),
+    env.DB.prepare("DELETE FROM users WHERE uid = ?").bind(uid),
+  ]);
 }

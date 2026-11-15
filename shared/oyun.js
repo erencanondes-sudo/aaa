@@ -131,6 +131,42 @@ return {konum:Object.assign({},this.konum)};
 
 }
 
+/* Turnuvada telefonun elindeki sıra: sunucunun önceden gönderdiği birkaç taştan oluşur.
+   HarfSirasi ile aynı şekilde çalışır; taş biterse null döner ve telefon sunucunun cevabını bekler. */
+export class OndenSira {
+
+constructor(){
+this.liste={serbest:[],sesli:[],sessiz:[]};
+this.zar=[];
+}
+
+/* veri: {serbest:[...], sesli:[...], sessiz:[...], zar:[...]} (sıradaki taşlar, baştan) */
+yenile(veri){
+this.liste={serbest:veri.serbest.slice(),sesli:veri.sesli.slice(),sessiz:veri.sessiz.slice()};
+this.zar=veri.zar.slice();
+}
+
+serbestAl(jokerVar){
+if(!this.liste.serbest.length)return null;
+let tas=this.liste.serbest.shift();
+let zar=this.zar.shift();
+if(!jokerVar && zar<JOKER_IHTIMAL)return {harf:JOKER,can:JOKER_CAN};
+return tas;
+}
+
+al(ad){
+return this.liste[ad].length ? this.liste[ad].shift() : null;
+}
+
+}
+
+/* Sunucu tarafı: sıradaki birkaç taşı telefona göndermek için */
+export function ondenVeri(sira,adet){
+let veri={zar:sira.zar.slice(sira.konum.serbest,sira.konum.serbest+adet)};
+for(let ad of ["serbest","sesli","sessiz"])veri[ad]=sira.liste[ad].slice(sira.konum[ad],sira.konum[ad]+adet);
+return veri;
+}
+
 /* ---------- Açılış tahtası ----------
    2 sesli + 3 sessiz + 2 serbest + joker (joker her zaman sağ altta, 8. yerde) */
 export async function acilisTahtasi(tohum,zorluk,turnuva){
@@ -225,6 +261,13 @@ let yeni;
 if(sesliSayisi<2)yeni=this.sira.al("sesli");
 else if(sessizSayisi<3)yeni=this.sira.al("sessiz");
 else yeni=this.sira.serbestAl(jokerVar);
+
+// Telefondaki önden sıra bittiyse yeni taşı sunucu gönderecek
+if(!yeni){
+this.taslar[y]={harf:null,can:0};
+degisen.push(y);
+continue;
+}
 
 this.taslar[y]={harf:yeni.harf,can:yeni.can};
 degisen.push(y);
