@@ -2,11 +2,12 @@
 
 import { Hata, GUN, kimlikUret, kullaniciBul, cift, engelliMi } from "./ortak.js";
 import { yeniTohum } from "../../shared/oyun.js";
-import { zorlukCek, devamEdenSayisi, acikOyunSayisi, SURELER, TURKIYE, EN_FAZLA_DEVAM_EDEN, EN_FAZLA_GIDEN_DAVET, EN_FAZLA_GELEN_DAVET, BILGISAYAR } from "./oyun.js";
+import { zorlukCek, devamEdenSayisi, acikOyunSayisi, TURKIYE, EN_FAZLA_DEVAM_EDEN, EN_FAZLA_GIDEN_DAVET, EN_FAZLA_GELEN_DAVET, BILGISAYAR } from "./oyun.js";
 
 const EN_FAZLA_OYUNCU = 100;
 const GUNLUK_HAK = 1;        // günlük turnuvada oynama hakkı
 const SIRALAMA_ADEDI = 100;
+const SECILEBILEN_GUNLER = [1, 2, 3, 7];   // kişisel turnuvanın süresi (gün)
 
 /* ---------- Türkiye saatiyle gün ve hafta ---------- */
 
@@ -32,6 +33,9 @@ export async function kisiselAc({ env, uid, govde, simdi }) {
     "SELECT g.* FROM games g JOIN players p ON p.game_id = g.id WHERE g.id = ? AND p.uid = ? AND p.status = 'katildi' AND g.kind = 'duello'"
   ).bind(govde.kaynak, uid).first();
   if (!kaynak || kaynak.opponent === "bilgisayar") throw new Hata("oyun-yok", 404);
+  // 7 oyunlukta oyunlar her gece açıldığı için süre 7 gün olmak zorunda
+  const gun = kaynak.format === 7 ? 7 : govde.gun | 0;
+  if (!SECILEBILEN_GUNLER.includes(gun)) throw new Hata("sure-gecersiz");
   if ((await devamEdenSayisi(env, uid)) >= EN_FAZLA_DEVAM_EDEN) throw new Hata("devam-eden-siniri");
 
   const { results: digerleri } = await env.DB.prepare(
@@ -43,7 +47,7 @@ export async function kisiselAc({ env, uid, govde, simdi }) {
   const komutlar = [
     env.DB.prepare(
       "INSERT INTO games (id, kind, creator, name, format, seed, difficulty, status, source_game, created_at, starts_at, ends_at, updated_at) VALUES (?, 'turnuva', ?, ?, ?, ?, ?, 'suruyor', ?, ?, ?, ?, ?)"
-    ).bind(id, uid, ad, kaynak.format, yeniTohum(), zorlukCek(), kaynak.id, simdi, simdi, simdi + SURELER[kaynak.format], simdi),
+    ).bind(id, uid, ad, kaynak.format, yeniTohum(), zorlukCek(), kaynak.id, simdi, simdi, simdi + gun * GUN, simdi),
     env.DB.prepare("INSERT INTO players (game_id, uid, status, total, joined_at, updated_at) VALUES (?, ?, 'katildi', 0, ?, ?)").bind(id, uid, simdi, simdi),
   ];
   for (const d of digerleri) {
@@ -120,7 +124,11 @@ export async function katil({ env, uid, govde, simdi }) {
 export async function durum({ env, uid, govde, simdi }) {
   const g = await env.DB.prepare("SELECT * FROM games WHERE id = ?").bind(govde.id).first();
   if (!g || g.kind === "duello") throw new Hata("oyun-yok", 404);
-  const ben = await env.DB.prepare("SELECT status, total FROM players WHERE game_id = ? AND uid = ?").bind(g.id, uid).first();
+  if (g.status === "suruyor" && simdi > g.ends_at) {
+    await env.DB.prepare("UPDATE games SET status = 'bitti', updated_at = ? WHERE id = ? AND status = 'suruyor'").bind(simdi, g.id).run();
+    g.status = "bitti";
+  }
+  const ben = await env.DB.prepare("SELECT status, total, last_read_at FROM players WHERE game_id = ? AND uid = ?").bind(g.id, uid).first();
   if (g.kind === "turnuva" && !ben) throw new Hata("oyun-yok", 404);
 
   const { results: siralama } = await env.DB.prepare(
@@ -143,6 +151,7 @@ export async function durum({ env, uid, govde, simdi }) {
       startsAt: g.starts_at, endsAt: g.ends_at, acikOyun: acikOyunSayisi(g, simdi),
     },
     katildim: !!(ben && ben.status === "katildi"),
+    okunmamis: !!(ben && g.last_msg_at && (!ben.last_read_at || g.last_msg_at > ben.last_read_at)),
     toplam: ben ? ben.total : 0,
     yerim,
     oyuncuSayisi: sayi.n,

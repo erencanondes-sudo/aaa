@@ -26,6 +26,6 @@ class_name = "TurOdasi"
 tag = "v1"
 new_sqlite_classes = ["TurOdasi"]
 
-# Saatlik temizlik
+# Günlük temizlik: her gece 03:07 (Türkiye saati; cron UTC ile yazılır)
 [triggers]
-crons = ["7 * * * *"]
+crons = ["7 0 * * *"]

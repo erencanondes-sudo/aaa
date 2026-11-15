@@ -3,7 +3,7 @@
 import { Hata, GUN, kimlikUret, kullaniciBul, engelliMi } from "./ortak.js";
 import { SOZLUK } from "./sozluk.js";
 import { bildirimGonder } from "./bildirim.js";
-import { yeniTohum, acilisTahtasi, oyunuKontrolEt, kelimePuani, SESLILER, TUR_SURESI, JOKER } from "../../shared/oyun.js";
+import { yeniTohum, acilisTahtasi, oyunuKontrolEt, kelimePuani, SESLILER, TUR_SURESI, JOKER, KALAN_SANIYE_PUANI } from "../../shared/oyun.js";
 
 const SURELER = { 1: GUN, 3: 2 * GUN, 7: 7 * GUN };
 const DAVET_SURESI = 7 * GUN;
@@ -271,13 +271,18 @@ export async function turBasla({ env, uid, govde, simdi }) {
   };
 }
 
-/* Turda bir kez çıkış hakkı: süre durur */
+/* Turda bir kez çıkış hakkı: süre durur. Düelloda o ana kadarki kelimeler kontrol edilip saklanır;
+   oyuncu dönmezse oyun bitince bu puan ve kalan saniyeler sayılır. */
 export async function turDuraklat({ env, uid, govde, simdi }) {
   const g = await oyunVeKatilim(env, uid, govde.id);
-  if (g.kind !== "duello") return odaSonucu(await oda(env, g.id, uid).duraklat({ idx: govde.idx | 0, simdi }));
+  const idx = govde.idx | 0;
+  if (g.kind !== "duello") return odaSonucu(await oda(env, g.id, uid).duraklat({ idx, simdi }));
+
+  const hamleler = Array.isArray(govde.hamleler) ? govde.hamleler.slice(0, 300) : [];
+  const kontrol = await oyunuKontrolEt({ tohum: await turTohumu(g.seed, idx), zorluk: g.difficulty, hamleler, kalanSaniye: 0, sozluk: SOZLUK });
   const r = await env.DB.prepare(
-    "UPDATE rounds SET paused_at = ?, pause_used = 1 WHERE game_id = ? AND uid = ? AND idx = ? AND finished_at IS NULL AND paused_at IS NULL AND pause_used = 0"
-  ).bind(simdi, govde.id, uid, govde.idx | 0).run();
+    "UPDATE rounds SET paused_at = ?, pause_used = 1, score = ?, words = ? WHERE game_id = ? AND uid = ? AND idx = ? AND finished_at IS NULL AND paused_at IS NULL AND pause_used = 0"
+  ).bind(simdi, kontrol.gecerli ? kontrol.puan : 0, JSON.stringify(kontrol.kelimeler), g.id, uid, idx).run();
   return { duraklatildi: r.meta.changes === 1 };
 }
 
@@ -351,6 +356,18 @@ async function rakibeHaber(env, g, uid) {
 export async function bittiyseKapat(env, id, simdi, zorla) {
   const g = await env.DB.prepare("SELECT * FROM games WHERE id = ?").bind(id).first();
   if (!g || g.status !== "suruyor" || g.kind !== "duello") return;
+
+  // Çıkış hakkıyla bırakılıp dönülmeyen turlar: saklanan puan + kalan saniyeler
+  if (zorla) {
+    const { results: duranlar } = await env.DB.prepare(
+      "SELECT * FROM rounds WHERE game_id = ? AND paused_at IS NOT NULL AND finished_at IS NULL"
+    ).bind(id).all();
+    for (const t of duranlar) {
+      const kalan = Math.max(0, TUR_SURESI - Math.floor(gecenSure(t, simdi) / 1000));
+      await turKaydet(env, g, t.uid, t.idx, (t.score || 0) + KALAN_SANIYE_PUANI * kalan, JSON.parse(t.words || "[]"), simdi);
+    }
+  }
+
   const { results: oyuncular } = await env.DB.prepare("SELECT uid, total FROM players WHERE game_id = ? AND status = 'katildi'").bind(id).all();
   const s = await env.DB.prepare("SELECT COUNT(*) AS n FROM rounds WHERE game_id = ? AND finished_at IS NOT NULL").bind(id).first();
   if (!zorla && s.n < oyuncular.length * g.format) return;
@@ -423,7 +440,21 @@ async function oyunlariDoldur(env, oyunlar, uid, simdi, kelimelerle) {
   });
 }
 
+/* Temizlik günde bir kez çalıştığı için, süresi dolan oyunlar liste açılınca da kapanır */
+async function suresiDolanlariKapat(env, uid, simdi) {
+  const { results } = await env.DB.prepare(
+    `SELECT g.id, g.kind, g.status FROM players p JOIN games g ON g.id = p.game_id
+     WHERE p.uid = ? AND g.status IN ('bekliyor','suruyor') AND g.ends_at < ?`
+  ).bind(uid, simdi).all();
+  for (const g of results) {
+    if (g.status === "bekliyor") await env.DB.prepare("UPDATE games SET status = 'dustu', updated_at = ? WHERE id = ? AND status = 'bekliyor'").bind(simdi, g.id).run();
+    else if (g.kind === "duello") await bittiyseKapat(env, g.id, simdi, true);
+    else await env.DB.prepare("UPDATE games SET status = 'bitti', updated_at = ? WHERE id = ? AND status = 'suruyor'").bind(simdi, g.id).run();
+  }
+}
+
 export async function oyunListesi({ env, uid, simdi }) {
+  await suresiDolanlariKapat(env, uid, simdi);
   const { results } = await env.DB.prepare(
     `SELECT g.*, p.status AS benim, p.last_read_at AS okuma FROM players p JOIN games g ON g.id = p.game_id
      WHERE p.uid = ?1 AND p.hidden = 0 AND p.status IN ('katildi','davetli')

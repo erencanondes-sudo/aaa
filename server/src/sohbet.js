@@ -1,4 +1,4 @@
-/* Oyun içi sohbet: arkadaş düellosu, rastgele düello ve kişisel turnuvada. Her oyunda son 100 mesaj. */
+/* Oyun içi sohbet: bilgisayara karşı oyun dışında her oyunda. Her oyunda son 100 mesaj. */
 
 import { Hata } from "./ortak.js";
 import { bildirimGonder } from "./bildirim.js";
@@ -10,7 +10,7 @@ async function sohbetOyunu(env, uid, id) {
   const g = await env.DB.prepare(
     "SELECT g.* FROM games g JOIN players p ON p.game_id = g.id WHERE g.id = ? AND p.uid = ? AND p.status = 'katildi'"
   ).bind(id, uid).first();
-  if (!g || !(g.kind === "turnuva" || (g.kind === "duello" && g.opponent !== "bilgisayar"))) throw new Hata("oyun-yok", 404);
+  if (!g || g.opponent === "bilgisayar") throw new Hata("oyun-yok", 404);
   return g;
 }
 
@@ -46,7 +46,8 @@ export async function gonder({ env, uid, govde, simdi, arka }) {
     env.DB.prepare("UPDATE games SET last_msg_at = ? WHERE id = ?").bind(simdi, g.id),
     env.DB.prepare("UPDATE players SET last_read_at = ? WHERE game_id = ? AND uid = ?").bind(simdi, g.id, uid),
   ]);
-  if (arka) arka(haberVer(env, g, uid));
+  // Günlük ve haftalık turnuvada çok kişi olduğu için bildirim gitmez, yalnızca okunmamış işareti görünür
+  if (arka && (g.kind === "duello" || g.kind === "turnuva")) arka(haberVer(env, g, uid));
 }
 
 /* "X sana mesaj gönderdi" (içerik yok); okunana kadar tekrar gönderilmez */

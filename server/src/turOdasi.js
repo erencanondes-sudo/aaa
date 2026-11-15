@@ -42,7 +42,7 @@ export class TurOdasi extends DurableObject {
     await this.alarmKur();
   }
 
-  /* Süresi dolan tur kendiliğinden kapanır; çıkış hakkıyla bırakılan tur turnuva bitince kapanır */
+  /* Süresi dolan tur kendiliğinden kapanır; çıkış hakkıyla bırakılan tur turnuva bitince kapanır (kalan saniyeleriyle) */
   async alarmKur() {
     const turlar = await this.ctx.storage.list({ prefix: "tur:" });
     let en = null, sonBitis = 0;
@@ -64,7 +64,8 @@ export class TurOdasi extends DurableObject {
       sonBitis = Math.max(sonBitis, t.bitis);
       if (t.bitti) continue;
       const doldu = t.durdu ? simdi >= t.bitis : gecen(t, simdi) >= TUR_SURESI * 1000 + PAY;
-      if (doldu) await this.kapat(t, 0, simdi);
+      // Çıkış hakkıyla bırakılan turda kalan saniyeler de puana eklenir
+      if (doldu) await this.kapat(t, t.durdu ? kalanSaniye(t, simdi) : 0, simdi);
       else acik = true;
     }
     if (!acik && simdi > sonBitis + GUN - 60000) {

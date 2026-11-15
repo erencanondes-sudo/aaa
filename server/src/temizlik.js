@@ -1,4 +1,4 @@
-/* Saatlik temizlik (Cron Trigger): süresi dolan oyunları kapatır, eski kayıtları siler */
+/* Günlük temizlik (Cron Trigger): süresi dolan oyunları kapatır, eski kayıtları siler */
 
 import { GUN } from "./ortak.js";
 import { bittiyseKapat } from "./oyun.js";
