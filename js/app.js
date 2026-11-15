@@ -406,6 +406,8 @@ databaseURL:"https://eren-63abb-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 let firebaseReady=false;
+let kayitSuruyor=false;
+let sunucuDurumu=null;   // son açılışın sonucu: liste, oyunlar, giden davetler, arkadaşlar, düello oyuncu listesi
 let auth=null;
 let db=null;
 let rtdb=null;
@@ -448,49 +450,11 @@ console.warn("Firestore önbelleği aktif edilemedi:",err);
 auth.onAuthStateChanged(function(user){
 
 if(user){
-
-if(!navigator.onLine){
-
-document.getElementById("sessionCheckScreen").style.display="none";
-onLoginSuccess(user.uid,{});
-return;
-
-}
-
-db.collection("users").doc(user.uid).get().then(function(doc){
-
-let profile=doc.data();
-
-document.getElementById("sessionCheckScreen").style.display="none";
-
-if(profile){
-onLoginSuccess(user.uid,profile);
+if(!kayitSuruyor)girisSonrasi();
 }
 else{
-document.getElementById("authScreen").style.display="block";
-}
-
-}).catch(function(e){
-
-console.error("Oturum geri yüklenemedi:",e);
-
-document.getElementById("sessionCheckScreen").style.display="none";
-
-if(!navigator.onLine){
-onLoginSuccess(user.uid,{});
-}
-else{
-document.getElementById("authScreen").style.display="block";
-}
-
-});
-
-}
-else{
-
 document.getElementById("sessionCheckScreen").style.display="none";
 document.getElementById("authScreen").style.display="block";
-
 }
 
 });
@@ -662,20 +626,27 @@ errorEl.innerHTML="Kayıt oluşturuluyor...";
 
 document.getElementById("registerBtn").disabled=true;
 
+kayitSuruyor=true;
+
 withTimeout(auth.createUserWithEmailAndPassword(email,password),15000).then(function(cred){
 
-let profile={name:name,username:username,email:email,country:country};
+return sunucu("profil/olustur",{username:username,name:name,country:country}).then(function(){
 
-return db.collection("users").doc(cred.user.uid).set(profile).then(function(){
+kayitSuruyor=false;
+return girisSonrasi();
 
-onLoginSuccess(cred.user.uid,profile);
+}).catch(function(e){
+
+// Profil oluşmadıysa Firebase hesabı da silinir; oyuncu aynı e-postayla tekrar deneyebilir
+return cred.user.delete().catch(function(){}).then(function(){ throw e; });
 
 });
 
 }).catch(function(e){
 
+kayitSuruyor=false;
 document.getElementById("registerBtn").disabled=false;
-errorEl.innerHTML=firebaseErrorMessage(e);
+errorEl.innerHTML=(e instanceof SunucuHatasi) ? hataMetni(e) : firebaseErrorMessage(e);
 
 });
 
@@ -706,17 +677,8 @@ errorEl.innerHTML="Giriş yapılıyor...";
 
 document.getElementById("loginBtn").disabled=true;
 
-withTimeout(auth.signInWithEmailAndPassword(email,password),15000).then(function(cred){
-
-return db.collection("users").doc(cred.user.uid).get().then(function(doc){
-
-let profile=doc.data();
-
-onLoginSuccess(cred.user.uid,profile);
-
-});
-
-}).catch(function(e){
+// Giriş başarılı olunca açılışı oturum dinleyicisi yapar
+withTimeout(auth.signInWithEmailAndPassword(email,password),15000).catch(function(e){
 
 document.getElementById("loginBtn").disabled=false;
 errorEl.style.color="";
@@ -727,14 +689,56 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 }
 
 
+/* Firebase girişi tamam: sunucudan açılış bilgisi alınır.
+   İnternet yoksa son kaydedilen profille devam edilir. */
+async function girisSonrasi(){
+
+let uid=auth.currentUser.uid;
+let kayitliAnahtar="konfetiProfil_"+uid;
+
+try{
+
+sunucuDurumu=await acilis();
+document.getElementById("sessionCheckScreen").style.display="none";
+
+if(!sunucuDurumu.profil){
+// Kayıt yarıda kalmış: profil yok
+await auth.signOut();
+document.getElementById("authScreen").style.display="block";
+document.getElementById("loginError").innerHTML="Kaydın tamamlanmamış, lütfen yeniden üye ol.";
+return;
+}
+
+try{ localStorage.setItem(kayitliAnahtar,JSON.stringify(sunucuDurumu.profil)); }catch(e){}
+onLoginSuccess(uid,sunucuDurumu.profil);
+
+}
+catch(e){
+
+console.error("Açılış bilgisi alınamadı:",e);
+document.getElementById("sessionCheckScreen").style.display="none";
+
+let kayitli=null;
+try{ kayitli=JSON.parse(localStorage.getItem(kayitliAnahtar)||"null"); }catch(err){}
+
+if(kayitli)onLoginSuccess(uid,kayitli);
+else document.getElementById("authScreen").style.display="block";
+
+document.getElementById("loginBtn").disabled=false;
+
+}
+
+}
+
+
 function onLoginSuccess(uid,profile){
 
 profile=profile||{};
 
 let isGuest=!uid;
 
-currentUser={uid:uid,isGuest:isGuest,name:profile.name||"",username:profile.username||"",email:profile.email||"",country:profile.country||null,avatarEmoji:profile.avatarEmoji||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0,foundWordsCount:(profile.foundWordsList||[]).length};
-currentUserFriends=profile.friendUsernames || [];
+currentUser={uid:uid,isGuest:isGuest,name:profile.name||"",username:profile.username||"",email:(!isGuest && auth.currentUser) ? (auth.currentUser.email||"") : "",country:profile.country||null,avatarEmoji:profile.avatar||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0,foundWordsCount:profile.foundWordsCount||0,usernameChangedAt:profile.usernameChangedAt||null};
+currentUserFriends=(sunucuDurumu && sunucuDurumu.arkadaslik) ? sunucuDurumu.arkadaslik.arkadaslar.map(function(a){ return a.username; }) : [];
 
 flushPendingGameFromStorage();
 
@@ -5115,32 +5119,20 @@ return;
 errorEl.style.color="#27ae60";
 errorEl.innerHTML="Kontrol ediliyor...";
 
-db.collection("users").where("username","==",newUsername).limit(1).get().then(function(snap){
+sunucu("profil/ad",{username:newUsername}).then(function(v){
 
-if(!snap.empty){
-errorEl.style.color="";
-errorEl.innerHTML="Bu kullanıcı adı zaten alınmış.";
-return;
-}
-
-errorEl.innerHTML="Güncelleniyor...";
-
-return db.collection("users").doc(currentUser.uid).update({username:newUsername}).then(function(){
-
-currentUser.username=newUsername;
-document.getElementById("profileUsername").innerHTML=newUsername;
+currentUser.username=v.username;
+document.getElementById("profileUsername").innerHTML=v.username;
 
 errorEl.style.color="#27ae60";
 errorEl.innerHTML="Kullanıcı adın güncellendi.";
 
 document.getElementById("newUsername").value="";
 
-});
-
 }).catch(function(e){
 
 errorEl.style.color="";
-errorEl.innerHTML=firebaseErrorMessage(e);
+errorEl.innerHTML=hataMetni(e);
 
 });
 
@@ -5160,9 +5152,12 @@ badgeRefreshInterval=null;
 }
 
 currentUser=null;
+sunucuDurumu=null;
 gameHistory=[];
 
 hideAllScreens();
+
+document.getElementById("loginBtn").disabled=false;
 
 screenNavStack=[];
 
@@ -5186,7 +5181,7 @@ console.error("Çıkış yapılamadı:",e);
 const AVATAR_EMOJI_CHOICES=["👤","😀","😎","🤓","🥳","😺","🐶","🦊","🐼","🐨","🦁","🐯","🐸","🐵","🦄","🐙","🦋","🌟","🔥","⚡","🎮","🎨","🎧","⚽","🏀","🎯","🚀","👑","🍀","🌈","😁","😅","🤩","🥸","🤠","🥷","🧙","🧛","🧟","👻","👽","🤖","🎃","💀","😇","🙃","🤪","😜","🐱","🐭","🐹","🐰","🦝","🐻","🐷","🐮","🐔","🐧","🐦","🦉","🦇","🐺","🦓","🦒","🐘","🦏","🦛","🐴","🐝","🦖","🐬","🐳","🐊","🐢","🦂","🕷️","🦀","🐠","🦈","🍉","🍕","🍔","🌮","🍩","🍿","🎲","🃏","🏆","🥇","🛸","🛹","🎸","🥁","🎬"];
 
 /* Resimli profil simgeleri: dosyalar avatars/ klasöründe (ad.webp).
-   Firebase'de avatarEmoji alanına "img:ad" olarak kaydedilir. */
+   Sunucuda "img:ad" olarak kaydedilir. */
 const AVATAR_IMAGE_COUNT=97;
 const AVATAR_IMAGE_CHOICES=Array.from({length:AVATAR_IMAGE_COUNT},function(_,i){ return "avatar-"+(i+1); });
 
@@ -5231,9 +5226,7 @@ openDetailModal(html);
 
 function selectAvatarEmoji(emoji){
 
-db.collection("users").doc(currentUser.uid).update({
-avatarEmoji:emoji
-}).then(function(){
+sunucu("profil/avatar",{avatar:emoji}).then(function(){
 
 currentUser.avatarEmoji=emoji;
 
@@ -5278,11 +5271,9 @@ else{
 document.getElementById("profileStatsRealSection").style.display="block";
 document.getElementById("profileGuestPrompt").style.display="none";
 
-let avgWordScore=computeAvgWordScore(gameHistory);
-
-let challengeGames=gameHistory.filter(function(g){return g.isChallenge;});
-let challengeWins=challengeGames.filter(function(g){return g.result==="win";}).length;
-let successPct=challengeGames.length? Math.round((challengeWins/challengeGames.length)*100) : 0;
+// İstatistikler sunucudan gelir (bütün oyunlar üzerinden)
+let avgWordScore=currentUser.wordScoreCount ? Math.round(currentUser.wordScoreSum/currentUser.wordScoreCount) : 0;
+let successPct=currentUser.challengeCount ? Math.round((currentUser.challengeWins/currentUser.challengeCount)*100) : 0;
 
 document.getElementById("profileSuccessPct").innerHTML="%"+successPct;
 document.getElementById("profileAvgScoreWord").innerHTML=avgWordScore;
@@ -5297,56 +5288,54 @@ function viewUserProfile(username,from){
 
 openDetailModal("<p>Yükleniyor...</p>","profile-modal");
 
-db.collection("users").where("username","==",username).limit(1).get().then(function(snap){
+sunucu("kullanici/getir",{username:username}).then(function(v){
 
-if(snap.empty){
+let profile=v.kullanici;
 
-document.getElementById("detailModalContent").innerHTML="<p>Kullanıcı bulunamadı.</p>";
-return;
-
-}
-
-let profile=snap.docs[0].data();
-
-let challengeCount=profile.challengeCount||0;
-let challengeWins=profile.challengeWins||0;
-let wordScoreSum=profile.wordScoreSum||0;
-let wordScoreCount=profile.wordScoreCount||0;
-let foundWordsCount=(profile.foundWordsList||[]).length;
-
-let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
-let avgScoreWord=wordScoreCount? Math.round(wordScoreSum/wordScoreCount) : 0;
+let successPct=profile.challengeCount? Math.round((profile.challengeWins/profile.challengeCount)*100) : 0;
+let avgScoreWord=profile.wordScoreCount? Math.round(profile.wordScoreSum/profile.wordScoreCount) : 0;
 
 let isFromChallengeList=(from==="home" || from==="challengeList");
+let isMe=profile.username===currentUser.username;
 
-let isFriend=currentUserFriends.includes(username);
-let hasSecondCard=!isFromChallengeList && (isFriend || from!=="istekler");
-
-let friendCardHtml=isFromChallengeList ? "" : (isFriend
-? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#ee483d,#e8342b);margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"removeFriend('"+profile.username+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">💔</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaşlıktan Çıkar</div></div></div>"
-: (hasSecondCard ? "<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#35b233,#209c2b);margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;\" onclick=\"addFriend('"+profile.username+"',this)\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">➕</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaş Ekle</div></div></div>" : ""));
+// Arkadaşlık düğmesi: arkadaşsa çıkar, istek geldiyse kabul et, istek gönderildiyse bekliyor, yoksa istek gönder
+let friendCardHtml="";
+if(!isFromChallengeList && !isMe){
+let stil="margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;";
+if(profile.arkadaslik==="arkadas"){
+friendCardHtml="<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#ee483d,#e8342b);"+stil+"\" onclick=\"removeFriend('"+profile.username+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">💔</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Arkadaşlıktan Çıkar</div></div></div>";
+}
+else if(profile.arkadaslik==="istek-gonderildi"){
+friendCardHtml="<div class=\"already-friend\">⏳ İstek gönderildi</div>";
+}
+else{
+let yazi=profile.arkadaslik==="istek-geldi" ? "İsteği Kabul Et" : "Arkadaş Ekle";
+friendCardHtml="<div class=\"settings-card\" style=\"background:linear-gradient(105deg,#35b233,#209c2b);"+stil+"\" onclick=\"addFriend('"+profile.username+"',this)\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:3px;\">➕</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">"+yazi+"</div></div></div>";
+}
+}
+let hasSecondCard=friendCardHtml!=="";
 
 let countryHtml=profile.country ? ("<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#7c9cf5;\">🌍</div><div class=\"profile-info-label\">Ülke</div><div class=\"profile-info-value\">"+countryFlagEmoji(profile.country)+" "+getCountryName(profile.country)+"</div></div>") : "";
 
 document.getElementById("detailModalContent").innerHTML=
 "<div style=\"text-align:center;\">"+
-"<div class=\"profile-icon\" style=\"margin:10px auto 8px;width:70px;height:70px;font-size:36px;\">"+avatarHtml(profile.avatarEmoji)+"</div>"+
+"<div class=\"profile-icon\" style=\"margin:10px auto 8px;width:70px;height:70px;font-size:36px;\">"+avatarHtml(profile.avatar)+"</div>"+
 "</div>"+
 "<div class=\"profile-info-card\" style=\"margin-top:8px;\">"+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#8b5cf6;\">👤</div><div class=\"profile-info-label\">Kullanıcı Adı</div><div class=\"profile-info-value\">"+profile.username+"</div></div>"+
 countryHtml+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#22c55e;\">📈</div><div class=\"profile-info-label\">Başarı Yüzdesi</div><div class=\"profile-info-value\">%"+successPct+"</div></div>"+
 "<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#e8342b;\">⭐</div><div class=\"profile-info-label\">Puan Ortalaması</div><div class=\"profile-info-value\">"+avgScoreWord+"</div></div>"+
-"<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#eab308;\">🔤</div><div class=\"profile-info-label\">Bulunan Benzersiz Kelime Sayısı</div><div class=\"profile-info-value\">"+foundWordsCount+"</div></div>"+
+"<div class=\"profile-info-row\"><div class=\"profile-info-icon\" style=\"background:#eab308;\">🔤</div><div class=\"profile-info-label\">Bulunan Benzersiz Kelime Sayısı</div><div class=\"profile-info-value\">"+(profile.foundWordsCount||0)+"</div></div>"+
 "</div>"+
 "<div class=\"settings-info-section\" style=\"grid-template-columns:"+(hasSecondCard ? "1fr 1fr" : "1fr")+";margin-top:0;\" onclick=\"event.stopPropagation();\">"+
-"<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"','"+(from||"profile")+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>"+
+(isMe ? "" : "<div class=\"friends-card\" style=\"background:#16a34a;margin-bottom:22px;width:160px;padding:1px 6px;min-height:42px;justify-self:center;justify-content:center;padding-right:14px;\" onclick=\"challengeFromProfile('"+profile.username+"','"+(from||"profile")+"')\"><div class=\"card-icon\" style=\"background:transparent;width:auto;margin-right:1px;\">⚔️</div><div class=\"card-content\" style=\"flex:none;\"><div class=\"card-title\" style=\"color:#fff;font-size:13px;\">Meydan Oku</div></div></div>")+
 friendCardHtml+
 "</div>";
 
 }).catch(function(e){
 
-document.getElementById("detailModalContent").innerHTML="<p>Profil yüklenemedi: "+e.message+"</p>";
+document.getElementById("detailModalContent").innerHTML="<p>"+hataMetni(e)+"</p>";
 
 });
 
@@ -5382,88 +5371,92 @@ document.getElementById("infoScreen").style.display="block";
 }
 
 
+/* Arkadaşlar ekranı: gelen istekler (kabul / reddet), arkadaşlar, gönderilen istekler */
 function renderFriendsList(){
 
 let list=document.getElementById("friendsList");
-
-if(currentUserFriends.length===0){
-
-list.innerHTML="<p>Henüz bir arkadaşın yok. Oynadığın bir meydan okumadan 'Arkadaş Ekle' diyerek listene ekleyebilirsin.</p>";
-return;
-
-}
-
 list.innerHTML="<p>Yükleniyor...</p>";
 
-let fetches=currentUserFriends.map(function(name){
+sunucu("arkadas/liste").then(function(v){
 
-return db.collection("users").where("username","==",name).limit(1).get().then(function(snap){
-
-if(snap.empty){
-return {name:name,successPct:0,avgScoreWord:0,avatarEmoji:"👤"};
-}
-
-let profile=snap.docs[0].data();
-let challengeCount=profile.challengeCount||0;
-let challengeWins=profile.challengeWins||0;
-let wordScoreSum=profile.wordScoreSum||0;
-let wordScoreCount=profile.wordScoreCount||0;
-
-let successPct=challengeCount? Math.round((challengeWins/challengeCount)*100) : 0;
-let avgScoreWord=wordScoreCount? Math.round(wordScoreSum/wordScoreCount) : 0;
-
-return {name:name,successPct:successPct,avgScoreWord:avgScoreWord,avatarEmoji:profile.avatarEmoji||"👤"};
-
-}).catch(function(e){
-return {name:name,successPct:0,avgScoreWord:0,avatarEmoji:"👤"};
-});
-
-});
-
-Promise.all(fetches).then(function(results){
+if(sunucuDurumu)sunucuDurumu.arkadaslik=v;
+currentUserFriends=v.arkadaslar.map(function(a){ return a.username; });
 
 let html="";
 
-results.forEach(function(r){
+function kart(a,ek){
+let h="<div class=\"oy-card\" style=\"cursor:pointer;\" onclick=\"viewUserProfile('"+a.username+"','friends')\">";
+h+="<div class=\"oy-avatar\">"+avatarHtml(a.avatar)+"</div>";
+h+="<div class=\"oy-content\">";
+h+="<div class=\"oy-card-header\">";
+h+="<div class=\"oy-user-info\" style=\"margin-left:5px;margin-top:2px;\">";
+h+="<span class=\"oy-username\" style=\"position:relative;top:-1px;\">"+a.username+"</span>";
+h+="<div class=\"friend-stats-row\">🏆 %"+a.basari+" <span class=\"friend-stats-sep\">|</span> 📊 <span style=\"position:relative;top:1px;\">"+a.ortalama+"</span></div>";
+h+="</div>";
+h+=ek||"";
+h+="</div>";
+h+="</div>";
+h+="</div>";
+return h;
+}
 
-html+="<div class=\"oy-card\" style=\"cursor:pointer;\" onclick=\"viewUserProfile('"+r.name+"','friends')\">";
-html+="<div class=\"oy-avatar\">"+avatarHtml(r.avatarEmoji)+"</div>";
-html+="<div class=\"oy-content\">";
-html+="<div class=\"oy-card-header\">";
-html+="<div class=\"oy-user-info\" style=\"margin-left:5px;margin-top:2px;\">";
-html+="<span class=\"oy-username\" style=\"position:relative;top:-1px;\">"+r.name+"</span>";
-html+="<div class=\"friend-stats-row\">🏆 %"+r.successPct+" <span class=\"friend-stats-sep\">|</span> 📊 <span style=\"position:relative;top:1px;\">"+r.avgScoreWord+"</span></div>";
-html+="</div>";
-html+="</div>";
-html+="</div>";
-html+="</div>";
-
+if(v.gelen.length){
+html+="<p class=\"screen-title\">Gelen İstekler</p>";
+v.gelen.forEach(function(a){
+html+=kart(a,"<div class=\"oy-actions\" onclick=\"event.stopPropagation();\"><button class=\"oy-btn-accept\" onclick=\"answerFriendRequest('"+a.username+"',true)\">Kabul</button><button class=\"oy-btn-decline\" onclick=\"answerFriendRequest('"+a.username+"',false)\">Reddet</button></div>");
 });
+}
+
+if(v.arkadaslar.length){
+if(v.gelen.length || v.giden.length)html+="<p class=\"screen-title\">Arkadaşlarım</p>";
+v.arkadaslar.forEach(function(a){ html+=kart(a); });
+}
+else{
+html+="<p>Henüz bir arkadaşın yok. Bir oyuncunun profilinden 'Arkadaş Ekle' diyerek istek gönderebilirsin.</p>";
+}
+
+if(v.giden.length){
+html+="<p class=\"screen-title\">Gönderdiğim İstekler</p>";
+v.giden.forEach(function(a){ html+=kart(a,"<div class=\"already-friend\">⏳ Bekliyor</div>"); });
+}
 
 list.innerHTML=html;
 
+}).catch(function(e){
+
+list.innerHTML="<p>"+hataMetni(e)+"</p>";
+
 });
 
 }
 
 
+/* Arkadaşlık isteği gönderir; karşı taraf zaten istek gönderdiyse doğrudan arkadaş olunur */
 function addFriend(username,btnEl){
 
-if(btnEl){
-btnEl.outerHTML="<div class=\"already-friend\">✓ Arkadaşın</div>";
-}
+sunucu("arkadas/istek",{username:username}).then(function(v){
 
-if(!currentUserFriends.includes(username)){
-currentUserFriends.push(username);
-}
-
-db.collection("users").doc(currentUser.uid).update({
-
-friendUsernames:firebase.firestore.FieldValue.arrayUnion(username)
+if(v.durum==="arkadas" && !currentUserFriends.includes(username))currentUserFriends.push(username);
+if(btnEl)btnEl.outerHTML=v.durum==="arkadas" ? "<div class=\"already-friend\">✓ Arkadaşın</div>" : "<div class=\"already-friend\">⏳ İstek gönderildi</div>";
 
 }).catch(function(e){
 
-console.error("Arkadaş eklenemedi:",e);
+showTopNotification(hataMetni(e));
+
+});
+
+}
+
+
+function answerFriendRequest(username,kabul){
+
+sunucu("arkadas/cevap",{username:username,kabul:kabul}).then(function(){
+
+renderFriendsList();
+
+}).catch(function(e){
+
+showTopNotification(hataMetni(e));
 
 });
 
@@ -5478,19 +5471,14 @@ return;
 
 let preservedReturn=returnToScreen;
 
+sunucu("arkadas/sil",{username:username}).then(function(){
+
 currentUserFriends=currentUserFriends.filter(function(f){ return f!==username; });
-
-db.collection("users").doc(currentUser.uid).update({
-
-friendUsernames:firebase.firestore.FieldValue.arrayRemove(username)
-
-}).then(function(){
-
 viewUserProfile(username,preservedReturn);
 
 }).catch(function(e){
 
-console.error("Arkadaş silinemedi:",e);
+showTopNotification(hataMetni(e));
 
 });
 
@@ -7521,17 +7509,6 @@ list.innerHTML=html;
 list.innerHTML="<p>İstekler yüklenemedi: "+e.message+"</p>";
 
 });
-
-}
-
-
-function computeAvgWordScore(games){
-
-if(!games.length)return 0;
-
-let sum=games.reduce(function(total,g){ return total+g.score; },0);
-
-return Math.round(sum/games.length);
 
 }
 

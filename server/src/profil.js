@@ -4,9 +4,14 @@ import { Hata, GUN, kullaniciAdiDuzelt, cift, kullaniciBul } from "./ortak.js";
 
 const AVATAR_SAYISI = 97;
 
+/* Profil simgesi: resim ("img:avatar-5") ya da tek bir emoji. Başka bir şey kabul edilmez
+   (telefon simgeyi sayfaya doğrudan yazdığı için). */
 function avatarDuzelt(a) {
-  const n = parseInt(String(a || "").replace("avatar-", ""), 10);
-  return n >= 1 && n <= AVATAR_SAYISI ? "avatar-" + n : null;
+  const v = String(a || "");
+  const resim = /^img:avatar-(\d{1,3})$/.exec(v);
+  if (resim) return Number(resim[1]) >= 1 && Number(resim[1]) <= AVATAR_SAYISI ? v : null;
+  if (v.length <= 12 && /^\p{Extended_Pictographic}(\uFE0F|\u200D\p{Extended_Pictographic})*\uFE0F?$/u.test(v)) return v;
+  return null;
 }
 
 function disProfil(u) {

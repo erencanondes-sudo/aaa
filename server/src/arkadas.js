@@ -9,7 +9,8 @@ const ISTEK_SURESI = 30 * GUN;
 export async function liste({ env, uid, simdi }) {
   const sinir = simdi - ISTEK_SURESI;
   const { results } = await env.DB.prepare(
-    `SELECT f.status, f.requested_by, f.created_at, u.uid, u.username, u.avatar
+    `SELECT f.status, f.requested_by, f.created_at, u.uid, u.username, u.avatar,
+       u.challenge_count, u.challenge_wins, u.word_score_sum, u.word_score_count
      FROM friends f JOIN users u ON u.uid = CASE WHEN f.a = ?1 THEN f.b ELSE f.a END
      WHERE (f.a = ?1 OR f.b = ?1)
        AND (f.status = 'arkadas' OR f.created_at > ?2)
@@ -20,7 +21,11 @@ export async function liste({ env, uid, simdi }) {
 
   const sonuc = { arkadaslar: [], gelen: [], giden: [] };
   for (const r of results) {
-    const k = { username: r.username, avatar: r.avatar };
+    const k = {
+      username: r.username, avatar: r.avatar,
+      basari: r.challenge_count ? Math.round((r.challenge_wins / r.challenge_count) * 100) : 0,
+      ortalama: r.word_score_count ? Math.round(r.word_score_sum / r.word_score_count) : 0,
+    };
     if (r.status === "arkadas") sonuc.arkadaslar.push(k);
     else if (r.requested_by === uid) sonuc.giden.push(k);
     else sonuc.gelen.push(k);

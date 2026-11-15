@@ -3,6 +3,7 @@
 import { Hata, GUN, kimlikUret, kullaniciBul, cift, engelliMi } from "./ortak.js";
 import { bildirimGonder } from "./bildirim.js";
 import { getir as profilGetir } from "./profil.js";
+import { liste as arkadasListesi } from "./arkadas.js";
 import { BILGISAYAR, SURELER, DAVET_SURESI, TURKIYE } from "./oyunOdasi.js";
 
 const KUYRUK_SURESI = 2 * GUN;
@@ -54,7 +55,9 @@ async function telefonaHazirla(env, detaylar, uid) {
 /* Telefon elindeki oyunların sürüm numaralarını gönderir (bilinen: {oyunId: surum});
    yalnızca numarası değişen oyunların ayrıntısı gelir. Bilinen boşsa hepsi gelir. */
 export async function acilis({ env, uid, govde, simdi }) {
-  const [p, { liste, giden }] = await Promise.all([profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi, uid)]);
+  const [p, { liste, giden }, arkadaslik] = await Promise.all([
+    profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi, uid), arkadasListesi({ env, uid, simdi }),
+  ]);
   const bilinen = govde.bilinen || {};
 
   const istenecek = Object.entries(liste)
@@ -86,6 +89,7 @@ export async function acilis({ env, uid, govde, simdi }) {
 
   return {
     profil: p.profil,
+    arkadaslik,
     acikOyuncular: satir ? JSON.parse(satir.data).filter((o) => o.username !== benimAdim) : [],
     giden: giden.map((d) => Object.assign(kisi(harita, d.hedef, uid), {
       oyunId: d.oyunId, kind: d.kind, zaman: d.zaman,
