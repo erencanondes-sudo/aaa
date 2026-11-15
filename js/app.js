@@ -1676,8 +1676,6 @@ document.getElementById("challengeFormatScreen").style.display="flex";
 }
 
 
-let longPressTimer=null;
-
 
 /* Düellonun sıradaki turunu oynatır (açık olan ve henüz oynamadığım ilk tur) */
 function playChallenge(id){

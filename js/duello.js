@@ -37,90 +37,115 @@ function updateChallengeBadge(){ oyunListeleriniCiz(); }
 
 /* ---------- Yardımcılar ---------- */
 
+function benBul(d){ return d.oyuncular.find(function(o){ return o.ben; }); }
+function rakipBul(d){ return d.oyuncular.find(function(o){ return !o.ben; }); }
+function turBul(o,i){ return o ? o.turlar.find(function(x){ return x.idx===i; }) : null; }
+
 function siradakiTurum(d){
 
-let ben=d.oyuncular.find(function(o){ return o.ben; });
+let ben=benBul(d);
 if(!ben || ben.status!=="katildi" || d.oyun.status!=="suruyor")return null;
 
 for(let i=0;i<d.oyun.acikOyun;i++){
-let t=ben.turlar.find(function(x){ return x.idx===i; });
+let t=turBul(ben,i);
 if(!t || !t.bitti)return {idx:i,basladi:!!t};
 }
 return null;
 
 }
 
-function kalanSureMetni(bitis){
-
-let ms=Math.max(0,bitis-Date.now());
-let saat=Math.floor(ms/3600000);
-if(saat>=24)return Math.floor(saat/24)+" gün";
-if(saat>=1)return saat+" saat";
-return Math.max(1,Math.floor(ms/60000))+" dk";
-
+function kalanSaat(bitis){
+return Math.max(0,Math.floor((bitis-Date.now())/3600000));
 }
 
-function rakipBilgisi(d){
-
-if(d.oyun.kind==="turnuva"){
-let sayi=d.oyuncular.filter(function(o){ return o.status==="katildi"; }).length;
-return {username:d.oyun.name||"Turnuva",avatar:"🏆",etiket:sayi+" oyuncu",turnuva:true};
+/* Kartların sırası (eski düzen): bekleyenler alta, yeniler üste */
+function oyOrder(waiting,tsSeconds){
+let minutes=Math.floor(Math.max(0,(tsSeconds||0)-1577836800)/60);
+return (waiting ? 20000000 : 0)+Math.max(0,10000000-minutes);
 }
 
-let r=d.oyuncular.find(function(o){ return !o.ben; });
-let etiket=d.oyun.opponent==="bilgisayar" ? "Bilgisayar" : (d.oyun.opponent==="rastgele" ? "Rastgele" : null);
-if(r && currentUserFriends.includes(r.username))etiket="Arkadaş";
-return {username:r ? r.username : "?",avatar:d.oyun.opponent==="bilgisayar" ? "🤖" : (r && r.avatar),etiket:etiket,turnuva:false};
-
+/* Rakibin adı ve görünümü */
+function rakipGorunumu(d){
+let r=rakipBul(d);
+let bilgisayar=d.oyun.opponent==="bilgisayar";
+return {
+ad:bilgisayar ? "Bilgisayar" : (r ? r.username : "?"),
+avatar:bilgisayar ? "🤖" : ((r && r.avatar)||"👤"),
+kelimeSayisi:bilgisayar ? null : (r ? r.kelimeSayisi||0 : 0),
+bilgisayar:bilgisayar
+};
 }
 
-function skorMetni(d){
-
-let ben=d.oyuncular.find(function(o){ return o.ben; });
-if(d.oyun.kind==="turnuva"){
-let sirali=d.oyuncular.filter(function(o){ return o.status==="katildi"; }).sort(function(a,b){ return b.total-a.total; });
-return (sirali.indexOf(ben)+1)+". sıra · "+ben.total+" puan";
+function profilTiki(g,kaynak){
+return g.bilgisayar ? "" : " onclick=\"viewUserProfile('"+g.ad+"','"+kaynak+"')\"";
 }
-let r=d.oyuncular.find(function(o){ return !o.ben; });
-return ben.total+" – "+(r ? r.total : 0);
 
+/* Benim oynadığım oyunlardaki toplamlar (rakibin toplamı da yalnızca o oyunlardan) */
+function duelloToplamlari(d){
+let ben=benBul(d),r=rakipBul(d);
+let benim=0,rakibin=0,oynadigim=0;
+for(let i=0;i<d.oyun.format;i++){
+let t=turBul(ben,i);
+if(!t || !t.bitti)continue;
+oynadigim++;
+benim+=t.puan||0;
+let rt=turBul(r,i);
+if(rt && rt.bitti)rakibin+=rt.puan||0;
+}
+return {benim:benim,rakibin:rakibin,oynadigim:oynadigim};
+}
+
+/* ---------- Gizlenen kartlar (uzun basınca "Vazgeç") ---------- */
+
+function gizliAnahtar(){ return "konfetiGizli_"+(currentUser ? currentUser.uid : ""); }
+
+function gizliler(){
+try{ return JSON.parse(localStorage.getItem(gizliAnahtar())||"{}"); }catch(e){ return {}; }
+}
+
+function gizliYaz(m){
+try{ localStorage.setItem(gizliAnahtar(),JSON.stringify(m)); }catch(e){}
 }
 
 /* ---------- Listeler ---------- */
 
-function oyunKartiHtml(k,d){
+function devamKartiHtml(k,d){
 
-let r=rakipBilgisi(d);
+let g=rakipGorunumu(d);
+let ben=benBul(d),r=rakipBul(d);
+let toplam=d.oyun.format;
+
+let simdiki=0;
+for(;simdiki<toplam;simdiki++){
+let a=turBul(ben,simdiki),b=g.bilgisayar ? a : turBul(r,simdiki);
+if(!(a && a.bitti && b && b.bitti))break;
+}
+if(simdiki>=toplam)simdiki=toplam-1;
+let oynadim=!!(turBul(ben,simdiki) && turBul(ben,simdiki).bitti);
 let sira=siradakiTurum(d);
-let bitti=k.bitti;
-let profilTik=r.turnuva ? "" : " onclick=\"viewUserProfile('"+r.username+"','ongoing')\"";
 
-let durum;
-if(bitti){
-let ben=d.oyuncular.find(function(o){ return o.ben; });
-let enYuksek=Math.max.apply(null,d.oyuncular.map(function(o){ return o.total; }));
-let kazandi=ben.total===enYuksek && d.oyuncular.filter(function(o){ return o.total===enYuksek; }).length===1;
-durum=d.oyun.status==="reddedildi" ? "Reddedildi" : (d.oyun.status==="dustu" ? "Süresi doldu" : (kazandi ? "🏆 Kazandın" : "Bitti"));
-}
-else if(d.oyun.status==="bekliyor"){
-durum="Cevap bekleniyor";
-}
-else{
-durum=(sira ? "Sıra sende" : "Rakip bekleniyor")+" ⏳ "+kalanSureMetni(d.oyun.endsAt);
-}
+let saat=kalanSaat(d.oyun.endsAt);
+let durum=oynadim ? (simdiki+1)+". oyun ⏳ "+saat+" saat" : simdiki+"/"+toplam+" ⏳ "+saat+" saat";
+let tik=profilTiki(g,"ongoing");
 
-let h="<div class=\"oy-card\" data-oyun-id=\""+d.oyun.id+"\">";
-h+="<div class=\"oy-avatar-col\"><div class=\"oy-avatar-ring\""+profilTik+"><div class=\"oy-avatar\">"+avatarHtml(r.avatar)+"</div></div></div>";
+let h="<div class=\"oy-card\" style=\"order:"+oyOrder(!sira,Math.floor((d.oyun.createdAt||0)/1000))+"\" data-lp-id=\""+d.oyun.id+"\" data-lp-type=\"ongoing\">";
+h+="<div class=\"oy-avatar-col\">";
+h+="<div class=\"oy-avatar-ring\""+tik+"><div class=\"oy-avatar\">"+avatarHtml(g.avatar)+"</div></div>";
+if(!g.bilgisayar)h+="<div class=\"oy-word-count\">"+g.kelimeSayisi+"</div>";
+h+="</div>";
 h+="<div class=\"oy-content\">";
 h+="<div class=\"oy-card-header\">";
-h+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\""+profilTik+">"+r.username+"</span>"+(r.etiket ? " <span class=\"oy-type-label\">("+r.etiket+")</span>" : "")+"</div>";
+h+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\""+tik+">"+g.ad+"</span></div>";
 h+="<span class=\"oy-status\">"+durum+"</span>";
 h+="</div>";
-h+="<div class=\"oy-score-line\">"+skorMetni(d)+(d.oyun.format>1 ? " · "+d.oyun.format+" oyun" : "")+"</div>";
+
+let oyna="";
+if(sira)oyna="<button class=\"oy-btn "+(sira.basladi ? "oy-btn-continue" : "oy-btn-play")+"\" onclick=\"playChallenge('"+d.oyun.id+"')\"><i class=\"fa-solid fa-play\"></i> "+(sira.basladi ? "Devam Et" : "Oyna")+"</button>";
+
 h+="<div class=\"oy-actions\">";
-h+="<button class=\"oy-btn oy-btn-view\" onclick=\"openChallengeDetail('"+d.oyun.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
-if(sira)h+="<button class=\"oy-btn "+(sira.basladi ? "oy-btn-continue" : "oy-btn-play")+"\" onclick=\"playChallenge('"+d.oyun.id+"')\"><i class=\"fa-solid fa-play\"></i> "+(sira.basladi ? "Devam Et" : "Oyna")+"</button>";
-if(bitti)h+="<button class=\"oy-btn oy-btn-delete\" onclick=\"deleteChallengeItem('"+d.oyun.id+"')\"><i class=\"fa-solid fa-trash\"></i> Sil</button>";
+h+="<button class=\"oy-btn oy-btn-view\" onclick=\"openChallengeDetail('"+d.oyun.id+"',null,null,'ongoing')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+h+=oyna;
+h+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChallengeDetail('"+d.oyun.id+"',null,null,'ongoing')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" style=\"display:none;\">0</span></button>";
 h+="</div>";
 h+="</div>";
 h+="</div>";
@@ -128,20 +153,34 @@ return h;
 
 }
 
-function davetKartiHtml(k,d){
+function gecmisKartiHtml(k,d){
 
-let r=rakipBilgisi(d);
-let davetEden=k.kind==="turnuva" ? (d.oyuncular.find(function(o){ return o.status==="katildi"; })||{}).username : r.username;
-let tur=k.kind==="turnuva" ? (d.oyun.name ? d.oyun.name+" turnuvası" : "Turnuva") : "Düello";
-let bicim=d.oyun.format===1 ? "1 oyun" : d.oyun.format+" oyun";
+let g=rakipGorunumu(d);
+let t=duelloToplamlari(d);
+let toplam=d.oyun.format;
 
-let h="<div class=\"oy-card\" data-oyun-id=\""+d.oyun.id+"\">";
-h+="<div class=\"oy-avatar-col\"><div class=\"oy-avatar-ring\"><div class=\"oy-avatar\">"+avatarHtml(r.avatar)+"</div></div></div>";
+let sonuc;
+if(t.benim>t.rakibin)sonuc=toplam===1 ? "🎉 Kazandın" : "🎉 Seri kazanıldı";
+else if(t.benim<t.rakibin)sonuc=toplam===1 ? "😔 Kaybettin" : "😔 Seri kaybedildi";
+else sonuc=toplam===1 ? "🤝 Berabere" : "🤝 Seri berabere";
+
+let meydanOku=g.bilgisayar ? "challengeComputerFromHistory()" : "challengeFromProfile('"+g.ad+"')";
+let tik=profilTiki(g,"oyunlarim");
+
+let h="<div class=\"oy-card\" style=\"order:"+oyOrder(false,Math.floor((d.oyun.endsAt||0)/1000))+"\" data-lp-id=\""+d.oyun.id+"\" data-lp-type=\"history\">";
+h+="<div class=\"oy-avatar-col\">";
+h+="<div class=\"oy-avatar-ring\""+tik+"><div class=\"oy-avatar\">"+avatarHtml(g.avatar)+"</div></div>";
+if(!g.bilgisayar)h+="<div class=\"oy-word-count\">"+g.kelimeSayisi+"</div>";
+h+="</div>";
 h+="<div class=\"oy-content\">";
-h+="<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"oy-username\">"+(davetEden||"?")+"</span></div><span class=\"oy-status\">"+tur+" · "+bicim+" ⏳ "+kalanSureMetni(k.bitis)+"</span></div>";
+h+="<div class=\"oy-card-header\">";
+h+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\""+tik+">"+g.ad+"</span></div>";
+h+="<span class=\"oy-status\">"+sonuc+" · "+t.benim+"-"+t.rakibin+"</span>";
+h+="</div>";
 h+="<div class=\"oy-actions\">";
-h+="<button class=\"oy-btn-accept\" onclick=\"respondChallenge('"+d.oyun.id+"',true)\">Kabul</button>";
-h+="<button class=\"oy-btn-decline\" onclick=\"respondChallenge('"+d.oyun.id+"',false)\">Reddet</button>";
+h+="<button class=\"oy-btn oy-btn-view\" onclick=\"openChallengeDetail('"+d.oyun.id+"',null,null,'oyunlarim')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+h+="<button class=\"oy-btn oy-btn-brown\" onclick=\""+meydanOku+"\">⚔️ Meydan Oku</button>";
+h+="<button class=\"oy-btn oy-btn-msg\" onclick=\"openChallengeDetail('"+d.oyun.id+"',null,null,'oyunlarim')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" style=\"display:none;\">0</span></button>";
 h+="</div>";
 h+="</div>";
 h+="</div>";
@@ -149,16 +188,87 @@ return h;
 
 }
 
-function gidenKartiHtml(g){
+/* İstekler: gelen düello daveti (Kabul Et / Reddet) ya da gönderdiğim davet */
+function istekKartiHtml(o){
 
-let durumlar={bekliyor:"⏳ Bekliyor",kabul:"✅ Kabul edildi",red:"❌ Reddedildi",dustu:"⌛ Süresi doldu"};
-let tur=g.kind==="turnuva" ? "Turnuva daveti" : "Düello daveti";
+let tik=" onclick=\"viewUserProfile('"+o.ad+"','istekler')\"";
 
-let h="<div class=\"oy-card\">";
-h+="<div class=\"oy-avatar-col\"><div class=\"oy-avatar-ring\" onclick=\"viewUserProfile('"+g.username+"','istekler')\"><div class=\"oy-avatar\">"+avatarHtml(g.avatar)+"</div></div></div>";
+let h="<div class=\"oy-card\" data-challenge-id=\""+o.id+"\" data-lp-id=\""+o.id+"\" data-lp-type=\""+(o.gelen ? "request" : "giden")+"\">";
+h+="<div class=\"oy-avatar-ring\""+tik+"><div class=\"oy-avatar\">"+avatarHtml(o.avatar||"👤")+"</div></div>";
 h+="<div class=\"oy-content\">";
-h+="<div class=\"oy-card-header\"><div class=\"oy-user-info\"><span class=\"clickable-name oy-username\" onclick=\"viewUserProfile('"+g.username+"','istekler')\">"+g.username+"</span></div><span class=\"oy-status\">"+durumlar[g.durum]+"</span></div>";
-h+="<div class=\"oy-score-line\">"+tur+"</div>";
+h+="<div class=\"oy-card-header\">";
+h+="<div class=\"oy-user-info\"><span class=\"clickable-name oy-username\""+tik+">"+o.ad+"</span></div>";
+
+if(o.durum==="kabul")h+="<span class=\"oy-status\">✅ Kabul edildi</span>";
+else if(o.durum==="bekliyor")h+="<span class=\"oy-status\">"+(o.gelen ? "📩 " : "⏳ ")+o.saat+" saat</span>";
+else if(o.durum==="dustu")h+="<span class=\"oy-status\">⌛ Süresi doldu</span>";
+else if(o.durum==="red")h+="<span class=\"oy-status\">🚫 Reddedildi</span>";
+
+h+="</div>";
+
+if(o.durum==="kabul"){
+h+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;color:#2ecc71;font-weight:700;\">Oyunlarım menüsünden oynayabilirsin.</div>";
+}
+else if(o.durum==="bekliyor" && o.gelen){
+h+="<div class=\"oy-actions\">";
+h+="<button class=\"oy-btn oy-btn-accept\" onclick=\"respondChallenge('"+o.id+"',true)\">✅ Kabul Et</button>";
+h+="<button class=\"oy-btn oy-btn-decline\" onclick=\"respondChallenge('"+o.id+"',false)\">❌ Reddet</button>";
+h+="</div>";
+}
+else if(o.durum==="bekliyor"){
+h+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;\">Kabul bekleniyor, "+o.saat+" saat içinde cevap verilmezse iptal olur.</div>";
+}
+
+h+="</div>";
+h+="</div>";
+return h;
+
+}
+
+/* Kişisel turnuva kartı (devam eden, geçmiş ya da davet) */
+function turnuvaKartiHtml(k,d,gecmis,davet){
+
+let katilanlar=d.oyuncular.filter(function(o){ return o.status==="katildi"; });
+let kurucu=katilanlar[0];
+let baslik=d.oyun.name || ((kurucu ? kurucu.username : "?")+"'in Turnuvası");
+let sira=siradakiTurum(d);
+let tur=gecmis ? "tournament-past" : (davet ? "tournament-invite" : "tournament-ongoing");
+let sira2=davet ? "" : " style=\"order:"+oyOrder(gecmis ? false : !sira,Math.floor(((gecmis ? d.oyun.endsAt : d.oyun.createdAt)||0)/1000))+"\"";
+
+let h="<div class=\"oy-card\""+sira2+" data-lp-id=\""+d.oyun.id+"\" data-lp-type=\""+tur+"\">";
+h+="<div class=\"oy-shield\"><div class=\"oy-shield-inner\"><span class=\"oy-swords\">🏆</span></div></div>";
+h+="<div class=\"oy-content\">";
+h+="<div class=\"oy-card-header\">";
+h+="<div class=\"oy-user-info\"><span class=\"oy-username\">"+baslik+"</span></div>";
+h+="<span class=\"oy-status\">"+katilanlar.length+" oyuncu · "+d.oyun.format+" oyun"+(gecmis||davet ? "" : " ⏳ "+kalanSaat(d.oyun.endsAt)+" saat")+"</span>";
+h+="</div>";
+
+if(davet){
+
+if(kurucu)h+="<div class=\"oy-status\" style=\"text-align:left;white-space:normal;margin-top:2px;margin-bottom:8px;\">"+kurucu.username+" seni turnuvaya davet etti.</div>";
+h+="<div class=\"oy-actions\">";
+h+="<button class=\"oy-btn oy-btn-accept\" onclick=\"respondChallenge('"+d.oyun.id+"',true)\"><i class=\"fa-solid fa-trophy\"></i> Katıl</button>";
+h+="<button class=\"oy-btn oy-btn-decline\" onclick=\"respondChallenge('"+d.oyun.id+"',false)\"><i class=\"fa-solid fa-xmark\"></i> Reddet</button>";
+h+="</div>";
+
+}
+else{
+
+let ben=benBul(d);
+let kilitli=false;
+for(let i=d.oyun.acikOyun;i<d.oyun.format;i++){ if(!(turBul(ben,i) && turBul(ben,i).bitti))kilitli=true; }
+
+h+="<div class=\"oy-actions\">";
+h+="<button class=\"oy-btn oy-btn-view\" onclick=\"kisiselTurnuvaAc('"+d.oyun.id+"')\"><i class=\"fa-solid fa-eye\"></i> Görüntüle</button>";
+if(!gecmis){
+if(sira)h+="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+d.oyun.id+"')\"><i class=\"fa-solid fa-play\"></i> Oyna</button>";
+else h+="<button class=\"oy-btn oy-btn-play\" disabled><i class=\"fa-solid fa-check\"></i> "+(kilitli ? "Bugün tamam" : "Oynadın")+"</button>";
+}
+h+="<button class=\"oy-btn oy-btn-msg\" onclick=\"kisiselTurnuvaAc('"+d.oyun.id+"')\"><i class=\"fa-solid fa-comment-dots\"></i> Mesaj<span class=\"badge\" style=\"display:none;\">0</span></button>";
+h+="</div>";
+
+}
+
 h+="</div>";
 h+="</div>";
 return h;
@@ -169,8 +279,13 @@ function oyunListeleriniCiz(){
 
 if(!sunucuDurumu)return;
 
+let gizli=gizliler();
+let gizliYeni={};
+
 let devam="",gecmis="",istekler="";
+let tDevam="",tGecmis="",tDavet="";
 let siraBende=0,gelenSayi=0;
+let gecmisSayi=0,tGecmisSayi=0;
 
 let liste=sunucuDurumu.liste.filter(function(k){ return k.kind==="duello" || k.kind==="turnuva"; });
 liste.sort(function(a,b){ return (b.bitis||0)-(a.bitis||0); });
@@ -179,39 +294,61 @@ liste.forEach(function(k){
 
 let d=sunucuDurumu.oyunlar[k.id];
 if(!d)return;
+if(gizli[k.id]){ gizliYeni[k.id]=true; return; }
+
+let turnuva=k.kind==="turnuva";
+
+if(yeniKabul[k.id] && !turnuva){
+let g=rakipGorunumu(d);
+istekler+=istekKartiHtml({id:d.oyun.id,ad:g.ad,avatar:g.avatar,gelen:true,durum:"kabul",saat:0});
+return;
+}
 
 if(k.durum==="davetli"){
-if(!k.bitti){
-istekler+=davetKartiHtml(k,d);
+if(k.bitti)return;
 gelenSayi++;
-}
-}
-else if(k.bitti){
-gecmis+=oyunKartiHtml(k,d);
-}
+if(turnuva)tDavet+=turnuvaKartiHtml(k,d,false,true);
 else{
-// Sırası bende olanlar üstte
-let kart=oyunKartiHtml(k,d);
-if(siradakiTurum(d)){
-devam=kart+devam;
-siraBende++;
+let g=rakipGorunumu(d);
+istekler+=istekKartiHtml({id:d.oyun.id,ad:g.ad,avatar:g.avatar,gelen:true,durum:"bekliyor",saat:kalanSaat(k.bitis)});
 }
-else devam+=kart;
+return;
 }
+
+if(k.bitti){
+// Reddedilen ve süresi dolan davetler İstekler'de görünür; geçmişte yalnızca oynanmış oyunlar
+if(d.oyun.status!=="bitti")return;
+if(turnuva){ if(tGecmisSayi++<20)tGecmis+=turnuvaKartiHtml(k,d,true,false); }
+else if(gecmisSayi++<20)gecmis+=gecmisKartiHtml(k,d);
+return;
+}
+
+if(d.oyun.status==="bekliyor")return;   // gönderdiğim davet: İstekler'de
+if(siradakiTurum(d))siraBende++;
+if(turnuva)tDevam+=turnuvaKartiHtml(k,d,false,false);
+else devam+=devamKartiHtml(k,d);
 
 });
 
-let giden=sunucuDurumu.giden.slice().sort(function(a,b){ return b.zaman-a.zaman; });
-let gidenHtml=giden.map(gidenKartiHtml).join("");
+// Gönderdiğim istekler (kabul edilenler Oyunlarım'a geçer)
+sunucuDurumu.giden.slice().sort(function(a,b){ return b.zaman-a.zaman; }).forEach(function(g){
+if(g.durum==="kabul" || gizli[g.oyunId+":"+g.username]){ if(gizli[g.oyunId+":"+g.username])gizliYeni[g.oyunId+":"+g.username]=true; return; }
+istekler+=istekKartiHtml({id:g.oyunId+":"+g.username,ad:g.username,avatar:g.avatar,gelen:false,durum:g.durum,saat:kalanSaat(g.zaman+7*86400000)});
+});
 
-let el;
-if((el=document.getElementById("ongoingList")))el.innerHTML=devam || "<p>Şu an oynamayı bekleyen bir oyunun yok.</p>";
-if((el=document.getElementById("historyList")))el.innerHTML=gecmis || "<p>Henüz biten bir oyunun yok.</p>";
-if((el=document.getElementById("challengesList"))){
-el.innerHTML=(istekler ? "<p class=\"screen-title\">Gelen İstekler</p>"+istekler : "")
-+(gidenHtml ? "<p class=\"screen-title\">Gönderdiğim İstekler</p>"+gidenHtml : "")
-|| "<p>Bekleyen bir isteğin yok.</p>";
-}
+gizliYaz(gizliYeni);
+
+let yaz=function(id,html,bos){
+let el=document.getElementById(id);
+if(el)el.innerHTML=html || bos;
+};
+
+yaz("oyTourOngoing",tDevam,"");
+yaz("oyTourPast",tGecmis,"");
+yaz("oyTourInvites",tDavet,"");
+yaz("ongoingList",devam,"<p>Şu an oynamayı bekleyen bir oyunun yok.</p>");
+yaz("historyList",gecmis,"<p>Henüz oynanmış bir oyun yok.</p>");
+yaz("challengesList",istekler,"<p>Bekleyen bir meydan okuma isteğin yok.</p>");
 
 rozetYaz("ongoingBadge",siraBende);
 rozetYaz("tabBadge",gelenSayi);
@@ -229,7 +366,146 @@ el.style.display=sayi>0 ? "flex" : "none";
 
 }
 
-/* Biten oyunu kendi listemden siler */
+/* ---------- Kartı uzun basınca: biten oyunda Sil, diğerlerinde Vazgeç ---------- */
+
+let longPressTimer=null;
+
+function initLongPressHandlers(){
+
+document.addEventListener("touchstart",handleLongPressStart,{passive:true});
+document.addEventListener("mousedown",handleLongPressStart);
+document.addEventListener("touchend",cancelLongPress);
+document.addEventListener("touchmove",cancelLongPress);
+document.addEventListener("mouseup",cancelLongPress);
+document.addEventListener("mouseleave",cancelLongPress);
+
+}
+
+function handleLongPressStart(e){
+
+let cardEl=e.target.closest(".oy-card[data-lp-id]");
+if(!cardEl)return;
+
+longPressTimer=setTimeout(function(){
+showCardActionOverlay(cardEl);
+longPressTimer=null;
+},550);
+
+}
+
+function cancelLongPress(){
+
+if(longPressTimer){
+clearTimeout(longPressTimer);
+longPressTimer=null;
+}
+
+}
+
+function showCardActionOverlay(cardEl){
+
+if(cardEl.querySelector(".oy-lp-overlay"))return;
+
+let type=cardEl.getAttribute("data-lp-type");
+let id=cardEl.getAttribute("data-lp-id");
+
+let isDirect=(type==="history" || type==="tournament-past");
+let actionLabel=isDirect ? "🗑️ Sil" : "🚫 Vazgeç";
+let actionColor=isDirect ? "#e74c3c" : "#e67e22";
+
+let overlay=document.createElement("div");
+overlay.className="oy-lp-overlay";
+overlay.style.cssText="position:absolute;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;gap:8px;z-index:5;border-radius:inherit;";
+
+let actionBtn=document.createElement("button");
+actionBtn.textContent=actionLabel;
+actionBtn.style.cssText="background:"+actionColor+";color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;";
+actionBtn.onclick=function(ev){
+ev.stopPropagation();
+handleCardAction(type,id,cardEl);
+};
+
+let cancelBtn=document.createElement("button");
+cancelBtn.textContent="İptal";
+cancelBtn.style.cssText="background:#334155;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;";
+cancelBtn.onclick=function(ev){
+ev.stopPropagation();
+overlay.remove();
+};
+
+overlay.appendChild(actionBtn);
+overlay.appendChild(cancelBtn);
+
+if(getComputedStyle(cardEl).position==="static")cardEl.style.position="relative";
+
+cardEl.appendChild(overlay);
+
+setTimeout(function(){
+
+function outsideHandler(ev){
+if(!overlay.contains(ev.target)){
+overlay.remove();
+document.removeEventListener("click",outsideHandler);
+document.removeEventListener("touchstart",outsideHandler);
+}
+}
+
+document.addEventListener("click",outsideHandler);
+document.addEventListener("touchstart",outsideHandler);
+
+},50);
+
+}
+
+function handleCardAction(type,id,cardEl){
+
+if(type==="history" || type==="tournament-past")deleteChallengeItem(id);
+else{
+// Süren oyun ve istekler yalnızca bu telefonda gizlenir
+let m=gizliler();
+m[id]=true;
+gizliYaz(m);
+}
+
+animateCardRemoval(cardEl,function(){ oyunListeleriniCiz(); });
+
+}
+
+function animateCardRemoval(cardEl,onDone){
+
+if(!cardEl){
+if(onDone)onDone();
+return;
+}
+
+let startHeight=cardEl.offsetHeight;
+
+cardEl.style.overflow="hidden";
+cardEl.style.maxHeight=startHeight+"px";
+cardEl.style.transition="max-height 0.7s ease, opacity 0.6s ease, transform 0.6s ease, margin 0.7s ease, padding 0.7s ease";
+
+requestAnimationFrame(function(){
+requestAnimationFrame(function(){
+cardEl.style.opacity="0";
+cardEl.style.transform="translateY(-8px) scale(0.98)";
+cardEl.style.maxHeight="0px";
+cardEl.style.marginTop="0px";
+cardEl.style.marginBottom="0px";
+cardEl.style.paddingTop="0px";
+cardEl.style.paddingBottom="0px";
+});
+});
+
+setTimeout(function(){
+cardEl.remove();
+if(onDone)onDone();
+},720);
+
+}
+
+initLongPressHandlers();
+
+/* Biten oyunu kendi listemden siler (sunucuda) */
 function deleteChallengeItem(id){
 
 sunucu("oyun/gizle",{id:id}).then(function(){
@@ -239,6 +515,13 @@ oyunListeleriniCiz();
 }).catch(function(e){
 showTopNotification(hataMetni(e));
 });
+
+}
+
+function challengeComputerFromHistory(){
+
+pendingOpponentChoice={type:"computer",opponent:"Bilgisayar"};
+showModalChallengeStart();
 
 }
 
@@ -304,13 +587,23 @@ zarf.classList.add("flying-loop");
 
 }
 
+let yeniKabul={};   // kabul ettiğim davetler 10 saniye İstekler'de "kabul edildi" olarak kalır
+
 function respondChallenge(id,accept){
 
-sunucu("oyun/cevap",{id:id,kabul:accept}).then(function(){
-if(accept)showTopNotification("Davet kabul edildi. Oyunlarım'dan oynayabilirsin.");
-return oyunlariYenile(true);
-}).catch(function(e){
+if(accept){
+yeniKabul[id]=true;
+oyunListeleriniCiz();
+setTimeout(function(){
+delete yeniKabul[id];
+oyunListeleriniCiz();
+},10000);
+}
+
+sunucu("oyun/cevap",{id:id,kabul:accept}).catch(function(e){
+delete yeniKabul[id];
 showTopNotification(hataMetni(e));
+}).then(function(){
 oyunlariYenile(true);
 });
 
@@ -462,7 +755,6 @@ acikAyrinti=id;
 hideAllScreens();
 document.getElementById("challengeDetailScreen").style.display="block";
 document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p>";
-document.getElementById("challengeDetailSidePanel").innerHTML="";
 document.getElementById("challengeDetailBottomSection").innerHTML="";
 
 let kayitli=sunucuDurumu && sunucuDurumu.oyunlar[id];
@@ -475,60 +767,215 @@ if(acikAyrinti===id)ayrintiCiz(d);
 document.getElementById("challengeDetailContent").innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">"+hataMetni(e)+"</p>";
 });
 
-let d=kayitli;
-if(!d || d.oyun.opponent!=="bilgisayar")sohbetAc(id);
+sohbetAc(id);
 
 }
 
 function ayrintiCiz(d){
 
-let r=rakipBilgisi(d);
-document.getElementById("challengeDetailTitle").innerHTML=r.turnuva ? r.username : r.username+" ile Düello";
+let g=rakipGorunumu(d);
+let ben=benBul(d),r=rakipBul(d);
+let myAvatar=(currentUser && currentUser.avatarEmoji)||"👤";
 
-let oyuncular=d.oyuncular.filter(function(o){ return o.status==="katildi"; });
-let h="<table class=\"td-score-table\"><tr><th>Oyun</th>";
-oyuncular.forEach(function(o){ h+="<th>"+(o.ben ? "Sen" : o.username)+"</th>"; });
-h+="</tr>";
+document.getElementById("challengeDetailTitle").innerHTML="<span class=\"cd-title-avatar\">"+avatarHtml(g.avatar)+"</span><span class=\"cd-title-text\">"+g.ad+" ile Düello</span>";
+
+let top="";
+let kalanMs=d.oyun.endsAt-Date.now();
+let bitti=d.oyun.status!=="suruyor" || kalanMs<=0;
+
+top+="<div class=\"td-card td-timer-card\">";
+top+="<span class=\"td-trophy-icon\">🏆</span>";
+top+="<span class=\"td-timer-subtitle\">Düello</span>";
+if(bitti){
+top+="<span class=\"td-timer-title\">Süre doldu</span>";
+}
+else{
+top+="<span class=\"td-timer-title\">Kalan süre</span>";
+top+="<div class=\"td-timer-clock\">"+Math.floor(kalanMs/3600000)+"<span class=\"td-timer-unit\">saat</span> "+Math.floor((kalanMs%3600000)/60000)+"<span class=\"td-timer-unit\">dk</span></div>";
+}
+top+="</div>";
+
+let hepsiBitti=true;
+for(let i=0;i<d.oyun.format;i++){
+let a=turBul(ben,i),b=g.bilgisayar ? a : turBul(r,i);
+if(!(a && a.bitti && b && b.bitti))hepsiBitti=false;
+}
+let sira=siradakiTurum(d);
+
+if(hepsiBitti || d.oyun.status==="bitti"){
+top+="<button class=\"td-day-card played\" disabled><div class=\"td-day-icon-circle\">✓</div><div class=\"td-day-label\">Tamamlandı</div></button>";
+}
+else if(!sira){
+top+="<button class=\"td-day-card played\" disabled><div class=\"td-day-icon-circle\">✓</div><div class=\"td-day-label\">Oynadın</div></button>";
+}
+else{
+top+="<button class=\"td-day-card playable\" onclick=\"playChallenge('"+d.oyun.id+"')\"><div class=\"td-day-icon-circle\"><div class=\"td-day-triangle\"></div></div><div class=\"td-day-label\">"+(sira.basladi ? "Devam Et" : "Oyna")+"</div><div class=\"td-day-arrow\">›</div></button>";
+}
+
+// Arkadaş düellosu turnuvaya çevrilebilir (bitmemiş ve süresi dolmamış)
+if(d.oyun.opponent==="arkadas" && !hepsiBitti && !bitti){
+top+="<button class=\"td-btn-purple td-btn-row\" onclick=\"openChallengeAddFriend('"+d.oyun.id+"')\"><span>Arkadaş<br>Ekle</span><span class=\"td-play-icon\">👤+</span></button>";
+}
+
+document.getElementById("challengeDetailContent").innerHTML=top;
+
+let t=duelloToplamlari(d);
+let ortBen=t.oynadigim ? Math.round(t.benim/t.oynadigim) : 0;
+let ortRakip=t.oynadigim ? Math.round(t.rakibin/t.oynadigim) : 0;
+
+let satirlar=[
+{ad:currentUser.username,avatar:myAvatar,puan:t.benim,ort:ortBen},
+{ad:g.ad,avatar:g.avatar,puan:t.rakibin,ort:ortRakip}
+];
+satirlar.sort(function(a,b){ return b.puan-a.puan; });
+
+let alt="<div class=\"td-section-title\">SIRALAMA</div>";
+alt+="<div class=\"td-leaderboard-list\">";
+satirlar.forEach(function(s,idx){
+alt+="<div class=\"td-leaderboard-item\">";
+alt+="<div class=\"td-user-info-group\">";
+alt+="<div class=\"td-rank-badge "+(idx===0 ? "td-rank-1" : "td-rank-2")+"\">"+(idx+1)+"</div>";
+alt+="<div class=\"td-avatar\">"+avatarHtml(s.avatar)+"</div>";
+alt+="<div class=\"td-user-details\"><span class=\"td-user-name\">"+s.ad+"</span><span style=\"display:block;font-size:max(9.5px, calc(7px / var(--k)));color:#7b8fae;font-weight:600;\">"+t.oynadigim+"/"+d.oyun.format+" ort. "+s.ort+"</span></div>";
+alt+="</div>";
+alt+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+s.puan+"</span></div>";
+alt+="</div>";
+});
+alt+="</div>";
+
+alt+="<div class=\"td-section-title\">OYUN BİLGİSİ</div>";
 
 for(let i=0;i<d.oyun.format;i++){
-let acik=i<d.oyun.acikOyun;
-h+="<tr><td>"+(i+1)+(acik ? "" : " 🔒")+"</td>";
-oyuncular.forEach(function(o){
-let t=o.turlar.find(function(x){ return x.idx===i; });
-let hucre=t && t.bitti ? t.puan : (t ? "⏳" : "–");
-// Kelimeler yalnızca ikimiz de o oyunu bitirdiysek görünür
-if(t && t.kelimeler)hucre="<span class=\"td-score-words\" onclick=\"kelimeleriGoster('"+d.oyun.id+"','"+(o.ben ? "" : o.username)+"',"+i+")\">"+t.puan+" 🔤</span>";
-h+="<td>"+hucre+"</td>";
+
+let bt=turBul(ben,i),rt=turBul(r,i);
+let benOynadi=!!(bt && bt.bitti),rakipOynadi=!!(rt && rt.bitti);
+
+alt+="<div class=\"td-card\" style=\"text-align:left;\">";
+alt+="<div style=\"font-weight:800;font-size:11.5px;color:#fff;margin-bottom:3px;\">"+(i+1)+". Oyun</div>";
+
+if(!benOynadi){
+alt+="<div style=\"font-size:10.5px;color:#7b8fae;\">Henüz oynamadın.</div>";
+}
+else{
+
+alt+="<div style=\"font-size:10.5px;color:#d1d5db;\">Harfler: "+(bt.harfler && bt.harfler.length ? bt.harfler.join(", ") : "-")+"</div>";
+alt+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin Puanın: <b style=\"color:#fff;\">"+bt.puan+"</b></div>";
+
+if(rakipOynadi)alt+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakip Puanı: <b style=\"color:#fff;\">"+rt.puan+"</b></div>";
+else alt+="<div style=\"font-size:10.5px;color:#7b8fae;\">Rakip henüz oynamadı.</div>";
+
+let benimKelimeler=bt.kelimeler||[];
+if(benimKelimeler.length)alt+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin Bulduğun Kelimeler: "+benimKelimeler.join(", ")+"</div>";
+
+// Rakibin kelimelerinden en fazla benim bulduğum kadarı görünür
+if(rakipOynadi && rt.kelimeler && rt.kelimeler.length){
+let gosterilen=rt.kelimeler.slice(0,benimKelimeler.length);
+if(gosterilen.length)alt+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+gosterilen.join(", ")+"</div>";
+}
+
+}
+
+alt+="</div>";
+
+}
+
+document.getElementById("challengeDetailBottomSection").innerHTML=alt;
+
+}
+
+/* ---------- Kişisel turnuva sayfası ---------- */
+
+let acikKisiselTurnuva=null;
+
+function kisiselTurnuvaAc(id){
+
+returnToScreen="ongoing";
+acikKisiselTurnuva=id;
+acikTurnuva=null;
+
+hideAllScreens();
+document.getElementById("tournamentDetailScreen").style.display="block";
+document.getElementById("tournamentDetailContent").innerHTML="<p>Yükleniyor...</p>";
+document.getElementById("tournamentTopRow").innerHTML="";
+document.getElementById("tournamentLeaderboardSection").innerHTML="";
+document.getElementById("tournamentDetailScreen").classList.remove("td-custom");
+
+let kayitli=sunucuDurumu && sunucuDurumu.oyunlar[id];
+if(kayitli)kisiselTurnuvaCiz(kayitli);
+
+oyunAyrintisi(id).then(function(d){
+if(acikKisiselTurnuva===id)kisiselTurnuvaCiz(d);
+}).catch(function(e){
+document.getElementById("tournamentDetailContent").innerHTML="<p>"+hataMetni(e)+"</p>";
 });
-h+="</tr>";
-}
 
-h+="<tr class=\"td-total-row\"><td>Toplam</td>";
-oyuncular.forEach(function(o){ h+="<td>"+o.total+"</td>"; });
-h+="</tr></table>";
-
-let sira=siradakiTurum(d);
-h+="<div class=\"oy-actions\" style=\"margin-top:12px;\">";
-if(sira)h+="<button class=\"oy-btn oy-btn-play\" onclick=\"playChallenge('"+d.oyun.id+"')\"><i class=\"fa-solid fa-play\"></i> "+(sira.basladi ? "Devam Et" : (sira.idx+1)+". Oyunu Oyna")+"</button>";
-if(d.oyun.kind==="duello" && d.oyun.opponent!=="bilgisayar")h+="<button class=\"oy-btn oy-btn-brown\" onclick=\"openChallengeAddFriend('"+d.oyun.id+"')\">➕ Arkadaş Ekle</button>";
-if(d.oyun.kind==="turnuva" && d.oyun.status==="suruyor")h+="<button class=\"oy-btn oy-btn-brown\" onclick=\"openTournamentInvite('"+d.oyun.id+"')\">➕ Arkadaş Davet Et</button>";
-h+="</div>";
-
-if(d.oyun.status==="suruyor")h+="<p class=\"td-remaining\">⏳ "+kalanSureMetni(d.oyun.endsAt)+" kaldı</p>";
-
-document.getElementById("challengeDetailContent").innerHTML=h;
+sohbetAc(id,"tournamentSidePanel");
 
 }
 
-function kelimeleriGoster(id,username,idx){
+function kisiselTurnuvaCiz(d){
 
-let d=sunucuDurumu.oyunlar[id];
-let o=d.oyuncular.find(function(x){ return username ? x.username===username : x.ben; });
-let t=o && o.turlar.find(function(x){ return x.idx===idx; });
-if(!t || !t.kelimeler)return;
+let katilanlar=d.oyuncular.filter(function(o){ return o.status==="katildi"; });
+let kurucu=katilanlar[0];
+let ben=benBul(d);
+let katildim=ben && ben.status==="katildi";
+let kalanMs=d.oyun.endsAt-Date.now();
+let bitti=d.oyun.status!=="suruyor" || kalanMs<=0;
 
-let kelimeler=t.kelimeler.slice().sort(function(a,b){ return b.length-a.length; });
-openDetailModal("<p class=\"screen-title\" style=\"margin-top:0;\">"+(o.ben ? "Senin" : o.username)+" · "+(idx+1)+". oyun</p><p>"+(kelimeler.join(", ")||"Kelime yok")+"</p>");
+let title=document.getElementById("tournamentDetailTitle");
+title.innerHTML=d.oyun.name ? "🏆 "+d.oyun.name : (kurucu ? kurucu.username : "?")+"'in Turnuvası";
+
+document.getElementById("tournamentDetailScreen").classList.add("td-custom");
+
+let top="<div class=\"td-card td-timer-card\">";
+top+="<span class=\"td-trophy-icon\">🏆</span>";
+top+="<span class=\"td-timer-subtitle\">"+d.oyun.format+" oyunluk</span>";
+if(bitti){
+top+="<span class=\"td-timer-title\">Sona erdi</span>";
+}
+else{
+top+="<span class=\"td-timer-title\">Kalan süre</span>";
+top+="<div class=\"td-timer-clock\">"+Math.floor(kalanMs/86400000)+"<span class=\"td-timer-unit\">gün</span> "+Math.floor((kalanMs%86400000)/3600000)+"<span class=\"td-timer-unit\">saat</span> "+Math.floor((kalanMs%3600000)/60000)+"<span class=\"td-timer-unit\">dk</span></div>";
+}
+top+="</div>";
+top+="<div class=\"td-top-right\">";
+if(katildim && !bitti)top+="<button class=\"td-top-card td-top-invite\" onclick=\"openTournamentInvite('"+d.oyun.id+"')\"><span class=\"td-top-card-icon\">👤+</span><span>Arkadaş Ekle</span></button>";
+top+="<div class=\"td-top-card td-top-orange\"></div>";
+top+="</div>";
+document.getElementById("tournamentTopRow").innerHTML=top;
+
+let sol="";
+if(katildim && !bitti){
+for(let i=0;i<d.oyun.format;i++){
+let oynadi=!!(turBul(ben,i) && turBul(ben,i).bitti);
+let acik=i<d.oyun.acikOyun;
+let etiket=(d.oyun.format===1 ? "Oyna" : (i+1)+". Oyun")+(oynadi ? " ✓" : (acik ? "" : " 🔒"));
+sol+="<button class=\"td-btn-green\" "+(oynadi||!acik ? "disabled" : "")+" onclick=\"playChallenge('"+d.oyun.id+"')\"><span>"+etiket+"</span>"+(oynadi||!acik ? "" : "<span class=\"td-play-icon\">▶</span>")+"</button>";
+}
+}
+document.getElementById("tournamentDetailContent").innerHTML=sol;
+
+let sirali=katilanlar.slice().sort(function(a,b){ return b.total-a.total; });
+let tablo="<div class=\"td-section-title\">SIRALAMA</div>";
+tablo+="<div class=\"td-leaderboard-list\">";
+sirali.forEach(function(p,idx){
+let oynanan=p.turlar.filter(function(t){ return t.bitti; }).length;
+let ort=oynanan>0 ? Math.round(p.total/oynanan) : 0;
+let rankClass=idx===0?"td-rank-1":(idx===1?"td-rank-2":(idx===2?"td-rank-3":""));
+tablo+="<div class=\"td-leaderboard-item\">";
+tablo+="<div class=\"td-user-info-group\">";
+tablo+="<div class=\"td-rank-badge "+rankClass+"\">"+(idx+1)+"</div>";
+tablo+="<div class=\"td-avatar\">"+avatarHtml(p.avatar||"👤")+"</div>";
+tablo+="<div class=\"td-user-details\">";
+tablo+="<span class=\"td-user-name\" onclick=\"viewUserProfile('"+p.username+"','oyunlarim')\">"+p.username+"</span>";
+tablo+="<span class=\"td-user-subtext\">"+oynanan+"/"+d.oyun.format+" ort.puan:"+ort+"</span>";
+tablo+="</div>";
+tablo+="</div>";
+tablo+="<div class=\"td-score-info\">Puan <span class=\"td-score-number\">"+p.total+"</span></div>";
+tablo+="</div>";
+});
+tablo+="</div>";
+document.getElementById("tournamentLeaderboardSection").innerHTML=tablo;
 
 }
 
@@ -563,8 +1010,10 @@ function sohbetAc(id,panelId){
 sohbetKapat();
 
 let panel=document.getElementById(panelId||"challengeDetailSidePanel");
-panel.innerHTML="<div class=\"sohbet-mesajlar\" id=\"sohbetMesajlar\"><p style=\"color:#7b8fae;font-size:0.85em;\">Bağlanıyor...</p></div>"
-+"<div class=\"sohbet-yaz\"><input id=\"sohbetYazi\" maxlength=\"100\" placeholder=\"Mesaj yaz...\" onkeydown=\"if(event.key==='Enter')sohbetGonder()\"><button onclick=\"sohbetGonder()\"><i class=\"fa-solid fa-paper-plane\"></i></button></div>";
+sohbetRenkli=(panelId==="tournamentSidePanel");
+panel.innerHTML="<div class=\"td-chat-header\">SOHBET</div>"
++"<div id=\"sohbetMesajlar\" class=\"td-chat-messages\"><p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p></div>"
++"<div class=\"td-chat-input-container\"><input type=\"text\" id=\"sohbetYazi\" maxlength=\"100\" placeholder=\"Mesajını yaz...\" class=\"td-chat-input\" onkeydown=\"if(event.key==='Enter')sohbetGonder()\"><button class=\"td-chat-send\" onclick=\"sohbetGonder()\">&#10148;</button></div>";
 
 oyunaBaglan(id,function(v){
 
@@ -572,7 +1021,7 @@ let kutu=document.getElementById("sohbetMesajlar");
 if(!kutu)return;
 
 if(v.t==="gecmis"){
-kutu.innerHTML=v.mesajlar.length ? v.mesajlar.map(mesajHtml).join("") : "<p class=\"sohbet-bos\" style=\"color:#7b8fae;font-size:0.85em;\">Henüz mesaj yok.</p>";
+kutu.innerHTML=v.mesajlar.length ? v.mesajlar.map(mesajHtml).join("") : "<p class=\"sohbet-bos\" style=\"color:#7b8fae;font-size:0.85em;\">"+(sohbetRenkli ? "Henüz mesaj yok." : "Henüz mesaj yok, ilk mesajı sen yaz.")+"</p>";
 kutu.scrollTop=kutu.scrollHeight;
 }
 else if(v.t==="mesaj"){
@@ -584,6 +1033,9 @@ kutu.scrollTop=kutu.scrollHeight;
 else if(v.t==="degisti" && acikAyrinti===id){
 // Rakip oynadı: ayrıntı yenilenir
 oyunAyrintisi(id).then(function(d){ if(acikAyrinti===id)ayrintiCiz(d); });
+}
+else if(v.t==="degisti" && acikKisiselTurnuva===id){
+oyunAyrintisi(id).then(function(d){ if(acikKisiselTurnuva===id)kisiselTurnuvaCiz(d); });
 }
 else if(v.t==="hata"){
 showTopNotification(hataMetni({kod:v.hata}));
@@ -604,13 +1056,17 @@ duelloSohbeti=null;
 
 }
 
+let sohbetRenkli=false;   // turnuvada her oyuncunun adı ayrı renkte
+
 function mesajHtml(m){
 
 let saat=new Date(m.zaman);
 let zaman=("0"+saat.getHours()).slice(-2)+":"+("0"+saat.getMinutes()).slice(-2);
+let ad=m.ben ? currentUser.username : m.ad;
+let renk=sohbetRenkli ? getTournamentChatUserColor(ad) : (m.ben ? "#0088ff" : "#7b8fae");
 // Mesaj metni sayfaya yazı olarak eklenir (HTML olarak değil)
 let metin=String(m.metin).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-return "<div class=\"sohbet-mesaj"+(m.ben ? " ben" : "")+"\"><b>"+(m.ben ? "Sen" : m.ad)+"</b> "+metin+" <span class=\"sohbet-zaman\">"+zaman+"</span></div>";
+return "<div class=\"td-chat-msg\"><div><span class=\"td-chat-user\" style=\"color:"+renk+";\">"+ad+":</span><span class=\"td-chat-text\">"+metin+"</span></div><span class=\"td-chat-time\">"+zaman+"</span></div>";
 
 }
 

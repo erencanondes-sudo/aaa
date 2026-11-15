@@ -11,7 +11,10 @@ let v=await sunucu("tur/basla",{id:oyunId,idx:idx});
 let O=window.KonfetiOyun;
 
 let sira=new O.HarfSirasi(v.tohum,v.zorluk);
-let tahta=new O.Tahta(await O.acilisTahtasi(v.acilisTohumu,v.zorluk,v.turnuva),sira);
+let acilis=await O.acilisTahtasi(v.acilisTohumu,v.zorluk,v.turnuva);
+// Ayrıntıda gösterilen açılış harfleri (joker hariç)
+let acilisHarfleri=acilis.map(function(t){ return t.harf; }).filter(function(h){ return h!==O.JOKER; });
+let tahta=new O.Tahta(acilis,sira);
 
 // Çıkıştan dönüşte o ana kadarki kelimeler aynı sırayla yeniden oynanır
 for(let h of v.hamleler){
@@ -20,7 +23,7 @@ tahta.kelimeYaz(h.yerler,h.joker,DICTIONARY);
 }
 await sira.hazirla(8);
 
-aktifMotor={oyunId:oyunId,idx:idx,tahta:tahta,sira:sira,hamleler:v.hamleler.slice(),duraklatildi:false,cikisHakki:v.cikisHakki};
+aktifMotor={oyunId:oyunId,idx:idx,tahta:tahta,sira:sira,hamleler:v.hamleler.slice(),duraklatildi:false,cikisHakki:v.cikisHakki,harfler:acilisHarfleri};
 
 // Bilgisayara karşı düello: bilgisayarın bu turu telefonda hesaplanır, turdan çıkınca ya da bitince gönderilir
 if(v.bilgisayar)aktifMotor.bilgisayar=await O.bilgisayarOyna(v.acilisTohumu,v.zorluk,DICTIONARY);
@@ -90,7 +93,7 @@ aktifMotor=null;
 if(m.baglanti)m.baglanti.kapat();
 
 // Günlük ve haftalık turnuvada puanı sunucu hesaplar (bulunan kelimeler + kalan saniye)
-let govde=m.sunucuda ? {id:m.oyunId,idx:m.idx,kalanSaniye:time} : {id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time,bilgisayar:m.bilgisayar||null};
+let govde=m.sunucuda ? {id:m.oyunId,idx:m.idx,kalanSaniye:time} : {id:m.oyunId,idx:m.idx,puan:puan,kelimeler:Array.from(m.tahta.bulunanlar),kalanSaniye:time,bilgisayar:m.bilgisayar||null,harfler:m.harfler};
 
 return sunucu("tur/bitir",govde).then(function(v){
 
@@ -116,7 +119,7 @@ function duelloTuruCik(){
 if(!aktifMotor || aktifMotor.duraklatildi || !aktifMotor.cikisHakki)return Promise.resolve(false);
 
 let m=aktifMotor;
-return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:score,kelimeler:Array.from(m.tahta.bulunanlar),bilgisayar:m.bilgisayar||null}).then(function(v){
+return sunucu("tur/duraklat",{id:m.oyunId,idx:m.idx,hamleler:m.hamleler,puan:score,kelimeler:Array.from(m.tahta.bulunanlar),bilgisayar:m.bilgisayar||null,harfler:m.harfler}).then(function(v){
 if(v.duraklatildi){
 m.duraklatildi=true;
 m.cikisHakki=false;

@@ -25,7 +25,7 @@ async function adlar(env, uidler) {
   for (let i = 0; i < liste.length; i += 90) {
     const parca = liste.slice(i, i + 90);
     const { results } = await env.DB.prepare(
-      `SELECT uid, username, avatar FROM users WHERE uid IN (${parca.map(() => "?").join(",")})`
+      `SELECT uid, username, avatar, found_words_count FROM users WHERE uid IN (${parca.map(() => "?").join(",")})`
     ).bind(...parca).all();
     for (const r of results) harita[r.uid] = r;
   }
@@ -35,7 +35,7 @@ async function adlar(env, uidler) {
 function kisi(harita, uid, ben) {
   if (uid === BILGISAYAR) return { ben: false, username: "Bilgisayar", avatar: null };
   const u = harita[uid];
-  return { ben: uid === ben, username: u ? u.username : "Silinmiş kullanıcı", avatar: u ? u.avatar : null };
+  return { ben: uid === ben, username: u ? u.username : "Silinmiş kullanıcı", avatar: u ? u.avatar : null, kelimeSayisi: u ? u.found_words_count || 0 : 0 };
 }
 
 async function telefonaHazirla(env, detaylar, uid) {
@@ -225,11 +225,11 @@ export async function turBasla({ env, uid, govde, simdi }) {
 
 export async function turDuraklat({ env, uid, govde, simdi }) {
   const hamleler = Array.isArray(govde.hamleler) ? govde.hamleler.slice(0, 300) : [];
-  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar, harfler: govde.harfler }));
 }
 
 export async function turBitir({ env, uid, govde, simdi }) {
-  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar, harfler: govde.harfler }));
 }
 
 /* ---------- Turnuvalar ---------- */

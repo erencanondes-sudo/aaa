@@ -49,6 +49,11 @@ export function acikOyunSayisi(o, simdi) {
 const turnuvaMi = (kind) => kind === "gunluk" || kind === "haftalik";
 const EN_YUKSEK_PUAN = 10000;
 
+/* Düelloda ayrıntıda gösterilen açılış harfleri (telefon gönderir) */
+function harfleriDuzelt(liste) {
+  return (Array.isArray(liste) ? liste : []).slice(0, 8).map((h) => String(h).slice(0, 1)).filter(Boolean);
+}
+
 /* Telefonun gönderdiği kelimeler: en fazla 300, her biri 2–8 harf */
 function kelimeleriDuzelt(liste) {
   return (Array.isArray(liste) ? liste : []).slice(0, 300).map((k) => String(k).slice(0, 8)).filter((k) => k.length >= 2);
@@ -221,6 +226,7 @@ export class OyunOdasi extends DurableObject {
   turGorunumu(o, ben) {
     return Object.entries(o.turlar).map(([idx, t]) => {
       const tur = { idx: Number(idx), bitti: !!t.bitti, puan: t.bitti ? t.puan : null };
+      if (t.harfler && o === ben) tur.harfler = t.harfler;
       // Kelimeler yalnızca bakan oyuncu da o turu bitirdiyse görünür
       if (t.bitti && (o === ben || (ben && ben.turlar[idx] && ben.turlar[idx].bitti))) tur.kelimeler = t.kelimeler;
       return tur;
@@ -333,7 +339,7 @@ export class OyunOdasi extends DurableObject {
   }
 
   /* Turda bir kez çıkış hakkı: süre durur, o ana kadarki puan saklanır */
-  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler, bilgisayar }) {
+  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler, bilgisayar, harfler }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
     await this.bilgisayarTuru(idx, bilgisayar, simdi);
@@ -344,6 +350,7 @@ export class OyunOdasi extends DurableObject {
       t.puan = puanDuzelt(puan);
       t.kelimeler = kelimeleriDuzelt(kelimeler);
       t.hamleler = Array.isArray(hamleler) ? hamleler.slice(0, 300) : [];
+      t.harfler = harfleriDuzelt(harfler);
     }
     t.durdu = simdi;
     t.cikis = true;
@@ -379,7 +386,7 @@ export class OyunOdasi extends DurableObject {
     return { tamam: true, kelime: sonuc.kelime, puan: sonuc.puan, toplam: t.puan, taslar: t.taslar, onden: ondenVeri(s, ONDEN) };
   }
 
-  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri, bilgisayar }) {
+  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri, bilgisayar, harfler }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
     await this.bilgisayarTuru(idx, bilgisayar, simdi);
@@ -398,6 +405,7 @@ export class OyunOdasi extends DurableObject {
     } else {
       puan = puanDuzelt(telefonPuani);
       kelimeler = kelimeleriDuzelt(telefonKelimeleri);
+      t.harfler = harfleriDuzelt(harfler);
     }
     await this.turKapat(o, idx, puan, kelimeler, simdi);
     return { puan, kelimeler };
@@ -421,6 +429,7 @@ export class OyunOdasi extends DurableObject {
   async turKapat(o, idx, puan, kelimeler, simdi) {
     const t = o.turlar[idx];
     o.turlar[idx] = { bitti: true, puan, kelimeler, bittiZaman: simdi };
+    if (t && t.harfler) o.turlar[idx].harfler = t.harfler;
     delete this.siralar[o.uid + ":" + idx];
     o.total += puan;
     await this.oyuncuKaydet(o);
@@ -645,7 +654,7 @@ export class OyunOdasi extends DurableObject {
     await this.yukle();
     const uid = istek.headers.get("x-uid");
     const o = this.oyun && this.oyuncular.get(uid);
-    if (!o || o.status !== "katildi" || this.oyun.opponent === "bilgisayar") return new Response("oyun-yok", { status: 404 });
+    if (!o || o.status !== "katildi") return new Response("oyun-yok", { status: 404 });
 
     const [telefon, oda] = Object.values(new WebSocketPair());
     this.ctx.acceptWebSocket(oda, [uid]);
