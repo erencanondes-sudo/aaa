@@ -1300,11 +1300,12 @@ function animatedNav(el,callback){
 
 el.classList.add("menu-card-pressed");
 
+// Sayfa basılma efektiyle aynı anda açılır; düello/turnuva kodu henüz yüklenmediyse yüklenince açılır
+ekKodla(callback);
+
 setTimeout(function(){
 el.classList.remove("menu-card-pressed");
-// Düello/turnuva kodu henüz yüklenmediyse yüklenince açılır
-ekKodla(callback);
-},80);
+},100);
 
 }
 
