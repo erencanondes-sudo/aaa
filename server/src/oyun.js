@@ -134,7 +134,8 @@ export async function duelloOlustur({ env, uid, govde, simdi, arka }) {
       id, kind: "duello", opponent: "bilgisayar", creator: uid, format, status: "suruyor",
       createdAt: simdi, startsAt: simdi, endsAt: bitis, oyuncular: [{ uid, status: "katildi" }],
     });
-    return { id };
+    // Telefon bilgisayarın bütün oyunlarını bu tohumlarla hemen hesaplayıp gönderir
+    return Object.assign({ id }, sonuc(await oyunOdasi(env, id).bilgisayarTohumlari({ uid })));
   }
 
   // Arkadaşa ya da kullanıcı adıyla düello daveti (1 hafta geçerli)
@@ -222,17 +223,21 @@ export async function daveteCevap({ env, uid, govde, simdi }) {
 
 /* ---------- Turlar ---------- */
 
+export async function bilgisayarSonuclari({ env, uid, govde, simdi }) {
+  return sonuc(await oyunOdasi(env, String(govde.id)).bilgisayarSonuclari({ uid, turlar: govde.turlar, simdi }));
+}
+
 export async function turBasla({ env, uid, govde, simdi }) {
   return sonuc(await oyunOdasi(env, String(govde.id)).turBasla({ uid, idx: govde.idx | 0, simdi }));
 }
 
 export async function turDuraklat({ env, uid, govde, simdi }) {
   const hamleler = Array.isArray(govde.hamleler) ? govde.hamleler.slice(0, 300) : [];
-  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar, harfler: govde.harfler }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turDuraklat({ uid, idx: govde.idx | 0, simdi, hamleler, puan: govde.puan, kelimeler: govde.kelimeler, harfler: govde.harfler }));
 }
 
 export async function turBitir({ env, uid, govde, simdi }) {
-  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler, bilgisayar: govde.bilgisayar, harfler: govde.harfler }));
+  return sonuc(await oyunOdasi(env, String(govde.id)).turBitir({ uid, idx: govde.idx | 0, simdi, kalanSaniye: govde.kalanSaniye | 0, puan: govde.puan, kelimeler: govde.kelimeler, harfler: govde.harfler }));
 }
 
 /* ---------- Turnuvalar ---------- */

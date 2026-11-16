@@ -132,7 +132,7 @@ export class OyunOdasi extends DurableObject {
     };
     for (const p of v.oyuncular) this.oyuncular.set(p.uid, this.yeniOyuncu(p.uid, p.status, p.davetEden, simdi));
 
-    // Bilgisayarın turlarını telefon hesaplar; oyuncu turunu bırakınca ya da bitirince gönderir
+    // Bilgisayarın oyunlarını telefon düello açılırken hesaplayıp gönderir (bilgisayarSonuclari)
     if (v.opponent === "bilgisayar") this.oyuncular.set(BILGISAYAR, this.yeniOyuncu(BILGISAYAR, "katildi", null, simdi));
 
     await this.oyunKaydet();
@@ -176,6 +176,26 @@ export class OyunOdasi extends DurableObject {
     if (!o || o.status !== "davetli") return;
     this.oyuncular.delete(uid);
     await this.ctx.storage.delete("o:" + uid);
+  }
+
+  /* Bilgisayara karşı düello: bütün oyunların tohumları oluşturana verilir; telefon bilgisayarın
+     oyunlarını hepsini birden hesaplayıp gönderir (sunucuda hesaplamak işlemci sınırını aşıyor) */
+  async bilgisayarTohumlari({ uid }) {
+    await this.yukle();
+    if (!this.oyun || this.oyun.opponent !== "bilgisayar" || this.oyun.creator !== uid) return { hata: "oyun-yok", durum: 404 };
+    const tohumlar = [];
+    for (let i = 0; i < this.oyun.format; i++) tohumlar.push(await turTohumu(this.oyun.seed, i));
+    return { tohumlar, zorluk: this.oyun.difficulty };
+  }
+
+  async bilgisayarSonuclari({ uid, turlar, simdi }) {
+    await this.yukle();
+    if (!this.oyun || this.oyun.opponent !== "bilgisayar" || this.oyun.creator !== uid) return { hata: "oyun-yok", durum: 404 };
+    const liste = Array.isArray(turlar) ? turlar.slice(0, this.oyun.format) : [];
+    for (let i = 0; i < liste.length; i++) await this.bilgisayarTuru(i, liste[i], simdi);
+    this.oyun.surum++;
+    await this.oyunKaydet();
+    return { tamam: true };
   }
 
   /* Kaynak düellonun oyuncuları (düellodan turnuva açmak için) */
@@ -334,15 +354,13 @@ export class OyunOdasi extends DurableObject {
       turnuva: kisisel,
       zorluk: this.oyun.difficulty,
       hamleler: t.hamleler || [],
-      bilgisayar: this.bilgisayarBekliyor(idx),
     });
   }
 
   /* Turda bir kez çıkış hakkı: süre durur, o ana kadarki puan saklanır */
-  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler, bilgisayar, harfler }) {
+  async turDuraklat({ uid, idx, simdi, hamleler, puan, kelimeler, harfler }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
-    await this.bilgisayarTuru(idx, bilgisayar, simdi);
     const t = r.o.turlar[idx];
     if (!t || t.bitti || t.durdu || t.cikis) return { duraklatildi: false };
     if (!turnuvaMi(this.oyun.kind)) {
@@ -386,10 +404,9 @@ export class OyunOdasi extends DurableObject {
     return { tamam: true, kelime: sonuc.kelime, puan: sonuc.puan, toplam: t.puan, taslar: t.taslar, onden: ondenVeri(s, ONDEN) };
   }
 
-  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri, bilgisayar, harfler }) {
+  async turBitir({ uid, idx, simdi, kalanSaniye: istenen, puan: telefonPuani, kelimeler: telefonKelimeleri, harfler }) {
     const r = await this.turOyuncusu(uid, idx, simdi);
     if (r.hata) return r;
-    await this.bilgisayarTuru(idx, bilgisayar, simdi);
     const o = r.o;
     const t = o.turlar[idx];
     if (!t) return { hata: "tur-yok", durum: 404 };
@@ -411,7 +428,7 @@ export class OyunOdasi extends DurableObject {
     return { puan, kelimeler };
   }
 
-  /* Bilgisayar rakibin bu turu henüz yazılmadıysa telefon hesaplayıp gönderir */
+  /* Bilgisayarın bir oyunu (yalnızca bir kez yazılır) */
   bilgisayarBekliyor(idx) {
     const b = this.oyuncular.get(BILGISAYAR);
     return !!b && !(b.turlar[idx] && b.turlar[idx].bitti);
