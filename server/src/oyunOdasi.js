@@ -12,6 +12,7 @@ import {
 } from "../../shared/oyun.js";
 
 export const BILGISAYAR = "bilgisayar";
+const BILGISAYAR_PUANI = 1000;   // bilgisayarın her oyundaki puanı (şimdilik sabit)
 export const SURELER = { 1: GUN, 3: 2 * GUN, 7: 7 * GUN };
 export const DAVET_SURESI = 7 * GUN;
 export const TURKIYE = 3 * 3600000;
@@ -132,8 +133,13 @@ export class OyunOdasi extends DurableObject {
     };
     for (const p of v.oyuncular) this.oyuncular.set(p.uid, this.yeniOyuncu(p.uid, p.status, p.davetEden, simdi));
 
-    // Bilgisayarın oyunlarını telefon düello açılırken hesaplayıp gönderir (bilgisayarSonuclari)
-    if (v.opponent === "bilgisayar") this.oyuncular.set(BILGISAYAR, this.yeniOyuncu(BILGISAYAR, "katildi", null, simdi));
+    // Bilgisayar bütün oyunlarını baştan oynar; puanı şimdilik her oyunda sabit
+    if (v.opponent === "bilgisayar") {
+      const b = this.yeniOyuncu(BILGISAYAR, "katildi", null, simdi);
+      for (let i = 0; i < v.format; i++) b.turlar[i] = { bitti: true, puan: BILGISAYAR_PUANI, kelimeler: [], bittiZaman: simdi };
+      b.total = BILGISAYAR_PUANI * v.format;
+      this.oyuncular.set(BILGISAYAR, b);
+    }
 
     await this.oyunKaydet();
     for (const o of this.oyuncular.values()) await this.oyuncuKaydet(o);
@@ -176,26 +182,6 @@ export class OyunOdasi extends DurableObject {
     if (!o || o.status !== "davetli") return;
     this.oyuncular.delete(uid);
     await this.ctx.storage.delete("o:" + uid);
-  }
-
-  /* Bilgisayara karşı düello: bütün oyunların tohumları oluşturana verilir; telefon bilgisayarın
-     oyunlarını hepsini birden hesaplayıp gönderir (sunucuda hesaplamak işlemci sınırını aşıyor) */
-  async bilgisayarTohumlari({ uid }) {
-    await this.yukle();
-    if (!this.oyun || this.oyun.opponent !== "bilgisayar" || this.oyun.creator !== uid) return { hata: "oyun-yok", durum: 404 };
-    const tohumlar = [];
-    for (let i = 0; i < this.oyun.format; i++) tohumlar.push(await turTohumu(this.oyun.seed, i));
-    return { tohumlar, zorluk: this.oyun.difficulty };
-  }
-
-  async bilgisayarSonuclari({ uid, turlar, simdi }) {
-    await this.yukle();
-    if (!this.oyun || this.oyun.opponent !== "bilgisayar" || this.oyun.creator !== uid) return { hata: "oyun-yok", durum: 404 };
-    const liste = Array.isArray(turlar) ? turlar.slice(0, this.oyun.format) : [];
-    for (let i = 0; i < liste.length; i++) await this.bilgisayarTuru(i, liste[i], simdi);
-    this.oyun.surum++;
-    await this.oyunKaydet();
-    return { tamam: true };
   }
 
   /* Kaynak düellonun oyuncuları (düellodan turnuva açmak için) */
@@ -426,21 +412,6 @@ export class OyunOdasi extends DurableObject {
     }
     await this.turKapat(o, idx, puan, kelimeler, simdi);
     return { puan, kelimeler };
-  }
-
-  /* Bilgisayarın bir oyunu (yalnızca bir kez yazılır) */
-  bilgisayarBekliyor(idx) {
-    const b = this.oyuncular.get(BILGISAYAR);
-    return !!b && !(b.turlar[idx] && b.turlar[idx].bitti);
-  }
-
-  async bilgisayarTuru(idx, s, simdi) {
-    if (!s || !this.bilgisayarBekliyor(idx)) return;
-    const b = this.oyuncular.get(BILGISAYAR);
-    const puan = puanDuzelt(s.puan);
-    b.turlar[idx] = { bitti: true, puan, kelimeler: kelimeleriDuzelt(s.kelimeler), bittiZaman: simdi };
-    b.total += puan;
-    await this.oyuncuKaydet(b);
   }
 
   async turKapat(o, idx, puan, kelimeler, simdi) {

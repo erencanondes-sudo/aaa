@@ -134,8 +134,7 @@ export async function duelloOlustur({ env, uid, govde, simdi, arka }) {
       id, kind: "duello", opponent: "bilgisayar", creator: uid, format, status: "suruyor",
       createdAt: simdi, startsAt: simdi, endsAt: bitis, oyuncular: [{ uid, status: "katildi" }],
     });
-    // Telefon bilgisayarın bütün oyunlarını bu tohumlarla hemen hesaplayıp gönderir
-    return Object.assign({ id }, sonuc(await oyunOdasi(env, id).bilgisayarTohumlari({ uid })));
+    return { id };
   }
 
   // Arkadaşa ya da kullanıcı adıyla düello daveti (1 hafta geçerli)
@@ -222,10 +221,6 @@ export async function daveteCevap({ env, uid, govde, simdi }) {
 }
 
 /* ---------- Turlar ---------- */
-
-export async function bilgisayarSonuclari({ env, uid, govde, simdi }) {
-  return sonuc(await oyunOdasi(env, String(govde.id)).bilgisayarSonuclari({ uid, turlar: govde.turlar, simdi }));
-}
 
 export async function turBasla({ env, uid, govde, simdi }) {
   return sonuc(await oyunOdasi(env, String(govde.id)).turBasla({ uid, idx: govde.idx | 0, simdi }));

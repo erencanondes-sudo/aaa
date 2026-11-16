@@ -530,7 +530,6 @@ showModalChallengeStart();
 /* ---------- Düello açma ve cevap ---------- */
 
 function createChallenge(gamesCount,inModal){
-if(waitForDictionary(createChallenge,this,arguments))return;
 
 let rakip=pendingChallenge.type==="computer" ? "bilgisayar" : "arkadas";
 let username=pendingChallenge.opponent;
@@ -543,8 +542,7 @@ let mesaj=rakip==="bilgisayar"
 ? "🤖 Bilgisayara karşı "+bicim+" düello başladı!<br>Oyunlarım menüsünden oynayabilirsin."
 : "Düello daveti "+username+" kullanıcısına gönderildi! ("+bicim+")<br>Kabul ettiğinde Oyunlarım'da görünecek.";
 
-if(rakip==="bilgisayar")bilgisayarOyunlariniGonder(v);
-else oyunlariYenile(true);
+oyunlariYenile(true);
 duelloGonderildiGoster(mesaj,inModal);
 
 }).catch(function(e){
@@ -552,23 +550,6 @@ duelloGonderildiGoster(mesaj,inModal);
 duelloGonderildiGoster(hataMetni(e),inModal);
 
 });
-
-}
-
-/* Bilgisayar bütün oyunlarını düello açılırken oynar (eskisi gibi); hesap telefonda yapılır */
-async function bilgisayarOyunlariniGonder(v){
-
-try{
-let turlar=[];
-for(let i=0;i<v.tohumlar.length;i++){
-turlar.push(await window.KonfetiOyun.bilgisayarOyna(v.tohumlar[i],v.zorluk,DICTIONARY));
-}
-await sunucu("oyun/bilgisayar",{id:v.id,turlar:turlar});
-}
-catch(e){
-console.error("Bilgisayarın oyunları gönderilemedi:",e);
-}
-oyunlariYenile(true);
 
 }
 

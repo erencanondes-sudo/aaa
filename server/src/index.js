@@ -29,7 +29,6 @@ const ISLEMLER = {
   "oyun/detay": oyun.detay,
   "oyun/gizle": oyun.gizle,
   "oyun/duello": oyun.duelloOlustur,
-  "oyun/bilgisayar": oyun.bilgisayarSonuclari,
   "oyun/cevap": oyun.daveteCevap,
   "oyun/rastgele": oyun.rastgeleKatil,
   "oyun/rastgele-iptal": oyun.rastgeleIptal,
