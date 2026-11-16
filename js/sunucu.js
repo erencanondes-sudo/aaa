@@ -10,11 +10,35 @@ this.durum=durum||0;
 }
 }
 
-/* Firebase girişinin belgesi (her istekte gönderilir; Firebase kendisi yeniler) */
+/* Firebase girişinin belgesi (her istekte gönderilir; Firebase kendisi yeniler).
+   Firebase henüz yüklenmediyse son alınan belge kullanılır (Firebase'in belgesi 1 saat geçerlidir);
+   o da yoksa ya da süresi dolduysa Firebase'in oturumu kontrol etmesi beklenir. */
 async function girisBelgesi(){
-let k=(auth && auth.currentUser);
-if(!k)throw new SunucuHatasi("giris-gerekli",401);
-return await k.getIdToken();
+if(!(auth && auth.currentUser) && !firebaseCevapVerdi){
+let k=kayitliBelge();
+if(k)return k;
+await firebaseCevabiniBekle();
+}
+let u=auth && auth.currentUser;
+if(!u)throw new SunucuHatasi("giris-gerekli",401);
+let belge=await u.getIdToken();
+belgeKaydet(u.uid,belge);
+return belge;
+}
+
+function kayitliBelge(){
+try{
+let b=JSON.parse(localStorage.getItem("konfetiBelge")||"null");
+if(b && b.uid===localStorage.getItem("konfetiSonGiris") && b.bitis>Date.now()+60000)return b.belge;
+}catch(e){}
+return null;
+}
+
+function belgeKaydet(uid,belge){
+try{
+let icerik=JSON.parse(atob(belge.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));
+localStorage.setItem("konfetiBelge",JSON.stringify({uid:uid,belge:belge,bitis:icerik.exp*1000}));
+}catch(e){}
 }
 
 async function sunucu(islem,govde){
@@ -82,9 +106,25 @@ return HATA_METINLERI[kod] || HATA_METINLERI["sunucu-hatasi"];
 
 const HAFIZA_SURUMU=1;
 
+/* Firebase henüz yüklenmediyse son giriş yapan kullanıcının hafızası */
+function hafizaUid(){
+let k=auth && auth.currentUser;
+if(k)return k.uid;
+try{ return localStorage.getItem("konfetiSonGiris")||""; }catch(e){ return ""; }
+}
+
 function hafizaAnahtari(){
-let k=(auth && auth.currentUser);
-return "konfetiOyunlar_"+(k ? k.uid : "");
+return "konfetiOyunlar_"+hafizaUid();
+}
+
+/* Son açılış bilgisi (oyunlar hariç; onlar ayrı tutulur): telefon açılınca sunucuyu beklemeden gösterilir */
+function kayitliDurum(){
+try{
+let d=JSON.parse(localStorage.getItem("konfetiDurum_"+hafizaUid())||"null");
+if(!d)return null;
+d.oyunlar=hafizaOku().oyunlar;
+return d;
+}catch(e){ return null; }
 }
 
 function hafizaOku(){
@@ -120,6 +160,7 @@ let eksik=v.liste.some(function(k){ return k.kind==="duello" && !h.oyunlar[k.id]
 if(eksik && !hepsi)return acilis(true);
 
 hafizaYaz(h);
+try{ localStorage.setItem("konfetiDurum_"+hafizaUid(),JSON.stringify(Object.assign({},v,{oyunlar:undefined}))); }catch(e){}
 v.oyunlar=h.oyunlar;
 return v;
 }
@@ -152,7 +193,7 @@ ws.onclose=function(){
 if(listeBaglantisi!==ws)return;
 listeBaglantisi=null;
 // Açılmadan koparsa da kendiliğinden yeniden kurulur
-listeYenidenDene=setTimeout(function(){ if(auth && auth.currentUser)listeyeBaglan(degisti).then(degisti); },5000);
+listeYenidenDene=setTimeout(function(){ if(currentUser && !currentUser.isGuest)listeyeBaglan(degisti).then(degisti); },5000);
 };
 }
 

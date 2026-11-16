@@ -1,4 +1,4 @@
-const CACHE_NAME = "konfeti-v10";
+const CACHE_NAME = "konfeti-v11";
 
 const APP_SHELL = [
   "./index.html",
@@ -33,6 +33,9 @@ self.addEventListener("activate", function (event) {
   self.clients.claim();
 });
 
+/* Sayfa ve kod/tasarım dosyaları önce telefondaki kopyadan gelir (açılış internet beklemez);
+   aynı anda yenisi indirilip saklanır, değişiklikler bir sonraki açılışta görünür.
+   Resimler ve kelime listesi seyrek değiştiği için yalnızca telefonda yoksa indirilir. */
 self.addEventListener("fetch", function (event) {
   const url = new URL(event.request.url);
 
@@ -41,47 +44,27 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // Sayfa açılışları ve kod/tasarım dosyaları: önce ağdan alınır ki güncellemeler hemen gelsin.
-  // İnternet yoksa önbellekteki sürüm kullanılır. Kelime listesi nadiren değiştiği için önbellekten gelir.
-  const isCodeFile = (url.pathname.endsWith(".js") || url.pathname.endsWith(".css")) && !url.pathname.endsWith("/words.js");
+  const sayfa = event.request.mode === "navigate";
+  const anahtar = sayfa ? "./index.html" : event.request;
+  const yenilenir = sayfa || ((url.pathname.endsWith(".js") || url.pathname.endsWith(".css")) && !url.pathname.endsWith("/words.js"));
 
-  if (event.request.mode === "navigate" || isCodeFile) {
-    event.respondWith(
-      fetch(event.request)
-        .then(function (networkResponse) {
-          const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, clone);
-          });
-          return networkResponse;
-        })
-        .catch(function () {
-          return (event.request.mode === "navigate" ? caches.match("./index.html") : caches.match(event.request))
-            .then(function (r) { return r || Response.error(); });
-        })
-    );
-    return;
-  }
-
-  // Everything else (icons, manifest, etc.): cache-first, since these rarely change.
   event.respondWith(
-    caches.match(event.request).then(function (cachedResponse) {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
-        .then(function (networkResponse) {
-          if (networkResponse.ok) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then(function (cache) {
-              cache.put(event.request, clone);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(function () {
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.match(anahtar).then(function (kopya) {
+        function indir() {
+          return fetch(event.request).then(function (yanit) {
+            if (yanit.ok && !yanit.redirected) cache.put(anahtar, yanit.clone());
+            return yanit;
+          });
+        }
+        if (kopya) {
+          if (yenilenir) event.waitUntil(indir().catch(function () {}));
+          return kopya;
+        }
+        return indir().catch(function () {
           return Response.error();
         });
+      });
     })
   );
 });

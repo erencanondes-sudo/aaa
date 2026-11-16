@@ -416,6 +416,22 @@ document.head.appendChild(b);
 });
 }
 
+/* Firebase oturumu ilk kez kontrol edince (ya da yüklenemeyince) bekleyen istekler devam eder */
+let firebaseCevapVerdi=false;
+let firebaseBekleyenler=[];
+
+function firebaseCevabiniBekle(){
+return new Promise(function(tamam){
+if(firebaseCevapVerdi)tamam();
+else firebaseBekleyenler.push(tamam);
+});
+}
+
+function firebaseCevapGeldi(){
+firebaseCevapVerdi=true;
+firebaseBekleyenler.splice(0).forEach(function(f){ f(); });
+}
+
 function firebaseBaslat(){
 
 firebase.initializeApp(firebaseConfig);
@@ -424,17 +440,20 @@ firebaseReady=true;
 
 auth.onAuthStateChanged(function(user){
 
+firebaseCevapGeldi();
+
 if(user){
 if(!kayitSuruyor)girisSonrasi();
 }
 else{
-try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
-// Kayıtlı profille hızlı açılmıştı ama oturum yok: giriş ekranına dönülür
+try{
+localStorage.removeItem("konfetiSonGiris");
+localStorage.removeItem("konfetiBelge");
+}catch(e){}
+// Kayıtlı profille hızlı açılmıştı ama oturum yok: tekrar giriş istenir
 if(currentUser && !currentUser.isGuest){
-listedenKop();
-currentUser=null;
-sunucuDurumu=null;
-hideAllScreens();
+erkenOturumuKapat();
+document.getElementById("loginError").innerHTML="Tekrar giriş yapman gerekiyor.";
 }
 document.getElementById("sessionCheckScreen").style.display="none";
 document.getElementById("authScreen").style.display="block";
@@ -454,6 +473,7 @@ firebaseHazir.catch(function(e){
 
 console.error("Firebase başlatılamadı:",e);
 firebaseHatali=true;
+firebaseCevapGeldi();
 
 if(!currentUser){
 document.getElementById("sessionCheckScreen").style.display="none";
@@ -478,8 +498,9 @@ function firebaseBekleMetni(){
 return firebaseHatali ? "Bağlantı kurulamadı. İnternet bağlantını kontrol edip uygulamayı yeniden aç." : "Bağlanıyor, birkaç saniye sonra tekrar dene.";
 }
 
-/* Telefonda kayıtlı profil varsa ana ekran Firebase'i ve sunucuyu beklemeden açılır;
-   sunucunun cevabı gelince bilgiler güncellenir. */
+/* Telefonda kayıtlı profil varsa ana ekran Firebase'i ve sunucuyu beklemeden, son kaydedilen
+   oyunlarla açılır. Son alınan giriş belgesi hâlâ geçerliyse sunucu da Firebase'le aynı anda istenir;
+   cevabı gelince bilgiler güncellenir. Firebase oturumu bulamazsa tekrar giriş istenir. */
 document.addEventListener("DOMContentLoaded",function(){
 
 let uid=null,kayitli=null;
@@ -489,8 +510,10 @@ if(uid)kayitli=JSON.parse(localStorage.getItem("konfetiProfil_"+uid)||"null");
 }catch(e){}
 
 if(uid && kayitli){
+sunucuDurumu=kayitliDurum();
 document.getElementById("sessionCheckScreen").style.display="none";
 onLoginSuccess(uid,kayitli,true);
+if(kayitliBelge())acilisIste().then(function(v){ acilisUygula(uid,v); }).catch(function(){});
 }
 
 // Firebase ana ekran çizildikten sonra yüklenir
@@ -718,25 +741,72 @@ errorEl.innerHTML=firebaseErrorMessage(e);
 
 /* Firebase girişi tamam: sunucudan açılış bilgisi alınır.
    İnternet yoksa son kaydedilen profille devam edilir. */
+/* Açılış isteği bir kez gönderilir; hızlı açılışta başlatılan istek Firebase gelince de kullanılır */
+let acilisSozu=null;
+
+function acilisIste(){
+if(!acilisSozu){
+acilisSozu=acilis().catch(function(e){
+acilisSozu=null;
+throw e;
+});
+}
+return acilisSozu;
+}
+
+/* Sunucunun cevabı ekrana işlenir (aynı cevap iki kez işlenmez) */
+function acilisUygula(uid,v){
+
+if(sunucuDurumu===v || !v.profil || !currentUser || currentUser.uid!==uid)return;
+sunucuDurumu=v;
+
+try{
+localStorage.setItem("konfetiProfil_"+uid,JSON.stringify(v.profil));
+localStorage.setItem("konfetiSonGiris",uid);
+}catch(e){}
+
+kullaniciyiKur(uid,v.profil);
+canliListeyiBaslat();
+
+}
+
+/* Kayıtlı profille açılmış oturum kapatılır (Firebase oturum bulamadı ya da kullanıcı farklı) */
+function erkenOturumuKapat(){
+listedenKop();
+sohbetKapat();
+currentUser=null;
+sunucuDurumu=null;
+acilisSozu=null;
+hideAllScreens();
+}
+
+/* Firebase girişi tamam: sunucudan açılış bilgisi alınır.
+   İnternet yoksa son kaydedilen profille devam edilir. */
 async function girisSonrasi(){
 
 let uid=auth.currentUser.uid;
 let kayitliAnahtar="konfetiProfil_"+uid;
+
+// Kayıtlı profille başka bir kullanıcı açılmışsa kapatılır
+if(currentUser && !currentUser.isGuest && currentUser.uid!==uid)erkenOturumuKapat();
+
 // Ana ekran kayıtlı profille önceden açıldıysa yalnızca bilgiler güncellenir
 let erkenAcik=!!(currentUser && currentUser.uid===uid);
 
 try{
 
-sunucuDurumu=await acilis();
+let v;
+try{ v=await acilisIste(); }
+catch(e){
+// Hızlı açılışta gönderilen eski belge kabul edilmediyse Firebase'in belgesiyle bir kez daha
+if(e.kod!=="giris-gerekli")throw e;
+v=await acilisIste();
+}
 document.getElementById("sessionCheckScreen").style.display="none";
 
-if(!sunucuDurumu.profil){
+if(!v.profil){
 // Kayıt yarıda kalmış: profil yok
-if(erkenAcik){
-listedenKop();
-currentUser=null;
-hideAllScreens();
-}
+if(erkenAcik)erkenOturumuKapat();
 try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
 await auth.signOut();
 document.getElementById("authScreen").style.display="block";
@@ -744,16 +814,19 @@ document.getElementById("loginError").innerHTML="Kaydın tamamlanmamış, lütfe
 return;
 }
 
+if(erkenAcik){
+acilisUygula(uid,v);
+acilisSozu=null;
+return;
+}
+
+sunucuDurumu=v;
 try{
-localStorage.setItem(kayitliAnahtar,JSON.stringify(sunucuDurumu.profil));
+localStorage.setItem(kayitliAnahtar,JSON.stringify(v.profil));
 localStorage.setItem("konfetiSonGiris",uid);
 }catch(e){}
-
-if(erkenAcik){
-kullaniciyiKur(uid,sunucuDurumu.profil);
-canliListeyiBaslat();
-}
-else onLoginSuccess(uid,sunucuDurumu.profil);
+onLoginSuccess(uid,v.profil);
+acilisSozu=null;
 
 }
 catch(e){
@@ -2025,7 +2098,11 @@ errorEl.innerHTML=hataMetni(e);
 function logoutUser(){
 
 if(!auth)return;
-try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
+try{
+localStorage.removeItem("konfetiSonGiris");
+localStorage.removeItem("konfetiBelge");
+}catch(e){}
+acilisSozu=null;
 
 auth.signOut().then(function(){
 
