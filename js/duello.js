@@ -873,10 +873,9 @@ else alt+="<div style=\"font-size:10.5px;color:#7b8fae;\">Rakip henüz oynamadı
 let benimKelimeler=bt.kelimeler||[];
 if(benimKelimeler.length)alt+="<div style=\"font-size:10.5px;color:#d1d5db;margin-top:3px;\">Senin Bulduğun Kelimeler: "+benimKelimeler.join(", ")+"</div>";
 
-// Rakibin kelimelerinden en fazla benim bulduğum kadarı görünür
+// Oyunu bitirince rakibin bütün kelimeleri görünür
 if(rakipOynadi && rt.kelimeler && rt.kelimeler.length){
-let gosterilen=rt.kelimeler.slice(0,benimKelimeler.length);
-if(gosterilen.length)alt+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+gosterilen.join(", ")+"</div>";
+alt+="<div style=\"font-size:10.5px;color:#d1d5db;\">Rakibin Bulduğu Kelimeler: "+rt.kelimeler.join(", ")+"</div>";
 }
 
 }
