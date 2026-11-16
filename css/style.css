@@ -2749,8 +2749,8 @@ body:not(.dark-mode) #tournamentDetailScreen .td-score-number{color:#192a56;}
 
 
 /* Sayfa geçişleri: yeni sayfa alttan gelir, geri dönüşte kapanan sayfa aşağı iner */
-.tam-sayfa{animation:sayfaAc .25s ease-out;}
-.tam-sayfa.sayfa-kapaniyor{animation:sayfaKapan .25s ease-in forwards;}
+.tam-sayfa{animation:sayfaAc .18s cubic-bezier(.2,.9,.3,1);}
+.tam-sayfa.sayfa-kapaniyor{animation:sayfaKapan .18s cubic-bezier(.7,0,.8,.1) forwards;}
 body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
 @keyframes sayfaAc{from{transform:translateY(calc(100dvh / var(--k)));}}
 @keyframes sayfaKapan{to{transform:translateY(calc(100dvh / var(--k)));}}
