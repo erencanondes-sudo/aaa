@@ -1136,7 +1136,7 @@ button{
 #wordGameContent .divider-left, #wordGameContent .divider-right{
     position:absolute;
     top:15%;
-    bottom:58px;
+    bottom:44px;
     width:1px;
     background:linear-gradient(180deg,rgba(226,232,240,.2) 0%,#cbd5e1 50%,rgba(226,232,240,.2) 100%);
 }
@@ -1148,7 +1148,7 @@ button{
     flex-direction:row;
     align-items:center;
     gap:12px;
-    margin:4px -12px 12px -12px;
+    margin:-6px -12px 10px -12px;
 }
 #wordGameContent #wordNewGameBtn::before, #wordGameContent #wordNewGameBtn::after{
     content:"";
@@ -1160,15 +1160,15 @@ button{
 #wordGameContent .yeni-oyun-btn{
     display:flex;
     align-items:center;
-    gap:8px;
-    height:38px;
-    padding:0 18px 0 6px;
+    gap:7px;
+    height:32px;
+    padding:0 14px 0 5px;
     border:0;
-    border-radius:12px;
+    border-radius:10px;
     background:linear-gradient(180deg,#5fd04c,#2e9f2c);
     color:#fff;
     font-family:inherit;
-    font-size:17px;
+    font-size:15px;
     font-weight:800;
     box-shadow:0 3px 0 #1f7a22,0 5px 10px rgba(0,0,0,.15);
     cursor:pointer;
@@ -1176,8 +1176,8 @@ button{
 }
 #wordGameContent .yeni-oyun-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #1f7a22;}
 #wordGameContent .yeni-oyun-ikon{
-    width:26px;
-    height:26px;
+    width:22px;
+    height:22px;
     border-radius:50%;
     background:#fff;
     display:flex;
@@ -1187,9 +1187,9 @@ button{
 }
 #wordGameContent .yeni-oyun-ikon::after{
     content:"";
-    border-top:6px solid transparent;
-    border-bottom:6px solid transparent;
-    border-left:9px solid #2e9f2c;
+    border-top:5px solid transparent;
+    border-bottom:5px solid transparent;
+    border-left:8px solid #2e9f2c;
     transform:translateX(1.5px);
 }
 
