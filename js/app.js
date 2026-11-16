@@ -1304,7 +1304,7 @@ setTimeout(function(){
 el.classList.remove("menu-card-pressed");
 // Düello/turnuva kodu henüz yüklenmediyse yüklenince açılır
 ekKodla(callback);
-},200);
+},80);
 
 }
 
