@@ -531,6 +531,7 @@ function createChallenge(gamesCount,inModal){
 
 let rakip=pendingChallenge.type==="computer" ? "bilgisayar" : "arkadas";
 let username=pendingChallenge.opponent;
+if(rakip!=="bilgisayar")bildirimIzniIste();
 
 sunucu("oyun/duello",{rakip:rakip,username:username,format:gamesCount}).then(function(v){
 
@@ -592,6 +593,7 @@ let yeniKabul={};   // kabul ettiğim davetler 10 saniye İstekler'de "kabul edi
 function respondChallenge(id,accept){
 
 if(accept){
+bildirimIzniIste();
 yeniKabul[id]=true;
 oyunListeleriniCiz();
 setTimeout(function(){
@@ -640,6 +642,7 @@ return;
 }
 
 showRandomWaitingState();
+bildirimIzniIste();
 
 sunucu("oyun/rastgele").then(function(v){
 
@@ -993,6 +996,7 @@ openDetailModal(html);
 function createTournamentFromDuel(id,format){
 
 document.getElementById("detailModalContent").innerHTML="<p>Turnuva açılıyor...</p>";
+bildirimIzniIste();
 
 sunucu("turnuva/ac",{kaynak:id,format:format}).then(function(){
 document.getElementById("detailModalContent").innerHTML="<p class=\"screen-title\">Turnuva açıldı 🎉</p><p>Oyunlarım'dan oynayabilir, arkadaşlarını davet edebilirsin.</p>";

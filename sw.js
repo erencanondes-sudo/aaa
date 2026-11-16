@@ -68,3 +68,29 @@ self.addEventListener("fetch", function (event) {
     })
   );
 });
+
+/* Bildirimler (Firebase Cloud Messaging). Bildirime basılınca uygulama Oyunlarım'da açılır. */
+self.addEventListener("push", function (event) {
+  let veri = {};
+  try { veri = event.data.json(); } catch (e) {}
+  const n = veri.notification || {};
+  event.waitUntil(
+    self.registration.showNotification(n.title || "Konfeti", {
+      body: n.body || "",
+      icon: "./icon-192.png"
+    })
+  );
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (pencereler) {
+      if (pencereler.length) {
+        pencereler[0].postMessage("oyunlarim");
+        return pencereler[0].focus();
+      }
+      return self.clients.openWindow("./?oyunlarim");
+    })
+  );
+});

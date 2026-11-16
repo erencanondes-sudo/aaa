@@ -513,6 +513,85 @@ console.error("Kod yüklenemedi:",e);
 });
 }
 
+/* ---------- Bildirimler (Firebase Cloud Messaging) ---------- */
+const BILDIRIM_VAPID="BMb0NPlSXC0uhRLP3L3wg45y1W-JGe0eEKlV9bDR3zzZQdyc74mMrxhn-PgsvJjaFKQa68Ui_7thIjMWW0vXt6c";
+
+function bildirimDesteklenir(){
+return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+}
+
+/* İzin verilmişse telefonun bildirim anahtarı alınır; değiştiyse sunucuya kaydedilir */
+function bildirimAnahtariKaydet(){
+if(!bildirimDesteklenir() || Notification.permission!=="granted" || !currentUser || currentUser.isGuest)return;
+let uid=currentUser.uid;
+firebaseCevabiniBekle().then(function(){
+if(!firebaseReady)throw new Error("Firebase hazır değil");
+return firebase.messaging ? null : betikYukle("lib/firebase/firebase-messaging-compat.js");
+}).then(function(){
+return navigator.serviceWorker.ready;
+}).then(function(kayit){
+return firebase.messaging().getToken({vapidKey:BILDIRIM_VAPID,serviceWorkerRegistration:kayit});
+}).then(function(token){
+if(!token || !currentUser || currentUser.uid!==uid)return;
+let kayitli=null;
+try{ kayitli=localStorage.getItem("konfetiBildirim"); }catch(e){}
+if(kayitli===uid+":"+token)return;
+return sunucu("profil/bildirim",{token:token}).then(function(){
+try{ localStorage.setItem("konfetiBildirim",uid+":"+token); }catch(e){}
+});
+}).catch(function(e){
+console.warn("Bildirim anahtarı alınamadı:",e);
+});
+}
+
+/* İzin yalnızca bir kez sorulur; düğmeye basılırken çağrılmalı (tarayıcı başka zaman sormaya izin vermiyor) */
+function bildirimIzniIste(){
+if(!bildirimDesteklenir() || Notification.permission!=="default")return Promise.resolve();
+return Notification.requestPermission().then(function(izin){
+if(izin==="granted")bildirimAnahtariKaydet();
+});
+}
+
+/* Çıkışta bu telefona bildirim gelmesin */
+function bildirimAnahtariniSil(){
+let kayitli=null;
+try{ kayitli=localStorage.getItem("konfetiBildirim"); localStorage.removeItem("konfetiBildirim"); }catch(e){}
+if(!kayitli)return Promise.resolve();
+return sunucu("profil/bildirim",{token:""}).catch(function(){});
+}
+
+/* Ayarlar: düğme, ayar açık ve izin verilmişse seçili görünür */
+function bildirimAyarlariniCiz(){
+let p=sunucuDurumu && sunucuDurumu.profil;
+let goster=!!(p && currentUser && !currentUser.isGuest && bildirimDesteklenir());
+document.getElementById("bildirimAyarlari").style.display=goster ? "block" : "none";
+if(!goster)return;
+let izin=Notification.permission==="granted";
+document.getElementById("bildirimOyunBtn").classList.toggle("active",izin && p.notifyGame);
+document.getElementById("bildirimMesajBtn").classList.toggle("active",izin && p.notifyMsg);
+}
+
+function bildirimAyariDegistir(tur){
+let p=sunucuDurumu && sunucuDurumu.profil;
+if(!p)return;
+let alan=tur==="oyun" ? "notifyGame" : "notifyMsg";
+let acik=true;
+if(Notification.permission==="granted")acik=!p[alan];
+else if(Notification.permission==="denied"){
+showTopNotification("Bildirim izni kapalı. Telefonun ayarlarından bu site için bildirimlere izin verebilirsin.");
+return;
+}
+let izinSozu=bildirimIzniIste();
+let govde={};
+govde[tur]=acik;
+sunucu("profil/bildirim",govde).then(function(){
+p[alan]=acik;
+return izinSozu;
+}).then(bildirimAyarlariniCiz).catch(function(e){
+showTopNotification(hataMetni(e));
+});
+}
+
 /* Firebase hazır değilken giriş düğmelerine basılırsa */
 function firebaseBekleMetni(){
 return firebaseHatali ? "Bağlantı kurulamadı. İnternet bağlantını kontrol edip uygulamayı yeniden aç." : "Bağlanıyor, birkaç saniye sonra tekrar dene.";
@@ -788,6 +867,7 @@ localStorage.setItem("konfetiSonGiris",uid);
 
 kullaniciyiKur(uid,v.profil);
 ekKodla(canliListeyiBaslat);
+bildirimAnahtariKaydet();
 
 }
 
@@ -884,6 +964,12 @@ setBottomNavActive("home");
 if(!currentUser.isGuest && !erken)ekKodla(canliListeyiBaslat);
 
 burstHomeConfetti();
+
+// Bildirime basılarak açıldıysa Oyunlarım gösterilir
+if(location.search.indexOf("oyunlarim")>=0){
+history.replaceState(history.state,"",location.pathname);
+if(!currentUser.isGuest)ekKodla(goToHistoryFromChallengeDone);
+}
 
 }
 
@@ -2132,7 +2218,9 @@ localStorage.removeItem("konfetiBelge");
 }catch(e){}
 acilisSozu=null;
 
-auth.signOut().then(function(){
+bildirimAnahtariniSil().then(function(){
+return auth.signOut();
+}).then(function(){
 
 if(ekKodYuklendi)sohbetKapat();
 listedenKop();
@@ -2345,6 +2433,7 @@ function showSettings(){
 hideAllScreens();
 document.getElementById("settingsScreen").style.display="block";
 updateThemeToggleUI(document.body.classList.contains("dark-mode") ? "dark" : "light");
+bildirimAyarlariniCiz();
 
 }
 
@@ -4810,6 +4899,11 @@ historyDragLocked=null;
 
 
 if("serviceWorker" in navigator){
+
+// Uygulama açıkken bildirime basılırsa
+navigator.serviceWorker.addEventListener("message",function(e){
+if(e.data==="oyunlarim" && currentUser && !currentUser.isGuest)ekKodla(goToHistoryFromChallengeDone);
+});
 
 window.addEventListener("load",function(){
 

@@ -186,6 +186,7 @@ openDetailModal(h);
 function sendTournamentInviteTo(id,username,btn){
 
 btn.disabled=true;
+bildirimIzniIste();
 sunucu("turnuva/davet",{id:id,username:username}).then(function(){
 btn.outerHTML="<div class=\"already-friend\">✓ "+username+" davet edildi</div>";
 oyunlariYenile(true);

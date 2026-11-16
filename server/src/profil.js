@@ -82,6 +82,10 @@ export async function bildirimAyari({ env, uid, govde }) {
   if (typeof govde.mesaj === "boolean") { alanlar.push("notify_msg = ?"); degerler.push(govde.mesaj ? 1 : 0); }
   if (typeof govde.token === "string") { alanlar.push("push_token = ?"); degerler.push(govde.token.slice(0, 400) || null); }
   if (!alanlar.length) return;
+  // Aynı telefonda daha önce başka hesap açıldıysa bildirimler o hesaba gitmesin
+  if (typeof govde.token === "string" && govde.token) {
+    await env.DB.prepare("UPDATE users SET push_token = NULL WHERE push_token = ? AND uid <> ?").bind(govde.token.slice(0, 400), uid).run();
+  }
   await env.DB.prepare("UPDATE users SET " + alanlar.join(", ") + " WHERE uid = ?").bind(...degerler, uid).run();
 }
 

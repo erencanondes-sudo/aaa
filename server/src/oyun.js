@@ -163,7 +163,7 @@ export async function duelloOlustur({ env, uid, govde, simdi, arka }) {
 
   if (!sessiz && arka) {
     const ben = await env.DB.prepare("SELECT username FROM users WHERE uid = ?").bind(uid).first();
-    arka(bildirimGonder(env, hedef.uid, "oyun", "Düello daveti", ben.username + " seni düelloya davet etti.", { oyun: id }));
+    arka(bildirimGonder(env, hedef.uid, "oyun", "Düello daveti", ben.username + " seni düelloya davet etti."));
   }
   return { id };
 }
@@ -195,7 +195,7 @@ export async function rastgeleKatil({ env, uid, simdi, arka }) {
     const kayit = { kind: "duello", durum: "katildi", surum: 1, bitis };
     await kullaniciOdasi(env, uid).ekle(id, kayit, null, simdi);
     await kullaniciOdasi(env, r.uid).ekle(id, kayit, null, simdi);
-    if (arka) arka(bildirimGonder(env, r.uid, "oyun", "Rakip bulundu", "Rastgele düellon başladı.", { oyun: id }));
+    if (arka) arka(bildirimGonder(env, r.uid, "oyun", "Rakip bulundu", "Rastgele düellon başladı."));
     return { id };
   }
 

@@ -37,7 +37,7 @@ async function erisimAnahtari(env) {
 }
 
 /* tur: "oyun" | "mesaj" (kullanıcı ayarlardan ikisini ayrı ayrı kapatabilir) */
-export async function bildirimGonder(env, uid, tur, baslik, metin, veri) {
+export async function bildirimGonder(env, uid, tur, baslik, metin) {
   if (!env.FCM_HESAP) return;
   try {
     const u = await env.DB.prepare("SELECT push_token, notify_game, notify_msg FROM users WHERE uid = ?").bind(uid).first();
@@ -48,7 +48,7 @@ export async function bildirimGonder(env, uid, tur, baslik, metin, veri) {
     const cevap = await fetch("https://fcm.googleapis.com/v1/projects/" + env.FIREBASE_PROJE_ID + "/messages:send", {
       method: "POST",
       headers: { authorization: "Bearer " + (await erisimAnahtari(env)), "content-type": "application/json" },
-      body: JSON.stringify({ message: { token: u.push_token, notification: { title: baslik, body: metin }, data: veri || {} } }),
+      body: JSON.stringify({ message: { token: u.push_token, notification: { title: baslik, body: metin } } }),
     });
     // Uygulama silinmiş ya da izin kaldırılmışsa anahtar unutulur
     if (cevap.status === 404 || cevap.status === 410) {

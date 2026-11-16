@@ -606,7 +606,7 @@ export class OyunOdasi extends DurableObject {
       if (o.uid === uid || o.bildirimOyun) continue;
       o.bildirimOyun = 1;
       await this.oyuncuKaydet(o);
-      this.ctx.waitUntil(bildirimGonder(this.env, o.uid, "oyun", "Rakibin oynadı", (ben ? ben.username : "Rakibin") + " sırasını oynadı.", { oyun: this.oyun.id }));
+      this.ctx.waitUntil(bildirimGonder(this.env, o.uid, "oyun", "Rakibin oynadı", (ben ? ben.username : "Rakibin") + " sırasını oynadı."));
     }
   }
 
@@ -719,7 +719,7 @@ export class OyunOdasi extends DurableObject {
           if (engelledi) continue;
           o.bildirimMesaj = 1;
           await this.oyuncuKaydet(o);
-          this.ctx.waitUntil(bildirimGonder(this.env, o.uid, "mesaj", "Yeni mesaj", kim.ad + " sana mesaj gönderdi.", { oyun: this.oyun.id, sohbet: "1" }));
+          this.ctx.waitUntil(bildirimGonder(this.env, o.uid, "mesaj", "Yeni mesaj", kim.ad + " sana mesaj gönderdi."));
         }
       }
     }
