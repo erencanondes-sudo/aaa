@@ -27,13 +27,13 @@
 <div class="game-wave game-wave-2"></div>
 <div class="game-wave game-wave-3"></div>
 
-<div id="wordTopAdBanner" style="display:none;width:320px;height:50px;border-radius:0 0 7px 7px;overflow:hidden;box-sizing:border-box;box-shadow:0 3px 8px rgba(0,0,0,0.2);position:fixed;top:env(safe-area-inset-top, 0px);left:50%;transform:translateX(-50%);z-index:15;">
+<div id="wordTopAdBanner" style="display:none;width:100vw;height:90px;overflow:hidden;box-sizing:border-box;position:fixed;top:env(safe-area-inset-top, 0px);left:0;z-index:15;">
 <div id="wordTopAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
 </div>
 
 <div id="topNotifContainer" class="top-notif-container"></div>
 
-<div id="wordTopAdBannerSpacer" style="display:none;height:calc(50px / var(--k) + 35px);"></div>
+<div id="wordTopAdBannerSpacer" style="display:none;height:calc(90px / var(--k) - 30px);"></div>
 
 <div id="fakeAdBanner" style="display:none;position:fixed;top:env(safe-area-inset-top, 0px);width:320px;height:100px;left:50%;transform:translateX(-50%);z-index:200;border-radius:0 0 10px 10px;box-sizing:border-box;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.25);">
 <div id="fakeAdBannerContent" style="width:100%;height:100%;position:relative;"></div>
@@ -624,16 +624,6 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 <div id="wordGameContent" style="display:none;position:relative;">
 
-<!-- TEST: harf kaydı (geçici) -->
-<button id="harfLogBtn" onclick="openHarfLog()" style="position:absolute;top:-30px;left:0;z-index:20;width:auto;padding:4px 8px;border:0;border-radius:8px;background:#1e293b;color:#fff;font-size:11px;font-weight:800;opacity:.85;">🧪 Harf kaydı</button>
-
-<div class="btn-row word-mode-toggle" id="wordNewGameBtn" style="margin:-17px auto 8px auto;width:55%;">
-<button class="word-mode-btn active" onclick="newGame()">
-<div class="word-mode-icon"><div class="new-play-circle"><div class="new-play-triangle"></div></div></div>
-<div class="word-mode-label">Yeni Oyun</div>
-</button>
-</div>
-
 <div class="word-info">
 <div class="word-info-top unified-panel" id="wordInfoPanel">
 <div class="divider-left"></div>
@@ -666,6 +656,13 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 </div>
 
+<div class="btn-row word-mode-toggle" id="wordNewGameBtn" style="margin:0 auto 8px auto;width:55%;">
+<button class="word-mode-btn active" onclick="newGame()">
+<div class="word-mode-icon"><div class="new-play-circle"><div class="new-play-triangle"></div></div></div>
+<div class="word-mode-label">Yeni Oyun</div>
+</button>
+</div>
+
 <div id="wordOperation">
 Harf seçiniz
 </div>
@@ -686,6 +683,9 @@ Harf seçiniz
 <button class="solution-btn" id="showWordsBtn" style="display:none;margin-top:0;flex:1;font-size:16px;white-space:nowrap;" onclick="showWordsList()">Kelimeleri Göster</button>
 </div>
 <div id="wordsBox"></div>
+
+<!-- TEST: harf kaydı (geçici) -->
+<button id="harfLogBtn" onclick="openHarfLog()" style="display:block;margin:20px auto 0;width:auto;padding:4px 8px;border:0;border-radius:8px;background:#1e293b;color:#fff;font-size:11px;font-weight:800;opacity:.85;">🧪 Harf kaydı</button>
 
 </div>
 
