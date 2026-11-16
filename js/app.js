@@ -151,7 +151,7 @@ return '<div style="width:100%;height:100%;background:linear-gradient(135deg,#19
 
 function(){
 return '<div style="width:100%;height:100%;position:relative;background:linear-gradient(135deg,#0097e6,#00a8ff);">'+
-'<video src="ad-video-hotel.mp4" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\';document.getElementById(\'adVideoFallback\').style.display=\'flex\';"></video>'+
+'<video src="ad-video.mp4" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\';document.getElementById(\'adVideoFallback\').style.display=\'flex\';"></video>'+
 '<div id="adVideoFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;position:absolute;top:0;left:0;">'+
 '<div style="font-size:32px;">🏖️</div>'+
 '<div style="font-size:16px;font-weight:bold;margin-top:6px;">Tatil Fırsatı</div>'+
@@ -403,25 +403,24 @@ let kayitSuruyor=false;
 let sunucuDurumu=null;   // son açılışın sonucu: liste, oyunlar, giden davetler, arkadaşlar, düello oyuncu listesi
 let auth=null;
 
-try{
+let firebaseHatali=false;
 
-if(typeof firebase==="undefined"){
-throw new Error("Firebase kütüphanesi yüklenemedi (script engellenmiş olabilir).");
+/* Firebase kütüphaneleri uygulamanın içinden (lib/firebase), sayfa çizildikten sonra yüklenir; ilk çizimi bekletmez */
+function betikYukle(src){
+return new Promise(function(tamam,hata){
+let b=document.createElement("script");
+b.src=src;
+b.onload=tamam;
+b.onerror=function(){ hata(new Error(src+" yüklenemedi")); };
+document.head.appendChild(b);
+});
 }
+
+function firebaseBaslat(){
 
 firebase.initializeApp(firebaseConfig);
 auth=firebase.auth();
 firebaseReady=true;
-
-// Analytics (aktif kullanıcı, ülke, cihaz vb. otomatik toplanır). Reklam engelleyici kütüphaneyi engellerse uygulama etkilenmez.
-try{
-if(firebase.analytics){
-firebase.analytics();
-}
-}catch(e){
-console.warn("Analytics başlatılamadı:",e);
-}
-
 
 auth.onAuthStateChanged(function(user){
 
@@ -429,6 +428,14 @@ if(user){
 if(!kayitSuruyor)girisSonrasi();
 }
 else{
+try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
+// Kayıtlı profille hızlı açılmıştı ama oturum yok: giriş ekranına dönülür
+if(currentUser && !currentUser.isGuest){
+listedenKop();
+currentUser=null;
+sunucuDurumu=null;
+hideAllScreens();
+}
 document.getElementById("sessionCheckScreen").style.display="none";
 document.getElementById("authScreen").style.display="block";
 }
@@ -436,14 +443,60 @@ document.getElementById("authScreen").style.display="block";
 });
 
 }
-catch(e){
+
+function firebaseYukle(){
+
+let firebaseHazir=betikYukle("lib/firebase/firebase-app-compat.js").then(function(){
+return betikYukle("lib/firebase/firebase-auth-compat.js");
+}).then(firebaseBaslat);
+
+firebaseHazir.catch(function(e){
 
 console.error("Firebase başlatılamadı:",e);
+firebaseHatali=true;
 
+if(!currentUser){
 document.getElementById("sessionCheckScreen").style.display="none";
 document.getElementById("authScreen").style.display="block";
+}
+
+});
+
+// Analytics (aktif kullanıcı, ülke, cihaz vb. otomatik toplanır). Giriş hazır olduktan sonra yüklenir; yüklenemezse uygulama etkilenmez.
+firebaseHazir.then(function(){
+return betikYukle("lib/firebase/firebase-analytics-compat.js");
+}).then(function(){
+firebase.analytics();
+}).catch(function(e){
+console.warn("Analytics başlatılamadı:",e);
+});
 
 }
+
+/* Firebase hazır değilken giriş düğmelerine basılırsa */
+function firebaseBekleMetni(){
+return firebaseHatali ? "Bağlantı kurulamadı. İnternet bağlantını kontrol edip uygulamayı yeniden aç." : "Bağlanıyor, birkaç saniye sonra tekrar dene.";
+}
+
+/* Telefonda kayıtlı profil varsa ana ekran Firebase'i ve sunucuyu beklemeden açılır;
+   sunucunun cevabı gelince bilgiler güncellenir. */
+document.addEventListener("DOMContentLoaded",function(){
+
+let uid=null,kayitli=null;
+try{
+uid=localStorage.getItem("konfetiSonGiris");
+if(uid)kayitli=JSON.parse(localStorage.getItem("konfetiProfil_"+uid)||"null");
+}catch(e){}
+
+if(uid && kayitli){
+document.getElementById("sessionCheckScreen").style.display="none";
+onLoginSuccess(uid,kayitli,true);
+}
+
+// Firebase ana ekran çizildikten sonra yüklenir
+firebaseYukle();
+
+});
 
 let timer;
 let time=120;
@@ -493,7 +546,7 @@ let errorEl=document.getElementById("forgotError");
 
 if(!firebaseReady){
 errorEl.style.color="";
-errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+errorEl.innerHTML=firebaseBekleMetni();
 return;
 }
 
@@ -560,7 +613,7 @@ function registerUser(){
 let errorEl=document.getElementById("authError");
 
 if(!firebaseReady){
-errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+errorEl.innerHTML=firebaseBekleMetni();
 return;
 }
 
@@ -633,7 +686,7 @@ let errorEl=document.getElementById("loginError");
 
 if(!firebaseReady){
 errorEl.style.color="";
-errorEl.innerHTML="Bağlantı kurulamadı. Bu dosyayı indirip normal bir tarayıcı sekmesinde açmayı dene.";
+errorEl.innerHTML=firebaseBekleMetni();
 return;
 }
 
@@ -669,6 +722,8 @@ async function girisSonrasi(){
 
 let uid=auth.currentUser.uid;
 let kayitliAnahtar="konfetiProfil_"+uid;
+// Ana ekran kayıtlı profille önceden açıldıysa yalnızca bilgiler güncellenir
+let erkenAcik=!!(currentUser && currentUser.uid===uid);
 
 try{
 
@@ -677,20 +732,35 @@ document.getElementById("sessionCheckScreen").style.display="none";
 
 if(!sunucuDurumu.profil){
 // Kayıt yarıda kalmış: profil yok
+if(erkenAcik){
+listedenKop();
+currentUser=null;
+hideAllScreens();
+}
+try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
 await auth.signOut();
 document.getElementById("authScreen").style.display="block";
 document.getElementById("loginError").innerHTML="Kaydın tamamlanmamış, lütfen yeniden üye ol.";
 return;
 }
 
-try{ localStorage.setItem(kayitliAnahtar,JSON.stringify(sunucuDurumu.profil)); }catch(e){}
-onLoginSuccess(uid,sunucuDurumu.profil);
+try{
+localStorage.setItem(kayitliAnahtar,JSON.stringify(sunucuDurumu.profil));
+localStorage.setItem("konfetiSonGiris",uid);
+}catch(e){}
+
+if(erkenAcik){
+kullaniciyiKur(uid,sunucuDurumu.profil);
+canliListeyiBaslat();
+}
+else onLoginSuccess(uid,sunucuDurumu.profil);
 
 }
 catch(e){
 
 console.error("Açılış bilgisi alınamadı:",e);
 document.getElementById("sessionCheckScreen").style.display="none";
+if(erkenAcik)return;
 
 let kayitli=null;
 try{ kayitli=JSON.parse(localStorage.getItem(kayitliAnahtar)||"null"); }catch(err){}
@@ -705,21 +775,32 @@ document.getElementById("loginBtn").disabled=false;
 }
 
 
-function onLoginSuccess(uid,profile){
+/* erken: kayıtlı profille sunucuyu beklemeden açılış (canlı liste sunucu cevabından sonra başlar) */
+function onLoginSuccess(uid,profile,erken){
 
-profile=profile||{};
-
-let isGuest=!uid;
-
-currentUser={uid:uid,isGuest:isGuest,name:profile.name||"",username:profile.username||"",email:(!isGuest && auth.currentUser) ? (auth.currentUser.email||"") : "",country:profile.country||null,avatarEmoji:profile.avatar||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0,foundWordsCount:profile.foundWordsCount||0,usernameChangedAt:profile.usernameChangedAt||null};
-currentUserFriends=(sunucuDurumu && sunucuDurumu.arkadaslik) ? sunucuDurumu.arkadaslik.arkadaslar.map(function(a){ return a.username; }) : [];
-
+kullaniciyiKur(uid,profile);
 
 document.getElementById("authScreen").style.display="none";
 document.getElementById("homeScreen").style.display="block";
 document.body.classList.add("home-active");
 
 setBottomNavActive("home");
+
+if(!currentUser.isGuest && !erken)canliListeyiBaslat();
+
+burstHomeConfetti();
+
+}
+
+/* Kullanıcı bilgileri ve ana ekrandaki yazılar (açılışta ve sunucu cevabı gelince) */
+function kullaniciyiKur(uid,profile){
+
+profile=profile||{};
+
+let isGuest=!uid;
+
+currentUser={uid:uid,isGuest:isGuest,name:profile.name||"",username:profile.username||"",email:(!isGuest && auth && auth.currentUser) ? (auth.currentUser.email||"") : "",country:profile.country||null,avatarEmoji:profile.avatar||"👤",challengeCount:profile.challengeCount||0,challengeWins:profile.challengeWins||0,wordScoreSum:profile.wordScoreSum||0,wordScoreCount:profile.wordScoreCount||0,foundWordsCount:profile.foundWordsCount||0,usernameChangedAt:profile.usernameChangedAt||null};
+currentUserFriends=(sunucuDurumu && sunucuDurumu.arkadaslik) ? sunucuDurumu.arkadaslik.arkadaslar.map(function(a){ return a.username; }) : [];
 
 let firstName=isGuest ? "misafir" : ((profile.name||"").trim().split(/\s+/)[0]||"");
 
@@ -729,12 +810,7 @@ document.getElementById("homeAvatarIcon").innerHTML=avatarHtml(currentUser.avata
 renderHomeStats();
 renderHomeChallengeListCarousel();
 
-if(!isGuest){
-oyunListeleriniCiz();
-canliListeyiBaslat();
-}
-
-burstHomeConfetti();
+if(!isGuest)oyunListeleriniCiz();
 
 }
 
@@ -1008,6 +1084,56 @@ sohbetKapat();
 }
 
 
+/* Geri dönüş: kapanan tam sayfa 0,25 saniyede aşağı kayar, sonra önceki sayfa açılır.
+   "geri-gidiyor" önceki sayfa ekrana çizildikten sonraki karede kalkar; yoksa o da alttan gelir. */
+let geriSuruyor=false;
+let geriBekleyen=[];
+
+function geriAnimasyonu(devam){
+
+if(geriSuruyor){
+geriBekleyen.push(devam);
+return;
+}
+
+let kapanan=null;
+for(let i=0;i<SCREEN_IDS.length;i++){
+let el=document.getElementById(SCREEN_IDS[i]);
+if(el.style.display && el.style.display!=="none"){ kapanan=el; break; }
+}
+
+if(!kapanan || !kapanan.classList.contains("tam-sayfa")){
+devam();
+return;
+}
+
+geriSuruyor=true;
+document.body.classList.add("geri-gidiyor");
+kapanan.classList.add("sayfa-kapaniyor");
+
+let bitti=false;
+let bitir=function(e){
+if(bitti || (e && e.target!==kapanan))return;
+bitti=true;
+kapanan.removeEventListener("animationend",bitir);
+kapanan.classList.remove("sayfa-kapaniyor");
+devam();
+requestAnimationFrame(function(){
+requestAnimationFrame(function(){
+document.body.classList.remove("geri-gidiyor");
+geriSuruyor=false;
+geriBekleyen.splice(0).forEach(function(f){ f(); });
+});
+});
+};
+
+kapanan.addEventListener("animationend",bitir);
+// Animasyon çalışmazsa da geri dönüş yapılır
+setTimeout(function(){ bitir(); },400);
+
+}
+
+
 function setBottomNavActive(name){
 
 document.querySelectorAll(".bn-item").forEach(function(el){
@@ -1064,7 +1190,7 @@ return;
 let parent=SCREEN_PARENT_MAP[currentScreenId];
 
 if(parent==="home"){
-goHome();
+geriAnimasyonu(goHome);
 return;
 }
 
@@ -1225,6 +1351,10 @@ renderHomeChallengeListCarousel();
 
 
 function goBackFromDetail(){
+geriAnimasyonu(geriDon);
+}
+
+function geriDon(){
 
 let dest=returnToScreen;
 returnToScreen=null;
@@ -1792,6 +1922,12 @@ errorEl.innerHTML="Yeni şifreler eşleşmiyor.";
 return;
 }
 
+if(!auth || !auth.currentUser){
+errorEl.style.color="";
+errorEl.innerHTML=firebaseBekleMetni();
+return;
+}
+
 errorEl.style.color="#27ae60";
 errorEl.innerHTML="Güncelleniyor...";
 
@@ -1887,6 +2023,9 @@ errorEl.innerHTML=hataMetni(e);
 
 
 function logoutUser(){
+
+if(!auth)return;
+try{ localStorage.removeItem("konfetiSonGiris"); }catch(e){}
 
 auth.signOut().then(function(){
 
@@ -2381,23 +2520,9 @@ playTone(1046.5,0.3,"sine",0.54,0.36);
 }
 
 
-function playClickSound(){
-
-playTone(880,0.05,"square",0.36,0);
-
-}
-
-
 function playClickSoundBack(){
 
 playTone(440,0.06,"sine",0.48,0);
-
-}
-
-
-function playClickSoundTab(){
-
-playTone(1046.5,0.04,"triangle",0.42,0);
 
 }
 
@@ -4560,14 +4685,10 @@ let threshold=33.3333/14;
 
 if(moved<-threshold && idx<HISTORY_TAB_ORDER.length-1){
 
-playClickSoundBack();
-
 switchHistoryTab(HISTORY_TAB_ORDER[idx+1]);
 
 }
 else if(moved>threshold && idx>0){
-
-playClickSoundBack();
 
 switchHistoryTab(HISTORY_TAB_ORDER[idx-1]);
 
@@ -4606,6 +4727,8 @@ let btn=e.target.closest("button");
 
 if(!btn)return;
 
+// Tıklama sesi yalnızca oyun ekranındaki düğmelerde
+if(!btn.closest("#playArea"))return;
 if(btn.closest("#wordCards"))return;
 if(btn.classList.contains("word-check-btn") || btn.classList.contains("equal"))return;
 if(btn.classList.contains("undo") || btn.classList.contains("word-shuffle-btn"))return;
@@ -4678,7 +4801,7 @@ targetScrollTop=prev.scrollTop||0;
 
 }
 
-playClickSoundBack();
+geriAnimasyonu(function(){
 
 suppressScreenPush=true;
 hideAllScreens();
@@ -4718,6 +4841,8 @@ oyunlariYenile().then(restoreScrollTop);
 if(targetId==="challengeDetailScreen" && acikAyrinti && sunucuDurumu && sunucuDurumu.oyunlar[acikAyrinti]){
 ayrintiCiz(sunucuDurumu.oyunlar[acikAyrinti]);
 }
+
+});
 
 });
 

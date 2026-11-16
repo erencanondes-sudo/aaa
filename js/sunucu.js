@@ -12,7 +12,7 @@ this.durum=durum||0;
 
 /* Firebase girişinin belgesi (her istekte gönderilir; Firebase kendisi yeniler) */
 async function girisBelgesi(){
-let k=firebase.auth().currentUser;
+let k=(auth && auth.currentUser);
 if(!k)throw new SunucuHatasi("giris-gerekli",401);
 return await k.getIdToken();
 }
@@ -83,7 +83,7 @@ return HATA_METINLERI[kod] || HATA_METINLERI["sunucu-hatasi"];
 const HAFIZA_SURUMU=1;
 
 function hafizaAnahtari(){
-let k=firebase.auth().currentUser;
+let k=(auth && auth.currentUser);
 return "konfetiOyunlar_"+(k ? k.uid : "");
 }
 
@@ -152,7 +152,7 @@ ws.onclose=function(){
 if(listeBaglantisi!==ws)return;
 listeBaglantisi=null;
 // Açılmadan koparsa da kendiliğinden yeniden kurulur
-listeYenidenDene=setTimeout(function(){ if(firebase.auth().currentUser)listeyeBaglan(degisti).then(degisti); },5000);
+listeYenidenDene=setTimeout(function(){ if(auth && auth.currentUser)listeyeBaglan(degisti).then(degisti); },5000);
 };
 }
 
