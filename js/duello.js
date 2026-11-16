@@ -2,6 +2,8 @@
    düello ayrıntısı ve anlık sohbet. Bilgiler açılışta sunucudan gelir (sunucuDurumu). */
 
 let duelloSohbeti=null;   // açık sohbet bağlantısı
+let sohbetOyunu=null;     // açık sohbetin oyunu (bağlantı koparsa yeniden kurulur)
+let sohbetYenidenDene=null;
 
 /* Açılış bilgisini yeniler ve görünen listeleri çizer. Liste canlı bağlantıyla güncel tutulduğu için
    yalnızca sunucu bir değişiklik bildirince ya da bir işlemden sonra (zorla) sunucuya sorulur. */
@@ -1020,6 +1022,16 @@ panel.innerHTML="<div class=\"td-chat-header\">SOHBET</div>"
 +"<div id=\"sohbetMesajlar\" class=\"td-chat-messages\"><p style=\"color:#7b8fae;font-size:0.85em;\">Yükleniyor...</p></div>"
 +"<div class=\"td-chat-input-container\"><input type=\"text\" id=\"sohbetYazi\" maxlength=\"100\" placeholder=\"Mesajını yaz...\" class=\"td-chat-input\" onkeydown=\"if(event.key==='Enter')sohbetGonder()\"><button class=\"td-chat-send\" onclick=\"sohbetGonder()\">&#10148;</button></div>";
 
+sohbetOyunu=id;
+sohbetBaglan(id);
+
+}
+
+/* Sunucu her bağlantıda mesaj geçmişinin tamamını gönderir; yeniden bağlanınca arada gelenler de görünür */
+function sohbetBaglan(id){
+
+let b=null;
+
 oyunaBaglan(id,function(v){
 
 let kutu=document.getElementById("sohbetMesajlar");
@@ -1046,14 +1058,50 @@ else if(v.t==="hata"){
 showTopNotification(hataMetni({kod:v.hata}));
 }
 
-}).then(function(b){ duelloSohbeti=b; }).catch(function(e){
-panel.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">"+hataMetni(e)+"</p>";
+},function(){
+// Bağlantı koptu: ekran açıksa 3 saniye sonra, arka plandaysa öne gelince yeniden kurulur
+if(!b || duelloSohbeti!==b)return;
+duelloSohbeti=null;
+if(document.visibilityState==="visible")sohbetYenidenDene=setTimeout(sohbetiYenile,3000);
+}).then(function(x){
+if(sohbetOyunu!==id){ x.kapat(); return; }
+b=x;
+duelloSohbeti=x;
+}).catch(function(e){
+let kutu=document.getElementById("sohbetMesajlar");
+if(kutu)kutu.innerHTML="<p style=\"color:#7b8fae;font-size:0.85em;\">"+hataMetni(e)+"</p>";
 });
 
 }
 
+/* Bağlantı yenilenir; arada rakip oynadıysa ayrıntı da yenilenir */
+function sohbetiYenile(){
+
+clearTimeout(sohbetYenidenDene);
+let id=sohbetOyunu;
+let kutu=document.getElementById("sohbetMesajlar");
+if(!id || !kutu || kutu.offsetParent===null)return;
+
+if(duelloSohbeti){
+let eski=duelloSohbeti;
+duelloSohbeti=null;
+eski.kapat();
+}
+sohbetBaglan(id);
+
+if(acikAyrinti===id)oyunAyrintisi(id).then(function(d){ if(acikAyrinti===id)ayrintiCiz(d); });
+else if(acikKisiselTurnuva===id)oyunAyrintisi(id).then(function(d){ if(acikKisiselTurnuva===id)kisiselTurnuvaCiz(d); });
+
+}
+
+document.addEventListener("visibilitychange",function(){
+if(document.visibilityState==="visible" && sohbetOyunu)sohbetiYenile();
+});
+
 function sohbetKapat(){
 
+clearTimeout(sohbetYenidenDene);
+sohbetOyunu=null;
 if(duelloSohbeti){
 duelloSohbeti.kapat();
 duelloSohbeti=null;

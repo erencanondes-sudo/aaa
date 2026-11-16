@@ -207,8 +207,9 @@ try{ ws.close(); }catch(e){}
 }
 
 /* ---------- Anlık bağlantı (sohbet ve turnuvada kelimeler) ----------
-   gelen: sunucudan her mesajda çağrılır ({t:"gecmis"|"mesaj"|"kelime"|"degisti"|"hata", ...}) */
-async function oyunaBaglan(oyunId,gelen){
+   gelen: sunucudan her mesajda çağrılır ({t:"gecmis"|"mesaj"|"kelime"|"degisti"|"hata", ...})
+   koptu: bağlantı kapanınca çağrılır (isteğe bağlı) */
+async function oyunaBaglan(oyunId,gelen,koptu){
 let adres=SUNUCU_ADRESI.replace(/^http/,"ws")+"/api/baglan?oyun="+encodeURIComponent(oyunId)+"&belge="+encodeURIComponent(await girisBelgesi());
 let ws=new WebSocket(adres);
 let bekleyen=[];
@@ -219,6 +220,7 @@ bekleyen=[];
 ws.onmessage=function(e){
 try{ gelen(JSON.parse(e.data)); }catch(err){ console.error(err); }
 };
+if(koptu)ws.onclose=koptu;
 return {
 // Bağlantı henüz açılmadıysa mesaj açılınca gönderilir
 gonder:function(veri){ if(ws.readyState===1)ws.send(JSON.stringify(veri)); else if(ws.readyState===0)bekleyen.push(JSON.stringify(veri)); },
