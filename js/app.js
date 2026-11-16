@@ -2778,7 +2778,7 @@ let wordScoreEl=document.getElementById("wordScoreValue");
 bannerTitleEl.innerHTML=title;
 
 let steps=Math.min(50,Math.max(toValue,1));
-let duration=1200;
+let duration=1500;
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
@@ -2831,14 +2831,31 @@ if(callback)callback();
 
 }
 
-function skipOrDismiss(){
+let lastTouchTime=0;
 
-if(!animationComplete){
-finalizeDisplay();
+function skipOrDismiss(e){
+
+if(e.type==="touchstart"){
+lastTouchTime=Date.now();
 }
-else{
+else if(Date.now()-lastTouchTime<600){
+return;
+}
+
+if(animationComplete){
 dismissBanner();
+return;
 }
+
+let nextStage=[300,500,700,900].find(function(t){return t>lastValue && t<toValue;});
+
+if(nextStage===undefined){
+finalizeDisplay();
+return;
+}
+
+count=Math.ceil(nextStage*steps/toValue)-1;
+tick();
 
 }
 
@@ -2847,7 +2864,7 @@ document.addEventListener("click",skipOrDismiss,true);
 document.addEventListener("touchstart",skipOrDismiss,true);
 },50);
 
-let roll=setInterval(function(){
+function tick(){
 
 if(myScoreToken!==gameSessionToken){
 clearInterval(roll);
@@ -2888,7 +2905,9 @@ playCountTickSound();
 
 }
 
-},stepTime);
+}
+
+let roll=setInterval(tick,stepTime);
 
 }
 
@@ -2909,27 +2928,6 @@ return {threshold:300,text:"Fena değil 🙂"};
 }
 
 return {threshold:null,text:""};
-
-}
-
-
-function updateWordScoreRating(el,value){
-
-if(value>=1000){
-el.innerHTML="Mükemmel 🤩";
-}
-else if(value>=750){
-el.innerHTML="Çok iyi 😄";
-}
-else if(value>=500){
-el.innerHTML="İyi 🙂";
-}
-else if(value>=300){
-el.innerHTML="Eh 😐";
-}
-else{
-el.innerHTML="";
-}
 
 }
 
