@@ -17,7 +17,6 @@
 .fa-check{width:0.875em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");}
 .fa-xmark{width:0.75em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E");}
 
-
 *{
     scrollbar-width:none;
     -ms-overflow-style:none;
@@ -1560,7 +1559,6 @@ button{
 body.dark-mode{background:#0a182f;}
 body.dark-mode .bn-nav{background:#0a182f!important;}
 body.dark-mode .game:not(.playing){background:#1c2f50;}
-body.dark-mode #globalHeader .hs-logo{color:#ffffff;}
 body.dark-mode #homeScreen .welcome{background:#2e4570;}
 body.dark-mode #homeScreen .found-words-count{color:#ffffff;}
 body.dark-mode #homeScreen .welcome-text{color:#ffffff;}
@@ -1616,32 +1614,6 @@ body.dark-mode #challengeTypeScreen .menu-card.red,
 body.dark-mode #challengeFormatScreen .menu-card.red{--menu-fill-color:#891e19;--menu-blur-color:rgba(0,0,0,.15);}
 body.dark-mode #challengeTypeScreen .menu-card.blue,
 body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--menu-blur-color:rgba(0,0,0,.15);}
-
-/* 1. Bölüm: Konfeti yazısı + 6 konfeti parçacığı - tüm menü ekranlarında ortak, sabit */
-#globalHeader{
-    height:60px;
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-#globalHeader .hs-logo{
-    position:relative;
-    font-size:38px;
-    line-height:1;
-    font-weight:800;
-    letter-spacing:-2px;
-    color:#12366f;
-    margin:0;
-}
-#globalHeader .hs-confetti{position:absolute;inset:0;pointer-events:none;}
-#globalHeader .hs-confetti span{position:absolute;width:8px;height:16px;border-radius:2px;}
-#globalHeader .hc1{left:16%;top:2px;background:#ff9715;transform:rotate(-34deg)}
-#globalHeader .hc2{left:13%;top:26px;background:#8244bd;width:10px!important;height:5px!important;transform:rotate(12deg)}
-#globalHeader .hc3{left:21%;top:38px;background:#70c824;width:9px!important;height:6px!important;transform:rotate(-32deg)}
-#globalHeader .hc4{right:16%;top:2px;background:#218de3;transform:rotate(35deg)}
-#globalHeader .hc5{right:13%;top:27px;background:#85ca18;width:9px!important;height:6px!important;transform:rotate(5deg)}
-#globalHeader .hc6{right:21%;top:36px;background:#ffb70e;width:8px!important;height:5px!important;transform:rotate(34deg)}
 
 #homeScreen .welcome{
     min-height:80px;
@@ -2746,7 +2718,6 @@ body:not(.dark-mode) #tournamentDetailScreen .td-score-number{color:#192a56;}
 
 .bn-home>i,
 .bn-exit>i{font-size:calc(var(--bn-icon-size) * 1.3);}
-
 
 /* Sayfa geçişleri: yeni sayfa alttan gelir, geri dönüşte kapanan sayfa aşağı iner */
 .tam-sayfa{animation:sayfaAc .18s cubic-bezier(.2,.9,.3,1);}
