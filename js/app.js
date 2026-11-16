@@ -136,8 +136,6 @@ renderChallengesList();
 window.addEventListener("online",refreshOnlineDependentScreens);
 window.addEventListener("offline",refreshOnlineDependentScreens);
 
-let adCachedTop=null;
-
 let adVariants=[
 
 function(){
@@ -194,28 +192,6 @@ videoEl.play().catch(function(){});
 
 }
 
-function positionAdBanner(){
-
-if(adCachedTop!==null){
-adBannerEl.style.top=adCachedTop+"px";
-adBannerEl.style.height="100px";
-adBannerEl.style.width="320px";
-return;
-}
-
-let gameRect=document.querySelector(".game").getBoundingClientRect();
-let headerEl=document.getElementById("globalHeader");
-let headerRect=headerEl.getBoundingClientRect();
-
-adCachedTop=headerRect.bottom-gameRect.top;
-
-adBannerEl.style.top=adCachedTop+"px";
-adBannerEl.style.height="100px";
-adBannerEl.style.width="320px";
-
-}
-
-
 /* ===== EKRAN ÖLÇEĞİ (zoom) =====
    Referans: kullanılabilir yükseklik 806.2 px (oran 8.062).
    B1 (100 px) sabit; geri kalan her şey aynı çarpanla ölçeklenir.
@@ -269,13 +245,7 @@ let el=document.getElementById(id);
 if(el)el.style.zoom=1/k;
 });
 
-if(k!==uiK){
 uiK=k;
-adCachedTop=null;
-if(adBannerEl && adBannerEl.style.display!=="none"){
-positionAdBanner();
-}
-}
 
 }
 
@@ -316,11 +286,7 @@ if(anyMenuVisible){
 
 if(adBannerEl.style.display==="none"){
 fillRandomAd();
-positionAdBanner();
 adBannerEl.style.display="block";
-}
-else if(adCachedTop===null){
-positionAdBanner();
 }
 
 spacerEl.style.display="block";
@@ -373,19 +339,28 @@ document.getElementById("wordTopAdBannerContent").innerHTML=wordTopAdVariants[wo
 }
 
 
+/* Oyun ekranı reklamı: oyun ekranı (playArea) görünürken üstte 320×50.
+   APK'da gerçek reklamda da standart 320×50 kullanılacak (büyük ya da açılır kapanır reklam değil);
+   reklam gelmezse alan daraltılmaz, içinde kendi tanıtımlarımız görünür. */
 function syncWordTopAdBanner(){
 
 let bannerEl=document.getElementById("wordTopAdBanner");
 let spacerEl=document.getElementById("wordTopAdBannerSpacer");
-let titleEl=document.getElementById("mainTitle");
+let playAreaEl=document.getElementById("playArea");
+let oyunda=playAreaEl.style.display!=="none" && playAreaEl.style.display!=="";
 
+if(oyunda){
+if(bannerEl.style.display==="none")fillWordTopAd();
+bannerEl.style.display="block";
+spacerEl.style.display="block";
+}
+else{
 bannerEl.style.display="none";
 spacerEl.style.display="none";
-titleEl.style.marginTop="";
+}
 
 }
 
-new MutationObserver(syncWordTopAdBanner).observe(document.getElementById("wordGameContent"),{attributes:true,attributeFilter:["style"]});
 new MutationObserver(syncWordTopAdBanner).observe(document.getElementById("playArea"),{attributes:true,attributeFilter:["style"]});
 
 const firebaseConfig={
