@@ -2433,8 +2433,18 @@ function showSettings(){
 hideAllScreens();
 document.getElementById("settingsScreen").style.display="block";
 updateThemeToggleUI(document.body.classList.contains("dark-mode") ? "dark" : "light");
+duelloListesiAyariniCiz();
 bildirimAyarlariniCiz();
 
+}
+
+
+/* Ayarlar: rastgele düello listesinde görünme (liste her gece yenilenir) */
+function duelloListesiAyariniCiz(){
+let p=sunucuDurumu && sunucuDurumu.profil;
+let goster=!!(p && currentUser && !currentUser.isGuest);
+document.getElementById("duelloListesiAyari").style.display=goster ? "block" : "none";
+if(goster)document.getElementById("duelloListesiBtn").classList.toggle("active",p.duelOpen);
 }
 
 

@@ -702,6 +702,7 @@ let acik=!sunucuDurumu.profil.duelOpen;
 sunucu("profil/duello-acik",{acik:acik}).then(function(){
 sunucuDurumu.profil.duelOpen=acik;
 syncChallengeListJoinButton();
+duelloListesiAyariniCiz();
 showTopNotification(acik ? "Listeye katıldın. Liste her gece yenilenir." : "Listeden çıktın.");
 }).catch(function(e){
 showTopNotification(hataMetni(e));
