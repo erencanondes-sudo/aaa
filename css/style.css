@@ -1,3 +1,23 @@
+@font-face{font-family:'Nunito';font-weight:800;font-display:swap;src:url(../fonts/nunito-800.woff2) format('woff2');}
+@font-face{font-family:'Nunito';font-weight:900;font-display:swap;src:url(../fonts/nunito-900.woff2) format('woff2');}
+
+/*! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. */
+.fa-solid{display:inline-block;height:1em;vertical-align:-.125em;background-color:currentColor;-webkit-mask:var(--fa) center/contain no-repeat;}
+.fa-house{width:1.125em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z'/%3E%3C/svg%3E");}
+.fa-trophy{width:1.125em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z'/%3E%3C/svg%3E");}
+.fa-gamepad{width:1.25em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M192 64C86 64 0 150 0 256S86 448 192 448H448c106 0 192-86 192-192s-86-192-192-192H192zM496 168a40 40 0 1 1 0 80 40 40 0 1 1 0-80zM392 304a40 40 0 1 1 80 0 40 40 0 1 1 -80 0zM168 200c0-13.3 10.7-24 24-24s24 10.7 24 24v32h32c13.3 0 24 10.7 24 24s-10.7 24-24 24H216v32c0 13.3-10.7 24-24 24s-24-10.7-24-24V280H136c-13.3 0-24-10.7-24-24s10.7-24 24-24h32V200z'/%3E%3C/svg%3E");}
+.fa-user-group{width:1.25em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath d='M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM609.3 512H471.4c5.4-9.4 8.6-20.3 8.6-32v-8c0-60.7-27.1-115.2-69.8-151.8c2.4-.1 4.7-.2 7.1-.2h61.4C567.8 320 640 392.2 640 481.3c0 17-13.8 30.7-30.7 30.7zM432 256c-31 0-59-12.6-79.3-32.9C372.4 196.5 384 163.6 384 128c0-26.8-6.6-52.1-18.3-74.3C384.3 40.1 407.2 32 432 32c61.9 0 112 50.1 112 112s-50.1 112-112 112z'/%3E%3C/svg%3E");}
+.fa-right-from-bracket{width:1em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z'/%3E%3C/svg%3E");}
+.fa-clock{width:1em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z'/%3E%3C/svg%3E");}
+.fa-comment-dots{width:1em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 448c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.6 .6-1 1.1-1.3 1.4l-.3 .3 0 0 0 0 0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zM128 208a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm128 0a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm96 32a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z'/%3E%3C/svg%3E");}
+.fa-stopwatch{width:0.875em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M176 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h16V98.4C92.3 113.8 16 200 16 304c0 114.9 93.1 208 208 208s208-93.1 208-208c0-41.8-12.3-80.7-33.5-113.2l24.1-24.1c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L355.7 143c-28.1-23-62.2-38.8-99.7-44.6V64h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H224 176zm72 192V320c0 13.3-10.7 24-24 24s-24-10.7-24-24V192c0-13.3 10.7-24 24-24s24 10.7 24 24z'/%3E%3C/svg%3E");}
+.fa-book-open{width:1.125em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M249.6 471.5c10.8 3.8 22.4-4.1 22.4-15.5V78.6c0-4.2-1.6-8.4-5-11C247.4 52 202.4 32 144 32C93.5 32 46.3 45.3 18.1 56.1C6.8 60.5 0 71.7 0 83.8V454.1c0 11.9 12.8 20.2 24.1 16.5C55.6 460.1 105.5 448 144 448c33.9 0 79 14 105.6 23.5zm76.8 0C353 462 398.1 448 432 448c38.5 0 88.4 12.1 119.9 22.6c11.3 3.8 24.1-4.6 24.1-16.5V83.8c0-12.1-6.8-23.3-18.1-27.6C529.7 45.3 482.5 32 432 32c-58.4 0-103.4 20-123 35.6c-3.3 2.6-5 6.8-5 11V456c0 11.4 11.7 19.3 22.4 15.5z'/%3E%3C/svg%3E");}
+.fa-eye{width:1.125em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z'/%3E%3C/svg%3E");}
+.fa-play{width:0.75em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z'/%3E%3C/svg%3E");}
+.fa-check{width:0.875em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");}
+.fa-xmark{width:0.75em;--fa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E");}
+
+
 *{
     scrollbar-width:none;
     -ms-overflow-style:none;
@@ -252,13 +272,6 @@ button{
     padding-bottom:13.5px;
 }
 
-.word-newgame-btn{
-    padding-top:7.5px;
-    padding-bottom:7.5px;
-    font-size:18px;
-    font-weight:bold;
-}
-
 .newgame:active, .newgame.menu-card-pressed{
     box-shadow:0 1px 0 #0a5aa1;
     transform:translateY(3px);
@@ -323,26 +336,6 @@ button{
 .card:active{
     box-shadow:0 1px 0 #006ba3;
     transform:translateY(3px);
-}
-
-.card.selected{
-    background:#ef7a5d;
-    box-shadow:0 4px 0 #c27059;
-}
-
-.card.selected:active{
-    box-shadow:0 1px 0 #a83217;
-}
-
-@keyframes randomWaitColor{
-    0%,100%{color:#0984e3;}
-    50%{color:#e17055;}
-}
-
-.random-wait-text{
-    font-size:19px;
-    font-weight:bold;
-    animation:randomWaitColor 1.6s ease-in-out infinite;
 }
 
 @keyframes cardPop{
@@ -665,7 +658,7 @@ button{
     pointer-events:none;
 }
 .phc{position:absolute;border-radius:3px;}
-.phc-dot{border-radius:50%;}
+
 .phc1{width:6px;height:6px;left:14%;top:18%;background:#7c9cf5;}
 .phc2{width:7px;height:7px;left:32%;top:4%;background:#f0596b;border-radius:50%;}
 .phc3{width:12px;height:6px;left:20%;top:34%;background:#a78bfa;transform:rotate(-30deg);}
@@ -748,24 +741,6 @@ button{
     margin:1px 0;
 }
 
-.history-btn{
-    background:#8e44ad;
-    box-shadow:0 4px 0 #6c3483;
-    margin-top:11px;
-    position:relative;
-}
-
-.tournament-btn{
-    background:#f39c12;
-    box-shadow:0 4px 0 #b9770e;
-    margin-top:11px;
-    position:relative;
-}
-
-.tab-btn{
-    position:relative;
-}
-
 .badge{
     position:absolute;
     top:-8px;
@@ -789,33 +764,6 @@ button{
     text-decoration:underline;
 }
 
-.history-btn:active{
-    box-shadow:0 1px 0 #6c3483;
-    transform:translateY(3px);
-}
-
-.profile-btn{
-    background:#0097e6;
-    box-shadow:0 4px 0 #006ba3;
-    margin-top:11px;
-}
-
-.profile-btn:active{
-    box-shadow:0 1px 0 #006ba3;
-    transform:translateY(3px);
-}
-
-.friends-btn{
-    background:#e17055;
-    box-shadow:0 4px 0 #b04a34;
-    margin-top:11px;
-}
-
-.friends-btn:active{
-    box-shadow:0 1px 0 #b04a34;
-    transform:translateY(3px);
-}
-
 .back-btn{
     background:#dfe6e9;
     color:#192a56;
@@ -828,66 +776,9 @@ button{
     align-self:center;
 }
 
-.back-arrow-btn{
-    background:#dfe6e9;
-    color:#192a56;
-    font-size:20px;
-    font-weight:bold;
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    padding:0;
-    box-shadow:0 4px 0 #b2bec3;
-    position:absolute;
-    top:16px;
-    left:16px;
-    z-index:20;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
 .back-btn:active{
     box-shadow:0 1px 0 #b2bec3;
     transform:translateY(3px);
-}
-
-.history-item{
-    background:#f1f2f6;
-    border-radius:12px;
-    padding:14px;
-    margin-bottom:10px;
-    text-align:left;
-}
-
-.history-item:nth-child(odd){
-    background:#f7f8fa;
-}
-
-.history-item:nth-child(even){
-    background:#e8eaef;
-}
-
-.history-item .h-top{
-    display:flex;
-    justify-content:space-between;
-    font-weight:bold;
-    color:#192a56;
-    font-size:17px;
-}
-
-.history-item .h-bottom{
-    color:#636e72;
-    font-size:14px;
-    margin-top:4px;
-}
-
-.history-item.win .h-top .h-result{
-    color:#44bd32;
-}
-
-.history-item.timeout .h-top .h-result{
-    color:#e84118;
 }
 
 .auth-info{
@@ -978,43 +869,6 @@ button{
     margin:10px 0 20px 0;
 }
 
-.challenge-btn{
-    background:#6c5ce7;
-    box-shadow:0 4px 0 #4b3fb0;
-    margin-top:12px;
-}
-
-.challenge-btn:active{
-    box-shadow:0 1px 0 #4b3fb0;
-    transform:translateY(3px);
-}
-
-.challenge-brown, .challenge-play-btn.challenge-brown{
-    background:#44bd32;
-    box-shadow:0 4px 0 #2f8a22;
-}
-
-.challenge-brown:active, .challenge-play-btn.challenge-brown:active{
-    box-shadow:0 1px 0 #2f8a22;
-    transform:translateY(3px);
-}
-
-.add-friend-btn, .challenge-play-btn.add-friend-btn{
-    background:#e67e22;
-    box-shadow:0 4px 0 #b3641b;
-}
-
-.add-friend-btn:active, .challenge-play-btn.add-friend-btn:active{
-    box-shadow:0 1px 0 #b3641b;
-    transform:translateY(3px);
-}
-
-.tab-buttons{
-    display:flex;
-    gap:10px;
-    margin:15px 0;
-}
-
 .history-tabs-viewport{
     overflow:hidden;
     width:calc(100% + 16px);
@@ -1059,52 +913,6 @@ button{
     -webkit-overflow-scrolling:touch;
 }
 
-.tab-btn{
-    flex:1;
-    background:#dfe6e9;
-    color:#636e72;
-    padding:11px 3px;
-    font-size:13px;
-    font-weight:bold;
-    box-shadow:none;
-    white-space:nowrap;
-}
-
-.tab-btn.active{
-    background:#0984e3;
-    color:white;
-}
-
-.challenge-item{
-    background:#f1f2f6;
-    border-radius:12px;
-    padding:14px;
-    margin-bottom:10px;
-    text-align:left;
-}
-
-.challenge-item:nth-child(odd){
-    background:#f7f8fa;
-}
-
-.challenge-item:nth-child(even){
-    background:#e8eaef;
-}
-
-.challenge-item .h-top{
-    display:flex;
-    justify-content:space-between;
-    font-weight:bold;
-    color:#192a56;
-    font-size:14px;
-}
-
-.challenge-item .h-bottom{
-    color:#636e72;
-    font-size:14px;
-    margin-top:4px;
-}
-
 .challenge-play-btn{
     background:#44bd32;
     box-shadow:0 4px 0 #2f8a22;
@@ -1112,14 +920,6 @@ button{
     padding:10px;
     margin-top:6px;
     width:100%;
-}
-
-.btn-compact{
-    width:200px;
-    max-width:100%;
-    display:block;
-    margin-left:auto;
-    margin-right:auto;
 }
 
 .btn-row{
@@ -1185,20 +985,9 @@ button{
     text-overflow:ellipsis;
 }
 
-.decline-btn{
-    background:#e84118;
-    box-shadow:0 4px 0 #a83217;
-}
-
 .view-btn{
     background:#636e72;
     box-shadow:0 4px 0 #4b5052;
-}
-
-.message-btn{
-    background:#00b894;
-    box-shadow:0 4px 0 #018a71;
-    position:relative;
 }
 
 .already-friend{
@@ -1206,64 +995,6 @@ button{
     font-weight:bold;
     font-size:14px;
     margin-top:8px;
-}
-
-.chat-messages{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    max-height:320px;
-    overflow-y:auto;
-    text-align:left;
-    background:#f1f2f6;
-    border-radius:12px;
-    padding:12px;
-    margin-bottom:12px;
-}
-
-.chat-bubble{
-    max-width:80%;
-    padding:10px 14px;
-    border-radius:14px;
-    font-size:15px;
-    word-wrap:break-word;
-}
-
-.chat-bubble.mine{
-    align-self:flex-end;
-    background:#0984e3;
-    color:white;
-}
-
-.chat-bubble.other{
-    align-self:flex-start;
-    background:white;
-    color:#192a56;
-    border:1px solid #dfe6e9;
-}
-
-.chat-bubble b{
-    display:block;
-    font-size:12px;
-    opacity:0.75;
-    margin-bottom:2px;
-}
-
-.chat-input-row{
-    display:flex;
-    gap:8px;
-    align-items:flex-start;
-}
-
-.chat-input-row .auth-input{
-    margin-bottom:0;
-    flex:1;
-}
-
-.chat-input-row button{
-    width:auto;
-    padding:14px 18px;
-    margin-top:0;
 }
 
 .challenge-play-btn:active{
@@ -1322,13 +1053,7 @@ button{
     transform:translateY(4px);
     box-shadow:0 2px 0 #0565aa;
 }
-.word-cards .card.tile-pressed{
-    transform:translateY(4px);
-    box-shadow:0 2px 0 #0565aa;
-}
-.word-cards .card.joker.tile-pressed{
-    box-shadow:0 2px 0 #bb8a00;
-}
+
 .word-cards .card.used:active{
     box-shadow:0 2px 0 #4b1787;
 }
@@ -1817,17 +1542,6 @@ button{
     box-shadow:0 4px 0 #006ba3,0 0 0 3px #f9ca24;
 }
 
-@keyframes wordSwapShake{
-    0%,100%{transform:translateX(0);}
-    30%{transform:translateX(-5px);}
-    60%{transform:translateX(5px);}
-    85%{transform:translateX(-2px);}
-}
-
-.word-cards .card.swap-shake{
-    animation:wordSwapShake 0.2s ease-in-out;
-}
-
 .word-cards .card.tile-swap-color{
     background:#8e44ad !important;
     color:white !important;
@@ -2078,53 +1792,11 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 }
 #homeScreen .home-tile:active,
 #homeScreen .home-tile.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
-#homeScreen .home-tile.tile-purple{background:linear-gradient(160deg,#9163d8,#6a3fc0);}
-#homeScreen .home-tile.tile-orange{background:linear-gradient(160deg,#f5ab3f,#e47a1f);}
-#homeScreen .home-tile.tile-green{background:linear-gradient(160deg,#62c2a8,#3a9a83);}
+
 #homeScreen .home-tile.tile-image{background:none;box-shadow:none;padding:0;overflow:visible;height:auto;aspect-ratio:484/534;}
 #homeScreen .home-tile.tile-image.menu-card-pressed,#homeScreen .home-tile.tile-image:active{transform:translateY(3px);filter:brightness(.96);}
 #homeScreen .home-tile-img{width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;}
-#homeScreen .home-tile-icon{
-    font-size:32px;
-    line-height:1;
-    margin-top:2px;
-    filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));
-}
-#homeScreen .home-tile-title{
-    margin-top:5px;
-    width:100%;
-    font-size:12.5px;
-    font-weight:800;
-    line-height:1.2;
-    white-space:nowrap;
-    text-align:center;
-}
-#homeScreen .home-tile-desc{
-    margin-top:2px;
-    width:100%;
-    padding:0 2px;
-    box-sizing:border-box;
-    font-size:10.5px;
-    line-height:1.2;
-    text-align:center;
-    opacity:.95;
-}
-#homeScreen .home-tile-arrow{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:9px;
-    width:24px;height:24px;
-    border-radius:50%;
-    background:rgba(255,255,255,.72);
-    display:flex;align-items:center;justify-content:center;
-    font-size:18px;font-weight:900;line-height:1;
-    padding-bottom:2px;
-    box-sizing:border-box;
-}
-#homeScreen .tile-purple .home-tile-arrow{color:#5b33a8;}
-#homeScreen .tile-orange .home-tile-arrow{color:#c2610f;}
-#homeScreen .tile-green .home-tile-arrow{color:#2b7a67;}
+
 #homeScreen .home-tile .badge{
     position:absolute!important;
     top:8px;right:8px;
@@ -2185,20 +1857,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #detailModalContent .menu-card.purple{background:linear-gradient(105deg,#7f3dc2,#682bb1)}
 /* Geri butonu her adımda aynı yerde: pencerenin altında sabit */
 #detailModalContent:has(.modal-back-btn){padding-bottom:61px;}
-#detailModalContent .duel-tour-format{
-    flex:1;
-    width:auto;
-    padding:10px 6px;
-    border:2px solid #dfe3ea;
-    border-radius:12px;
-    background:#fff;
-    color:#475569;
-    font-size:13px;
-    line-height:1.35;
-    cursor:pointer;
-}
-#detailModalContent .duel-tour-format b{font-size:15px;color:#192a56;}
-#detailModalContent .duel-tour-format.active{border-color:#6c3fd1;background:#f3eefe;color:#6c3fd1;}
+
 #detailModalContent .modal-back-btn{
     position:absolute;
     left:50%;
@@ -2288,7 +1947,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     white-space:nowrap;
 }
 .clc-title-group{display:flex;align-items:center;gap:6px;margin-left:6px;}
-.clc-title-icon{font-size:15px;line-height:1;}
+
 .clc-title{font-size:12px;font-weight:800;color:#1e293b;margin:0;line-height:1;position:relative;top:1px;}
 .clc-user-list{
     display:flex;
@@ -2497,42 +2156,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     box-sizing:border-box;
     flex:none;
 }
-
-#homeScreen .bottom-nav{
-    width:100%;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:7px;
-    margin-top:9px;
-    padding-top:12px;
-    border-top:2px solid #e7ebf1;
-}
-#homeScreen .bottom-nav-item{
-    border:0;
-    min-height:64px;
-    border-radius:13px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:4px;padding:6px 2px;
-    color:#26364d;
-    font-size:10px;font-weight:800;
-    cursor:pointer;font-family:inherit;
-    box-shadow:0 3px 7px rgba(35,50,75,.10);
-    transition:transform .12s ease;
-}
-#homeScreen .bottom-nav-item:active{transform:scale(.96)}
-#homeScreen .bottom-icon{
-    width:32px;height:32px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-size:16px;
-}
-#homeScreen .profile-bottom{background:#eaf3ff}
-#homeScreen .friends-bottom{background:#fbe0e0}
-#homeScreen .settings-bottom{background:#e4e6e9}
-#homeScreen .info-bottom{background:#ece2ff}
-#homeScreen .profile-bottom .bottom-icon{background:#a9ccff}
-#homeScreen .friends-bottom .bottom-icon{background:#e98f8f}
-#homeScreen .settings-bottom .bottom-icon{background:#b4bac0}
-#homeScreen .info-bottom .bottom-icon{background:#c1a9ff}
 
 /* ===== OYUNLARIM (historyScreen) - YENİ TASARIM ===== */
 
@@ -2807,18 +2430,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     text-align:left;
 }
 
-#tournamentDetailScreen .td-header, #challengeDetailScreen .td-header{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:16px;
-}
-#tournamentDetailScreen .td-header-icon, #challengeDetailScreen .td-header-icon{
-    width:32px;height:32px;flex:none;
-    border-radius:50%;
-    background:rgba(255,255,255,.1);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    border:0;color:#fff;font-size:15px;font-family:inherit;
-}
 #tournamentDetailScreen .td-header-title, #challengeDetailScreen .td-header-title{
     flex:1;text-align:center;
     font-size:15px;font-weight:800;
@@ -2868,9 +2479,10 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-timer-clock, #challengeDetailScreen .td-timer-clock{font-size:11px;font-weight:800;margin-top:2px;white-space:nowrap;}
 #tournamentDetailScreen .td-timer-unit, #challengeDetailScreen .td-timer-unit{font-size:max(8.5px, calc(7px / var(--k)));color:#7b8fae;margin-right:2px;}
 
-#tournamentDetailScreen .td-btn-purple, #challengeDetailScreen .td-btn-purple,
-#tournamentDetailScreen .td-btn-green, #challengeDetailScreen .td-btn-green,
-#tournamentDetailScreen .td-btn-locked, #challengeDetailScreen .td-btn-locked{
+#tournamentDetailScreen .td-btn-purple,
+#challengeDetailScreen .td-btn-purple,
+#tournamentDetailScreen .td-btn-green,
+#challengeDetailScreen .td-btn-green{
     border-radius:16px;
     padding:10px 6px;
     text-align:center;
@@ -2885,20 +2497,17 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-btn-purple, #challengeDetailScreen .td-btn-purple{background:linear-gradient(135deg,#8a2be2,#4b0082);}
 #tournamentDetailScreen .td-btn-green, #challengeDetailScreen .td-btn-green{background:linear-gradient(135deg,#2ecc71,#27ae60);}
 #tournamentDetailScreen .td-btn-green:disabled, #challengeDetailScreen .td-btn-green:disabled{opacity:.55;cursor:default;}
-#tournamentDetailScreen .td-btn-locked, #challengeDetailScreen .td-btn-locked{background:#26314f;color:#7b8fae;opacity:.7;cursor:default;}
+
 #tournamentDetailScreen .td-play-icon, #challengeDetailScreen .td-play-icon{font-size:16px;}
 /* Davet butonu: ikon yazının sağında, daha kısa */
 #tournamentDetailScreen .td-btn-row, #challengeDetailScreen .td-btn-row{flex-direction:row;gap:8px;min-height:44px;padding:7px 8px;}
-/* Gün kartları: gölgesiz; seçili gün mor dış çizgiyle */
-#tournamentDetailScreen .td-day-card.td-day-plain{box-shadow:none !important;width:100%;border:1px solid rgba(0,0,0,.14);}
-#tournamentDetailScreen .td-days-tight{gap:4px;}
+
 /* Özel turnuva üst satırı: süre kartı | Arkadaş Ekle | turuncu kart (sütunlar alttaki satırla hizalı) */
 #tournamentDetailScreen .td-top-row:empty{display:none;}
 #tournamentDetailScreen .td-top-row{display:grid;grid-template-columns:0.82fr 2.18fr;gap:10px;align-items:stretch;margin-bottom:10px;}
 /* Özel turnuvada sol sütun (günler) daha geniş, sohbet biraz daha dar */
 #tournamentDetailScreen.td-custom .td-grid-row{grid-template-columns:0.82fr 2.18fr;}
-/* Gün ve oyun yazıları butonun ortasında (soldaki ikon kadar sağdan pay bırakılır) */
-#tournamentDetailScreen .td-day-card.td-day-plain .td-day-label{text-align:center;margin-right:23px;}
+
 #tournamentDetailScreen .td-top-right{display:flex;gap:10px;}
 #tournamentDetailScreen .td-top-card{
     flex:1;
@@ -2916,7 +2525,6 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #tournamentDetailScreen .td-top-invite{background:linear-gradient(135deg,#8a2be2,#4b0082);cursor:pointer;}
 #tournamentDetailScreen .td-top-invite:active{transform:translateY(2px);}
 #tournamentDetailScreen .td-top-orange{background:linear-gradient(135deg,#f8a83c,#ea6c1c);}
-#tournamentDetailScreen .td-day-card.td-day-game{width:90%;}
 
 #tournamentDetailScreen .td-days-list, #challengeDetailScreen .td-days-list{display:flex;flex-direction:column;gap:8px;}
 #tournamentDetailScreen .td-day-card, #challengeDetailScreen .td-day-card{
@@ -3049,12 +2657,11 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 /* ===== TURNUVA DETAY - AÇIK TEMA (koyu mod kapalıyken koyu temanın üzerine yazar) ===== */
 body:not(.dark-mode) .game:has(#tournamentDetailScreen[style*="display: block"]){background:#ebeef5;}
 body:not(.dark-mode) #tournamentDetailScreen{color:#192a56;}
-body:not(.dark-mode) #tournamentDetailScreen .td-header-icon{background:#fff;color:#5b3bd6;box-shadow:0 2px 6px rgba(25,40,80,.08);border:1px solid #e6eaf2;}
+
 body:not(.dark-mode) #tournamentDetailScreen .td-card,
 body:not(.dark-mode) #tournamentDetailScreen .td-chat-card,
 body:not(.dark-mode) #tournamentDetailScreen .td-leaderboard-item{background:#fff;border:1px solid #e6eaf2;box-shadow:0 4px 12px rgba(25,40,80,.06);}
 body:not(.dark-mode) #tournamentDetailScreen .td-timer-clock{color:#5b3bd6;}
-body:not(.dark-mode) #tournamentDetailScreen .td-btn-locked,
 body:not(.dark-mode) #tournamentDetailScreen .td-day-card.locked{background:#e4e8f0;color:#94a3b8;}
 body:not(.dark-mode) #tournamentDetailScreen .td-day-card.locked .td-day-icon-circle{background:#fff;}
 body:not(.dark-mode) #tournamentDetailScreen .td-chat-header{color:#5b3bd6;}
@@ -3140,3 +2747,10 @@ body:not(.dark-mode) #tournamentDetailScreen .td-score-number{color:#192a56;}
 .bn-home>i,
 .bn-exit>i{font-size:calc(var(--bn-icon-size) * 1.3);}
 
+
+/* Sayfa geçişleri: yeni sayfa alttan gelir, geri dönüşte kapanan sayfa aşağı iner */
+.tam-sayfa{animation:sayfaAc .25s ease-out;}
+.tam-sayfa.sayfa-kapaniyor{animation:sayfaKapan .25s ease-in forwards;}
+body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
+@keyframes sayfaAc{from{transform:translateY(calc(100dvh / var(--k)));}}
+@keyframes sayfaKapan{to{transform:translateY(calc(100dvh / var(--k)));}}
