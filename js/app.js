@@ -334,7 +334,15 @@ if(wordTopAdChosenIndex===null){
 wordTopAdChosenIndex=Math.floor(Math.random()*wordTopAdVariants.length);
 }
 
-document.getElementById("wordTopAdBannerContent").innerHTML=wordTopAdVariants[wordTopAdChosenIndex]();
+let icerikEl=document.getElementById("wordTopAdBannerContent");
+icerikEl.innerHTML=wordTopAdVariants[wordTopAdChosenIndex]();
+
+// TEST (geçici): rastgele yükseklik (50-90) ve konum (üstte / ortalı); sağ altta etiket. Sonra tamamen kaldırılacak.
+let testH=50+Math.floor(Math.random()*41);
+let testOrtali=Math.random()<0.5;
+icerikEl.style.setProperty("--test-h",testH+"px");
+icerikEl.style.setProperty("--test-top",testOrtali ? ((90-testH)/2)+"px" : "0px");
+icerikEl.insertAdjacentHTML("beforeend","<span style=\"position:absolute;right:4px;bottom:2px;font-size:0.6em;font-weight:bold;color:#fff;background:rgba(0,0,0,0.55);padding:1px 4px;border-radius:4px;pointer-events:none;\">TEST: "+testH+" · "+(testOrtali ? "ortalı" : "üstte")+"</span>");
 
 }
 
