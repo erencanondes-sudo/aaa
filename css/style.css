@@ -1142,13 +1142,14 @@ button{
 }
 #wordGameContent .divider-left{left:31.5%;}
 #wordGameContent .divider-right{right:31.5%;}
+#wordGameContent .unified-panel .section:not(.distribution-section){position:relative;top:6px;}
 
 #wordGameContent #wordNewGameBtn{
     grid-column:1 / -1;
     flex-direction:row;
     align-items:center;
     gap:12px;
-    margin:-6px -12px 10px -12px;
+    margin:-10px -12px 10px -12px;
 }
 #wordGameContent #wordNewGameBtn::before, #wordGameContent #wordNewGameBtn::after{
     content:"";
