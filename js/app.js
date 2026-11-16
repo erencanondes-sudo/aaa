@@ -2778,7 +2778,7 @@ let wordScoreEl=document.getElementById("wordScoreValue");
 bannerTitleEl.innerHTML=title;
 
 let steps=Math.min(50,Math.max(toValue,1));
-let duration=1500;
+let duration=toValue>=900 ? 1200 : toValue>=700 ? 1000 : toValue>=500 ? 800 : 600;
 let stepTime=duration/steps;
 let count=0;
 let lastValue=0;
