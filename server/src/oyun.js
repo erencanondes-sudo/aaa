@@ -1,5 +1,6 @@
 /* Oyun istekleri: telefondan gelen isteği ilgili oyun odasına ve kullanıcı odasına yönlendirir */
 
+import { oturumVer } from "./auth.js";
 import { Hata, GUN, kimlikUret, kullaniciBul, cift, engelliMi } from "./ortak.js";
 import { bildirimGonder } from "./bildirim.js";
 import { getir as profilGetir } from "./profil.js";
@@ -54,7 +55,7 @@ async function telefonaHazirla(env, detaylar, uid) {
 
 /* Telefon elindeki oyunların sürüm numaralarını gönderir (bilinen: {oyunId: surum});
    yalnızca numarası değişen oyunların ayrıntısı gelir. Bilinen boşsa hepsi gelir. */
-export async function acilis({ env, uid, govde, simdi }) {
+export async function acilis({ env, uid, govde, simdi, firebaseIle }) {
   const [p, { liste, giden }, arkadaslik] = await Promise.all([
     profilGetir({ env, uid }), kullaniciOdasi(env, uid).getir(simdi, uid), arkadasListesi({ env, uid, simdi }),
   ]);
@@ -89,6 +90,8 @@ export async function acilis({ env, uid, govde, simdi }) {
   const benimAdim = p.profil ? p.profil.username : null;
 
   return {
+    // Firebase belgesiyle gelen açılışta 30 günlük oturum belgesi yenilenir
+    oturum: firebaseIle && p.profil ? await oturumVer(env, uid) : undefined,
     profil: p.profil,
     arkadaslik,
     rastgeleBekliyor: !!kuyruk,

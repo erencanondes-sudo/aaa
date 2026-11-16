@@ -68,16 +68,17 @@ export default {
     // Anlık bağlantı: tarayıcı bu bağlantıda başlık gönderemediği için giriş belgesi adreste gelir
     if (yol === "baglan" && istek.headers.get("upgrade") === "websocket") {
       const belge = new URL(istek.url).searchParams.get("belge") || "";
-      const uid = await kimlikDogrula(new Request(istek.url, { headers: { authorization: "Bearer " + belge } }), env.FIREBASE_PROJE_ID);
-      if (!uid) return new Response("giris-gerekli", { status: 401 });
-      return oyun.baglan(istek, env, uid);
+      const kim = await kimlikDogrula(new Request(istek.url, { headers: { authorization: "Bearer " + belge } }), env);
+      if (!kim) return new Response("giris-gerekli", { status: 401 });
+      return oyun.baglan(istek, env, kim.uid);
     }
 
     const islem = ISLEMLER[yol];
     if (!islem || istek.method !== "POST") return yanit(env, { hata: "bulunamadi" }, 404);
 
-    const uid = await kimlikDogrula(istek, env.FIREBASE_PROJE_ID);
-    if (!uid) return yanit(env, { hata: "giris-gerekli" }, 401);
+    const kim = await kimlikDogrula(istek, env);
+    if (!kim) return yanit(env, { hata: "giris-gerekli" }, 401);
+    const uid = kim.uid;
 
     let govde = {};
     try {
@@ -85,7 +86,7 @@ export default {
     } catch (e) {}
 
     try {
-      const sonuc = await islem({ env, uid, govde, simdi: Date.now(), arka: (is) => ctx.waitUntil(is) });
+      const sonuc = await islem({ env, uid, govde, simdi: Date.now(), arka: (is) => ctx.waitUntil(is), firebaseIle: kim.firebase });
       return yanit(env, Object.assign({ tamam: true }, sonuc || {}));
     } catch (e) {
       if (e instanceof Hata) return yanit(env, { hata: e.message }, e.durum);

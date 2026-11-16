@@ -493,6 +493,26 @@ console.warn("Analytics başlatılamadı:",e);
 
 }
 
+/* Düello ve turnuva kodu ana ekran çizildikten sonra yüklenir; ona ihtiyaç duyan işler yüklenince çalışır */
+let ekKodYuklendi=false;
+let ekKodBekleyen=[];
+
+function ekKodla(f){
+if(ekKodYuklendi)f();
+else ekKodBekleyen.push(f);
+}
+
+function ekKodYukle(){
+betikYukle("js/duello.js").then(function(){
+return betikYukle("js/turnuva.js");
+}).then(function(){
+ekKodYuklendi=true;
+ekKodBekleyen.splice(0).forEach(function(f){ f(); });
+}).catch(function(e){
+console.error("Kod yüklenemedi:",e);
+});
+}
+
 /* Firebase hazır değilken giriş düğmelerine basılırsa */
 function firebaseBekleMetni(){
 return firebaseHatali ? "Bağlantı kurulamadı. İnternet bağlantını kontrol edip uygulamayı yeniden aç." : "Bağlanıyor, birkaç saniye sonra tekrar dene.";
@@ -516,7 +536,8 @@ onLoginSuccess(uid,kayitli,true);
 if(kayitliBelge())acilisIste().then(function(v){ acilisUygula(uid,v); }).catch(function(){});
 }
 
-// Firebase ana ekran çizildikten sonra yüklenir
+// Düello/turnuva kodu ve Firebase ana ekran çizildikten sonra yüklenir
+ekKodYukle();
 firebaseYukle();
 
 });
@@ -766,14 +787,14 @@ localStorage.setItem("konfetiSonGiris",uid);
 }catch(e){}
 
 kullaniciyiKur(uid,v.profil);
-canliListeyiBaslat();
+ekKodla(canliListeyiBaslat);
 
 }
 
 /* Kayıtlı profille açılmış oturum kapatılır (Firebase oturum bulamadı ya da kullanıcı farklı) */
 function erkenOturumuKapat(){
 listedenKop();
-sohbetKapat();
+if(ekKodYuklendi)sohbetKapat();
 currentUser=null;
 sunucuDurumu=null;
 acilisSozu=null;
@@ -800,6 +821,7 @@ try{ v=await acilisIste(); }
 catch(e){
 // Hızlı açılışta gönderilen eski belge kabul edilmediyse Firebase'in belgesiyle bir kez daha
 if(e.kod!=="giris-gerekli")throw e;
+try{ localStorage.removeItem("konfetiBelge"); }catch(err){}
 v=await acilisIste();
 }
 document.getElementById("sessionCheckScreen").style.display="none";
@@ -859,7 +881,7 @@ document.body.classList.add("home-active");
 
 setBottomNavActive("home");
 
-if(!currentUser.isGuest && !erken)canliListeyiBaslat();
+if(!currentUser.isGuest && !erken)ekKodla(canliListeyiBaslat);
 
 burstHomeConfetti();
 
@@ -881,9 +903,11 @@ document.getElementById("welcomeText").innerHTML="Hoş geldin, "+firstName+" �
 document.getElementById("homeAvatarIcon").innerHTML=avatarHtml(currentUser.avatarEmoji);
 
 renderHomeStats();
-renderHomeChallengeListCarousel();
 
+ekKodla(function(){
+renderHomeChallengeListCarousel();
 if(!isGuest)oyunListeleriniCiz();
+});
 
 }
 
@@ -1152,7 +1176,7 @@ document.getElementById("playArea").style.display="none";
 document.getElementById("authScreen").style.display="none";
 
 // Ekrandan çıkınca düello sohbeti kapanır
-sohbetKapat();
+if(ekKodYuklendi)sohbetKapat();
 
 }
 
@@ -1278,7 +1302,8 @@ el.classList.add("menu-card-pressed");
 
 setTimeout(function(){
 el.classList.remove("menu-card-pressed");
-callback();
+// Düello/turnuva kodu henüz yüklenmediyse yüklenince açılır
+ekKodla(callback);
 },200);
 
 }
@@ -1417,8 +1442,10 @@ document.body.classList.add("home-active");
 screenNavStack=[];
 
 renderHomeStats();
+ekKodla(function(){
 updateChallengeBadge();
 renderHomeChallengeListCarousel();
+});
 
 }
 
@@ -2106,7 +2133,7 @@ acilisSozu=null;
 
 auth.signOut().then(function(){
 
-sohbetKapat();
+if(ekKodYuklendi)sohbetKapat();
 listedenKop();
 
 
@@ -4905,8 +4932,10 @@ syncBottomNavForScreen(targetId);
 
 if(targetId==="homeScreen"){
 renderHomeStats();
+ekKodla(function(){
 updateChallengeBadge();
 renderHomeChallengeListCarousel();
+});
 }
 
 if(targetId==="historyScreen"){
@@ -4915,7 +4944,7 @@ oyunlariYenile().then(restoreScrollTop);
 
 }
 
-if(targetId==="challengeDetailScreen" && acikAyrinti && sunucuDurumu && sunucuDurumu.oyunlar[acikAyrinti]){
+if(targetId==="challengeDetailScreen" && ekKodYuklendi && acikAyrinti && sunucuDurumu && sunucuDurumu.oyunlar[acikAyrinti]){
 ayrintiCiz(sunucuDurumu.oyunlar[acikAyrinti]);
 }
 

@@ -62,3 +62,9 @@ CREATE TABLE IF NOT EXISTS duel_pool (
   id INTEGER PRIMARY KEY,
   data TEXT NOT NULL
 );
+
+-- Sunucunun kendi ayarları (oturum belgelerini imzalayan anahtar ilk kullanımda kendiliğinden oluşur)
+CREATE TABLE IF NOT EXISTS settings (
+  k TEXT PRIMARY KEY,
+  v TEXT NOT NULL
+);

@@ -10,8 +10,8 @@ this.durum=durum||0;
 }
 }
 
-/* Firebase girişinin belgesi (her istekte gönderilir; Firebase kendisi yeniler).
-   Firebase henüz yüklenmediyse son alınan belge kullanılır (Firebase'in belgesi 1 saat geçerlidir);
+/* Her istekte gönderilen giriş belgesi: Firebase'in belgesi (Firebase kendisi yeniler).
+   Firebase henüz yüklenmediyse sunucunun verdiği 30 günlük oturum belgesi kullanılır;
    o da yoksa ya da süresi dolduysa Firebase'in oturumu kontrol etmesi beklenir. */
 async function girisBelgesi(){
 if(!(auth && auth.currentUser) && !firebaseCevapVerdi){
@@ -21,9 +21,7 @@ await firebaseCevabiniBekle();
 }
 let u=auth && auth.currentUser;
 if(!u)throw new SunucuHatasi("giris-gerekli",401);
-let belge=await u.getIdToken();
-belgeKaydet(u.uid,belge);
-return belge;
+return await u.getIdToken();
 }
 
 function kayitliBelge(){
@@ -34,10 +32,11 @@ if(b && b.uid===localStorage.getItem("konfetiSonGiris") && b.bitis>Date.now()+60
 return null;
 }
 
-function belgeKaydet(uid,belge){
+/* Oturum belgesi: "o.<uid>.<bitiş saniyesi>.<imza>" */
+function belgeKaydet(belge){
 try{
-let icerik=JSON.parse(atob(belge.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));
-localStorage.setItem("konfetiBelge",JSON.stringify({uid:uid,belge:belge,bitis:icerik.exp*1000}));
+let p=belge.split(".");
+localStorage.setItem("konfetiBelge",JSON.stringify({uid:p[1],belge:belge,bitis:Number(p[2])*1000}));
 }catch(e){}
 }
 
@@ -147,6 +146,7 @@ let bilinen={};
 Object.keys(h.oyunlar).forEach(function(id){ bilinen[id]=h.oyunlar[id].oyun.surum; });
 
 let v=await sunucu("acilis",{bilinen:bilinen});
+if(v.oturum)belgeKaydet(v.oturum);
 
 v.oyunlar.forEach(function(d){ h.oyunlar[d.oyun.id]=d; });
 
