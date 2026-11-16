@@ -926,53 +926,6 @@ button{
     gap:8px;
 }
 
-.word-mode-toggle{
-    display:flex;
-    flex-direction:row;
-    flex-wrap:nowrap;
-}
-.word-mode-toggle .word-mode-btn{
-    flex:1;
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    background:linear-gradient(100deg,#55dc43,#1da92b);
-    color:#fff;
-    border:0;
-    border-radius:20px;
-    padding:6px 8px;
-    height:36px;
-    box-shadow:0 4px 0 #14751d,0 6px 12px rgba(0,0,0,.25);
-    cursor:pointer;
-    font-family:inherit;
-    min-width:0;
-    transition:transform .12s,box-shadow .12s;
-}
-.word-mode-toggle .word-mode-btn:active{
-    transform:translateY(2px);
-    box-shadow:0 2px 0 #14751d;
-}
-.word-mode-toggle .word-mode-btn .word-mode-icon{
-    display:flex;align-items:center;justify-content:center;
-    flex:none;
-}
-.word-mode-toggle .word-mode-btn .new-play-circle{
-    width:22px;height:22px;min-width:22px;
-    border-radius:50%;
-    background:#fff;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 5px rgba(0,0,0,.2);
-}
-.word-mode-toggle .word-mode-btn .new-play-triangle{
-    width:0;height:0;
-    border-top:4.5px solid transparent;
-    border-bottom:4.5px solid transparent;
-    border-left:7px solid #209e32;
-    transform:translateX(1px);
-}
-.word-mode-toggle .word-mode-btn .word-mode-label{font-size:14px;font-weight:800;white-space:nowrap;}
 
 .btn-row .challenge-play-btn{
     flex:1;
@@ -1724,7 +1677,7 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
 #homeScreen .menu-card.menu-card-pressed{transform:translateY(3px);filter:brightness(.96)}
 #homeScreen .menu-card.new, #gameTypeScreen .menu-card.new, #randomWaitScreen .menu-card.new, #challengeTypeScreen .menu-card.new, #challengeFriendScreen .menu-card.new, #challengeFormatScreen .menu-card.new, #profileScreen .menu-card.new{min-height:78px;background:linear-gradient(105deg,#35b233,#209c2b)}
 #homeScreen .menu-card.new{margin-bottom:8px;}
-#homeScreen .home-new-img-btn{
+.home-new-img-btn{
     display:block;
     width:100%;
     height:auto;
@@ -1735,9 +1688,9 @@ body.dark-mode #randomWaitScreen .menu-card.blue{--menu-fill-color:#013b5a;--men
     cursor:pointer;
     transition:transform .2s,filter .2s;
 }
-#homeScreen .home-new-img-btn img{width:100%;height:auto;display:block;pointer-events:none;}
-#homeScreen .home-new-img-btn:active,
-#homeScreen .home-new-img-btn.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
+.home-new-img-btn img{width:100%;height:auto;display:block;pointer-events:none;}
+.home-new-img-btn:active,
+.home-new-img-btn.menu-card-pressed{transform:translateY(3px);filter:brightness(.96);}
 
 /* ===== Ana ekran kare kartları (Oyunlarım / Haftalık / Günlük) ===== */
 #homeScreen .home-tiles{
