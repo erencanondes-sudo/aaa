@@ -2729,3 +2729,80 @@ body:not(.dark-mode) #tournamentDetailScreen .td-score-number{color:#192a56;}
 body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
 @keyframes sayfaAc{from{transform:translateY(calc(100dvh / var(--k)));}}
 @keyframes sayfaKapan{to{transform:translateY(calc(100dvh / var(--k)));}}
+
+/* ===== KELİME SERÜVENİ ===== */
+#seruvenScreen h2,#seruvenSeviyeScreen h2{font-family:'Nunito',Arial,sans-serif;font-weight:900;color:#1e2d46;margin:0.4em 0 0.6em;}
+
+.seruven-kart{
+    display:grid;grid-template-columns:4.4em 1fr auto;align-items:center;gap:0.8em;
+    margin-top:0.75em;padding:0.55em 0.75em 0.55em 0.55em;box-sizing:border-box;
+    background:linear-gradient(180deg,#ffffff,#eaf2fc);border:0.12em solid #ffffff;border-radius:1.2em;
+    box-shadow:0 0.35em 0.9em rgba(30,45,70,.12);cursor:pointer;text-align:left;
+}
+.seruven-kart:active{transform:scale(.98);}
+.seruven-kart.yakinda{cursor:default;opacity:.7;}
+.seruven-kart.yakinda:active{transform:none;}
+.seruven-kart-ikon{
+    font-size:2.1em;line-height:1;width:2.1em;height:2.1em;border-radius:0.45em;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:inset 0 -0.12em 0 rgba(0,0,0,.12);text-shadow:0 0.05em 0.1em rgba(0,0,0,.25);
+}
+.seruven-kart-govde{min-width:0;}
+.seruven-kart-ad{font-family:'Nunito',Arial,sans-serif;font-weight:900;font-size:1.2em;color:#1e2d46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.seruven-tik{color:#22a822;font-size:0.9em;}
+.seruven-kart-ilerleme{display:flex;align-items:center;gap:0.5em;margin-top:0.35em;}
+.seruven-kart-ilerleme span{font-weight:800;font-size:0.85em;color:#4a5b78;white-space:nowrap;}
+.seruven-bar{flex:1;height:0.85em;background:#d4e0ee;border-radius:1em;overflow:hidden;box-shadow:inset 0 0.1em 0.2em rgba(0,0,0,.1);}
+.seruven-bar-dolu{height:100%;background:linear-gradient(180deg,#6ee26e,#27a827);border-radius:1em;}
+.seruven-oynat{
+    width:3.2em;height:2.7em;margin:0;padding:0;border:0;border-radius:0.8em;
+    background:linear-gradient(180deg,#5ee65e,#22a822);color:#fff;font-size:1.05em;
+    box-shadow:0 0.25em 0 #178017;display:flex;align-items:center;justify-content:center;
+}
+.seruven-oynat:active{transform:translateY(0.15em);box-shadow:0 0.1em 0 #178017;}
+.seruven-yakinda{padding:0.4em 0.8em;border-radius:0.7em;background:#dfe6ef;color:#6b7a90;font-weight:800;font-size:0.85em;white-space:nowrap;}
+
+.seruven-ozet{
+    display:flex;align-items:center;gap:0.8em;margin-top:1.1em;padding:0.7em 1em;box-sizing:border-box;
+    background:#ffffff;border-radius:1.4em;box-shadow:0 0.35em 0.9em rgba(30,45,70,.12);text-align:left;
+}
+.seruven-ozet-yildiz{font-size:2em;line-height:1;}
+.seruven-ozet-govde{flex:1;min-width:0;}
+.seruven-ozet-govde b{color:#1e2d46;font-size:0.95em;}
+.seruven-madalya{display:flex;flex-direction:column;align-items:center;padding-left:0.8em;border-left:0.1em solid #e1e8f1;}
+.seruven-madalya span{font-size:1.8em;line-height:1;}
+.seruven-madalya small{font-weight:800;color:#4a5b78;font-size:0.75em;}
+
+.seruven-seviyeler{display:grid;grid-template-columns:repeat(4,1fr);gap:0.65em;margin-top:0.6em;}
+.seruven-seviye{
+    width:auto;margin:0;padding:0;aspect-ratio:1;border:0;border-radius:1em;
+    background:linear-gradient(180deg,#5fa8ff,#2f7de0);color:#fff;box-shadow:0 0.28em 0 #1f5fb0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1em;
+}
+.seruven-seviye b{font-family:'Nunito',Arial,sans-serif;font-weight:900;font-size:1.6em;line-height:1;}
+.seruven-seviye span{color:#ffd84d;font-size:0.8em;letter-spacing:0.05em;min-height:1em;}
+.seruven-seviye.gecildi{background:linear-gradient(180deg,#5ee65e,#22a822);box-shadow:0 0.28em 0 #178017;}
+.seruven-seviye.kilitli{background:#d3dbe6;color:#8d9bb0;box-shadow:0 0.28em 0 #b4c0cf;}
+.seruven-seviye:not(.kilitli):active{transform:translateY(0.15em);box-shadow:0 0.1em 0 rgba(0,0,0,.25);}
+
+/* Oyun ekranı: hedef kelimeler ve sıradaki harfler */
+#seruvenHedefler{display:flex;flex-direction:column;gap:0.25em;margin-top:0.3em;width:100%;}
+.seruven-hedef{
+    background:#ffffff;color:#1e2d46;border-radius:0.5em;padding:0.15em 0.4em;
+    font-weight:900;letter-spacing:0.08em;font-size:max(9px, calc(8px / var(--k)));text-align:center;
+    box-shadow:0 0.1em 0.25em rgba(0,0,0,.12);
+}
+.seruven-hedef.bulundu{background:#22a822;color:#ffffff;}
+#seruvenSiradakiSesli,#seruvenSiradakiSessiz{
+    width:1.7em;height:1.7em;display:flex;align-items:center;justify-content:center;
+    background:#ffffff;border-radius:0.4em;font-weight:900;font-size:1.05em;box-shadow:0 0.12em 0 rgba(0,0,0,.18);
+}
+#seruvenSiradakiSesli{color:#e0532f;}
+#seruvenSiradakiSessiz{color:#1f6fd1;}
+.seruven-sonuc-yildiz{text-align:center;font-size:2.4em;color:#ffc52e;letter-spacing:0.1em;margin:0.2em 0;}
+
+body.dark-mode #seruvenScreen h2,body.dark-mode #seruvenSeviyeScreen h2{color:#ffffff;}
+body.dark-mode .seruven-kart,body.dark-mode .seruven-ozet{background:#2e4570;border-color:#3a5482;}
+body.dark-mode .seruven-kart-ad,body.dark-mode .seruven-ozet-govde b{color:#ffffff;}
+body.dark-mode .seruven-kart-ilerleme span,body.dark-mode .seruven-madalya small{color:#c9d6ea;}
+body.dark-mode .seruven-bar{background:#1c2f50;}

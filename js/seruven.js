@@ -2,11 +2,11 @@
    Seviyeler Çetrefilli oyun ekranında oynanır; hedef kelimeler js/seruven-kelimeler.js içinde. */
 
 const SERUVEN_KISIMLARI=[
-{ad:"Hedef Kelimeler",seviyeler:SERUVEN_HEDEF_KELIMELER},
-{ad:"Harf Avı",seviyeler:null},
-{ad:"Bomba Taşları",seviyeler:null},
-{ad:"Yayılan Taş",seviyeler:null},
-{ad:"Yakında",seviyeler:null}
+{ad:"Hedef Kelimeler",ikon:"🎯",renk:"#4fa3f7,#1f6fd1",seviyeler:SERUVEN_HEDEF_KELIMELER},
+{ad:"Harf Avı",ikon:"🔍",renk:"#5fd3a0,#1f9e6b",seviyeler:null},
+{ad:"Bomba Taşları",ikon:"💣",renk:"#ff9a6b,#e0532f",seviyeler:null},
+{ad:"Yayılan Taş",ikon:"🪨",renk:"#b28cf0,#7a4fd1",seviyeler:null},
+{ad:"Yakında",ikon:"✨",renk:"#c3cede,#94a3b8",seviyeler:null}
 ];
 const SERUVEN_SEVIYE_SAYISI=20;
 const SERUVEN_RASTGELE_SEVIYE=20;   // kısım bitince oynanan rastgele oyun (21. oyun)
@@ -75,10 +75,14 @@ let bitti=gecilen===SERUVEN_SEVIYE_SAYISI;
 let yuzde=Math.round(gecilen/SERUVEN_SEVIYE_SAYISI*100);
 
 h+="<div class=\"seruven-kart"+(hazir ? "" : " yakinda")+"\""+(hazir ? " onclick=\"seruvenSeviyeleriGoster("+k+")\"" : "")+">";
-h+="<div class=\"seruven-kart-ad\">"+kisim.ad+(bitti ? " <i class=\"fa-solid fa-check seruven-tik\"></i>" : "")+"</div>";
+h+="<div class=\"seruven-kart-ikon\" style=\"background:linear-gradient(135deg,"+kisim.renk+");\">"+kisim.ikon+"</div>";
+h+="<div class=\"seruven-kart-govde\"><div class=\"seruven-kart-ad\">"+kisim.ad+(bitti ? " <i class=\"fa-solid fa-check seruven-tik\"></i>" : "")+"</div>";
+if(hazir){
+h+="<div class=\"seruven-kart-ilerleme\"><div class=\"seruven-bar\"><div class=\"seruven-bar-dolu\" style=\"width:"+yuzde+"%;\"></div></div><span>"+gecilen+" / "+SERUVEN_SEVIYE_SAYISI+"</span></div>";
+}
+h+="</div>";
 
 if(hazir){
-h+="<div class=\"seruven-kart-ilerleme\"><div class=\"bar-bg\"><div class=\"bar-fill-blue\" style=\"width:"+yuzde+"%;\"></div></div><span>"+gecilen+" / "+SERUVEN_SEVIYE_SAYISI+"</span></div>";
 h+="<button class=\"seruven-oynat\" onclick=\"event.stopPropagation();seruvenOyna("+k+","+seruvenSiradakiSeviye(k)+")\"><i class=\"fa-solid fa-play\"></i></button>";
 }
 else if(kisim.ad!=="Yakında"){
@@ -94,14 +98,14 @@ document.getElementById("seruvenKisimlar").innerHTML=h;
 // Toplam ilerleme ve madalya: 1-49 bronz, 50-79 gümüş, 80-100 altın
 let toplam=seruvenToplamGecilen();
 let enCok=SERUVEN_KISIMLARI.length*SERUVEN_SEVIYE_SAYISI;
-let madalya="";
-if(toplam>=80)madalya="🥇 Altın";
-else if(toplam>=50)madalya="🥈 Gümüş";
-else if(toplam>=1)madalya="🥉 Bronz";
+let madalya=null;
+if(toplam>=80)madalya=["🥇","Altın"];
+else if(toplam>=50)madalya=["🥈","Gümüş"];
+else if(toplam>=1)madalya=["🥉","Bronz"];
 
-document.getElementById("seruvenOzet").innerHTML="<div class=\"seruven-ozet\"><div><b>Toplam İlerleme</b> "+toplam+" / "+enCok+"</div>"
-+"<div class=\"bar-bg\"><div class=\"bar-fill-blue\" style=\"width:"+Math.round(toplam/enCok*100)+"%;\"></div></div>"
-+(madalya ? "<div class=\"seruven-madalya\">"+madalya+"</div>" : "")+"</div>";
+document.getElementById("seruvenOzet").innerHTML="<div class=\"seruven-ozet\"><div class=\"seruven-ozet-yildiz\">⭐</div>"
++"<div class=\"seruven-ozet-govde\"><b>Toplam İlerleme</b><div class=\"seruven-kart-ilerleme\"><div class=\"seruven-bar\"><div class=\"seruven-bar-dolu\" style=\"width:"+Math.round(toplam/enCok*100)+"%;\"></div></div><span>"+toplam+" / "+enCok+"</span></div></div>"
++(madalya ? "<div class=\"seruven-madalya\"><span>"+madalya[0]+"</span><small>"+madalya[1]+"</small></div>" : "")+"</div>";
 
 }
 
