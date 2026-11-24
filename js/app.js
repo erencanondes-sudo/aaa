@@ -60,7 +60,7 @@ syncPlayingClass();
 new MutationObserver(syncPlayingClass).observe(playAreaEl,{attributes:true,attributeFilter:["style"]});
 
 let adBannerEl=document.getElementById("fakeAdBanner");
-let adMenuScreenIds=["homeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentDetailScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeFormatScreen","challengeDoneScreen","challengeDetailScreen"];
+let adMenuScreenIds=["homeScreen","seruvenScreen","seruvenSeviyeScreen","historyScreen","profileScreen","friendsScreen","settingsScreen","infoScreen","gameTypeScreen","tournamentDetailScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeFormatScreen","challengeDoneScreen","challengeDetailScreen"];
 
 function deviceHasSystemNavBar(){
 
@@ -574,6 +574,32 @@ showTopNotification(hataMetni(e));
 });
 }
 
+/* ---------- Kelime Serüveni ----------
+   Kodu ve kelimeleri ilk açılışta yüklenir (js/seruven-kelimeler.js, js/seruven.js) */
+let seruvenYukleniyor=null;
+
+function seruvenAc(){
+if(!seruvenYukleniyor){
+seruvenYukleniyor=betikYukle("js/seruven-kelimeler.js").then(function(){
+return betikYukle("js/seruven.js");
+});
+}
+seruvenYukleniyor.then(seruvenSayfasi).catch(function(e){
+console.error(e);
+seruvenYukleniyor=null;
+showTopNotification("Kelime Serüveni yüklenemedi. İnternet bağlantını kontrol et.");
+});
+}
+
+/* Oyun ekranı: Serüven seviyesinde kelime dağılımı ve puan yerine hedef kelimeler ve sıradaki harfler görünür */
+function seruvenGorunumu(acik){
+document.getElementById("wordDagilimBolumu").style.display=acik ? "none" : "";
+document.getElementById("seruvenHedefBolumu").style.display=acik ? "" : "none";
+document.getElementById("wordPuanBlok").style.display=acik ? "none" : "inline-flex";
+document.getElementById("seruvenSiradaki").style.display=acik ? "inline-flex" : "none";
+document.getElementById("wordTargetLabel").innerHTML=acik ? "BULUNAN" : "KALAN KELİME";
+}
+
 /* Firebase hazır değilken giriş düğmelerine basılırsa */
 function firebaseBekleMetni(){
 return firebaseHatali ? "Bağlantı kurulamadı. İnternet bağlantını kontrol edip uygulamayı yeniden aç." : "Bağlanıyor, birkaç saniye sonra tekrar dene.";
@@ -605,6 +631,8 @@ firebaseYukle();
 
 let timer;
 let time=120;
+let turSuresi=120;     // turun toplam süresi (süre çubuğu buna göre dolar)
+let seruvenOyunu=null; // Kelime Serüveni seviyesi oynanıyorsa: {kisim, seviye, hedefler, bulunan}
 let score=0;
 let resultRecorded=false;
 let gameActive=false;
@@ -1047,7 +1075,7 @@ let activeChallengeSide=null;
 let activeChallengeGameIndex=null;
 let returnToScreen=null;
 
-const SCREEN_IDS=["homeScreen","profileScreen","otherProfileScreen","friendsScreen","settingsScreen","infoScreen","challengeDetailScreen","gameTypeScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentDetailScreen","playArea","authScreen"];
+const SCREEN_IDS=["homeScreen","seruvenScreen","seruvenSeviyeScreen","profileScreen","otherProfileScreen","friendsScreen","settingsScreen","infoScreen","challengeDetailScreen","gameTypeScreen","challengeTypeScreen","randomWaitScreen","challengeFriendScreen","challengeFormatScreen","challengeDoneScreen","historyScreen","tournamentDetailScreen","playArea","authScreen"];
 
 let screenNavStack=[];
 let suppressScreenPush=false;
@@ -1204,6 +1232,11 @@ activeChallengeGameIndex=null;
 });
 }
 
+// Kelime Serüveni seviyesinden çıkış: süre durur, seviye bırakılır
+if(playAreaEl && playAreaEl.style.display==="block" && seruvenOyunu){
+seruvenBirak();
+}
+
 if(!suppressScreenPush){
 
 for(let i=0;i<SCREEN_IDS.length;i++){
@@ -1226,6 +1259,8 @@ break;
 
 document.getElementById("homeScreen").style.display="none";
 document.body.classList.remove("home-active");
+document.getElementById("seruvenScreen").style.display="none";
+document.getElementById("seruvenSeviyeScreen").style.display="none";
 document.getElementById("profileScreen").style.display="none";
 document.getElementById("otherProfileScreen").style.display="none";
 document.getElementById("friendsScreen").style.display="none";
@@ -1317,6 +1352,7 @@ profileScreen:"home",
 friendsScreen:"home",
 settingsScreen:"home",
 infoScreen:"home",
+seruvenScreen:"home",
 tournamentDetailScreen:"home"
 };
 
@@ -3498,7 +3534,9 @@ setTimeout(function(){
 
 if(wordRevealToken!==revealSessionToken)return;
 
-animateWordTargetRoll(remainingCount,1000,onAllDone);
+// Kelime Serüveni'nde kalan kelime sayısı yerine bulunan hedefler görünür
+if(seruvenOyunu)onAllDone();
+else animateWordTargetRoll(remainingCount,1000,onAllDone);
 
 },TARGET_ROLL_START_DELAY);
 
@@ -3515,10 +3553,17 @@ clearInterval(timer);
 
 document.getElementById("wordLengthBreakdown").style.visibility="visible";
 document.getElementById("wordMessage").style.visibility="visible";
-document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
 renderWordLengthBreakdown();
 
+if(seruvenOyunu){
+document.getElementById("wordMessage").innerHTML="Hedef kelimeleri yaz!";
+seruvenHedefCiz();
+seruvenSiradakiCiz();
+}
+else{
+document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
 startWordTargetConfettiRain(wordAchievable.length);
+}
 
 gameEndTime=Date.now()+time*1000;
 
@@ -3534,17 +3579,22 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 document.getElementById("wordTimeValue").innerHTML=time;
 let timeBarEl=document.getElementById("wordTimeBar");
 if(timeBarEl){
-let timePct=Math.max(0,Math.min(100,(time/120)*100));
+let timePct=Math.max(0,Math.min(100,(time/turSuresi)*100));
 timeBarEl.style.width=timePct+"%";
 }
 
-if(time<=90){
+if(time<=90 && !seruvenOyunu){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
 if(time<=0 && !resultRecorded){
 
 clearInterval(timer);
+
+if(seruvenOyunu){
+seruvenBitti(false);
+return;
+}
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 
@@ -3580,7 +3630,7 @@ motorTuruGoster(presetData.yeniTur);
 return;
 }
 
-let data=presetData ? presetData : generateWordGameData();
+let data=(presetData && presetData.seruven) ? seruvenTahtasi() : (presetData ? presetData : generateWordGameData());
 
 wordBaseLetters=data.baseLetters;
 wordAchievable=data.achievable;
@@ -3596,7 +3646,7 @@ document.getElementById("wordGameContent").style.display="block";
 
 playClickSoundNewgame();
 
-let inManagedContext=!!activeChallengeId;
+let inManagedContext=!!activeChallengeId || !!seruvenOyunu;
 document.getElementById("wordNewGameBtn").style.display=inManagedContext ? "none" : "flex";
 
 if(restoredProgress){
@@ -3787,6 +3837,11 @@ return null;
 
 
 function updateWordTarget(){
+
+if(seruvenOyunu){
+seruvenHedefCiz();
+return;
+}
 
 let remaining=wordAchievable.length-wordFound.size;
 
@@ -4387,7 +4442,7 @@ if(guess.length>=6){
 spawnWordConfetti(10);
 }
 
-if(!(aktifMotor && aktifMotor.sunucuda) && wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
+if(!(aktifMotor && aktifMotor.sunucuda) && !seruvenOyunu && wordAchievable.length && wordFound.size>=wordAchievable.length && !resultRecorded){
 
 clearInterval(timer);
 
@@ -4438,15 +4493,25 @@ let consonantsAfterRemoval=otherLetters.filter(function(l){ return !VOWELS.inclu
 let jokerAlreadyExists=wordTiles.some(function(t,tIdx){ return t.letter==='★' && tIdx!==idx; });
 
 let newLetter;
+let newLife=null;
 let harfReason;
 let oldLetterForLog=tile.letter;
 harfLastPick=null;
 
-if(vowelsAfterRemoval<2){
+let harfTuru=(vowelsAfterRemoval<2) ? "sesli" : ((consonantsAfterRemoval<3) ? "sessiz" : "serbest");
+
+// Kelime Serüveni: harfler önceden hazırlanan sıradan gelir (sıradaki harfler ekranda görünür)
+if(seruvenOyunu){
+let tas=seruvenHarfAl(harfTuru,jokerAlreadyExists);
+newLetter=tas.harf;
+newLife=tas.can;
+harfReason="serüven "+harfTuru;
+}
+else if(harfTuru==="sesli"){
 newLetter=pickWeightedLetter(VOWELS);
 harfReason="sesli zorunlu";
 }
-else if(consonantsAfterRemoval<3){
+else if(harfTuru==="sessiz"){
 newLetter=pickWeightedLetter(Object.keys(LETTER_TABLE).filter(function(l){ return !VOWELS.includes(l); }));
 harfReason="sessiz zorunlu";
 }
@@ -4460,7 +4525,7 @@ harfReason="serbest";
 }
 
 tile.letter=newLetter;
-tile.life=(newLetter==='★') ? 9 : randomLifeForLetter(newLetter);
+tile.life=(newLife!==null) ? newLife : ((newLetter==='★') ? 9 : randomLifeForLetter(newLetter));
 
 harfLogAdd("   "+oldLetterForLog+" bitti → "+newLetter+tile.life+"  ["+harfReason+(harfLastPick ? ", sayı "+harfLastPick.raw.toFixed(4)+", r "+harfLastPick.r.toFixed(2)+"/"+harfLastPick.total : "")+"]");
 
@@ -4486,6 +4551,11 @@ updateWordTarget();
 }
 
 harfLogAdd("   Tahta: "+harfBoardText()+harfDupText());
+
+if(seruvenOyunu){
+seruvenSiradakiCiz();
+seruvenKelime(guess);
+}
 
 wordSequence=[];
 wordTiles.forEach(t=>t.used=false);
@@ -4713,7 +4783,10 @@ let mySessionToken=gameSessionToken;
 
 clearInterval(timer);
 
-time=(presetData && presetData.resumeTime) ? presetData.resumeTime : 120;
+turSuresi=(presetData && presetData.sure) ? presetData.sure : 120;
+time=(presetData && presetData.resumeTime) ? presetData.resumeTime : turSuresi;
+if(!(presetData && presetData.seruven))seruvenOyunu=null;
+seruvenGorunumu(!!seruvenOyunu);
 score=0;
 resultRecorded=false;
 gameActive=true;
@@ -4726,7 +4799,7 @@ document.getElementById("wordOperation").innerHTML="Harf seçiniz";
 document.getElementById("wordTarget").innerHTML="--";
 document.getElementById("wordTargetBar").style.width="100%";
 document.getElementById("wordScoreValue").innerHTML=0;
-document.getElementById("wordTimeValue").innerHTML=120;
+document.getElementById("wordTimeValue").innerHTML=time;
 document.getElementById("wordTimeBar").style.width="100%";
 document.getElementById("wordCards").innerHTML="";
 document.getElementById("showWordsBtn").style.display="none";
@@ -4753,11 +4826,11 @@ time=Math.max(0,Math.round((gameEndTime-Date.now())/1000));
 document.getElementById("wordTimeValue").innerHTML=time;
 let timeBarEl=document.getElementById("wordTimeBar");
 if(timeBarEl){
-let timePct=Math.max(0,Math.min(100,(time/120)*100));
+let timePct=Math.max(0,Math.min(100,(time/turSuresi)*100));
 timeBarEl.style.width=timePct+"%";
 }
 
-if(time<=90){
+if(time<=90 && !seruvenOyunu){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
 
@@ -4769,6 +4842,11 @@ return;
 }
 
 clearInterval(timer);
+
+if(seruvenOyunu){
+if(!resultRecorded)seruvenBitti(false);
+return;
+}
 
 let result=(!activeChallengeId && score>=300) ? "win" : "timeout";
 

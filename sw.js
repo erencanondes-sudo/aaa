@@ -1,4 +1,4 @@
-const CACHE_NAME = "konfeti-v11";
+const CACHE_NAME = "konfeti-v12";
 
 const APP_SHELL = [
   "./index.html",

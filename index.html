@@ -236,6 +236,30 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 </div>
 </div>
 
+<button class="menu-card purple" id="seruvenDugme" style="margin-top:16px;" onclick="animatedNav(this,seruvenAc)">
+<div class="icon-circle">🗺️</div>
+<div class="menu-copy"><b>Kelime Serüveni</b><span>Seviye seviye kelime avı</span></div>
+<div class="arrow">›</div>
+</button>
+
+</div>
+
+<div id="seruvenScreen" class="tam-sayfa" style="display:none;">
+
+<h2>Kelime Serüveni</h2>
+
+<div id="seruvenKisimlar"></div>
+
+<div id="seruvenOzet"></div>
+
+</div>
+
+<div id="seruvenSeviyeScreen" class="tam-sayfa" style="display:none;">
+
+<h2 id="seruvenSeviyeBaslik"></h2>
+
+<div id="seruvenSeviyeler"></div>
+
 </div>
 
 <div id="profileScreen" class="tam-sayfa" style="display:none;">
@@ -635,16 +659,21 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 <div class="bar-bg"><div class="bar-fill-orange" id="wordTimeBar" style="width:100%;"></div></div>
 </div>
 
-<div class="section distribution-section">
+<div class="section distribution-section" id="wordDagilimBolumu">
 <div class="pill-header">KELİME DAĞILIMI</div>
 <div class="dist-table" id="wordLengthBreakdown" style="visibility:hidden;"></div>
+</div>
+
+<div class="section distribution-section" id="seruvenHedefBolumu" style="display:none;">
+<div class="pill-header">HEDEF KELİMELER</div>
+<div id="seruvenHedefler"></div>
 </div>
 
 <div class="divider-right"></div>
 
 <div class="section">
 <div class="words-icon"><i class="fa-solid fa-book-open"></i></div>
-<div class="section-label">KALAN KELİME</div>
+<div class="section-label" id="wordTargetLabel">KALAN KELİME</div>
 <div class="words-number" id="wordTarget">--</div>
 <div class="bar-bg"><div class="bar-fill-blue" id="wordTargetBar" style="width:100%;"></div></div>
 </div>
@@ -655,7 +684,7 @@ a3.5 3.5 0 0 1 0 7.5z"></path>
 
 </div>
 <div class="word-info-bottom" style="margin-top:-6px;">
-<div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:31px;left:-110px;">🎉</span><span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;"><span style="position:relative;top:19px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:9px;"><span id="wordScoreValue">0</span></span></span></div>
+<div style="position:relative;grid-column:2;"><span id="wordScoreEmoji" style="display:inline-block;font-size:48px;position:absolute;top:31px;left:-110px;">🎉</span><span id="wordPuanBlok" style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;"><span style="position:relative;top:19px;">PUAN</span><span class="value" id="wordScoreItem" style="position:relative;top:9px;"><span id="wordScoreValue">0</span></span></span><span id="seruvenSiradaki" style="display:none;flex-direction:column;align-items:center;gap:2px;position:relative;top:12px;"><span>SIRADAKİ</span><span id="seruvenSiradakiSesli" title="Bir sesli harfin canı biterse gelecek harf"></span><span id="seruvenSiradakiSessiz" title="Bir sessiz harfin canı biterse gelecek harf"></span></span></div>
 <p id="wordMessage" style="grid-column:3;justify-self:start;margin-left:10px;position:relative;top:32px;visibility:hidden;">Harflerden kelime türetiniz!</p>
 </div>
 </div>
