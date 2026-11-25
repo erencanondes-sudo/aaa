@@ -2795,6 +2795,13 @@ body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
 .seruven-hedef.bulundu{background:#22a822;color:#ffffff;}
 /* Taş, bulunmamış bir hedef kelimenin harfiyse turuncu (seçilince yine mor olur) */
 .word-cards .card.hedef-harf:not(.used){background:linear-gradient(145deg,#ffa43a,#f07a12);box-shadow:0 6px 0 #b8560a,0 9px 16px rgba(0,0,0,.25);}
+/* Harf Avı: avlanacak taş kırmızı */
+.word-cards .card.av-tasi:not(.used){background:linear-gradient(145deg,#ff6b6b,#d62f3a);box-shadow:0 6px 0 #9c1c26,0 9px 16px rgba(0,0,0,.25);}
+/* Bomba Taşları: bombalı taş koyu, sol üstte sayaç */
+.word-cards .card.bomba-tasi:not(.used){background:linear-gradient(145deg,#4a5568,#1f2733);box-shadow:0 6px 0 #10151c,0 9px 16px rgba(0,0,0,.3);}
+.bomba-sayac{position:absolute;top:-0.35em;left:-0.35em;font-size:0.38em;font-weight:900;background:#ffcf3a;color:#1f2733;border-radius:1em;padding:0.1em 0.35em;box-shadow:0 0.1em 0.2em rgba(0,0,0,.3);line-height:1.2;}
+/* Yayılan Taş: gri taş */
+.word-cards .card.gri-tas:not(.used){background:linear-gradient(145deg,#a0a8b4,#6b7480);box-shadow:0 6px 0 #4d545e,0 9px 16px rgba(0,0,0,.25);}
 .seruven-sonuc-yildiz{text-align:center;font-size:2.4em;color:#ffc52e;letter-spacing:0.1em;margin:0.2em 0;}
 
 body.dark-mode #seruvenScreen h2,body.dark-mode #seruvenSeviyeScreen h2{color:#ffffff;}

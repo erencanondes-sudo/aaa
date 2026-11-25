@@ -1,11 +1,39 @@
 /* Kelime Serüveni: kısımlar, seviyeler, ilerleme (yalnızca bu telefonda) ve seviye oyunu.
    Seviyeler Çetrefilli oyun ekranında oynanır; hedef kelimeler js/seruven-kelimeler.js içinde. */
 
+/* Harf Avı: hedef = işaretli harf sayısı, can = her işaretli harfin canı, harf = harflerin zorluğu */
+const SERUVEN_AV_HARFLERI={kolay:["K","L","M","N","R","S","T","D","B","Y"],orta:["C","Ç","G","H","P","Ş","Z"],zor:["Ğ","J","F","V"]};
+function seruvenAv(hedef,can,harf,sure){ return {hedef:hedef,can:can,harf:harf,sure:sure||120}; }
+const SERUVEN_AV_SEVIYELERI=[
+seruvenAv(1,1,"kolay"),seruvenAv(1,2,"kolay"),seruvenAv(2,1,"kolay"),seruvenAv(1,1,"orta"),seruvenAv(2,2,"kolay"),
+seruvenAv(2,1,"orta"),seruvenAv(3,1,"kolay"),seruvenAv(1,2,"orta"),seruvenAv(3,2,"kolay"),seruvenAv(2,2,"orta"),
+seruvenAv(1,1,"zor"),seruvenAv(3,1,"orta"),seruvenAv(2,1,"zor"),seruvenAv(3,2,"orta"),seruvenAv(1,2,"zor",180),
+seruvenAv(4,1,"orta",180),seruvenAv(2,2,"zor",180),seruvenAv(4,2,"orta",180),seruvenAv(3,2,"zor",240),seruvenAv(4,2,"zor",240)
+];
+
+/* Bomba Taşları: bomba = bombalı taş sayısı, sayac = kaç kelimede patlar, zor = bombalar zor sessiz harflerde */
+function seruvenBomba(bomba,sayac,zor,sure){ return {bomba:bomba,sayac:sayac,zor:!!zor,sure:sure||120}; }
+const SERUVEN_BOMBA_SEVIYELERI=[
+seruvenBomba(1,5),seruvenBomba(1,4),seruvenBomba(2,6),seruvenBomba(1,3),seruvenBomba(2,5),
+seruvenBomba(2,4),seruvenBomba(3,6),seruvenBomba(1,2),seruvenBomba(2,3),seruvenBomba(3,5),
+seruvenBomba(1,3,true),seruvenBomba(3,4),seruvenBomba(2,3,true),seruvenBomba(4,6),seruvenBomba(3,3,false,180),
+seruvenBomba(2,2,true,180),seruvenBomba(4,4,false,180),seruvenBomba(3,3,true,180),seruvenBomba(4,3,true,240),seruvenBomba(4,2,true,240)
+];
+
+/* Yayılan Taş: gri = başlangıçtaki gri taş sayısı, aralik = kaç kelimede bir yayılır */
+function seruvenYayilan(gri,aralik,sure){ return {gri:gri,aralik:aralik,sure:sure||120}; }
+const SERUVEN_YAYILAN_SEVIYELERI=[
+seruvenYayilan(1,3),seruvenYayilan(1,2),seruvenYayilan(2,4),seruvenYayilan(2,3),seruvenYayilan(1,1),
+seruvenYayilan(3,4),seruvenYayilan(2,2),seruvenYayilan(3,3),seruvenYayilan(4,4),seruvenYayilan(2,1),
+seruvenYayilan(3,2),seruvenYayilan(4,3),seruvenYayilan(3,1),seruvenYayilan(4,2),seruvenYayilan(5,3,180),
+seruvenYayilan(4,1,180),seruvenYayilan(5,2,180),seruvenYayilan(5,1,180),seruvenYayilan(6,2,240),seruvenYayilan(6,1,240)
+];
+
 const SERUVEN_KISIMLARI=[
-{ad:"Hedef Kelimeler",ikon:"🎯",renk:"#4fa3f7,#1f6fd1",seviyeler:SERUVEN_HEDEF_KELIMELER},
-{ad:"Harf Avı",ikon:"🔍",renk:"#5fd3a0,#1f9e6b",seviyeler:null},
-{ad:"Bomba Taşları",ikon:"💣",renk:"#ff9a6b,#e0532f",seviyeler:null},
-{ad:"Yayılan Taş",ikon:"🪨",renk:"#b28cf0,#7a4fd1",seviyeler:null},
+{ad:"Hedef Kelimeler",tur:"hedef",ikon:"🎯",renk:"#4fa3f7,#1f6fd1",seviyeler:SERUVEN_HEDEF_KELIMELER},
+{ad:"Harf Avı",tur:"av",ikon:"🔍",renk:"#5fd3a0,#1f9e6b",seviyeler:SERUVEN_AV_SEVIYELERI},
+{ad:"Bomba Taşları",tur:"bomba",ikon:"💣",renk:"#ff9a6b,#e0532f",seviyeler:SERUVEN_BOMBA_SEVIYELERI},
+{ad:"Yayılan Taş",tur:"yayilan",ikon:"🪨",renk:"#b28cf0,#7a4fd1",seviyeler:SERUVEN_YAYILAN_SEVIYELERI},
 {ad:"Yakında",ikon:"✨",renk:"#c3cede,#94a3b8",seviyeler:null}
 ];
 const SERUVEN_SEVIYE_SAYISI=20;
@@ -136,7 +164,7 @@ h+="<b>"+(s+1)+"</b><span>"+(y ? "★".repeat(y)+"☆".repeat(3-y) : "")+"</span
 h+="</div>";
 
 if(siradaki===SERUVEN_RASTGELE_SEVIYE){
-h+="<button class=\"menu-card full-card new\" style=\"margin-top:1em;\" onclick=\"seruvenOyna("+k+","+SERUVEN_RASTGELE_SEVIYE+")\"><div class=\"icon-circle\">🎲</div><div class=\"menu-copy\"><b>Rastgele Oyun</b><span>Rastgele 2 kelime</span></div><div class=\"arrow\">›</div></button>";
+h+="<button class=\"menu-card full-card new\" style=\"margin-top:1em;\" onclick=\"seruvenOyna("+k+","+SERUVEN_RASTGELE_SEVIYE+")\"><div class=\"icon-circle\">🎲</div><div class=\"menu-copy\"><b>Rastgele Oyun</b><span>"+(SERUVEN_KISIMLARI[k].tur==="hedef" ? "Rastgele 2 kelime" : "Rastgele bir seviye")+"</span></div><div class=\"arrow\">›</div></button>";
 }
 
 document.getElementById("seruvenSeviyeler").innerHTML=h;
@@ -148,16 +176,20 @@ document.getElementById("seruvenSeviyeler").innerHTML=h;
 
 function seruvenOyna(k,s){
 
-let hedefler;
-let sure;
+let kisim=SERUVEN_KISIMLARI[k];
+let ayar;
+let hedefler=[];
 if(s===SERUVEN_RASTGELE_SEVIYE){
+// Kısım bitince: Hedef Kelimeler'de rastgele 2 kelime, diğerlerinde rastgele bir seviye
+if(kisim.tur==="hedef"){
 hedefler=SERUVEN_RASTGELE[Math.floor(Math.random()*SERUVEN_RASTGELE.length)].slice();
-sure=SERUVEN_RASTGELE_SURE;
+ayar={sure:SERUVEN_RASTGELE_SURE};
+}
+else ayar=kisim.seviyeler[Math.floor(Math.random()*kisim.seviyeler.length)];
 }
 else{
-let sev=SERUVEN_KISIMLARI[k].seviyeler[s];
-hedefler=sev.havuz[Math.floor(Math.random()*sev.havuz.length)].slice();
-sure=sev.sure;
+ayar=kisim.seviyeler[s];
+if(kisim.tur==="hedef")hedefler=ayar.havuz[Math.floor(Math.random()*ayar.havuz.length)].slice();
 }
 
 seruvenAcikKisim=k;
@@ -172,21 +204,68 @@ hideAllScreens();
 playAreaEl.style.display="block";
 }
 
-seruvenOyunu={kisim:k,seviye:s,hedefler:hedefler,bulunan:new Set()};
+seruvenOyunu={kisim:k,seviye:s,tur:kisim.tur,ayar:ayar,hedefler:hedefler,bulunan:new Set(),toplam:0,tamam:0,kelimeSayaci:0,kullanilan:[],olay:[]};
 
-newGame({seruven:true,sure:sure});
+newGame({seruven:true,sure:ayar.sure});
 
 }
 
-/* Açılış tahtası: hedef kelimelerden hiçbiri hemen yazılamasın, gerisi rastgele */
+/* Açılış harfleri. Hedef Kelimeler: hedeflerden hiçbiri hemen yazılamasın.
+   Harf Avı: işaretlenecek harfler için yeterli sessiz olsun. Gerisi rastgele. */
 function seruvenTahtasi(){
+let o=seruvenOyunu;
 let d;
 let deneme=0;
+function uygun(){
+if(o.tur==="hedef")return !o.hedefler.some(function(w){ return window.KonfetiOyun.kurulabilir(w,d.baseLetters,1); });
+if(o.tur==="av")return d.baseLetters.filter(function(h){ return !VOWELS.includes(h); }).length>=o.ayar.hedef;
+return true;
+}
 do{
 d=generateWordGameData();
 deneme++;
-} while(deneme<50 && seruvenOyunu.hedefler.some(function(w){ return window.KonfetiOyun.kurulabilir(w,d.baseLetters,1); }));
+} while(deneme<50 && !uygun());
 return d;
+}
+
+/* Taşlar dağıtılmadan önce: işaretli harfler, bombalar ya da gri taşlar yerleştirilir */
+function seruvenTahtaHazirla(){
+
+let o=seruvenOyunu;
+let a=o.ayar;
+let yerler=shuffleArray(wordTiles.map(function(t,i){ return i; }).filter(function(i){ return wordTiles[i].letter!=='★'; }));
+let sessizYerler=yerler.filter(function(i){ return !VOWELS.includes(wordTiles[i].letter); });
+
+if(o.tur==="av"){
+let harfler=shuffleArray(SERUVEN_AV_HARFLERI[a.harf]);
+sessizYerler.slice(0,a.hedef).forEach(function(i,j){
+let t=wordTiles[i];
+t.letter=harfler[j%harfler.length];
+t.life=a.can;
+t.av=true;
+});
+o.toplam=Math.min(a.hedef,sessizYerler.length);
+}
+else if(o.tur==="bomba"){
+// Zor bombalar sessiz taşlara konur ve harfi zor bir sessize döner (sesli/sessiz sayısı değişmez)
+let bombaYerleri=(a.zor ? sessizYerler : yerler).slice(0,a.bomba);
+let zorHarfler=shuffleArray(SERUVEN_AV_HARFLERI.orta.concat(SERUVEN_AV_HARFLERI.zor));
+bombaYerleri.forEach(function(i,j){
+let t=wordTiles[i];
+t.bomba=a.sayac;
+if(a.zor){
+t.letter=zorHarfler[j%zorHarfler.length];
+t.life=randomLifeForLetter(t.letter);
+}
+});
+o.toplam=bombaYerleri.length;
+}
+else if(o.tur==="yayilan"){
+yerler.slice(0,a.gri).forEach(function(i){ wordTiles[i].gri=true; });
+}
+
+wordBaseLetters=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
+
 }
 
 /* Oyun ekranından çıkılınca seviye bırakılır */
@@ -198,7 +277,7 @@ seruvenOyunu=null;
 }
 
 
-/* ---------- Hedef kelimeler ---------- */
+/* ---------- Görev bilgisi ve taş görünümü ---------- */
 
 /* Harf, henüz bulunmamış bir hedef kelimede geçiyor mu (taş turuncu görünür) */
 function seruvenHedefHarfi(harf){
@@ -206,35 +285,182 @@ let o=seruvenOyunu;
 return !!o && o.hedefler.some(function(w){ return !o.bulunan.has(w) && w.includes(harf); });
 }
 
-function seruvenHedefCiz(){
-if(!seruvenOyunu)return;
+function seruvenTasSinifi(t){
 let o=seruvenOyunu;
-document.getElementById("seruvenHedefler").innerHTML=o.hedefler.map(function(w){
+if(!o || t.letter==='★')return "";
+if(o.tur==="hedef")return seruvenHedefHarfi(t.letter) ? " hedef-harf" : "";
+if(o.tur==="av")return t.av ? " av-tasi" : "";
+if(o.tur==="bomba")return typeof t.bomba==="number" ? " bomba-tasi" : "";
+if(o.tur==="yayilan")return t.gri ? " gri-tas" : "";
+return "";
+}
+
+function seruvenTasEki(t){
+if(seruvenOyunu && seruvenOyunu.tur==="bomba" && typeof t.bomba==="number")return "<span class=\"bomba-sayac\">💣"+t.bomba+"</span>";
+return "";
+}
+
+function seruvenGriSayisi(){
+return wordTiles.filter(function(t){ return t.gri; }).length;
+}
+
+function seruvenGorevCiz(){
+
+let o=seruvenOyunu;
+if(!o)return;
+
+let baslik, liste, etiket, deger, oran;
+
+if(o.tur==="hedef"){
+baslik="HEDEF KELİMELER";
+liste=o.hedefler.map(function(w){
 let bulundu=o.bulunan.has(w);
 return "<div class=\"seruven-hedef"+(bulundu ? " bulundu" : "")+"\">"+(bulundu ? "✓ " : "")+w+"</div>";
 }).join("");
-document.getElementById("wordTarget").innerHTML=o.bulunan.size+"/"+o.hedefler.length;
-document.getElementById("wordTargetBar").style.width=Math.round(o.bulunan.size/o.hedefler.length*100)+"%";
+etiket="BULUNAN";
+deger=o.bulunan.size+"/"+o.hedefler.length;
+oran=o.bulunan.size/o.hedefler.length;
+}
+else if(o.tur==="av"){
+baslik="AVLANACAK HARFLER";
+liste=wordTiles.filter(function(t){ return t.av; }).map(function(t){ return "<div class=\"seruven-hedef\">"+t.letter+" ×"+t.life+"</div>"; }).join("");
+etiket="AVLANAN";
+deger=o.tamam+"/"+o.toplam;
+oran=o.toplam ? o.tamam/o.toplam : 1;
+}
+else if(o.tur==="bomba"){
+baslik="BOMBALAR";
+liste=wordTiles.filter(function(t){ return typeof t.bomba==="number"; }).map(function(t){ return "<div class=\"seruven-hedef\">"+t.letter+" 💣"+t.bomba+"</div>"; }).join("");
+etiket="ÇÖZÜLEN";
+deger=o.tamam+"/"+o.toplam;
+oran=o.toplam ? o.tamam/o.toplam : 1;
+}
+else{
+let gri=seruvenGriSayisi();
+let kalan=o.ayar.aralik-o.kelimeSayaci;
+baslik="GRİ TAŞLAR";
+liste="<div class=\"seruven-hedef\">"+kalan+" kelime sonra yayılır</div>";
+etiket="GRİ TAŞ";
+deger=gri;
+oran=gri/7;
 }
 
-/* Geçerli bir kelime yazıldı: hedefse işaretlenir, hepsi bulununca seviye biter */
+document.getElementById("seruvenGorevBaslik").innerHTML=baslik;
+document.getElementById("seruvenHedefler").innerHTML=liste;
+document.getElementById("wordTargetLabel").innerHTML=etiket;
+document.getElementById("wordTarget").innerHTML=deger;
+document.getElementById("wordTargetBar").style.width=Math.round(oran*100)+"%";
+
+}
+
+
+/* ---------- Kelime yazılınca ---------- */
+
+/* Harfler değişmeden önce: kullanılan işaretli taşlar (avlanan, çözülen bomba, temizlenen gri) belirlenir */
+function seruvenKelimeOncesi(yerler){
+let o=seruvenOyunu;
+if(!o)return;
+o.kullanilan=yerler.map(function(i){ return wordTiles[i]; });
+o.olay=[];
+o.kullanilan.forEach(function(t){
+if(t.av && t.life<=1){
+t.av=false;
+o.tamam++;
+o.olay.push("🎯 "+t.letter+" avlandı!");
+}
+if(typeof t.bomba==="number"){
+t.bomba=null;
+o.tamam++;
+o.olay.push("✂️ Bomba çözüldü!");
+}
+if(t.gri){
+t.gri=false;
+o.olay.push("✨ Gri taş temizlendi!");
+}
+});
+}
+
+/* Geçerli kelimeden sonra (harfler değişti): görev ilerler, seviye biter ya da kaybedilir */
 function seruvenKelime(kelime){
+
 let o=seruvenOyunu;
 if(!o || resultRecorded)return;
-if(!o.hedefler.includes(kelime) || o.bulunan.has(kelime)){
-document.getElementById("wordMessage").innerHTML=kelime+" geçerli, harfler yenilendi.";
+let mesaj=o.olay.length ? o.olay.join(" ") : kelime+" geçerli, harfler yenilendi.";
+
+if(o.tur==="hedef"){
+if(o.hedefler.includes(kelime) && !o.bulunan.has(kelime)){
+o.bulunan.add(kelime);
+mesaj="🎯 "+kelime+" bulundu!";
+}
+document.getElementById("wordMessage").innerHTML=mesaj;
+seruvenGorevCiz();
+if(o.bulunan.size===o.hedefler.length)seruvenBitti(true);
 return;
 }
-o.bulunan.add(kelime);
-document.getElementById("wordMessage").innerHTML="🎯 "+kelime+" bulundu!";
-seruvenHedefCiz();
-if(o.bulunan.size===o.hedefler.length)seruvenBitti(true);
+
+if(o.tur==="bomba"){
+// Kullanılmayan bombaların sayacı bir azalır
+let patladi=false;
+wordTiles.forEach(function(t){
+if(typeof t.bomba==="number" && !o.kullanilan.includes(t)){
+t.bomba--;
+if(t.bomba<=0)patladi=true;
+}
+});
+document.getElementById("wordMessage").innerHTML=mesaj;
+seruvenGorevCiz();
+if(patladi)seruvenBitti(false,"Bomba patladı 💥");
+else if(o.tamam>=o.toplam)seruvenBitti(true);
+return;
+}
+
+if(o.tur==="yayilan"){
+if(seruvenGriSayisi()===0){
+document.getElementById("wordMessage").innerHTML=mesaj;
+seruvenGorevCiz();
+seruvenBitti(true);
+return;
+}
+o.kelimeSayaci++;
+if(o.kelimeSayaci>=o.ayar.aralik){
+o.kelimeSayaci=0;
+if(seruvenYay())mesaj+=" ⚠️ Gri taş yayıldı!";
+}
+document.getElementById("wordMessage").innerHTML=mesaj;
+seruvenGorevCiz();
+if(seruvenGriSayisi()>=wordTiles.filter(function(t){ return t.letter!=='★'; }).length)seruvenBitti(false,"Bütün taşlar griye döndü");
+return;
+}
+
+// Harf Avı
+document.getElementById("wordMessage").innerHTML=mesaj;
+seruvenGorevCiz();
+if(o.tamam>=o.toplam)seruvenBitti(true);
+
+}
+
+/* Grilik bir gri taşın yanındaki (sağ, sol, üst, alt) temiz taşa geçer; yanında temiz taş yoksa rastgele bir temiz taşa */
+function seruvenYay(){
+let SUTUN=4;
+let temiz=function(i){ return i>=0 && i<wordTiles.length && wordTiles[i].letter!=='★' && !wordTiles[i].gri; };
+let adaylar=[];
+wordTiles.forEach(function(t,i){
+if(!t.gri)return;
+let komsular=[i-SUTUN,i+SUTUN];
+if(i%SUTUN>0)komsular.push(i-1);
+if(i%SUTUN<SUTUN-1)komsular.push(i+1);
+komsular.forEach(function(n){ if(temiz(n) && !adaylar.includes(n))adaylar.push(n); });
+});
+if(!adaylar.length)adaylar=wordTiles.map(function(t,i){ return i; }).filter(temiz);
+if(!adaylar.length)return false;
+wordTiles[adaylar[Math.floor(Math.random()*adaylar.length)]].gri=true;
+return true;
 }
 
 
 /* ---------- Seviye sonu ---------- */
 
-function seruvenBitti(kazandi){
+function seruvenBitti(kazandi,sebep){
 
 let o=seruvenOyunu;
 if(!o)return;
@@ -274,8 +500,8 @@ else{
 
 playErrorSound();
 
-h="<p class=\"screen-title\">Süre bitti ⏱️</p>";
-h+="<p>"+o.bulunan.size+" / "+o.hedefler.length+" kelime bulundu.</p>";
+h="<p class=\"screen-title\">"+(sebep || "Süre bitti ⏱️")+"</p>";
+if(o.tur==="hedef")h+="<p>"+o.bulunan.size+" / "+o.hedefler.length+" kelime bulundu.</p>";
 h+="<button class=\"menu-card full-card new\" style=\"margin-top:1em;\" onclick=\"closeDetailModal();seruvenOyna("+k+","+s+")\"><div class=\"icon-circle\">🔁</div><div class=\"menu-copy\"><b>Tekrar</b></div><div class=\"arrow\">›</div></button>";
 
 }

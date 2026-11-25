@@ -591,11 +591,11 @@ showTopNotification("Kelime Serüveni yüklenemedi. İnternet bağlantını kont
 });
 }
 
-/* Oyun ekranı: Serüven seviyesinde kelime dağılımı yerine hedef kelimeler görünür */
+/* Oyun ekranı: Serüven seviyesinde kelime dağılımı yerine görev bilgisi (hedef kelimeler, avlanacak harfler, bombalar, gri taşlar) görünür */
 function seruvenGorunumu(acik){
 document.getElementById("wordDagilimBolumu").style.display=acik ? "none" : "";
 document.getElementById("seruvenHedefBolumu").style.display=acik ? "" : "none";
-document.getElementById("wordTargetLabel").innerHTML=acik ? "BULUNAN" : "KALAN KELİME";
+if(!acik)document.getElementById("wordTargetLabel").innerHTML="KALAN KELİME";
 }
 
 /* Firebase hazır değilken giriş düğmelerine basılırsa */
@@ -3555,7 +3555,7 @@ renderWordLengthBreakdown();
 
 if(seruvenOyunu){
 document.getElementById("wordMessage").innerHTML="Hedef kelimeleri yaz!";
-seruvenHedefCiz();
+seruvenGorevCiz();
 renderWordCards();
 }
 else{
@@ -3684,6 +3684,7 @@ wordFound=new Set();
 let order=shuffleArray([...wordBaseLetters,'★']);
 wordTiles=order.map((l,i)=>({letter:l,used:false,id:i,life:(l==='★' ? 9 : randomLifeForLetter(l))}));
 ensureJokerAtBottomRight();
+if(seruvenOyunu)seruvenTahtaHazirla();
 
 harfLogAdd("════ YENİ TUR"+(activeChallengeId ? " (düello)" : "")+" ════");
 harfLogAdd("Başlangıç tahtası: "+harfBoardText()+harfDupText());
@@ -3711,10 +3712,10 @@ wordTiles.forEach((t,i)=>{
 
 let c=document.createElement("div");
 
-c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "")+(seruvenOyunu && seruvenHedefHarfi(t.letter) ? " hedef-harf" : "");
+c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "")+(seruvenOyunu ? seruvenTasSinifi(t) : "");
 c.dataset.id=t.id;
 // Turnuvada taş sunucudan henüz gelmediyse karo bir an boş görünür
-c.innerHTML=(t.letter===null ? "·" : (t.letter==='★' ? "★" : t.letter))+"<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+(t.letter===null ? "" : t.life)+"</span>";
+c.innerHTML=(t.letter===null ? "·" : (t.letter==='★' ? "★" : t.letter))+"<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+(t.letter===null ? "" : t.life)+"</span>"+(seruvenOyunu ? seruvenTasEki(t) : "");
 
 if(t.letter==='★'){
 c.onclick=function(){ tapWordTile(i); };
@@ -3837,7 +3838,7 @@ return null;
 function updateWordTarget(){
 
 if(seruvenOyunu){
-seruvenHedefCiz();
+seruvenGorevCiz();
 return;
 }
 
@@ -4459,6 +4460,8 @@ recordGameEnd("win",finalScore);
 }
 
 harfLogAdd("Kelime: "+guess);
+
+if(seruvenOyunu)seruvenKelimeOncesi(usedIndices);
 
 let replacedIndices=[];
 let decreasedIds=[];
