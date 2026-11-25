@@ -2785,7 +2785,7 @@ body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
 .seruven-seviye.kilitli{background:#d3dbe6;color:#8d9bb0;box-shadow:0 0.28em 0 #b4c0cf;}
 .seruven-seviye:not(.kilitli):active{transform:translateY(0.15em);box-shadow:0 0.1em 0 rgba(0,0,0,.25);}
 
-/* Oyun ekranı: hedef kelimeler ve sıradaki harfler */
+/* Oyun ekranı: hedef kelimeler */
 #seruvenHedefler{display:flex;flex-direction:column;gap:0.25em;margin-top:0.3em;width:100%;}
 .seruven-hedef{
     background:#ffffff;color:#1e2d46;border-radius:0.5em;padding:0.15em 0.4em;
@@ -2793,12 +2793,8 @@ body.geri-gidiyor .tam-sayfa:not(.sayfa-kapaniyor){animation:none;}
     box-shadow:0 0.1em 0.25em rgba(0,0,0,.12);
 }
 .seruven-hedef.bulundu{background:#22a822;color:#ffffff;}
-#seruvenSiradakiSesli,#seruvenSiradakiSessiz{
-    width:1.7em;height:1.7em;display:flex;align-items:center;justify-content:center;
-    background:#ffffff;border-radius:0.4em;font-weight:900;font-size:1.05em;box-shadow:0 0.12em 0 rgba(0,0,0,.18);
-}
-#seruvenSiradakiSesli{color:#e0532f;}
-#seruvenSiradakiSessiz{color:#1f6fd1;}
+/* Taş, bulunmamış bir hedef kelimenin harfiyse turuncu (seçilince yine mor olur) */
+.word-cards .card.hedef-harf:not(.used){background:linear-gradient(145deg,#ffa43a,#f07a12);box-shadow:0 6px 0 #b8560a,0 9px 16px rgba(0,0,0,.25);}
 .seruven-sonuc-yildiz{text-align:center;font-size:2.4em;color:#ffc52e;letter-spacing:0.1em;margin:0.2em 0;}
 
 body.dark-mode #seruvenScreen h2,body.dark-mode #seruvenSeviyeScreen h2{color:#ffffff;}

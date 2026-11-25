@@ -591,12 +591,10 @@ showTopNotification("Kelime Serüveni yüklenemedi. İnternet bağlantını kont
 });
 }
 
-/* Oyun ekranı: Serüven seviyesinde kelime dağılımı ve puan yerine hedef kelimeler ve sıradaki harfler görünür */
+/* Oyun ekranı: Serüven seviyesinde kelime dağılımı yerine hedef kelimeler görünür */
 function seruvenGorunumu(acik){
 document.getElementById("wordDagilimBolumu").style.display=acik ? "none" : "";
 document.getElementById("seruvenHedefBolumu").style.display=acik ? "" : "none";
-document.getElementById("wordPuanBlok").style.display=acik ? "none" : "inline-flex";
-document.getElementById("seruvenSiradaki").style.display=acik ? "inline-flex" : "none";
 document.getElementById("wordTargetLabel").innerHTML=acik ? "BULUNAN" : "KALAN KELİME";
 }
 
@@ -3558,7 +3556,7 @@ renderWordLengthBreakdown();
 if(seruvenOyunu){
 document.getElementById("wordMessage").innerHTML="Hedef kelimeleri yaz!";
 seruvenHedefCiz();
-seruvenSiradakiCiz();
+renderWordCards();
 }
 else{
 document.getElementById("wordMessage").innerHTML="Harflerden kelime türetiniz!";
@@ -3713,7 +3711,7 @@ wordTiles.forEach((t,i)=>{
 
 let c=document.createElement("div");
 
-c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "");
+c.className="card"+(t.letter==='★' ? " joker" : "")+(t.used ? " used" : "")+(seruvenOyunu && seruvenHedefHarfi(t.letter) ? " hedef-harf" : "");
 c.dataset.id=t.id;
 // Turnuvada taş sunucudan henüz gelmediyse karo bir an boş görünür
 c.innerHTML=(t.letter===null ? "·" : (t.letter==='★' ? "★" : t.letter))+"<span class=\"tile-life"+(t.life===1 ? " tile-life-critical" : "")+"\">"+(t.letter===null ? "" : t.life)+"</span>";
@@ -4493,21 +4491,13 @@ let consonantsAfterRemoval=otherLetters.filter(function(l){ return !VOWELS.inclu
 let jokerAlreadyExists=wordTiles.some(function(t,tIdx){ return t.letter==='★' && tIdx!==idx; });
 
 let newLetter;
-let newLife=null;
 let harfReason;
 let oldLetterForLog=tile.letter;
 harfLastPick=null;
 
 let harfTuru=(vowelsAfterRemoval<2) ? "sesli" : ((consonantsAfterRemoval<3) ? "sessiz" : "serbest");
 
-// Kelime Serüveni: harfler önceden hazırlanan sıradan gelir (sıradaki harfler ekranda görünür)
-if(seruvenOyunu){
-let tas=seruvenHarfAl(harfTuru,jokerAlreadyExists);
-newLetter=tas.harf;
-newLife=tas.can;
-harfReason="serüven "+harfTuru;
-}
-else if(harfTuru==="sesli"){
+if(harfTuru==="sesli"){
 newLetter=pickWeightedLetter(VOWELS);
 harfReason="sesli zorunlu";
 }
@@ -4525,7 +4515,7 @@ harfReason="serbest";
 }
 
 tile.letter=newLetter;
-tile.life=(newLife!==null) ? newLife : ((newLetter==='★') ? 9 : randomLifeForLetter(newLetter));
+tile.life=(newLetter==='★') ? 9 : randomLifeForLetter(newLetter);
 
 harfLogAdd("   "+oldLetterForLog+" bitti → "+newLetter+tile.life+"  ["+harfReason+(harfLastPick ? ", sayı "+harfLastPick.raw.toFixed(4)+", r "+harfLastPick.r.toFixed(2)+"/"+harfLastPick.total : "")+"]");
 
@@ -4552,10 +4542,7 @@ updateWordTarget();
 
 harfLogAdd("   Tahta: "+harfBoardText()+harfDupText());
 
-if(seruvenOyunu){
-seruvenSiradakiCiz();
-seruvenKelime(guess);
-}
+if(seruvenOyunu)seruvenKelime(guess);
 
 wordSequence=[];
 wordTiles.forEach(t=>t.used=false);

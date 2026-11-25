@@ -13,7 +13,6 @@ const SERUVEN_RASTGELE_SEVIYE=20;   // kısım bitince oynanan rastgele oyun (21
 const SERUVEN_RASTGELE_SURE=120;
 
 let seruvenAcikKisim=0;
-let seruvenSirasi=null;
 
 
 /* ---------- İlerleme: her kısım için 20 seviyenin yıldızı (0 = geçilmedi) ---------- */
@@ -174,7 +173,6 @@ playAreaEl.style.display="block";
 }
 
 seruvenOyunu={kisim:k,seviye:s,hedefler:hedefler,bulunan:new Set()};
-seruvenSirasi={sesli:[],sessiz:[],serbest:[]};
 
 newGame({seruven:true,sure:sure});
 
@@ -200,49 +198,13 @@ seruvenOyunu=null;
 }
 
 
-/* ---------- Harf sırası: sesli, sessiz ve serbest sıra (serbestte joker zarı da önceden atılır) ---------- */
-
-function seruvenSiradakiTas(tur){
-let l=seruvenSirasi[tur];
-if(!l.length){
-let harfler=Object.keys(LETTER_TABLE);
-if(tur==="sesli")harfler=VOWELS;
-else if(tur==="sessiz")harfler=harfler.filter(function(h){ return !VOWELS.includes(h); });
-let harf=pickWeightedLetter(harfler);
-l.push({harf:harf,can:randomLifeForLetter(harf),zar:letterRandom()});
-}
-return l[0];
-}
-
-function seruvenTasCoz(tas,tur,jokerVar){
-if(tur==="serbest" && !jokerVar && tas.zar<0.15)return {harf:'★',can:9};
-return {harf:tas.harf,can:tas.can};
-}
-
-function seruvenHarfAl(tur,jokerVar){
-let tas=seruvenSiradakiTas(tur);
-seruvenSirasi[tur].shift();
-return seruvenTasCoz(tas,tur,jokerVar);
-}
-
-/* Sıradaki harfler: üstte bir sesli, altta bir sessiz harfin canı biterse gelecek harf
-   (tahtadaki sesli/sessiz sayısına göre zorunlu sıradan ya da serbest sıradan) */
-function seruvenSiradakiCiz(){
-if(!seruvenOyunu)return;
-let harfler=wordTiles.filter(function(t){ return t.letter!=='★'; }).map(function(t){ return t.letter; });
-let sesli=harfler.filter(function(h){ return VOWELS.includes(h); }).length;
-let sessiz=harfler.length-sesli;
-let jokerVar=wordTiles.some(function(t){ return t.letter==='★'; });
-function tahmin(kalanSesli,kalanSessiz){
-let tur=(kalanSesli<2) ? "sesli" : ((kalanSessiz<3) ? "sessiz" : "serbest");
-return seruvenTasCoz(seruvenSiradakiTas(tur),tur,jokerVar).harf;
-}
-document.getElementById("seruvenSiradakiSesli").innerHTML=tahmin(sesli-1,sessiz);
-document.getElementById("seruvenSiradakiSessiz").innerHTML=tahmin(sesli,sessiz-1);
-}
-
-
 /* ---------- Hedef kelimeler ---------- */
+
+/* Harf, henüz bulunmamış bir hedef kelimede geçiyor mu (taş turuncu görünür) */
+function seruvenHedefHarfi(harf){
+let o=seruvenOyunu;
+return !!o && o.hedefler.some(function(w){ return !o.bulunan.has(w) && w.includes(harf); });
+}
 
 function seruvenHedefCiz(){
 if(!seruvenOyunu)return;
