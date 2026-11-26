@@ -4410,6 +4410,18 @@ setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 return;
 }
 
+// Kelime Serüveni (Harf Avı, Bomba Taşları, Yayılan Taş): en az 5 harf
+if(seruvenOyunu && seruvenOyunu.tur!=="hedef" && guess.length<5){
+document.getElementById("wordMessage").innerHTML="Bu oyunda en az 5 harfli kelime yazmalısın.";
+playErrorSound();
+flashWordCards(usedIndices,"error",250);
+flashWordOperation("error",250);
+wordSequence=[];
+wordTiles.forEach(t=>t.used=false);
+setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
+return;
+}
+
 if(wordFound.has(guess)){
 document.getElementById("wordMessage").innerHTML=guess+" zaten bulundu.";
 playAlreadyFoundSound();
