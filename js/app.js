@@ -4410,9 +4410,9 @@ setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 return;
 }
 
-// Kelime Serüveni (Harf Avı, Bomba Taşları, Yayılan Taş): en az 5 harf
-if(seruvenOyunu && seruvenOyunu.tur!=="hedef" && guess.length<5){
-document.getElementById("wordMessage").innerHTML="Bu oyunda en az 5 harfli kelime yazmalısın.";
+// Kelime Serüveni: işaretli taşlar (avlanacak, bombalı, gri) yalnızca 5 harf ve üstü kelimelerde kullanılabilir
+if(seruvenOyunu && guess.length<5 && usedIndices.some(function(i){ return seruvenIsaretli(wordTiles[i]); })){
+document.getElementById("wordMessage").innerHTML="İşaretli taşlar yalnızca 5 harf ve üstü kelimelerde kullanılabilir.";
 playErrorSound();
 flashWordCards(usedIndices,"error",250);
 flashWordOperation("error",250);

@@ -1,7 +1,7 @@
 /* Kelime Serüveni: kısımlar, seviyeler, ilerleme (yalnızca bu telefonda) ve seviye oyunu.
    Seviyeler Çetrefilli oyun ekranında oynanır; hedef kelimeler js/seruven-kelimeler.js içinde. */
 
-/* Bu üç kısımda yalnızca 5 harf ve üstü kelimeler geçerli. İşaretler tahtadaki harflere konur, harfler değişmez.
+/* Bu üç kısımda işaretli taşlar yalnızca 5 harf ve üstü kelimelerde kullanılabilir. İşaretler tahtadaki harflere konur, harfler değişmez.
    Harf Avı: hedef = işaretli taş sayısı (her biri farklı harf), can = işaretli taşların canı */
 function seruvenAv(hedef,can){ return {hedef:hedef,can:can,sure:120}; }
 const SERUVEN_AV_SEVIYELERI=[
@@ -302,6 +302,10 @@ return "";
 function seruvenTasEki(t){
 if(seruvenOyunu && seruvenOyunu.tur==="bomba" && typeof t.bomba==="number")return "<span class=\"bomba-sayac\">💣"+t.bomba+"</span>";
 return "";
+}
+
+function seruvenIsaretli(t){
+return !!(t.av || typeof t.bomba==="number" || t.gri);
 }
 
 function seruvenGriSayisi(){
