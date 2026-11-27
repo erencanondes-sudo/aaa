@@ -3554,7 +3554,7 @@ document.getElementById("wordMessage").style.visibility="visible";
 renderWordLengthBreakdown();
 
 if(seruvenOyunu){
-document.getElementById("wordMessage").innerHTML="Hedef kelimeleri yaz!";
+document.getElementById("wordMessage").innerHTML=seruvenKuralMetni();
 seruvenGorevCiz();
 renderWordCards();
 }
@@ -3584,6 +3584,9 @@ timeBarEl.style.width=timePct+"%";
 if(time<=90 && !seruvenOyunu){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
+
+// Kelime Serüveni: zamanla olanlar (kaçan av, saniyeli bomba, yayılan gri)
+if(seruvenOyunu)seruvenSaniye();
 
 if(time<=0 && !resultRecorded){
 
@@ -4410,9 +4413,12 @@ setTimeout(function(){ renderWordCards(); updateWordOperationText(); },250);
 return;
 }
 
-// Kelime Serüveni: işaretli taşlar (avlanacak, bombalı, gri) yalnızca 5 harf ve üstü kelimelerde kullanılabilir
-if(seruvenOyunu && guess.length<5 && usedIndices.some(function(i){ return seruvenIsaretli(wordTiles[i]); })){
-document.getElementById("wordMessage").innerHTML="İşaretli taşlar yalnızca 5 harf ve üstü kelimelerde kullanılabilir.";
+// Kelime Serüveni: kilitli gri taş kullanılamaz; işaretli taşlar (avlanacak, bombalı, gri) yalnızca 5 harf ve üstü kelimelerde
+let seruvenEngel=null;
+if(seruvenOyunu && usedIndices.some(function(i){ return seruvenGriKilitli(wordTiles[i]); }))seruvenEngel="Gri taşlar kilitli; yanındaki taşları kullanarak temizle.";
+else if(seruvenOyunu && guess.length<5 && usedIndices.some(function(i){ return seruvenIsaretli(wordTiles[i]); }))seruvenEngel="İşaretli taşlar yalnızca 5 harf ve üstü kelimelerde kullanılabilir.";
+if(seruvenEngel){
+document.getElementById("wordMessage").innerHTML=seruvenEngel;
 playErrorSound();
 flashWordCards(usedIndices,"error",250);
 flashWordOperation("error",250);
@@ -4473,7 +4479,7 @@ recordGameEnd("win",finalScore);
 
 harfLogAdd("Kelime: "+guess);
 
-if(seruvenOyunu)seruvenKelimeOncesi(usedIndices);
+if(seruvenOyunu)seruvenKelimeOncesi(usedIndices,guess);
 
 let replacedIndices=[];
 let decreasedIds=[];
@@ -4835,6 +4841,9 @@ timeBarEl.style.width=timePct+"%";
 if(time<=90 && !seruvenOyunu){
 document.getElementById("showWordsBtn").style.display="inline-block";
 }
+
+// Kelime Serüveni: zamanla olanlar (kaçan av, saniyeli bomba, yayılan gri)
+if(seruvenOyunu)seruvenSaniye();
 
 if(time<=0){
 
